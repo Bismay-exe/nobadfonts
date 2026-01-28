@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { Upload as UploadIcon, File, X } from 'lucide-react';
+import { Upload as UploadIcon, File, X, Image as ImageIcon, Link as LinkIcon } from 'lucide-react';
 
 const Upload = () => {
     const { user } = useAuth();
@@ -13,6 +13,30 @@ const Upload = () => {
         designer: '',
         tags: [] as string[],
     });
+
+    // Banner state
+    const [bannerItems, setBannerItems] = useState<{ id: string, type: 'file' | 'url', content: File | string }[]>([]);
+    const [urlInput, setUrlInput] = useState('');
+    const [showUrlInput, setShowUrlInput] = useState(false);
+
+    // Variant State
+    type FontVariant = {
+        id: string;
+        name: string;
+        files: {
+            ttf: File | null;
+            otf: File | null;
+            woff: File | null;
+            woff2: File | null;
+        };
+    };
+    const [variants, setVariants] = useState<FontVariant[]>([]);
+
+    const VARIANT_NAMES = [
+        "Extra Light", "Light", "Regular", "Medium", "Semi Bold", "Bold", "Extra Bold", "Black",
+        "Italic", "Thin Italic", "Extra Light Italic", "Light Italic", "Regular Italic",
+        "Medium Italic", "Semi Bold Italic", "Bold Italic", "Extra Bold Italic", "Black Italic"
+    ];
 
     const CATEGORIES = [
         { id: '3d', label: '3D' },
@@ -140,6 +164,59 @@ const Upload = () => {
         setFiles(prev => ({ ...prev, [format]: null }));
     };
 
+    const handleBannerFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files) {
+            const newfiles = Array.from(e.target.files).map(file => ({
+                id: Math.random().toString(36).substring(7),
+                type: 'file' as const,
+                content: file
+            }));
+            setBannerItems(prev => [...prev, ...newfiles]);
+        }
+    };
+
+    const addBannerUrl = () => {
+        if (!urlInput) return;
+        setBannerItems(prev => [...prev, {
+            id: Math.random().toString(36).substring(7),
+            type: 'url',
+            content: urlInput
+        }]);
+        setUrlInput('');
+        setShowUrlInput(false);
+    };
+
+    const removeBannerItem = (id: string) => {
+        setBannerItems(prev => prev.filter(item => item.id !== id));
+    };
+
+    // Variant Helpers
+    const addVariant = () => {
+        setVariants(prev => [
+            ...prev,
+            {
+                id: Math.random().toString(36).substring(7),
+                name: 'Regular',
+                files: { ttf: null, otf: null, woff: null, woff2: null }
+            }
+        ]);
+    };
+
+    const removeVariant = (id: string) => {
+        setVariants(prev => prev.filter(v => v.id !== id));
+    };
+
+    const updateVariantName = (id: string, name: string) => {
+        setVariants(prev => prev.map(v => v.id === id ? { ...v, name } : v));
+    };
+
+    const updateVariantFile = (id: string, format: keyof FontVariant['files'], file: File) => {
+        setVariants(prev => prev.map(v => v.id === id ? {
+            ...v,
+            files: { ...v.files, [format]: file }
+        } : v));
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!user) return alert('You must be logged in to upload');
@@ -157,6 +234,36 @@ const Upload = () => {
             const slug = `${baseSlug}-${Math.random().toString(36).substring(2, 6)}`;
             const folderPath = `${user.id}/${slug}`;
             const uploadUrls: any = {};
+            const galleryUrls: string[] = [];
+
+            // Process Banner Items
+            for (const item of bannerItems) {
+                if (item.type === 'file') {
+                    const file = item.content as File;
+                    // Use timestamp to allow same filename multiple times
+                    const bannerPath = `${folderPath}/gallery/${Date.now()}-${file.name}`;
+                    const { error: bannerUploadError } = await supabase.storage
+                        .from('fonts')
+                        .upload(bannerPath, file, { upsert: true });
+
+                    if (bannerUploadError) {
+                        console.error(`Failed to upload banner ${file.name}:`, bannerUploadError);
+                        continue;
+                    }
+
+                    const { data: { publicUrl } } = supabase.storage
+                        .from('fonts')
+                        .getPublicUrl(bannerPath);
+
+                    galleryUrls.push(publicUrl);
+                } else if (item.type === 'url') {
+                    galleryUrls.push(item.content as string);
+                }
+            }
+
+            const previewImageUrl = galleryUrls.length > 0 ? galleryUrls[0] : null;
+
+            // Helper to upload a single file
 
             // Helper to upload a single file
             const uploadFile = async (file: File, format: string) => {
@@ -199,13 +306,55 @@ const Upload = () => {
                         is_published: true,
                         user_id: user.id,
                         // Spread the uploaded URLs
-                        ...uploadUrls
+                        ...uploadUrls,
+                        preview_image_url: previewImageUrl,
+                        gallery_images: galleryUrls
                     }
                 ]);
 
             if (dbError) {
                 console.error('Database Error:', dbError);
                 throw new Error(`Database insert failed: ${dbError.message}`);
+            }
+
+            const fontId = (dbError as any)?.details ? null : 'unknown'; // Supabase insert response handling might be tricky if not selecting.
+            // Actually, we need the ID. Let's assume the insert returns data if we ask.
+            // But standard insert doesn't return unless .select() is chained.
+
+            // Refetch or use a select insert
+            const { data: insertedFont, error: insertError } = await supabase
+                .from('fonts')
+                .select('id')
+                .eq('slug', slug)
+                .single();
+
+            if (insertError || !insertedFont) throw new Error('Failed to retrieve new font ID');
+
+            // Upload and Insert Variants
+            for (const variant of variants) {
+                const variantUrls: any = {};
+                const promises = [];
+
+                for (const format of ['ttf', 'otf', 'woff', 'woff2'] as const) {
+                    const file = variant.files[format];
+                    if (file) {
+                        promises.push(uploadFile(file, format).then(url => variantUrls[`${format}_url`] = url));
+                    }
+                }
+
+                if (promises.length > 0) {
+                    await Promise.all(promises);
+
+                    const { error: variantError } = await supabase
+                        .from('font_variants')
+                        .insert({
+                            font_id: insertedFont.id,
+                            variant_name: variant.name,
+                            ...variantUrls
+                        });
+
+                    if (variantError) console.error(`Failed to save variant ${variant.name}`, variantError);
+                }
             }
 
             alert('Font uploaded successfully!');
@@ -291,6 +440,175 @@ const Upload = () => {
                     </div>
                 </div>
 
+
+
+                {/* Variants Section */}
+                <div className="col-span-1 md:col-span-2 bg-white p-8 rounded-3xl border-x border-b border-black">
+                    <div className="flex justify-between items-center mb-4">
+                        <label className="font-bold uppercase text-lg">Font Variants</label>
+                        <button
+                            type="button"
+                            onClick={addVariant}
+                            className="bg-black text-white px-4 py-2 rounded-full font-bold text-sm hover:bg-gray-800"
+                        >
+                            + Add Variant
+                        </button>
+                    </div>
+
+                    <div className="space-y-6">
+                        {variants.map((variant) => (
+                            <div key={variant.id} className="p-4 border-2 border-dashed border-gray-300 rounded-2xl bg-gray-50">
+                                <div className="flex justify-between items-start mb-4">
+                                    <div>
+                                        <label className="block text-xs font-bold uppercase mb-1">Variant Name</label>
+                                        <select
+                                            value={variant.name}
+                                            onChange={(e) => updateVariantName(variant.id, e.target.value)}
+                                            className="border-2 border-black rounded-lg px-3 py-1 font-bold bg-white"
+                                        >
+                                            {VARIANT_NAMES.map(name => (
+                                                <option key={name} value={name}>{name}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => removeVariant(variant.id)}
+                                        className="text-red-500 hover:text-red-700 p-1"
+                                    >
+                                        <X size={20} />
+                                    </button>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                    {(['ttf', 'otf', 'woff', 'woff2'] as const).map(format => (
+                                        <div key={format} className="relative">
+                                            {variant.files[format] ? (
+                                                <div className="flex items-center justify-between bg-green-100 border border-green-300 rounded-lg p-2 text-xs font-bold">
+                                                    <span className="truncate max-w-20">{variant.files[format]?.name}</span>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => updateVariantFile(variant.id, format, null as any)}
+                                                    >
+                                                        <X size={14} className="text-green-700" />
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <div className="relative">
+                                                    <input
+                                                        type="file"
+                                                        accept={`.${format}`}
+                                                        onChange={(e) => {
+                                                            if (e.target.files?.[0]) {
+                                                                updateVariantFile(variant.id, format, e.target.files[0]);
+                                                            }
+                                                        }}
+                                                        className="absolute inset-0 opacity-0 cursor-pointer z-10 w-full h-full"
+                                                    />
+                                                    <div className="border border-gray-300 bg-white rounded-lg p-2 text-center text-xs font-bold text-gray-500 hover:border-black hover:text-black transition-colors">
+                                                        {format.toUpperCase()}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
+                        {variants.length === 0 && (
+                            <p className="text-gray-400 text-center text-sm italic">
+                                No additional variants added. The main files above will be treated as the default variant.
+                            </p>
+                        )}
+                    </div>
+                </div>
+                {/* Banner Image Section */}
+                <div className="col-span-1 md:col-span-2 bg-white p-8 rounded-3xl border-x border-b border-black md:border-t-0 space-y-4">
+                    <label className="block font-bold uppercase text-lg">Banner Gallery <span className="text-sm text-gray-500 normal-case ml-2">(Optional - Multiple images allowed)</span></label>
+
+                    {/* List of items */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4 empty:hidden">
+                        {bannerItems.map((item) => (
+                            <div key={item.id} className="relative group aspect-video bg-gray-100 rounded-xl overflow-hidden border-2 border-gray-200">
+                                {item.type === 'file' ? (
+                                    <div className="w-full h-full flex flex-col items-center justify-center p-2 text-center">
+                                        <ImageIcon className="text-gray-400 mb-1" />
+                                        <span className="text-xs font-bold truncate w-full">{(item.content as File).name}</span>
+                                    </div>
+                                ) : (
+                                    <img
+                                        src={item.content as string}
+                                        alt="Preview"
+                                        className="w-full h-full object-cover"
+                                    />
+                                )}
+                                <button
+                                    type="button"
+                                    onClick={() => removeBannerItem(item.id)}
+                                    className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                                >
+                                    <X size={12} />
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="flex flex-wrap gap-4">
+                        <div className="relative">
+                            <input
+                                type="file"
+                                multiple
+                                accept="image/png, image/jpeg, image/webp, image/avif"
+                                onChange={handleBannerFileChange}
+                                className="absolute inset-0 opacity-0 cursor-pointer w-full z-10"
+                            />
+                            <button
+                                type="button"
+                                className="flex items-center gap-2 px-4 py-2 rounded-full font-bold border-2 border-dashed border-gray-300 hover:border-black hover:bg-gray-50 transition-all text-gray-500 hover:text-black"
+                            >
+                                <UploadIcon size={18} /> Add Images
+                            </button>
+                        </div>
+
+                        <div className="flex gap-2">
+                            {showUrlInput ? (
+                                <div className="flex items-center gap-2">
+                                    <input
+                                        type="url"
+                                        value={urlInput}
+                                        onChange={e => setUrlInput(e.target.value)}
+                                        placeholder="https://..."
+                                        className="border-2 border-black rounded-lg px-2 py-1 focus:outline-none"
+                                        autoFocus
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={addBannerUrl}
+                                        className="bg-black text-white px-3 py-1 rounded-lg font-bold text-sm"
+                                    >
+                                        Add
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowUrlInput(false)}
+                                        className="text-gray-500 hover:text-black"
+                                    >
+                                        <X size={18} />
+                                    </button>
+                                </div>
+                            ) : (
+                                <button
+                                    type="button"
+                                    onClick={() => setShowUrlInput(true)}
+                                    className="flex items-center gap-2 px-4 py-2 rounded-full font-bold border-2 border-dashed border-gray-300 hover:border-black hover:bg-gray-50 transition-all text-gray-500 hover:text-black"
+                                >
+                                    <LinkIcon size={18} /> Add URL
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                </div >
+
                 <div className='col-span-1 md:col-span-2 space-y-4 bg-white p-8 rounded-3xl border-y border-black'>
                     <label className="block font-bold mb-2 uppercase">Categories</label>
                     <div className="flex gap-2 flex-wrap max-h-full overflow-y-auto p-1">
@@ -312,7 +630,7 @@ const Upload = () => {
                         ))}
                     </div>
                 </div>
-                
+
                 <button
                     type="submit"
                     disabled={loading}

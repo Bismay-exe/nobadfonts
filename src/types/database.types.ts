@@ -67,6 +67,47 @@ export type Database = {
           },
         ]
       }
+      font_variants: {
+        Row: {
+          created_at: string
+          font_id: string
+          id: string
+          otf_url: string | null
+          ttf_url: string | null
+          variant_name: string
+          woff2_url: string | null
+          woff_url: string | null
+        }
+        Insert: {
+          created_at?: string
+          font_id: string
+          id?: string
+          otf_url?: string | null
+          ttf_url?: string | null
+          variant_name: string
+          woff2_url?: string | null
+          woff_url?: string | null
+        }
+        Update: {
+          created_at?: string
+          font_id?: string
+          id?: string
+          otf_url?: string | null
+          ttf_url?: string | null
+          variant_name?: string
+          woff2_url?: string | null
+          woff_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "font_variants_font_id_fkey"
+            columns: ["font_id"]
+            isOneToOne: false
+            referencedRelation: "fonts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       fonts: {
         Row: {
           category: string
@@ -95,6 +136,7 @@ export type Database = {
           ttf_url: string | null
           otf_url: string | null
           zip_url: string
+          gallery_images: string[] | null
         }
         Insert: {
           category: string
@@ -120,6 +162,7 @@ export type Database = {
           weights?: number[] | null
           woff2_url: string
           zip_url: string
+          gallery_images: string[] | null
         }
         Update: {
           category?: string
@@ -145,6 +188,7 @@ export type Database = {
           weights?: number[] | null
           woff2_url?: string
           zip_url?: string
+          gallery_images?: string[] | null
         }
         Relationships: []
       }

@@ -2,7 +2,7 @@ import React, { useLayoutEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { MoveRight, Sparkles, PenTool, Type, Layers, Instagram, Dribbble, Twitter, MessageCircle, Check, Image as ImageIcon, ArrowUpRight, SlidersHorizontal } from 'lucide-react';
+import { MoveRight, Sparkles, PenTool, Type, Layers, Instagram, Dribbble, Twitter, MessageCircle, Check, Image as ArrowUpRight, SlidersHorizontal } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 
@@ -128,10 +128,6 @@ const Land2: React.FC = () => {
                 </div>
             </section>
 
-
-
-
-
             {/* === NEW SECTION 2: TYPE TESTER === */}
             <motion.section
                 className="col-span-1 md:col-span-2 md:row-span-2 bg-[#C6FF34] rounded-3xl p-8 md:p-16 flex flex-col justify-between text-white"
@@ -142,7 +138,13 @@ const Land2: React.FC = () => {
                 </div>
 
                 <div className="grow flex items-center justify-center">
-                    <span style={{ fontWeight: weight }} className="text-6xl text-[#7E3BED] transition-all duration-100 ease-in-out select-none">
+                    <span style={{ fontWeight: weight }} className="hidden md:hidden lg:block text-6xl text-[#7E3BED] transition-all duration-100 ease-in-out select-none">
+                        Lorem ipsum dolor, sit amet consectetur adipisicing elit. Asperiores repellendus magni rerum iusto quia consequuntur. Cum, adipisci. Ex eius eum magni, aliquid voluptatibus optio vel maiores, eaque dignissimos tenetur maxime?
+                    </span>
+                    <span style={{ fontWeight: weight }} className="hidden md:block lg:hidden text-6xl text-[#7E3BED] transition-all duration-100 ease-in-out select-none">
+                        Lorem ipsum dolor, sit amet consectetur adipisicing elit. Asperiores repellendus magni rerum iusto quia consequuntur. Cum, adipisci.
+                    </span>
+                    <span style={{ fontWeight: weight }} className="md:hidden text-6xl text-[#7E3BED] transition-all duration-100 ease-in-out select-none">
                         Lorem ipsum dolor sit amet consectetur adipisicing elit.
                     </span>
                 </div>
@@ -164,26 +166,34 @@ const Land2: React.FC = () => {
             </motion.section>
 
 
-            {/* === NEW SECTION 3: IN THE WILD (Gallery) === */}
-            <section className="p-8 md:p-16 bg-[#FE8616] border-y-2 border-black rounded-3xl">
-                <h2 className="text-4xl font-black uppercase mb-12 flex items-center gap-4">
-                    <ImageIcon className="text-[#FF90E8]" /> In The Wild
-                </h2>
-
-                {/* Masonry Layout Simulation */}
-                <div ref={galleryRef} className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div className="bg-gray-100 h-100 border-2 border-black rounded-lg overflow-hidden relative group shadow-[8px_8px_0px_0px_#000]">
-                        <img src="https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=1000&auto=format&fit=crop" className="w-full h-full object-cover transition-transform group-hover:scale-110" alt="Poster Design" />
-                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white font-bold uppercase">View Project</div>
-                    </div>
-                    <div className="bg-gray-100 h-75 md:translate-y-12 border-2 border-black rounded-lg overflow-hidden relative group shadow-[8px_8px_0px_0px_#000]">
-                        <img src="https://images.unsplash.com/photo-1561070791-2526d30994b5?q=80&w=1000&auto=format&fit=crop" className="w-full h-full object-cover transition-transform group-hover:scale-110" alt="Book Cover" />
-                    </div>
-                    <div className="bg-gray-100 h-112.5 border-2 border-black rounded-lg overflow-hidden relative group shadow-[8px_8px_0px_0px_#000]">
-                        <img src="https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=1000&auto=format&fit=crop" className="w-full h-full object-cover transition-transform group-hover:scale-110" alt="Magazine" />
+            <motion.section
+                className="rounded-3xl p-8 md:p-16 flex flex-col justify-between bg-[#7E3BED] text-[#C6FF34] overflow-hidden relative"
+                >
+                <div className="p-6 absolute top-0 left-0 z-10 w-full bg-linear-to-b from-[#7E3BED] to-transparent">
+                    <div className="flex items-center gap-2">
+                        <Sparkles size={18} />
+                        <span className="text-sm font-bold uppercase tracking-wider">Trending Styles</span>
                     </div>
                 </div>
-            </section>
+
+                {/* GSAP Scroller */}
+                <div className="h-full overflow-hidden flex items-center justify-center relative mask-image-vertical">
+                    <div className="flex flex-col gap-8 py-8 text-center font-black text-4xl md:text-5xl uppercase tracking-tight select-none">
+                        {/* Duplicated list for seamless loop */}
+                        <span>Neue Mono</span>
+                        <span>Editorial Serif</span>
+                        <span>Brutal Sans</span>
+                        <span>Liquid Display</span>
+                        <span className="text-white">Geometric</span>
+                        <span>Neue Mono</span>
+                        <span>Editorial Serif</span>
+                        <span>Brutal Sans</span>
+                        <span>Liquid Display</span>
+                        <span className="text-white">Geometric</span>
+                    </div>
+                </div>
+                <div className="p-6 absolute bottom-0 left-0 z-10 w-full bg-linear-to-t from-[#7E3BED] to-transparent h-24 pointer-events-none" />
+            </motion.section>
 
 
             {/* === CATEGORIES (Services) SECTION === */}
@@ -242,7 +252,7 @@ const Land2: React.FC = () => {
                     <div className="bg-white p-8 border-2 border-black shadow-[8px_8px_0px_0px_#000] flex flex-col">
                         <h3 className="text-2xl font-black uppercase mb-2">Free</h3>
                         <div className="text-4xl font-black mb-6">$0<span className="text-sm font-normal text-gray-500">/project</span></div>
-                        <ul className="space-y-4 mb-8 flex-grow">
+                        <ul className="space-y-4 mb-8 grow">
                             <li className="flex gap-2 text-sm font-bold"><Check size={18} /> Personal Use Only</li>
                             <li className="flex gap-2 text-sm font-bold"><Check size={18} /> 1 User Seat</li>
                             <li className="flex gap-2 text-sm font-bold text-gray-400 line-through"><Check size={18} /> Commercial Work</li>
@@ -255,7 +265,7 @@ const Land2: React.FC = () => {
                         <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black text-white px-4 py-1 rounded-full text-xs font-bold uppercase">Most Popular</div>
                         <h3 className="text-2xl font-black uppercase mb-2">Pro</h3>
                         <div className="text-4xl font-black mb-6">$45<span className="text-sm font-normal text-black/60">/font</span></div>
-                        <ul className="space-y-4 mb-8 flex-grow">
+                        <ul className="space-y-4 mb-8 grow">
                             <li className="flex gap-2 text-sm font-bold"><Check size={18} /> Commercial Use</li>
                             <li className="flex gap-2 text-sm font-bold"><Check size={18} /> Up to 3 Users</li>
                             <li className="flex gap-2 text-sm font-bold"><Check size={18} /> Web & Print</li>
@@ -267,7 +277,7 @@ const Land2: React.FC = () => {
 
 
             {/* === TESTIMONIALS (Sticky Notes) === */}
-            <section className="p-8 md:p-16 relative min-h-[850px] md:min-h-[600px] overflow-hidden bg-white rounded-3xl">
+            <section className="p-8 md:p-16 relative min-h-212.5 md:min-h-150 overflow-hidden bg-white rounded-3xl">
                 <h2 className="text-4xl font-black mb-12 uppercase">Word on the street</h2>
 
                 <div className="relative flex justify-center items-center h-full mt-20">
@@ -293,7 +303,7 @@ const Land2: React.FC = () => {
 
                 <motion.div
                     whileHover={{ scale: 1.02, rotate: 2 }}
-                    className="bg-[#FF6B00] w-full max-w-3xl aspect-square md:aspect-[4/3] rounded-[50%] md:rounded-[200px] flex flex-col items-center justify-center text-center p-12 relative z-10 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] cursor-pointer"
+                    className="bg-[#FF6B00] w-full max-w-3xl aspect-square md:aspect-4/3 rounded-[50%] md:rounded-[200px] flex flex-col items-center justify-center text-center p-12 relative z-10 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] cursor-pointer"
                 >
                     <h2 className="text-5xl md:text-7xl font-black uppercase leading-none mb-8">Let's Craft <br /> Your Success.</h2>
                     <p className="font-bold text-xl mb-8">Find the typeface that defines you.</p>

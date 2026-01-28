@@ -19,7 +19,7 @@ export function useFont(id: string | undefined) {
         // Fetch font data
         const { data: fontData, error: fontError } = await supabase
           .from('fonts')
-          .select('*')
+          .select('*, font_variants(*)')
           .eq('id', id)
           .single();
 

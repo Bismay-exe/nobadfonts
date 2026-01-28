@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import { useFont } from '../hooks/useFont';
 import FontTester from '../components/fonts/FontTester';
+import { PreviewAccordion } from '../components/fonts/PreviewAccordion';
 
 export default function FontDetails() {
     const { id } = useParams();
@@ -14,20 +15,37 @@ export default function FontDetails() {
     const [copied, setCopied] = useState(false);
     const [isFontLoaded, setIsFontLoaded] = useState(false);
 
+    const [variantPreviewText, setVariantPreviewText] = useState('');
+    const [variantPreviewSize, setVariantPreviewSize] = useState(48);
+
     useEffect(() => {
         if (!font) return;
 
+        // Load main font
         const fontUrl = font.woff2_url || font.woff_url || font.ttf_url || font.otf_url;
-        if (!fontUrl) return;
+        if (fontUrl) {
+            const fontFamily = `font-${font.id}`;
+            const fontFace = new FontFace(fontFamily, `url(${fontUrl})`);
+            fontFace.load().then((loadedFace) => {
+                document.fonts.add(loadedFace);
+                setIsFontLoaded(true);
+            }).catch((err) => {
+                console.error(`Failed to load font ${font.name}:`, err);
+            });
+        }
 
-        const fontFamily = `font-${font.id}`;
-        const fontFace = new FontFace(fontFamily, `url(${fontUrl})`);
-
-        fontFace.load().then((loadedFace) => {
-            document.fonts.add(loadedFace);
-            setIsFontLoaded(true);
-        }).catch((err) => {
-            console.error(`Failed to load font ${font.name}:`, err);
+        // Load variant fonts
+        font.font_variants?.forEach(variant => {
+            const variantUrl = variant.woff2_url || variant.woff_url || variant.ttf_url || variant.otf_url;
+            if (variantUrl) {
+                const variantFamily = `font-${font.id}-${variant.variant_name}`;
+                const variantFace = new FontFace(variantFamily, `url(${variantUrl})`);
+                variantFace.load().then((loadedFace) => {
+                    document.fonts.add(loadedFace);
+                }).catch((err) => {
+                    console.error(`Failed to load variant ${variant.variant_name}:`, err);
+                });
+            }
         });
     }, [font]);
 
@@ -69,13 +87,8 @@ export default function FontDetails() {
         setTimeout(() => setCopied(false), 2000);
     };
 
-    const downloadFont = async (format: 'ttf' | 'otf' | 'woff' | 'woff2') => {
-        if (!font) return;
-
-        const urlKey = `${format}_url` as keyof typeof font;
-        const url = font[urlKey];
-
-        if (!url) return alert('This format is not available.');
+    const downloadFont = async (url: string, filename: string) => {
+        if (!font || !url) return;
 
         try {
             // Record download if user is logged in
@@ -90,8 +103,8 @@ export default function FontDetails() {
 
             // Trigger download
             const link = document.createElement('a');
-            link.href = url as string;
-            link.download = `${font.slug}.${format}`;
+            link.href = url;
+            link.download = filename;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -146,28 +159,55 @@ export default function FontDetails() {
         return true;
     });
 
-    // Safety check for tags/category
     const displayTags = (font.tags && Array.isArray(font.tags) && font.tags.length > 0)
         ? font.tags
         : (font.category ? [font.category] : []);
 
+    const galleryImages = font.gallery_images && font.gallery_images.length > 0
+        ? font.gallery_images
+        : (font.preview_image_url ? [font.preview_image_url] : []);
+
+
+    const imageCount = galleryImages.length > 0 ? galleryImages.length : 1;
+    // Desktop (Row): Width_total = (11 + N) * unit, Height = 8 * unit (for 3:2 expanded) -> AR = (11+N)/8
+    const desktopAr = (11 + imageCount) / 8;
+    // Mobile (Col): Width = 18 * unit (for 3:2 expanded), Height_total = (11 + N) * unit -> AR = 18/(11+N)
+    const mobileAr = 18 / (11 + imageCount);
 
     return (
         <div className="mx-auto">
-            <div className='relative h-100 w-full bg-white rounded-3xl border-2 border-black flex justify-center items-center'>
-                <h1
-                    style={{
-                        fontFamily: isFontLoaded ? `font-${font.id}` : 'sans-serif',
-                        opacity: isFontLoaded ? 1 : 0
-                    }}
-                    className="text-9xl text-center text-gray-900 mb-2 transition-opacity duration-300">{font.name}</h1>
+            <div
+                style={{
+                    '--mobile-ar': mobileAr,
+                    '--desktop-ar': desktopAr,
+                } as React.CSSProperties}
+                className={`relative w-full bg-white rounded-3xl border-2 border-black flex justify-center items-center overflow-hidden group ${galleryImages.length > 0 ? 'aspect-(--mobile-ar) md:aspect-(--desktop-ar)' : 'h-[66vw] md:h-100'}`}
+            >
+                {galleryImages.length > 0 && (
+                    <div className="absolute inset-0 z-20">
+                        <PreviewAccordion images={galleryImages} />
+                    </div>
+                )}
+
+                {/* Fallback height container if no images, or overlay content */}
+                <div className={`relative z-10 w-full h-full flex justify-center items-center ${galleryImages.length > 0 ? 'pointer-events-none' : ''}`}>
+                    <h1
+                        style={{
+                            fontFamily: isFontLoaded ? `font-${font.id}` : 'sans-serif',
+                            opacity: isFontLoaded ? 1 : 0
+                        }}
+                        className={`text-6xl md:text-9xl text-center transition-all duration-300 drop-shadow-lg ${galleryImages.length > 0 ? 'text-white' : 'text-gray-900'}`}
+                    >
+                        {font.name}
+                    </h1>
+                </div>
             </div>
 
 
 
             {/* Header */}
             <div className="relative column col-span-3  justify-between items-start md:items-center gap-4">
-                <div className='flex flex-col items-start justify-end w-full md:w-auto bg-white rounded-3xl border-2 border-black p-4'>
+                <div className='flex flex-col items-start justify-end w-full md:w-auto bg-[#BDF522] rounded-3xl border-2 border-black p-4'>
                     {/* Back Button */}
                     <Link to="/fonts" className="absolute top-3 left-3 inline-flex items-center bg-black px-3 py-2 rounded-full font-semibold text-gray-50 hover:text-gray-900 mb-8 transition-colors">
                         <ArrowLeft size={18} className="mr-2" />
@@ -233,6 +273,69 @@ export default function FontDetails() {
                 </div>
             </div>
 
+            {/* Variant Previews Section */}
+            <div className='w-full bg-white/20 text-black rounded-3xl border-2 border-black overflow-hidden'>
+                {/* Controller Row */}
+                <div className="flex flex-col md:flex-row items-center justify-between gap-6 p-6 rounded-3xl border-b border-black bg-white hover:bg-gray-100">
+                    <input
+                        type="text"
+                        value={variantPreviewText}
+                        onChange={(e) => setVariantPreviewText(e.target.value)}
+                        placeholder="Type something to preview..."
+                        className="w-full md:w-1/2 text-xl bg-transparent border-b-2 border-gray-300 focus:border-black outline-none px-2 py-2 transition-colors placeholder:text-gray-400"
+                    />
+                    <div className="flex items-center gap-4 w-full md:w-auto bg-white px-4 py-2 rounded-full border border-gray-200">
+                        <span className="text-xs font-bold uppercase text-gray-500">Size</span>
+                        <input
+                            type="range"
+                            min="16"
+                            max="150"
+                            value={variantPreviewSize}
+                            onChange={(e) => setVariantPreviewSize(Number(e.target.value))}
+                            className="w-full md:w-48 accent-black cursor-pointer"
+                        />
+                        <span className="font-mono text-sm w-12 text-right">{variantPreviewSize}px</span>
+                    </div>
+                </div>
+
+                {/* Main Font Preview */}
+                <div className="p-8 rounded-3xl border-b border-black bg-white hover:bg-gray-100 transition-colors">
+                    <div className="flex justify-between items-center mb-4">
+                        <span className="text-[8px] font-bold uppercase tracking-wider text-gray-500 bg-gray-200 px-2 py-1 rounded-xl">Default</span>
+                    </div>
+                    <p
+                        style={{
+                            fontFamily: isFontLoaded ? `font-${font.id}` : 'sans-serif',
+                            fontSize: `${variantPreviewSize}px`,
+                            lineHeight: 1.2,
+                            opacity: isFontLoaded ? 1 : 0
+                        }}
+                        className="wrap-break-word transition-all duration-200 w-full"
+                    >
+                        {variantPreviewText || font.name}
+                    </p>
+                </div>
+
+                {/* Variants List */}
+                {font.font_variants?.map(variant => (
+                    <div key={variant.id} className="p-8 rounded-3xl border-b border-black bg-white hover:bg-gray-100 transition-colors">
+                        <div className="flex justify-between items-center mb-4">
+                            <span className="text-[8px] font-bold uppercase tracking-wider text-gray-500 bg-gray-200 px-2 py-1 rounded-xl">{variant.variant_name}</span>
+                        </div>
+                        <p
+                            style={{
+                                fontFamily: `font-${font.id}-${variant.variant_name}`,
+                                fontSize: `${variantPreviewSize}px`,
+                                lineHeight: 1.2
+                            }}
+                            className="wrap-break-word transition-all duration-200 w-full"
+                        >
+                            {variantPreviewText || `${font.name} ${variant.variant_name}`}
+                        </p>
+                    </div>
+                ))}
+            </div>
+
             {/* Main Content Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-3">
                 {/* Left Column: Tester (Span 2) */}
@@ -263,23 +366,26 @@ export default function FontDetails() {
 
                 {/* Download Buttons Stacked */}
                 <div id='download' className="lg:col-span-3 bg-white border border-black rounded-3xl p-6">
-                    <h3 className="font-bold text-lg mb-4">Download Options</h3>
+                    <h3 className="font-bold text-lg mb-4">Download Default</h3>
 
                     <div className="flex flex-col md:flex-row gap-3">
                         {availableFormats.length > 0 ? (
-                            availableFormats.map(format => (
-                                <button
-                                    key={format.label}
-                                    onClick={() => downloadFont(format.type)}
-                                    className="w-full flex items-center justify-between px-6 py-4 bg-black text-white rounded-3xl hover:bg-[#00C2FF] hover:text-black border-2 border-transparent transition-all font-black uppercase text-sm"
-                                >
-                                    <span className="flex items-center gap-2">
-                                        <Download size={18} />
-                                        <span>Download {format.label}</span>
-                                    </span>
-                                    <span className="text-xs opacity-70 font-normal">.{(format.type as string).toUpperCase()}</span>
-                                </button>
-                            ))
+                            availableFormats.map(format => {
+                                const url = font[format.key as keyof typeof font] as string;
+                                return (
+                                    <button
+                                        key={format.label}
+                                        onClick={() => downloadFont(url, `${font.slug}.${format.type}`)}
+                                        className="w-full flex items-center justify-between px-6 py-4 bg-black text-white rounded-3xl hover:bg-[#00C2FF] hover:text-black border-2 border-transparent transition-all font-black uppercase text-sm"
+                                    >
+                                        <span className="flex items-center gap-2">
+                                            <Download size={18} />
+                                            <span>Download {format.label}</span>
+                                        </span>
+                                        <span className="text-xs opacity-70 font-normal">.{format.type.toUpperCase()}</span>
+                                    </button>
+                                );
+                            })
                         ) : (
                             <div className="text-center py-4 text-gray-400 italic">
                                 No download formats available.
@@ -287,6 +393,35 @@ export default function FontDetails() {
                         )}
                     </div>
                 </div>
+
+                {/* Variants Section */}
+                {font.font_variants && font.font_variants.length > 0 && (
+                    <div className="lg:col-span-3 border border-black rounded-3xl">
+                        <div className="grid grid-cols-1">
+                            {font.font_variants.map(variant => (
+                                <div key={variant.id} className=" bg-white border border-black rounded-3xl p-4 hover:border-black transition-colors">
+                                    <h4 className="font-bold mb-3">{variant.variant_name}</h4>
+                                    <div className="flex flex-wrap gap-2">
+                                        {(['ttf', 'otf', 'woff', 'woff2'] as const).map(format => {
+                                            const urlKey = `${format}_url` as keyof typeof variant;
+                                            const url = variant[urlKey];
+                                            if (!url) return null;
+                                            return (
+                                                <button
+                                                    key={format}
+                                                    onClick={() => downloadFont(url as string, `${font.slug}-${variant.variant_name}.${format}`)}
+                                                    className="flex items-center justify-between px-6 py-4 bg-black text-white rounded-3xl hover:bg-[#00C2FF] hover:text-black border-2 border-transparent transition-all font-black uppercase text-sm"
+                                                >
+                                                    {format}
+                                                </button>
+                                            )
+                                        })}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
 
             </div>
         </div>

@@ -7,7 +7,7 @@ export default function Navbar() {
     const [open, setOpen] = useState(false);
 
     return (
-        <nav className="w-full bg-white border-y-2 rounded-3xl p-4">
+        <nav className="w-full bg-[#7B46F8] border-y-2 border-black rounded-3xl p-4">
             <div className="flex justify-between items-center">
                 <Link
                     to="/"
@@ -19,7 +19,7 @@ export default function Navbar() {
                 {/* Mobile menu button */}
                 <button
                     onClick={() => setOpen(!open)}
-                    className="md:hidden border-2 border-black rounded-full px-6 py-2 font-bold"
+                    className="md:hidden border-2 border-black bg-[#BDF522] rounded-full px-6 py-2 font-bold"
                     aria-label="Toggle menu"
                 >
                     ☰
@@ -56,7 +56,7 @@ function NavLinks({
     onClick?: () => void;
 }) {
     const base =
-        'border-2 border-black px-4 py-1 font-bold rounded-full hover:bg-black hover:text-white transition-colors';
+        'border-2 border-black px-4 py-1 font-bold rounded-full bg-white hover:bg-black hover:text-white transition-colors';
 
     return (
         <div className="flex flex-col-reverse md:flex-row justify-between items-end gap-2">
