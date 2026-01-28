@@ -317,7 +317,7 @@ const Upload = () => {
                 throw new Error(`Database insert failed: ${dbError.message}`);
             }
 
-            const fontId = (dbError as any)?.details ? null : 'unknown'; // Supabase insert response handling might be tricky if not selecting.
+
             // Actually, we need the ID. Let's assume the insert returns data if we ask.
             // But standard insert doesn't return unless .select() is chained.
 
