@@ -24,7 +24,7 @@ export function useFonts({ query, categories, sortBy = 'trending' }: FontFilterP
         if (error) throw error;
         
         // Ensure we don't set nulls if something weird comes back
-        setFonts((data || []).filter(f => f && typeof f === 'object'));
+        setFonts((data || []).filter((f: any) => f && typeof f === 'object'));
         
       } catch (err: any) {
         console.error('Error fetching fonts:', err);
