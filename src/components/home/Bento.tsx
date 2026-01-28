@@ -55,7 +55,7 @@ const Bento: React.FC = () => {
 
                     <div className="relative z-10 mt-12">
                         <h1 className="text-6xl md:text-8xl font-black tracking-tighter leading-[0.9] mb-4">
-                            Fontique.
+                            NoBadFonts.
                         </h1>
                         <p className="text-xl md:text-2xl font-medium leading-tight max-w-md text-neutral-600">
                             Curating the digital alphabet. <br /> Premium type for modern interfaces.

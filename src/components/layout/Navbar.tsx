@@ -11,9 +11,9 @@ export default function Navbar() {
             <div className="flex justify-between items-center">
                 <Link
                     to="/"
-                    className="font-black text-2xl uppercase tracking-tighter"
+                    className="h-10 w-10 flex items-center gap-2 font-black text-2xl tracking-tighter"
                 >
-                    Fontique
+                    <img src="/logo/logo.png" alt="" className='bg-black p-1 rounded-xl' />NoBadFonts
                 </Link>
 
                 {/* Mobile menu button */}

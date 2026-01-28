@@ -68,7 +68,7 @@ const Land2: React.FC = () => {
                     </h1>
 
                     <p className="text-xl md:text-2xl font-medium max-w-2xl mx-auto leading-tight text-neutral-700 mb-8">
-                        Fontique is a curated library of typefaces built for designers who care about how things feel, not just how they look.
+                        NoBadFonts is a curated library of typefaces built for designers who care about how things feel, not just how they look.
                     </p>
 
                     <Link to="/fonts" className="inline-flex items-center gap-2 border-2 border-black px-6 py-3 group rounded-full font-serif font-thin italic hover:bg-[#7B46F8] hover:text-[#BDF522] transition-colors ">
@@ -100,7 +100,7 @@ const Land2: React.FC = () => {
             <section className="p-8 md:p-16 grid md:grid-cols-2 gap-12 items-center relative bg-[#FA51A2] rounded-3xl border-y-2 border-black">
                 <div className="font-bold text-2xl md:text-4xl leading-tight">
                     <span className="text-6xl block mb-4">///</span>
-                    At Fontique, we believe typography is the voice of your brand. We reject the bland and champion the brave, supplying kinetic type for digital maximalists.
+                    At NoBadFonts, we believe typography is the voice of your brand. We reject the bland and champion the brave, supplying kinetic type for digital maximalists.
                 </div>
                 <div className="flex justify-center relative">
                     <svg viewBox="0 0 300 150" className="w-full max-w-md rotate-[-5deg]">
@@ -282,7 +282,7 @@ const Land2: React.FC = () => {
 
                 <div className="relative flex justify-center items-center h-full mt-20">
                     <div className="absolute bg-[#FFC900] p-8 w-80 h-80 rotate-[-10deg] border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] top-0 left-10 md:left-1/4 z-10">
-                        <p className="font-bold text-xl leading-tight">"Fontique's selection is absolutely unhinged in the best way possible. My portfolio has never looked this good."</p>
+                        <p className="font-bold text-xl leading-tight">"NoBadFonts's selection is absolutely unhinged in the best way possible. My portfolio has never looked this good."</p>
                         <div className="mt-8 font-black uppercase">- Sarah, Art Director</div>
                     </div>
                     <div className="absolute bg-[#FF90E8] p-8 w-80 h-80 rotate-[5deg] border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] top-70 md:top-20 right-10 md:right-1/4 z-20">
@@ -333,7 +333,7 @@ const Land2: React.FC = () => {
 
                 <div className="relative z-10">
                     <h2 className="text-[10vw] font-black leading-none tracking-tighter">Email</h2>
-                    <p className="text-xl md:text-3xl font-bold mb-12">hello@fontique.com</p>
+                    <p className="text-xl md:text-3xl font-bold mb-12">hello@NoBadFonts.com</p>
 
                     <h2 className="text-[10vw] font-black leading-none tracking-tighter">Whatsapp</h2>
                     <p className="text-xl md:text-3xl font-bold">+1 (555) 000-TYPE</p>
@@ -341,7 +341,7 @@ const Land2: React.FC = () => {
 
                 <div className="absolute bottom-[-5vw] right-[-5vw] rotate-12 opacity-20 pointer-events-none">
                     <div className="text-[20vw] font-black text-black tracking-tighter">
-                        FONTIQUE
+                        NoBadFonts
                     </div>
                 </div>
 
@@ -349,7 +349,7 @@ const Land2: React.FC = () => {
                     <a href="#">Licensing</a>
                     <a href="#">Privacy Policy</a>
                     <a href="#">Terms & Conditions</a>
-                    <span className="ml-auto">© 2024 Fontique. All rights reserved.</span>
+                    <span className="ml-auto">© 2024 NoBadFonts. All rights reserved.</span>
                 </div>
             </footer>
 
