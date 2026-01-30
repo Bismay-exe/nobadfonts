@@ -9,19 +9,28 @@ export default function Layout() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Check for error in query params (standard OAuth errors)
-        const error = searchParams.get('error');
-        const errorDescription = searchParams.get('error_description');
-        const errorHash = new URLSearchParams(location.hash.substring(1)).get('error_description');
+        // Robust check using window.location to catch everything
+        const params = new URLSearchParams(window.location.search);
+        const hashParams = new URLSearchParams(window.location.hash.substring(1));
 
-        if (error || errorDescription || errorHash) {
-            const message = errorDescription || errorHash || 'An authentication error occurred';
-            alert(`Authentication Error: ${message.replace(/\+/g, ' ')}`);
+        const error = params.get('error') || hashParams.get('error');
+        const errorDescription = params.get('error_description') || hashParams.get('error_description');
 
-            // Clear errors from URL without refreshing
-            navigate(location.pathname, { replace: true });
+        if (error || errorDescription) {
+            const message = errorDescription || error || 'An authentication error occurred';
+
+            // formatting the message for better readability
+            const formattedMessage = message.replace(/\+/g, ' ').replace(/%20/g, ' ');
+
+            // Clean URL immediately
+            window.history.replaceState({}, document.title, window.location.pathname);
+
+            // Show alert after clearing URL (setTimeout to let UI update)
+            setTimeout(() => {
+                alert(`Authentication Error: ${formattedMessage}`);
+            }, 100);
         }
-    }, [searchParams, location.hash, navigate, location.pathname]);
+    }, [location]);
 
     return (
         <div className="flex flex-col min-h-screen w-full border-x-4 bg-black overflow-x-hidden">
