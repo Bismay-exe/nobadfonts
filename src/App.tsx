@@ -9,6 +9,7 @@ import Upload from './pages/Upload';
 import Members from './pages/Members';
 import MemberDetails from './pages/MemberDetails';
 import AdminDashboard from './pages/AdminDashboard';
+import { ScrollRestoration } from './components/layout/ScrollRestoration';
 
 import { AuthProvider } from './contexts/AuthContext';
 
@@ -16,6 +17,7 @@ function App() {
   return (
     <AuthProvider>
       <Router>
+        <ScrollRestoration />
         <Routes>
           <Route path="/" element={<Layout />}>
             <Route index element={<Home />} />

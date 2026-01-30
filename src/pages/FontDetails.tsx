@@ -1,4 +1,4 @@
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Download, Heart, Share2, ArrowLeft, Check } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
@@ -228,10 +228,20 @@ export default function FontDetails() {
             <div className="relative justify-between items-start md:items-center">
                 <div className='flex flex-col items-start justify-end w-full md:w-auto bg-[#BDF522] rounded-3xl border-2 border-black p-4'>
                     {/* Back Button */}
-                    <Link to="/fonts" className="absolute top-3 left-3 inline-flex items-center bg-black px-3 py-2 rounded-full font-semibold text-gray-50 hover:text-gray-900 mb-8 transition-colors">
+                    {/* Back Button */}
+                    <button
+                        onClick={() => {
+                            if (window.history.length > 1) {
+                                navigate(-1);
+                            } else {
+                                navigate('/fonts');
+                            }
+                        }}
+                        className="absolute top-3 left-3 inline-flex items-center bg-black px-3 py-2 rounded-full font-semibold text-gray-50 hover:text-gray-900 mb-8 transition-colors"
+                    >
                         <ArrowLeft size={18} className="mr-2" />
                         Back to Catalog
-                    </Link>
+                    </button>
                     <h1
                         className="text-5xl text-gray-900 pt-15 transition-opacity duration-300"
                         style={{

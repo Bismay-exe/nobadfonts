@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { Link } from 'react-router-dom';
 import type { Database } from '../types/database.types';
@@ -11,6 +12,23 @@ export default function Members() {
     const [topMembers, setTopMembers] = useState<Profile[]>([]);
     const [otherMembers, setOtherMembers] = useState<Profile[]>([]);
     const [loading, setLoading] = useState(true);
+    const location = useLocation();
+
+    // Handle scroll restoration for async content
+    useEffect(() => {
+        if (!loading) {
+            import('../components/layout/ScrollRestoration').then(({ scrollPositions }) => {
+                // Just aggressively restore if we have a key match
+                const savedPosition = scrollPositions.get(location.key);
+                if (savedPosition !== undefined) {
+                    // Small timeout helps ensure layout is really stable
+                    requestAnimationFrame(() => {
+                        window.scrollTo(0, savedPosition);
+                    });
+                }
+            });
+        }
+    }, [loading, location.key]);
 
     useEffect(() => {
         const fetchData = async () => {

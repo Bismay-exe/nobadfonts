@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import FontCard from '../components/fonts/FontCard';
 import type { Database } from '../types/database.types';
@@ -48,6 +48,16 @@ export default function MemberDetails() {
         fetchData();
     }, [id]);
 
+    const navigate = useNavigate();
+
+    const goBack = () => {
+        if (window.history.length > 1) {
+            navigate(-1);
+        } else {
+            navigate('/members');
+        }
+    };
+
     if (loading) return (
         <div className="flex justify-center items-center min-h-[50vh]">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-black"></div>
@@ -67,10 +77,10 @@ export default function MemberDetails() {
 
             {/* Header Profile Section */}
             <div className="bg-white border-b border-black rounded-3xl px-8 pt-24 pb-8 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden">
-                <Link to="/members" className="absolute top-8 left-8 flex items-center text-sm font-bold hover:text-gray-600 mb-8 transition-colors">
+                <button onClick={goBack} className="absolute top-8 left-8 flex items-center text-sm font-bold hover:text-gray-600 mb-8 transition-colors">
                     <ArrowLeft size={20} className="mr-2" />
                     Back to Members
-                </Link>
+                </button>
                 <div className="absolute top-0 right-0 w-32 h-32 bg-[#BDF522] rounded-full blur-[60px] opacity-50 -mr-10 -mt-10 pointer-events-none"></div>
                 <div className="w-32 h-32 bg-gray-100 rounded-full border-2 border-black overflow-hidden shrink-0 z-10">
                     {profile.avatar_url ? (
