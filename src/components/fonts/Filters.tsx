@@ -1,4 +1,4 @@
-import { Search, ChevronDown, Check, Type, Image } from 'lucide-react';
+import { Search, Type, Image } from 'lucide-react';
 import type { FontFilterParams } from '../../types/font';
 import { useState } from 'react';
 
