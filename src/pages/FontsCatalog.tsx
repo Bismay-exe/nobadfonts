@@ -34,7 +34,7 @@ export default function FontsCatalog() {
 
             <div className="col-span-1 lg:col-span-4 border-b-2 border-black flex flex-col lg:flex-col">
                 {/* Sidebar */}
-                <aside className="w-full shrink-0 bg-[#FF90D9] rounded-3xl p-4">
+                <aside className="w-full shrink-0 bg-[#FFF8DA] rounded-3xl p-4">
                     <Filters
                         filters={filters}
                         onChange={setFilters}

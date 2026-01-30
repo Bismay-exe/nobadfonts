@@ -150,8 +150,9 @@ export default function Filters({ filters, onChange, viewMode, onViewModeChange 
                 </div>
             </div>
 
+            {/* Search & View Toggle */}
             <div className='flex flex-col md:flex-row gap-2'>
-                <div className='flex gap-2'>
+                <div className='flex gap-2 w-full'>
                     {/* Search */}
                     <div className="relative w-full">
                         <input
@@ -161,15 +162,15 @@ export default function Filters({ filters, onChange, viewMode, onViewModeChange 
                             onChange={(e) => handleChange('query', e.target.value)}
                             className="w-full pl-10 pr-4 py-2 border border-gray-700 bg-black/10 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                         />
-                        <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
+                        <Search className="absolute left-3 top-3 text-gray-900" size={18} />
                     </div>
 
                     {/* View Toggle */}
                     {onViewModeChange && (
-                        <div className="flex bg-gray-100 p-1 rounded-full border border-gray-200">
+                        <div className="flex bg-gray-100 h-11 p-1 w-auto rounded-full border border-gray-200">
                             <button
                                 onClick={() => onViewModeChange('font')}
-                                className={`p-2 rounded-full transition-all ${viewMode === 'font'
+                                className={`p-2 aspect-square rounded-full transition-all ${viewMode === 'font'
                                     ? 'bg-black text-white shadow-sm'
                                     : 'text-gray-500 hover:text-black'
                                     }`}
@@ -179,7 +180,7 @@ export default function Filters({ filters, onChange, viewMode, onViewModeChange 
                             </button>
                             <button
                                 onClick={() => onViewModeChange('image')}
-                                className={`p-2 rounded-full transition-all ${viewMode === 'image'
+                                className={`p-2 aspect-square rounded-full transition-all ${viewMode === 'image'
                                     ? 'bg-black text-white shadow-sm'
                                     : 'text-gray-500 hover:text-black'
                                     }`}
@@ -191,7 +192,7 @@ export default function Filters({ filters, onChange, viewMode, onViewModeChange 
                     )}
                 </div>
 
-                {/* Sort & View Toggle */}
+                
                 <div className='w-full flex flex-col justify-end md:items-end gap-2 relative z-50'>
 
                         <div className="flex items-center gap-3">
