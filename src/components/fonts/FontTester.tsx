@@ -12,6 +12,8 @@ export default function FontTester({ font }: FontTesterProps) {
     const [lineHeight, setLineHeight] = useState(1.5);
     const [letterSpacing, setLetterSpacing] = useState(0);
     const [textAlign, setTextAlign] = useState<'left' | 'center' | 'right'>('left');
+    const [textColor, setTextColor] = useState('#000000');
+    const [bgColor, setBgColor] = useState('#FFFFFF');
 
     const fontName = `custom-font-${font.slug}`;
 
@@ -118,8 +120,36 @@ export default function FontTester({ font }: FontTesterProps) {
                 </div>
             </div>
 
+            {/* Colors */}
+            <div className="flex items-center space-x-3 border-l border-gray-300 pl-6">
+                <div className="flex items-center gap-2" title="Text Color">
+                    <div className="w-6 h-6 rounded-full border border-gray-300 overflow-hidden relative">
+                        <input
+                            type="color"
+                            value={textColor}
+                            onChange={(e) => setTextColor(e.target.value)}
+                            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[150%] h-[150%] p-0 border-0 cursor-pointer"
+                        />
+                    </div>
+                </div>
+                <div className="flex items-center gap-2" title="Background Color">
+                    <div className="w-6 h-6 rounded-full border border-gray-300 overflow-hidden relative">
+                        <input
+                            type="color"
+                            value={bgColor}
+                            onChange={(e) => setBgColor(e.target.value)}
+                            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[150%] h-[150%] p-0 border-0 cursor-pointer"
+                        />
+                    </div>
+                </div>
+            </div>
+
+
             {/* Preview Area */}
-            <div className="p-8 min-h-75 flex items-center justify-center overflow-auto bg-white">
+            <div
+                className="p-8 min-h-75 flex items-center justify-center overflow-auto transition-colors duration-200"
+                style={{ backgroundColor: bgColor }}
+            >
                 <textarea
                     value={text}
                     onChange={(e) => setText(e.target.value)}
@@ -130,10 +160,11 @@ export default function FontTester({ font }: FontTesterProps) {
                         lineHeight: lineHeight,
                         letterSpacing: `${letterSpacing}px`,
                         textAlign: textAlign,
+                        color: textColor,
                     }}
                     spellCheck={false}
                 />
             </div>
-        </div>
+        </div >
     );
 }

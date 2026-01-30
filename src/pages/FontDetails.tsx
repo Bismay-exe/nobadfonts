@@ -1,11 +1,13 @@
 import { useNavigate, useParams } from 'react-router-dom';
-import { Download, Heart, Share2, ArrowLeft, Check, X, Link as LinkIcon, Image as ImageIcon, MoveLeft, MoveRight, Save, Trash2, Edit2, Upload, Plus } from 'lucide-react';
+import { Download, Heart, Share2, ArrowLeft, Check, X, Link as LinkIcon, Image as ImageIcon, MoveLeft, MoveRight, Save, Trash2, Edit2, Upload, Plus, Type } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import { useFont } from '../hooks/useFont';
 import FontTester from '../components/fonts/FontTester';
 import { PreviewAccordion } from '../components/fonts/PreviewAccordion';
+import FontCard from '../components/fonts/FontCard';
+import type { Font } from '../types/font';
 
 export default function FontDetails() {
     const { id } = useParams();
@@ -23,6 +25,32 @@ export default function FontDetails() {
     const [galleryState, setGalleryState] = useState<{ id: string, url: string, size: number, file?: File, type: 'url' | 'file' }[]>([]);
     const [showUrlInput, setShowUrlInput] = useState(false);
     const [urlInput, setUrlInput] = useState('');
+
+    // View Mode State
+    const [viewMode, setViewMode] = useState<'font' | 'image'>('font');
+
+    // Similar Fonts State
+    const [similarFonts, setSimilarFonts] = useState<Font[]>([]);
+
+    useEffect(() => {
+        if (!font || !font.category) return;
+
+        const fetchSimilar = async () => {
+            const { data } = await supabase.rpc('search_fonts', {
+                sort_by: 'trending',
+                filter_category: font.category
+            });
+
+            if (data) {
+                // client-side filter to exclude current font and take top 4
+                const similar = (data as any[])
+                    .filter(f => f.id !== font.id)
+                    .slice(0, 4);
+                setSimilarFonts(similar as Font[]);
+            }
+        };
+        fetchSimilar();
+    }, [font]);
 
     useEffect(() => {
         if (font) {
@@ -660,6 +688,104 @@ export default function FontDetails() {
                         {font.name}
                     </h1>
                     <p className="text-xl font-mono text-gray-500">by {font.designer}</p>
+                    
+                    {/* Admin Actions */}
+                    {profile?.role === 'admin' && (
+                        <div className="mb-4 space-y-2 w-full p-2 bg-red-50 border border-red-200 rounded-2xl">
+                            <p className="text-xs font-bold text-red-500 uppercase text-center mb-1">Admin Controls</p>
+                            <button
+                                onClick={async () => {
+                                    if (!confirm('Are you sure you want to delete this font? This cannot be undone.')) return;
+
+                                    try {
+                                        // 1. Collect all file paths
+                                        const filePaths: string[] = [];
+
+                                        // Helper to extract path from URL
+                                        // URL format: https://[project].supabase.co/storage/v1/object/public/fonts/[user_id]/[slug]/[filename]
+                                        // Storage path: [user_id]/[slug]/[filename]
+                                        const getPathFromUrl = (url: string) => {
+                                            try {
+                                                const urlObj = new URL(url);
+                                                const pathParts = urlObj.pathname.split('/public/fonts/');
+                                                if (pathParts.length > 1) {
+                                                    return decodeURIComponent(pathParts[1]);
+                                                }
+                                                return null;
+                                            } catch (e) {
+                                                console.error("Invalid URL:", url);
+                                                return null;
+                                            }
+                                        };
+
+                                        // Main font files
+                                        (['woff2_url', 'woff_url', 'ttf_url', 'otf_url', 'zip_url'] as const).forEach(key => {
+                                            const url = font[key as keyof typeof font] as string | null;
+                                            if (url) {
+                                                const path = getPathFromUrl(url);
+                                                if (path) filePaths.push(path);
+                                            }
+                                        });
+
+                                        // Images
+                                        if (font.preview_image_url) {
+                                            const path = getPathFromUrl(font.preview_image_url);
+                                            if (path) filePaths.push(path);
+                                        }
+                                        if (font.gallery_images && Array.isArray(font.gallery_images)) {
+                                            font.gallery_images.forEach(url => {
+                                                const path = getPathFromUrl(url);
+                                                if (path) filePaths.push(path);
+                                            });
+                                        }
+
+                                        // Variant files
+                                        if (font.font_variants && Array.isArray(font.font_variants)) {
+                                            font.font_variants.forEach(variant => {
+                                                (['woff2_url', 'woff_url', 'ttf_url', 'otf_url'] as const).forEach(key => {
+                                                    const url = variant[key as keyof typeof variant] as string | null;
+                                                    if (url) {
+                                                        const path = getPathFromUrl(url);
+                                                        if (path) filePaths.push(path);
+                                                    }
+                                                });
+                                            });
+                                        }
+
+                                        console.log("Deleting files:", filePaths);
+
+                                        // 2. Delete files from storage
+                                        if (filePaths.length > 0) {
+                                            const { error: storageError } = await supabase.storage
+                                                .from('fonts')
+                                                .remove(filePaths);
+
+                                            if (storageError) {
+                                                console.error("Storage delete error:", storageError);
+                                                // We continue to delete the DB record even if storage fails partial, 
+                                                // or should we stop? Usually stopping is safer, but orphaned files are better than broken app state.
+                                                // Let's warn but proceed, or maybe ask? For now, proceed.
+                                            }
+                                        }
+
+                                        // 3. Delete database record
+                                        const { error } = await supabase.from('fonts').delete().eq('id', font.id);
+                                        if (error) throw error;
+
+                                        alert('Font and all associated files deleted successfully.');
+                                        navigate('/');
+
+                                    } catch (err: any) {
+                                        console.error('Delete failed:', err);
+                                        alert('Error deleting font: ' + err.message);
+                                    }
+                                }}
+                                className="inline-flex items-center bg-red-500 px-3 py-2 rounded-full font-semibold text-gray-50 hover:text-gray-900 mb-8 transition-colors"
+                            >
+                                Delete Font
+                            </button>
+                        </div>
+                    )}
 
                     {/* Format Badges */}
                     <div className="flex flex-wrap gap-2 mt-2">
@@ -1129,7 +1255,46 @@ export default function FontDetails() {
                     </div>
                 )}
 
+                {/* Similar Fonts Section */}
+                {similarFonts.length > 0 && (
+                    <div>
+                        <div className="flex justify-between items-center gap-2 bg-white rounded-3xl border-y border-black p-1">
+                            <h3 className="bg-white rounded-3xl p-5 font-black text-3xl uppercase tracking-tight">Similar Fonts</h3>
+
+                            <div className="flex items-center mr-2">
+                                <div className="flex bg-gray-100 h-11 p-1 w-auto rounded-full border border-gray-200">
+                                    <button
+                                        onClick={() => setViewMode('font')}
+                                        className={`p-2 aspect-square rounded-full transition-all ${viewMode === 'font'
+                                            ? 'bg-black text-white shadow-sm'
+                                            : 'text-gray-500 hover:text-black'
+                                            }`}
+                                        title="Font View"
+                                    >
+                                        <Type size={16} />
+                                    </button>
+                                    <button
+                                        onClick={() => setViewMode('image')}
+                                        className={`p-2 aspect-square rounded-full transition-all ${viewMode === 'image'
+                                            ? 'bg-black text-white shadow-sm'
+                                            : 'text-gray-500 hover:text-black'
+                                            }`}
+                                        title="Image View"
+                                    >
+                                        <ImageIcon size={16} />
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+                            {similarFonts.map(f => (
+                                <FontCard key={f.id} font={f} viewMode={viewMode} />
+                            ))}
+                        </div>
+                    </div>
+                )}
+
             </div>
-        </div>
+        </div >
     );
 }

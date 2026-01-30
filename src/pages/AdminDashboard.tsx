@@ -4,13 +4,14 @@ import { useAuth } from '../contexts/AuthContext';
 import { Navigate, Link } from 'react-router-dom';
 import { Search } from 'lucide-react';
 import type { Database } from '../types/database.types';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
 type FontRow = Database['public']['Tables']['fonts']['Row'];
 
 export default function AdminDashboard() {
     const { user, profile, loading: authLoading } = useAuth();
-    const [activeTab, setActiveTab] = useState<'requests' | 'users' | 'files' | 'curation'>('requests');
+    const [activeTab, setActiveTab] = useState<'requests' | 'users' | 'files' | 'curation' | 'analytics'>('requests');
 
     // State for Requests
     const [pendingRequests, setPendingRequests] = useState<Profile[]>([]);
@@ -20,6 +21,10 @@ export default function AdminDashboard() {
 
     // State for Files/Storage
     const [allFonts, setAllFonts] = useState<FontRow[]>([]);
+
+    // State for Analytics
+    const [downloadStats, setDownloadStats] = useState<{ date: string, count: number }[]>([]);
+    const [topDownloadedFonts, setTopDownloadedFonts] = useState<{ name: string, count: number }[]>([]);
 
     // Search States
     const [searchUsers, setSearchUsers] = useState('');
@@ -37,6 +42,8 @@ export default function AdminDashboard() {
             fetchAllUsers();
         } else if (activeTab === 'files' || activeTab === 'curation') {
             fetchFonts();
+        } else if (activeTab === 'analytics') {
+            fetchAnalytics();
         }
     }, [activeTab, profile]);
 
@@ -84,6 +91,75 @@ export default function AdminDashboard() {
             console.error('Error fetching fonts:', error);
         } else {
             setAllFonts(data || []);
+        }
+        setLoading(false);
+    };
+
+    const fetchAnalytics = async () => {
+        setLoading(true);
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+        // Fetch downloads
+        const { data: downloads, error } = await supabase
+            .from('downloads')
+            .select('font_id, downloaded_at')
+            .gte('downloaded_at', thirtyDaysAgo.toISOString());
+
+        if (error) {
+            console.error('Error fetching analytics:', error);
+        } else if (downloads) {
+            // Process Chart Data (Group by Date)
+            const dateMap = new Map<string, number>();
+            // Initialize last 30 days with 0
+            for (let i = 0; i < 30; i++) {
+                const d = new Date();
+                d.setDate(d.getDate() - i);
+                const dateStr = d.toISOString().split('T')[0];
+                dateMap.set(dateStr, 0);
+            }
+
+            downloads.forEach(d => {
+                if (!d.downloaded_at) return;
+                const dateStr = d.downloaded_at.split('T')[0];
+                dateMap.set(dateStr, (dateMap.get(dateStr) || 0) + 1);
+            });
+
+            const chartData = Array.from(dateMap.entries())
+                .map(([date, count]) => ({ date, count }))
+                .sort((a, b) => a.date.localeCompare(b.date));
+
+            setDownloadStats(chartData);
+
+            // Process Top Fonts
+            // We need to fetch font names. 
+            // For efficiency, we'll fetch all fonts first if not already fetched, or just IDs.
+            // But let's just group by ID and then fetch names for top 10.
+            const fontCounts = new Map<string, number>();
+            downloads.forEach(d => {
+                fontCounts.set(d.font_id, (fontCounts.get(d.font_id) || 0) + 1);
+            });
+
+            const topIds = Array.from(fontCounts.entries())
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 10);
+
+            if (topIds.length > 0) {
+                const { data: fontNames } = await supabase
+                    .from('fonts')
+                    .select('id, name')
+                    .in('id', topIds.map(t => t[0]));
+
+                if (fontNames) {
+                    const topFontsData = topIds.map(([id, count]) => {
+                        const font = fontNames.find(f => f.id === id);
+                        return { name: font?.name || 'Unknown Font', count };
+                    });
+                    setTopDownloadedFonts(topFontsData);
+                }
+            } else {
+                setTopDownloadedFonts([]);
+            }
         }
         setLoading(false);
     };
@@ -220,42 +296,53 @@ export default function AdminDashboard() {
     if (!user || profile?.role !== 'admin') return <Navigate to="/" replace />;
 
     return (
-        <div className="mx-auto px-4 py-8 bg-white/30 min-h-screen">
-            <h1 className="text-4xl font-black uppercase mb-8">Admin Dashboard</h1>
+        <div className="mx-auto bg-white/0 rounded-3xl">
+            <div className="bg-[#BDF522] rounded-3xl p-8 border-y border-black">
+                <h1 className="text-4xl text-center md:text-left font-black uppercase">Admin Dashboard</h1>
+            </div>
 
             {/* Tabs */}
-            <div className="flex flex-wrap gap-4 mb-8">
-                <button
-                    onClick={() => setActiveTab('requests')}
-                    className={`px-6 py-2 rounded-full font-bold border-2 border-black transition-all ${activeTab === 'requests' ? 'bg-[#BDF522] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]' : 'bg-white hover:bg-gray-50'
-                        }`}
-                >
-                    Requests
-                    {pendingRequests.length > 0 && (
-                        <span className="ml-2 bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">{pendingRequests.length}</span>
-                    )}
-                </button>
-                <button
-                    onClick={() => setActiveTab('users')}
-                    className={`px-6 py-2 rounded-full font-bold border-2 border-black transition-all ${activeTab === 'users' ? 'bg-[#FF90E8] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]' : 'bg-white hover:bg-gray-50'
-                        }`}
-                >
-                    User Management
-                </button>
-                <button
-                    onClick={() => setActiveTab('files')}
-                    className={`px-6 py-2 rounded-full font-bold border-2 border-black transition-all ${activeTab === 'files' ? 'bg-[#04ff96] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]' : 'bg-white hover:bg-gray-50'
-                        }`}
-                >
-                    Storage & Files
-                </button>
-                <button
-                    onClick={() => setActiveTab('curation')}
-                    className={`px-6 py-2 rounded-full font-bold border-2 border-black transition-all ${activeTab === 'curation' ? 'bg-[#FFDE59] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]' : 'bg-white hover:bg-gray-50'
-                        }`}
-                >
-                    Site Curation
-                </button>
+            <div className='bg-white rounded-3xl p-2 border-y border-black'>
+                <div className="flex flex-wrap gap-4 px-1 py-4">
+                    <button
+                        onClick={() => setActiveTab('requests')}
+                        className={`px-6 py-2 rounded-full font-bold border-2 border-black transition-all ${activeTab === 'requests' ? 'bg-[#BDF522] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]' : 'bg-white hover:bg-gray-50'
+                            }`}
+                    >
+                        Requests
+                        {pendingRequests.length > 0 && (
+                            <span className="ml-2 bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">{pendingRequests.length}</span>
+                        )}
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('users')}
+                        className={`px-6 py-2 rounded-full font-bold border-2 border-black transition-all ${activeTab === 'users' ? 'bg-[#FF90E8] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]' : 'bg-white hover:bg-gray-50'
+                            }`}
+                    >
+                        User Management
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('files')}
+                        className={`px-6 py-2 rounded-full font-bold border-2 border-black transition-all ${activeTab === 'files' ? 'bg-[#04ff96] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]' : 'bg-white hover:bg-gray-50'
+                            }`}
+                    >
+                        Storage & Files
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('curation')}
+                        className={`px-6 py-2 rounded-full font-bold border-2 border-black transition-all ${activeTab === 'curation' ? 'bg-[#FFDE59] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]' : 'bg-white hover:bg-gray-50'
+                            }`}
+                    >
+                        Site Curation
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('analytics')}
+                        className={`px-6 py-2 rounded-full font-bold border-2 border-black transition-all ${activeTab === 'analytics' ? 'bg-[#FF90D9] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]' : 'bg-white hover:bg-gray-50'
+                            }`}
+                    >
+                        Analytics
+                    </button>
+                </div>
             </div>
 
             <div className="bg-white border-2 border-black rounded-3xl p-8 min-h-[50vh]">
@@ -608,6 +695,70 @@ export default function AdminDashboard() {
                                             ))}
                                         </tbody>
                                     </table>
+                                </div>
+                            </div>
+                        )}
+                        {activeTab === 'analytics' && (
+                            <div>
+                                <h2 className="text-2xl font-bold flex items-center gap-3 mb-8">
+                                    Analytics (Last 30 Days)
+                                </h2>
+
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                    {/* Chart */}
+                                    <div className="bg-white p-6 rounded-3xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                                        <h3 className="font-bold text-lg mb-6">Downloads Trend</h3>
+                                        <div className="h-64 w-full">
+                                            <ResponsiveContainer width="100%" height="100%">
+                                                <LineChart data={downloadStats}>
+                                                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                                                    <XAxis
+                                                        dataKey="date"
+                                                        tickFormatter={(str) => {
+                                                            const date = new Date(str);
+                                                            return `${date.getMonth() + 1}/${date.getDate()}`;
+                                                        }}
+                                                        tick={{ fontSize: 12 }}
+                                                        interval={4}
+                                                    />
+                                                    <YAxis allowDecimals={false} />
+                                                    <Tooltip
+                                                        contentStyle={{ borderRadius: '12px', border: '2px solid black', fontWeight: 'bold' }}
+                                                    />
+                                                    <Line
+                                                        type="monotone"
+                                                        dataKey="count"
+                                                        stroke="#000"
+                                                        strokeWidth={3}
+                                                        dot={{ r: 4, fill: '#000' }}
+                                                        activeDot={{ r: 6, fill: '#FF90E8' }}
+                                                    />
+                                                </LineChart>
+                                            </ResponsiveContainer>
+                                        </div>
+                                    </div>
+
+                                    {/* Top Fonts */}
+                                    <div className="bg-white p-6 rounded-3xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                                        <h3 className="font-bold text-lg mb-6">Top Downloaded Fonts</h3>
+                                        {topDownloadedFonts.length > 0 ? (
+                                            <div className="space-y-3">
+                                                {topDownloadedFonts.map((font, idx) => (
+                                                    <div key={idx} className="flex justify-between items-center p-3 bg-gray-50 rounded-xl border border-gray-200">
+                                                        <div className="flex items-center gap-3">
+                                                            <span className="w-6 h-6 flex items-center justify-center bg-black text-white rounded-full text-xs font-bold">
+                                                                {idx + 1}
+                                                            </span>
+                                                            <span className="font-bold">{font.name}</span>
+                                                        </div>
+                                                        <span className="font-mono font-bold text-blue-600">{font.count}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <div className="text-center text-gray-400 py-8">No data available</div>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         )}

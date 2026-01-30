@@ -5,9 +5,10 @@ interface FontGridProps {
     fonts: Font[];
     emptyMessage?: string;
     loading?: boolean;
+    viewMode?: 'font' | 'image';
 }
 
-export default function FontGrid({ fonts, emptyMessage = "No fonts found.", loading = false }: FontGridProps) {
+export default function FontGrid({ fonts, emptyMessage = "No fonts found.", loading = false, viewMode = 'font' }: FontGridProps) {
     if (loading) {
         return (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -30,7 +31,7 @@ export default function FontGrid({ fonts, emptyMessage = "No fonts found.", load
         <div className="grid grid-cols-1 md:grid-cols-2 gap-0 h-200 w-full">
             {fonts.map((font) => (
                 <div key={font.id} className="h-full">
-                    <FontCard font={font} />
+                    <FontCard font={font} viewMode={viewMode} />
                 </div>
             ))}
         </div>

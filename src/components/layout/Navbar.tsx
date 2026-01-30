@@ -61,7 +61,7 @@ function NavLinks({
         'border-2 border-black px-4 py-1 font-bold rounded-full bg-white hover:bg-black hover:text-white transition-colors';
 
     return (
-        <div className="flex flex-col-reverse md:flex-row justify-between items-end gap-2">
+        <div className="flex flex-col md:flex-row justify-between items-end gap-2">
             <Link to="/fonts" onClick={onClick} className={base}>
                 Fonts
             </Link>

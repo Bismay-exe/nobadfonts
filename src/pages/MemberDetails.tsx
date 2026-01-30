@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import FontCard from '../components/fonts/FontCard';
 import type { Database } from '../types/database.types';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Type, Image as ImageIcon } from 'lucide-react';
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
 type Font = Database['public']['Tables']['fonts']['Row'];
@@ -13,6 +13,7 @@ export default function MemberDetails() {
     const [profile, setProfile] = useState<Profile | null>(null);
     const [fonts, setFonts] = useState<Font[]>([]);
     const [loading, setLoading] = useState(true);
+    const [viewMode, setViewMode] = useState<'font' | 'image'>('font');
 
     useEffect(() => {
         if (!id) return;
@@ -109,26 +110,53 @@ export default function MemberDetails() {
                 </div>
             </div>
 
-            {/* Fonts Grid */}
-            <div className="md:hidden bg-white rounded-3xl border-y border-black p-8 flex items-baseline gap-4">
-                <div className="h-1 bg-black grow rounded-full opacity-90"></div>
-                <h2 className="text-3xl font-black uppercase flex flex-col items-center">Uploaded Fonts
-                    <span className="text-gray-500 font-mono text-sm">Total Font{fonts.length !== 1 ? 's' : ''} {fonts.length}</span>
+
+
+            {/* Fonts Header with Toggle */}
+            <div className="flex justify-between items-center my-8 px-4">
+                <h2 className="text-3xl font-black uppercase flex flex-col items-start">
+                    Uploaded Fonts
+                    <span className="text-gray-500 font-mono text-sm font-normal">Total {fonts.length} Font{fonts.length !== 1 ? 's' : ''}</span>
                 </h2>
-                <div className="h-1 bg-black grow rounded-full opacity-90"></div>
+                <div className="flex bg-gray-100 p-1 rounded-full border border-gray-200">
+                    <button
+                        onClick={() => setViewMode('font')}
+                        className={`p-2 rounded-full transition-all ${viewMode === 'font'
+                            ? 'bg-black text-white shadow-sm'
+                            : 'text-gray-500 hover:text-black'
+                            }`}
+                        title="Font View"
+                    >
+                        <Type size={16} />
+                    </button>
+                    <button
+                        onClick={() => setViewMode('image')}
+                        className={`p-2 rounded-full transition-all ${viewMode === 'image'
+                            ? 'bg-black text-white shadow-sm'
+                            : 'text-gray-500 hover:text-black'
+                            }`}
+                        title="Image View"
+                    >
+                        <ImageIcon size={16} />
+                    </button>
+                </div>
             </div>
 
             <div className="columns-1 md:columns-3 lg:columns-5 gap-0">
                 {fonts.map(font => (
-                    <FontCard key={font.id} font={font} />
+                    <div key={font.id} className="mb-4 break-inside-avoid">
+                        <FontCard font={font} viewMode={viewMode} />
+                    </div>
                 ))}
             </div>
 
-            {fonts.length === 0 && (
-                <div className="text-center py-20 bg-gray-50 rounded-3xl border-2 border-dashed border-gray-300">
-                    <p className="text-xl font-bold text-gray-400">This member hasn't uploaded any fonts yet.</p>
-                </div>
-            )}
-        </div>
+            {
+                fonts.length === 0 && (
+                    <div className="text-center py-20 bg-gray-50 rounded-3xl border-2 border-dashed border-gray-300">
+                        <p className="text-xl font-bold text-gray-400">This member hasn't uploaded any fonts yet.</p>
+                    </div>
+                )
+            }
+        </div >
     );
 }
