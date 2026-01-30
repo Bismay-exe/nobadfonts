@@ -236,10 +236,14 @@ const Upload = () => {
             const uploadUrls: any = {};
             const galleryUrls: string[] = [];
 
+            const gallerySizes: number[] = [];
+
             // Process Banner Items
             for (const item of bannerItems) {
                 if (item.type === 'file') {
                     const file = item.content as File;
+                    gallerySizes.push(file.size); // Track size
+
                     // Use timestamp to allow same filename multiple times
                     const bannerPath = `${folderPath}/gallery/${Date.now()}-${file.name}`;
                     const { error: bannerUploadError } = await supabase.storage
@@ -257,13 +261,16 @@ const Upload = () => {
 
                     galleryUrls.push(publicUrl);
                 } else if (item.type === 'url') {
+                    // For URLs, we can't easily get size without fetching, so 0 or null
+                    gallerySizes.push(0);
                     galleryUrls.push(item.content as string);
                 }
             }
 
             const previewImageUrl = galleryUrls.length > 0 ? galleryUrls[0] : null;
-
-            // Helper to upload a single file
+            // Assuming first gallery image is preview, tracking its size separately as well if needed, 
+            // but the new column file_size_image_preview is for it.
+            const previewImageSize = gallerySizes.length > 0 ? gallerySizes[0] : null;
 
             // Helper to upload a single file
             const uploadFile = async (file: File, format: string) => {
@@ -331,7 +338,9 @@ const Upload = () => {
                         ...uploadUrls,
                         ...fileSizes,
                         preview_image_url: previewImageUrl,
+                        file_size_image_preview: previewImageSize,
                         gallery_images: galleryUrls,
+                        gallery_image_sizes: gallerySizes,
                         uploaded_by: user.id
                     }
                 ]);

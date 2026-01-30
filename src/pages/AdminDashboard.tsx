@@ -413,14 +413,22 @@ export default function AdminDashboard() {
                                 </div>
 
                                 {/* Summary Cards */}
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
                                     <div className="bg-gray-50 rounded-2xl p-6 border-2 border-black">
                                         <h3 className="font-bold text-gray-500 uppercase text-sm mb-2">Total Fonts</h3>
                                         <p className="text-4xl font-black">{totalFonts}</p>
                                     </div>
                                     <div className="bg-gray-50 rounded-2xl p-6 border-2 border-black">
-                                        <h3 className="font-bold text-gray-500 uppercase text-sm mb-2">Total Storage Usage</h3>
+                                        <h3 className="font-bold text-gray-500 uppercase text-sm mb-2">Fonts Storage</h3>
                                         <p className="text-4xl font-black">{formatBytes(totalStorageSize)}</p>
+                                    </div>
+                                    <div className="bg-gray-50 rounded-2xl p-6 border-2 border-black">
+                                        <h3 className="font-bold text-gray-500 uppercase text-sm mb-2">Images Storage</h3>
+                                        <p className="text-4xl font-black">{formatBytes(allFonts.reduce((acc, font) => {
+                                            const previewSize = font.file_size_image_preview || 0;
+                                            const gallerySize = (font.gallery_image_sizes || []).reduce((a, b) => a + b, 0);
+                                            return acc + previewSize + gallerySize;
+                                        }, 0))}</p>
                                     </div>
                                     <div className="bg-gray-50 rounded-2xl p-6 border-2 border-black">
                                         <h3 className="font-bold text-gray-500 uppercase text-sm mb-2">Files Count</h3>

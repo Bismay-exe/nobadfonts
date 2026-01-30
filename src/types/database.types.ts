@@ -154,6 +154,9 @@ export type Database = {
           otf_url: string | null
           zip_url: string
           gallery_images: string[] | null
+          file_size_image_preview: number | null
+          gallery_image_sizes: number[] | null
+          uploaded_by: string
         }
         Insert: {
           category: string
