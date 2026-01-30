@@ -1,16 +1,26 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { PreviewAccordion } from '../components/fonts/PreviewAccordion';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function Auth() {
+    const { user, loading: authLoading } = useAuth();
     const [isLogin, setIsLogin] = useState(true);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [fullName, setFullName] = useState('');
+    const [otp, setOtp] = useState('');
+    const [isVerifying, setIsVerifying] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (!authLoading && user) {
+            navigate('/profile', { replace: true });
+        }
+    }, [user, authLoading, navigate]);
 
     const handleAuth = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -24,8 +34,9 @@ export default function Auth() {
                     password,
                 });
                 if (error) throw error;
+                navigate('/profile');
             } else {
-                const { error } = await supabase.auth.signUp({
+                const { data, error } = await supabase.auth.signUp({
                     email,
                     password,
                     options: {
@@ -35,7 +46,34 @@ export default function Auth() {
                     },
                 });
                 if (error) throw error;
+
+                // If session is null (email confirmation required)
+                if (data.user && !data.session) {
+                    setIsVerifying(true);
+                } else {
+                    navigate('/profile');
+                }
             }
+        } catch (err: any) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleVerifyOtp = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+        setError(null);
+
+        try {
+            const { error } = await supabase.auth.verifyOtp({
+                email,
+                token: otp,
+                type: 'signup'
+            });
+
+            if (error) throw error;
             navigate('/profile');
         } catch (err: any) {
             setError(err.message);
@@ -58,31 +96,55 @@ export default function Auth() {
         }
     };
 
+    const handleResendOtp = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const { error } = await supabase.auth.resend({
+                type: 'signup',
+                email: email
+            });
+            if (error) throw error;
+            alert('Code resent! Check your email (and spam support).');
+        } catch (err: any) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <div className="fixed h-screen w-screen top-0 left-0 flex flex-col-reverse md:flex-row bg-black">
             {/* Form Side */}
             <div className="w-full md:h-full p-8 md:p-16 flex flex-col justify-center relativee">
 
                 {/* Toggle Switch */}
-                <div className="flex bg-black p-1 rounded-full border border-[#333] w-fit mx-auto relative z-10">
-                    <button
-                        onClick={() => setIsLogin(true)}
-                        className={`px-8 py-3 rounded-full font-bold uppercase text-sm transition-all duration-300 ${isLogin ? 'bg-[#BDF522] text-black' : 'text-gray-500 hover:text-white'}`}
-                    >
-                        Log In
-                    </button>
-                    <button
-                        onClick={() => setIsLogin(false)}
-                        className={`px-8 py-3 rounded-full font-bold uppercase text-sm transition-all duration-300 ${!isLogin ? 'bg-[#A609F0] text-white' : 'text-gray-500 hover:text-white'}`}
-                    >
-                        Sign Up
-                    </button>
-                </div>
+                {!isVerifying && (
+                    <div className="flex bg-black p-1 rounded-full border border-[#333] w-fit mx-auto relative z-10">
+                        <button
+                            onClick={() => setIsLogin(true)}
+                            className={`px-8 py-3 rounded-full font-bold uppercase text-sm transition-all duration-300 ${isLogin ? 'bg-[#BDF522] text-black' : 'text-gray-500 hover:text-white'}`}
+                        >
+                            Log In
+                        </button>
+                        <button
+                            onClick={() => setIsLogin(false)}
+                            className={`px-8 py-3 rounded-full font-bold uppercase text-sm transition-all duration-300 ${!isLogin ? 'bg-[#A609F0] text-white' : 'text-gray-500 hover:text-white'}`}
+                        >
+                            Sign Up
+                        </button>
+                    </div>
+                )}
 
                 <div className="w-full bg-white/0 text-white p-2 md:p-16 rounded-3xl">
-                    <h2 className="text-3xl font-bold mb-2">{isLogin ? 'Welcome Back' : 'Create Account'}</h2>
+                    <h2 className="text-3xl font-bold mb-2">
+                        {isVerifying ? 'Verify Email' : (isLogin ? 'Welcome Back' : 'Create Account')}
+                    </h2>
                     <p className="text-gray-500 mb-2">
-                        {isLogin ? 'Enter your details to access your account' : 'Start your journey with us today'}
+                        {isVerifying
+                            ? `Enter the code sent to ${email}`
+                            : (isLogin ? 'Enter your details to access your account' : 'Start your journey with us today')
+                        }
                     </p>
 
                     {error && (
@@ -91,47 +153,88 @@ export default function Auth() {
                         </div>
                     )}
 
-                    <form onSubmit={handleAuth} className="space-y-4">
-                        {!isLogin && (
+                    {isVerifying ? (
+                        <form onSubmit={handleVerifyOtp} className="space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Verification Code</label>
                                 <input
                                     type="text"
                                     required
-                                    className="w-full bg-black border border-[#333] rounded-xl p-2 text-white font-bold placeholder-gray-700 focus:outline-none focus:bg-[#1a1a1a] focus:border-[#A609F0] transition-all"
-                                    value={fullName}
-                                    onChange={(e) => setFullName(e.target.value)}
+                                    placeholder="123456"
+                                    className="w-full bg-black border border-[#333] rounded-xl p-2 text-white font-bold placeholder-gray-700 focus:outline-none focus:bg-[#1a1a1a] focus:border-[#A609F0] transition-all text-center tracking-widest text-2xl"
+                                    value={otp}
+                                    onChange={(e) => setOtp(e.target.value)}
+                                    maxLength={6}
                                 />
                             </div>
-                        )}
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                            <input
-                                type="email"
-                                required
-                                className={`w-full bg-black border border-[#333] rounded-xl p-2 text-white font-bold placeholder-gray-700 focus:outline-none focus:bg-[#1a1a1a]  transition-all ${isLogin ? 'focus:border-[#BDF522]' : 'focus:border-[#A609F0]'}`}
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                            <input
-                                type="password"
-                                required
-                                className={`w-full bg-black border border-[#333] rounded-xl p-2 text-white font-bold placeholder-gray-700 focus:outline-none focus:bg-[#1a1a1a]  transition-all ${isLogin ? 'focus:border-[#BDF522]' : 'focus:border-[#A609F0]'}`}
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                            />
-                        </div>
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                className="mt-8 w-full py-3 rounded-xl font-black uppercase text-lg flex items-center justify-center gap-3 transition-all hover:scale-[1.02] active:scale-[0.98] bg-[#A609F0] text-white hover:bg-white hover:text-black">
+                                {loading ? 'Verifying...' : 'Verify Email'}
+                            </button>
 
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className={`mt-8 w-full py-3 rounded-xl font-black uppercase text-lg flex items-center justify-center gap-3 transition-all hover:scale-[1.02] active:scale-[0.98] ${isLogin ? 'bg-[#BDF522] text-black hover:bg-white' : 'bg-[#A609F0] text-white hover:bg-white hover:text-black'}`}>
-                            {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Create Account')}
-                        </button>
-                    </form>
+                            <div className="flex flex-col gap-2 mt-4">
+                                <button
+                                    type="button"
+                                    onClick={handleResendOtp}
+                                    disabled={loading}
+                                    className="text-sm font-medium text-[#BDF522] hover:underline"
+                                >
+                                    Resend Code
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setIsVerifying(false)}
+                                    className="text-sm font-medium text-gray-500 hover:text-white"
+                                >
+                                    Back to Sign Up
+                                </button>
+                            </div>
+                        </form>
+                    ) : (
+                        <form onSubmit={handleAuth} className="space-y-4">
+                            {!isLogin && (
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                                    <input
+                                        type="text"
+                                        required
+                                        className="w-full bg-black border border-[#333] rounded-xl p-2 text-white font-bold placeholder-gray-700 focus:outline-none focus:bg-[#1a1a1a] focus:border-[#A609F0] transition-all"
+                                        value={fullName}
+                                        onChange={(e) => setFullName(e.target.value)}
+                                    />
+                                </div>
+                            )}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                <input
+                                    type="email"
+                                    required
+                                    className={`w-full bg-black border border-[#333] rounded-xl p-2 text-white font-bold placeholder-gray-700 focus:outline-none focus:bg-[#1a1a1a]  transition-all ${isLogin ? 'focus:border-[#BDF522]' : 'focus:border-[#A609F0]'}`}
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                                <input
+                                    type="password"
+                                    required
+                                    className={`w-full bg-black border border-[#333] rounded-xl p-2 text-white font-bold placeholder-gray-700 focus:outline-none focus:bg-[#1a1a1a]  transition-all ${isLogin ? 'focus:border-[#BDF522]' : 'focus:border-[#A609F0]'}`}
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                />
+                            </div>
+
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                className={`mt-8 w-full py-3 rounded-xl font-black uppercase text-lg flex items-center justify-center gap-3 transition-all hover:scale-[1.02] active:scale-[0.98] ${isLogin ? 'bg-[#BDF522] text-black hover:bg-white' : 'bg-[#A609F0] text-white hover:bg-white hover:text-black'}`}>
+                                {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Create Account')}
+                            </button>
+                        </form>
+                    )}
 
                     <div className="hidden mt-6 text-center text-sm">
                         <span className="text-gray-500">

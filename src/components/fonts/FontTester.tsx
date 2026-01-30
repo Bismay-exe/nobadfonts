@@ -20,16 +20,25 @@ export default function FontTester({ font }: FontTesterProps) {
         if (!font) return;
 
         // Determine best URL to load
-        // Order: ttf -> otf -> woff -> woff2
-        const fontUrl = font.ttf_url || font.otf_url || font.woff_url || font.woff2_url;
+        // Order: woff2 -> woff -> ttf -> otf (Web standards priority)
+        const getFontSource = () => {
+            if (font.woff2_url) return { url: font.woff2_url, format: 'woff2' };
+            if (font.woff_url) return { url: font.woff_url, format: 'woff' };
+            if (font.ttf_url) return { url: font.ttf_url, format: 'truetype' };
+            if (font.otf_url) return { url: font.otf_url, format: 'opentype' };
+            return null;
+        };
 
-        if (!fontUrl) return;
+        const fontSource = getFontSource();
+        if (!fontSource) return;
+
+        const { url, format } = fontSource;
 
         const style = document.createElement('style');
         style.innerHTML = `
             @font-face {
                 font-family: '${fontName}';
-                src: url('${fontUrl}');
+                src: url('${url}') format('${format}');
                 font-display: swap;
             }
         `;

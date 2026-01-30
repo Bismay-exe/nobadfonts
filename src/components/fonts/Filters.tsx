@@ -97,6 +97,8 @@ const CATEGORIES = [
 const SORT_OPTIONS = [
     { id: 'trending', label: 'Trending' },
     { id: 'popular', label: 'Most Popular' },
+    { id: 'editor-picks', label: 'Editor’s picks' },
+    { id: 'featured', label: 'Featured' },
     { id: 'newest', label: 'Newest' },
     { id: 'alpha', label: 'A-Z' },
 ];

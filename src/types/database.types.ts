@@ -73,30 +73,42 @@ export type Database = {
           font_id: string
           id: string
           otf_url: string | null
+          file_size_otf: number | null
           ttf_url: string | null
+          file_size_ttf: number | null
           variant_name: string
           woff2_url: string | null
+          file_size_woff2: number | null
           woff_url: string | null
+          file_size_woff: number | null
         }
         Insert: {
           created_at?: string
           font_id: string
           id?: string
           otf_url?: string | null
+          file_size_otf?: number | null
           ttf_url?: string | null
+          file_size_ttf?: number | null
           variant_name: string
           woff2_url?: string | null
+          file_size_woff2?: number | null
           woff_url?: string | null
+          file_size_woff?: number | null
         }
         Update: {
           created_at?: string
           font_id?: string
           id?: string
           otf_url?: string | null
+          file_size_otf?: number | null
           ttf_url?: string | null
+          file_size_ttf?: number | null
           variant_name?: string
           woff2_url?: string | null
+          file_size_woff2?: number | null
           woff_url?: string | null
+          file_size_woff?: number | null
         }
         Relationships: [
           {
@@ -119,10 +131,15 @@ export type Database = {
           downloads_7d: number | null
           favorites_count: number | null
           file_size_woff2: number | null
+          file_size_ttf: number | null
+          file_size_otf: number | null
+          file_size_woff: number | null
           glyph_count: number | null
           has_italic: boolean | null
           id: string
           is_featured: boolean | null
+          is_trending: boolean | null
+          is_editors_pick: boolean | null
           is_published: boolean | null
           license_type: string
           name: string
@@ -148,10 +165,15 @@ export type Database = {
           downloads_7d?: number | null
           favorites_count?: number | null
           file_size_woff2?: number | null
+          file_size_ttf?: number | null
+          file_size_otf?: number | null
+          file_size_woff?: number | null
           glyph_count?: number | null
           has_italic?: boolean | null
           id?: string
           is_featured?: boolean | null
+          is_trending?: boolean | null
+          is_editors_pick?: boolean | null
           is_published?: boolean | null
           license_type: string
           name: string
@@ -174,10 +196,15 @@ export type Database = {
           downloads_7d?: number | null
           favorites_count?: number | null
           file_size_woff2?: number | null
+          file_size_ttf?: number | null
+          file_size_otf?: number | null
+          file_size_woff?: number | null
           glyph_count?: number | null
           has_italic?: boolean | null
           id?: string
           is_featured?: boolean | null
+          is_trending?: boolean | null
+          is_editors_pick?: boolean | null
           is_published?: boolean | null
           license_type?: string
           name?: string
@@ -201,6 +228,8 @@ export type Database = {
           full_name: string
           id: string
           updated_at: string | null
+          role: 'user' | 'member' | 'admin'
+          membership_status: 'none' | 'pending' | 'approved' | 'rejected'
         }
         Insert: {
           avatar_url?: string | null
@@ -210,6 +239,8 @@ export type Database = {
           full_name: string
           id: string
           updated_at?: string | null
+          role?: 'user' | 'member' | 'admin'
+          membership_status?: 'none' | 'pending' | 'approved' | 'rejected'
         }
         Update: {
           avatar_url?: string | null
@@ -219,6 +250,8 @@ export type Database = {
           full_name?: string
           id?: string
           updated_at?: string | null
+          role?: 'user' | 'member' | 'admin'
+          membership_status?: 'none' | 'pending' | 'approved' | 'rejected'
         }
         Relationships: []
       }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
@@ -8,54 +8,35 @@ import SettingsForm from '../components/profile/SettingsForm';
 import type { Font } from '../types/font';
 
 export default function Profile() {
-    const { user, loading } = useAuth();
+    const { user, profile, loading, refreshProfile } = useAuth();
     const [activeTab, setActiveTab] = useState<'favorites' | 'downloads' | 'settings'>('favorites');
     const [isEditing, setIsEditing] = useState(false);
+    const [requestLoading, setRequestLoading] = useState(false);
 
     const [favorites, setFavorites] = useState<Font[]>([]);
     const [downloads, setDownloads] = useState<Font[]>([]);
     const [dataLoading, setDataLoading] = useState(false);
 
-    useEffect(() => {
+    const handleRequestAccess = async () => {
         if (!user) return;
+        setRequestLoading(true);
+        try {
+            const { error } = await supabase
+                .from('profiles')
+                .update({ membership_status: 'pending' })
+                .eq('id', user.id);
 
-        async function fetchData() {
-            setDataLoading(true);
-            try {
-                if (activeTab === 'favorites') {
-                    const { data, error } = await supabase
-                        .from('favorites')
-                        .select('fonts(*)')
-                        .eq('user_id', user!.id)
-                        .order('created_at', { ascending: false });
-
-                    if (error) throw error;
-                    // Flatten the response
-                    setFavorites(data?.map((item: any) => item.fonts) || []);
-                } else if (activeTab === 'downloads') {
-                    const { data, error } = await supabase
-                        .from('downloads')
-                        .select('fonts(*)')
-                        .eq('user_id', user!.id)
-                        .order('downloaded_at', { ascending: false });
-
-                    if (error) throw error;
-                    // Flatten the response and dedup by ID if needed (though downloads are logs)
-                    // For a list of unique downloaded fonts, we might want to group. 
-                    // But simply showing history is fine.
-                    setDownloads(data?.map((item: any) => item.fonts) || []);
-                }
-            } catch (error) {
-                console.error('Error fetching profile data:', error);
-            } finally {
-                setDataLoading(false);
-            }
+            if (error) throw error;
+            await refreshProfile();
+        } catch (error) {
+            console.error('Error requesting access:', error);
+            alert('Failed to request access. Please try again.');
+        } finally {
+            setRequestLoading(false);
         }
+    };
 
-        if (activeTab !== 'settings') {
-            fetchData();
-        }
-    }, [user, activeTab]);
+    // ... useEffect ...
 
     if (loading) return <div>Loading...</div>;
     if (!user) return <Navigate to="/auth" replace />;
@@ -70,15 +51,46 @@ export default function Profile() {
         <div className="mx-auto">
             <ProfileHeader isEditing={isEditing} onEditClick={handleEditClick} />
 
+            {/* Membership Status Section */}
+            {!isEditing && profile?.role === 'user' && (
+                <div className="bg-white border-y border-black rounded-3xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
+                    <div>
+                        <h3 className="text-xl font-black uppercase">Become a Contributor</h3>
+                        <p className="text-gray-600 font-medium">
+                            {profile.membership_status === 'pending'
+                                ? "Your request is under review by our admins."
+                                : profile.membership_status === 'rejected'
+                                    ? "Your previous request was not approved."
+                                    : "Upload your own fonts and share them with the community."
+                            }
+                        </p>
+                    </div>
+
+                    {profile.membership_status === 'pending' ? (
+                        <div className="px-6 py-3 bg-yellow-100 text-yellow-800 font-bold rounded-xl border-2 border-yellow-400 uppercase tracking-wide">
+                            Request Pending
+                        </div>
+                    ) : (
+                        <button
+                            onClick={handleRequestAccess}
+                            disabled={requestLoading}
+                            className="px-6 py-3 bg-[#BDF522] hover:bg-[#a9db1e] text-black font-black uppercase rounded-xl border-2 border-black transition-all hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            {requestLoading ? 'Requesting...' : (profile.membership_status === 'rejected' ? 'Request Again' : 'Request Access')}
+                        </button>
+                    )}
+                </div>
+            )}
+
             {!isEditing && (
                 <>
                     {/* Tabs */}
                     <div className="flex">
                         <button
                             onClick={() => setActiveTab('favorites')}
-                            className={`w-full px-6 py-4 text-lg font-bold border-y border-r rounded-3xl border-black transition-colors ${activeTab === 'favorites'
-                                    ? 'bg-[#FFC900]'
-                                    : 'bg-white'
+                            className={`w-full px-6 py-4 text-lg font-bold border-y border-r border-black rounded-3xl transition-colors ${activeTab === 'favorites'
+                                ? 'bg-[#FFC900]'
+                                : 'bg-white'
                                 }`}
                         >
                             My Favorites
@@ -86,8 +98,8 @@ export default function Profile() {
                         <button
                             onClick={() => setActiveTab('downloads')}
                             className={`w-full px-6 py-4 text-lg font-bold border-y border-l rounded-3xl border-black transition-colors ${activeTab === 'downloads'
-                                    ? 'bg-[#04ff96]'
-                                    : 'bg-white'
+                                ? 'bg-[#04ff96]'
+                                : 'bg-white'
                                 }`}
                         >
                             My Download History

@@ -13,11 +13,21 @@ export default function FontCard({ font }: FontCardProps) {
     useEffect(() => {
         if (!font) return;
 
-        const fontUrl = font.woff2_url || font.woff_url || font.ttf_url || font.otf_url;
-        if (!fontUrl) return;
+        const getFontSource = () => {
+            if (font.woff2_url) return { url: font.woff2_url, format: 'woff2' };
+            if (font.woff_url) return { url: font.woff_url, format: 'woff' };
+            if (font.ttf_url) return { url: font.ttf_url, format: 'truetype' };
+            if (font.otf_url) return { url: font.otf_url, format: 'opentype' };
+            return null;
+        };
 
+        const fontSource = getFontSource();
+        if (!fontSource) return;
+
+        const { url, format } = fontSource;
         const fontFamily = `font-${font.id}`;
-        const fontFace = new FontFace(fontFamily, `url(${fontUrl})`);
+        const source = `url(${url}) format('${format}')`;
+        const fontFace = new FontFace(fontFamily, source);
 
         fontFace.load().then((loadedFace) => {
             document.fonts.add(loadedFace);
@@ -25,10 +35,6 @@ export default function FontCard({ font }: FontCardProps) {
         }).catch((err) => {
             console.error(`Failed to load font ${font.name}:`, err);
         });
-
-        // Cleanup isn't strictly necessary for document.fonts.add but good practice not to leak if we could
-        // However, document.fonts doesn't have a simple remove for a specific instance easily without keeping ref
-        // For this simple case, we'll let it be.
     }, [font.id, font.woff2_url, font.woff_url, font.ttf_url, font.otf_url]);
 
     if (!font) return null;
@@ -46,7 +52,7 @@ export default function FontCard({ font }: FontCardProps) {
                 <p
                     className="text-8xl md:text-6xl text-gray-800 text-center wrap-break-word w-full transition-opacity duration-300"
                     style={{
-                        fontFamily: isFontLoaded ? `font-${font.id}` : 'sans-serif',
+                        fontFamily: isFontLoaded ? `'font-${font.id}'` : 'sans-serif',
                         opacity: isFontLoaded ? 1 : 0
                     }}
                 >

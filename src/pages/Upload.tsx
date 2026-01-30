@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { Upload as UploadIcon, File, X, Image as ImageIcon, Link as LinkIcon } from 'lucide-react';
 
 const Upload = () => {
-    const { user } = useAuth();
+    const { user, profile } = useAuth();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
@@ -283,10 +283,32 @@ const Upload = () => {
 
             // Upload all selected files in parallel
             const uploadPromises = [];
-            if (files.ttf) uploadPromises.push(uploadFile(files.ttf, 'ttf').then(url => uploadUrls.ttf_url = url));
-            if (files.otf) uploadPromises.push(uploadFile(files.otf, 'otf').then(url => uploadUrls.otf_url = url));
-            if (files.woff) uploadPromises.push(uploadFile(files.woff, 'woff').then(url => uploadUrls.woff_url = url));
-            if (files.woff2) uploadPromises.push(uploadFile(files.woff2, 'woff2').then(url => uploadUrls.woff2_url = url));
+            const fileSizes: any = {};
+
+            if (files.ttf) {
+                uploadPromises.push(uploadFile(files.ttf, 'ttf').then(url => {
+                    uploadUrls.ttf_url = url;
+                    fileSizes.file_size_ttf = files.ttf?.size;
+                }));
+            }
+            if (files.otf) {
+                uploadPromises.push(uploadFile(files.otf, 'otf').then(url => {
+                    uploadUrls.otf_url = url;
+                    fileSizes.file_size_otf = files.otf?.size;
+                }));
+            }
+            if (files.woff) {
+                uploadPromises.push(uploadFile(files.woff, 'woff').then(url => {
+                    uploadUrls.woff_url = url;
+                    fileSizes.file_size_woff = files.woff?.size;
+                }));
+            }
+            if (files.woff2) {
+                uploadPromises.push(uploadFile(files.woff2, 'woff2').then(url => {
+                    uploadUrls.woff2_url = url;
+                    fileSizes.file_size_woff2 = files.woff2?.size;
+                }));
+            }
 
             await Promise.all(uploadPromises);
 
@@ -305,10 +327,12 @@ const Upload = () => {
                         slug: slug,
                         is_published: true,
                         user_id: user.id,
-                        // Spread the uploaded URLs
+                        // Spread the uploaded URLs and Sizes
                         ...uploadUrls,
+                        ...fileSizes,
                         preview_image_url: previewImageUrl,
-                        gallery_images: galleryUrls
+                        gallery_images: galleryUrls,
+                        uploaded_by: user.id
                     }
                 ]);
 
@@ -333,12 +357,16 @@ const Upload = () => {
             // Upload and Insert Variants
             for (const variant of variants) {
                 const variantUrls: any = {};
+                const variantSizes: any = {};
                 const promises = [];
 
                 for (const format of ['ttf', 'otf', 'woff', 'woff2'] as const) {
                     const file = variant.files[format];
                     if (file) {
-                        promises.push(uploadFile(file, format).then(url => variantUrls[`${format}_url`] = url));
+                        promises.push(uploadFile(file, format).then(url => {
+                            variantUrls[`${format}_url`] = url;
+                            variantSizes[`file_size_${format}`] = file.size;
+                        }));
                     }
                 }
 
@@ -350,7 +378,8 @@ const Upload = () => {
                         .insert({
                             font_id: insertedFont.id,
                             variant_name: variant.name,
-                            ...variantUrls
+                            ...variantUrls,
+                            ...variantSizes
                         });
 
                     if (variantError) console.error(`Failed to save variant ${variant.name}`, variantError);
@@ -366,6 +395,30 @@ const Upload = () => {
             setLoading(false);
         }
     };
+
+    // Role Check
+    if (!profile || (profile.role !== 'member' && profile.role !== 'admin')) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-8 space-y-6">
+                <div className="bg-red-100 p-6 rounded-full">
+                    <div className="text-6xl">🔒</div>
+                </div>
+                <h1 className="text-4xl font-black uppercase">Access Restricted</h1>
+                <p className="text-xl text-gray-600 max-w-lg">
+                    Uploading fonts is currently restricted to approved <strong>Members</strong> and <strong>Admins</strong>.
+                </p>
+                <div className="flex gap-4">
+                    <button onClick={() => navigate('/')} className="px-6 py-3 bg-black text-white rounded-xl font-bold hover:scale-105 transition-transform">
+                        Go Home
+                    </button>
+                    {/* Placeholder for future "Request Access" feature */}
+                    <button disabled className="px-6 py-3 border-2 border-black text-black rounded-xl font-bold opacity-50 cursor-not-allowed">
+                        Request Access
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="mx-auto">

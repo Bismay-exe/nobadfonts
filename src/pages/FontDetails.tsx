@@ -9,7 +9,7 @@ import { PreviewAccordion } from '../components/fonts/PreviewAccordion';
 
 export default function FontDetails() {
     const { id } = useParams();
-    const { user } = useAuth();
+    const { user, profile } = useAuth();
     const navigate = useNavigate();
     const { font, loading, error, isFavorited, setIsFavorited } = useFont(id);
     const [copied, setCopied] = useState(false);
@@ -21,30 +21,49 @@ export default function FontDetails() {
     useEffect(() => {
         if (!font) return;
 
-        // Load main font
-        const fontUrl = font.woff2_url || font.woff_url || font.ttf_url || font.otf_url;
-        if (fontUrl) {
-            const fontFamily = `font-${font.id}`;
-            const fontFace = new FontFace(fontFamily, `url(${fontUrl})`);
-            fontFace.load().then((loadedFace) => {
+        // Helper to load font with format hint
+        const loadFont = async (family: string, url: string, format?: string) => {
+            try {
+                const source = `url(${url})` + (format ? ` format('${format}')` : '');
+                const fontFace = new FontFace(family, source);
+                const loadedFace = await fontFace.load();
                 document.fonts.add(loadedFace);
-                setIsFontLoaded(true);
-            }).catch((err) => {
-                console.error(`Failed to load font ${font.name}:`, err);
+                return true;
+            } catch (err) {
+                console.error(`Failed to load font ${family}:`, err);
+                return false;
+            }
+        };
+
+        // Load main font
+        const getFontSource = (f: typeof font) => {
+            if (f.woff2_url) return { url: f.woff2_url, format: 'woff2' };
+            if (f.woff_url) return { url: f.woff_url, format: 'woff' };
+            if (f.ttf_url) return { url: f.ttf_url, format: 'truetype' };
+            if (f.otf_url) return { url: f.otf_url, format: 'opentype' };
+            return null;
+        };
+
+        const mainSource = getFontSource(font);
+        if (mainSource) {
+            loadFont(`font-${font.id}`, mainSource.url, mainSource.format).then(success => {
+                if (success) setIsFontLoaded(true);
             });
         }
 
         // Load variant fonts
         font.font_variants?.forEach(variant => {
-            const variantUrl = variant.woff2_url || variant.woff_url || variant.ttf_url || variant.otf_url;
-            if (variantUrl) {
+            // Variants use the same structure, so we can reuse logic if types match, 
+            // but variant type might be slightly different. Manual check is safe.
+            let variantSource = null;
+            if (variant.woff2_url) variantSource = { url: variant.woff2_url, format: 'woff2' };
+            else if (variant.woff_url) variantSource = { url: variant.woff_url, format: 'woff' };
+            else if (variant.ttf_url) variantSource = { url: variant.ttf_url, format: 'truetype' };
+            else if (variant.otf_url) variantSource = { url: variant.otf_url, format: 'opentype' };
+
+            if (variantSource) {
                 const variantFamily = `font-${font.id}-${variant.variant_name}`;
-                const variantFace = new FontFace(variantFamily, `url(${variantUrl})`);
-                variantFace.load().then((loadedFace) => {
-                    document.fonts.add(loadedFace);
-                }).catch((err) => {
-                    console.error(`Failed to load variant ${variant.variant_name}:`, err);
-                });
+                loadFont(variantFamily, variantSource.url, variantSource.format);
             }
         });
     }, [font]);
@@ -206,7 +225,7 @@ export default function FontDetails() {
 
 
             {/* Header */}
-            <div className="relative column col-span-3  justify-between items-start md:items-center gap-4">
+            <div className="relative justify-between items-start md:items-center">
                 <div className='flex flex-col items-start justify-end w-full md:w-auto bg-[#BDF522] rounded-3xl border-2 border-black p-4'>
                     {/* Back Button */}
                     <Link to="/fonts" className="absolute top-3 left-3 inline-flex items-center bg-black px-3 py-2 rounded-full font-semibold text-gray-50 hover:text-gray-900 mb-8 transition-colors">
@@ -225,19 +244,19 @@ export default function FontDetails() {
                     <p className="text-xl font-mono text-gray-500">by {font.designer}</p>
 
                     {/* Format Badges */}
-                    <div className="flex gap-2 mt-2">
-                        {availableFormats.map(f => (
-                            <span key={f.label} className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                                {f.label}
+                    <div className="flex flex-wrap gap-2 mt-2">
+                        {font.font_variants?.map(variant => (
+                            <span key={variant.id} className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-[#000] border text-[#fff]">
+                                {variant.variant_name}
                             </span>
                         ))}
                     </div>
                 </div>
 
-                <div className="flex flex-col items-start justify-end h-full w-full bg-white rounded-3xl border-2 border-black p-4">
+                <div className="flex flex-col items-start justify-end h-full w-auto bg-white rounded-3xl border-2 border-black p-4">
                     <div className="flex flex-wrap gap-1">
                         {displayTags.map((tag, i) => (
-                            <div key={i} className="bg-gray-900 text-gray-300 text-xs px-6 py-4 rounded-full font-medium">
+                            <div key={i} className="bg-gray-900 text-gray-300 text-xs px-3 py-2 rounded-full font-medium">
                                 {tag}
                             </div>
                         ))}
@@ -245,6 +264,30 @@ export default function FontDetails() {
                 </div>
 
                 <div className="flex md:flex-col justify-between">
+                    {/* Admin Actions */}
+                    {profile?.role === 'admin' && (
+                        <div className="mb-4 space-y-2 w-full p-2 bg-red-50 border border-red-200 rounded-2xl">
+                            <p className="text-xs font-bold text-red-500 uppercase text-center mb-1">Admin Controls</p>
+                            <button
+                                onClick={async () => {
+                                    if (!confirm('Are you sure you want to delete this font? This cannot be undone.')) return;
+                                    const { error } = await supabase.from('fonts').delete().eq('id', font.id);
+                                    if (error) alert('Error deleting font');
+                                    else navigate('/');
+                                }}
+                                className="w-full flex items-center justify-center px-4 py-2 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors font-bold text-sm"
+                            >
+                                Delete Font
+                            </button>
+                            <button
+                                onClick={() => alert('Edit functionality coming soon')}
+                                className="w-full flex items-center justify-center px-4 py-2 bg-white border border-black text-black rounded-xl hover:bg-gray-100 transition-colors font-bold text-sm"
+                            >
+                                Edit Font
+                            </button>
+                        </div>
+                    )}
+
                     <button
                         onClick={handleFavorite}
                         className={`flex items-center w-full px-4 py-2 gap-2 border border-black rounded-3xl transition-colors ${isFavorited
@@ -324,7 +367,7 @@ export default function FontDetails() {
                         </div>
                         <p
                             style={{
-                                fontFamily: `font-${font.id}-${variant.variant_name}`,
+                                fontFamily: `'font-${font.id}-${variant.variant_name}'`,
                                 fontSize: `${variantPreviewSize}px`,
                                 lineHeight: 1.2
                             }}
@@ -337,9 +380,9 @@ export default function FontDetails() {
             </div>
 
             {/* Main Content Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-3">
+            <div className="">
                 {/* Left Column: Tester (Span 2) */}
-                <div className="lg:col-span-2 space-y-8">
+                <div className="space-y-8">
                     <section>
                         <h2 className="text-2xl font-bold py-4 px-4 bg-white rounded-3xl border-2 border-black">Interactive Tester</h2>
                         <FontTester font={font} />
@@ -365,7 +408,7 @@ export default function FontDetails() {
                 </div>
 
                 {/* Download Buttons Stacked */}
-                <div id='download' className="lg:col-span-3 bg-white border border-black rounded-3xl p-6">
+                <div id='download' className="bg-white border border-black rounded-3xl p-6">
                     <h3 className="font-bold text-lg mb-4">Download Default</h3>
 
                     <div className="flex flex-col md:flex-row gap-3">
