@@ -246,7 +246,7 @@ export default function FontDetails() {
                     {/* Format Badges */}
                     <div className="flex flex-wrap gap-2 mt-2">
                         {font.font_variants?.map(variant => (
-                            <span key={variant.id} className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-[#000] border text-[#fff]">
+                            <span key={variant.id} className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-black border text-white">
                                 {variant.variant_name}
                             </span>
                         ))}

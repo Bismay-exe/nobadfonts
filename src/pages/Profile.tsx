@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
@@ -36,7 +36,49 @@ export default function Profile() {
         }
     };
 
-    // ... useEffect ...
+    useEffect(() => {
+        if (!user) return;
+
+        const fetchData = async () => {
+            setDataLoading(true);
+            try {
+                if (activeTab === 'favorites') {
+                    const { data, error } = await supabase
+                        .from('favorites')
+                        .select('font_id, fonts (*)')
+                        .eq('user_id', user.id);
+
+                    if (error) throw error;
+                    // Format data: Extract the font object from the joined response
+                    const formattedFonts = data.map((item: any) => item.fonts) as Font[];
+                    setFavorites(formattedFonts);
+                } else if (activeTab === 'downloads') {
+                    const { data, error } = await supabase
+                        .from('downloads')
+                        .select('font_id, fonts (*)')
+                        .eq('user_id', user.id)
+                        .order('downloaded_at', { ascending: false });
+
+                    if (error) throw error;
+                    // Format data: Extract the font object from the joined response
+                    // Use a Map to filtering duplicates if a user downloaded the same font multiple times, 
+                    // though typically the UI might just show the history. 
+                    // Let's deduplicate by ID for a cleaner "My Downloads" list if desired, 
+                    // or keep as history. For "My Download History" usually implies unique items or a log.
+                    // Given the content is a standard FontGrid, unique items make more sense.
+                    const fontsList = data.map((item: any) => item.fonts) as Font[];
+                    const uniqueFonts = Array.from(new Map(fontsList.map(item => [item['id'], item])).values());
+                    setDownloads(uniqueFonts);
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            } finally {
+                setDataLoading(false);
+            }
+        };
+
+        fetchData();
+    }, [user, activeTab]);
 
     if (loading) return <div>Loading...</div>;
     if (!user) return <Navigate to="/auth" replace />;
