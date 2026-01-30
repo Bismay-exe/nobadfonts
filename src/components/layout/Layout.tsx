@@ -1,12 +1,10 @@
 import { useEffect } from 'react';
-import { Outlet, useSearchParams, useLocation, useNavigate } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
 
 export default function Layout() {
-    const [searchParams] = useSearchParams();
     const location = useLocation();
-    const navigate = useNavigate();
 
     useEffect(() => {
         // Robust check using window.location to catch everything
