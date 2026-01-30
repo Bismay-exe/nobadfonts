@@ -26,6 +26,10 @@ export default function AdminDashboard() {
     const [downloadStats, setDownloadStats] = useState<{ date: string, count: number }[]>([]);
     const [topDownloadedFonts, setTopDownloadedFonts] = useState<{ name: string, count: number }[]>([]);
 
+    // State for Favorites Analytics
+    const [favoritesStats, setFavoritesStats] = useState<{ date: string, count: number }[]>([]);
+    const [topFavoritedFonts, setTopFavoritedFonts] = useState<{ name: string, count: number }[]>([]);
+
     // Search States
     const [searchUsers, setSearchUsers] = useState('');
     const [searchFiles, setSearchFiles] = useState('');
@@ -100,16 +104,25 @@ export default function AdminDashboard() {
         const thirtyDaysAgo = new Date();
         thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
+        const thirtyDaysAgoIso = thirtyDaysAgo.toISOString();
+
         // Fetch downloads
-        const { data: downloads, error } = await supabase
+        const { data: downloads, error: downloadsError } = await supabase
             .from('downloads')
             .select('font_id, downloaded_at')
-            .gte('downloaded_at', thirtyDaysAgo.toISOString());
+            .gte('downloaded_at', thirtyDaysAgoIso);
 
-        if (error) {
-            console.error('Error fetching analytics:', error);
-        } else if (downloads) {
-            // Process Chart Data (Group by Date)
+        // Fetch favorites
+        const { data: favorites, error: favoritesError } = await supabase
+            .from('favorites')
+            .select('font_id, created_at')
+            .gte('created_at', thirtyDaysAgoIso);
+
+        if (downloadsError) console.error('Error fetching downloads analytics:', downloadsError);
+        if (favoritesError) console.error('Error fetching favorites analytics:', favoritesError);
+
+        // --- Process Downloads ---
+        if (downloads) {
             const dateMap = new Map<string, number>();
             // Initialize last 30 days with 0
             for (let i = 0; i < 30; i++) {
@@ -131,13 +144,63 @@ export default function AdminDashboard() {
 
             setDownloadStats(chartData);
 
-            // Process Top Fonts
-            // We need to fetch font names. 
-            // For efficiency, we'll fetch all fonts first if not already fetched, or just IDs.
-            // But let's just group by ID and then fetch names for top 10.
+            // Top Downloaded Fonts
             const fontCounts = new Map<string, number>();
             downloads.forEach(d => {
                 fontCounts.set(d.font_id, (fontCounts.get(d.font_id) || 0) + 1);
+            });
+
+            const topIds = Array.from(fontCounts.entries())
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 10);
+
+            if (topIds.length > 0) {
+                // We will fetch names later in a batch if needed, or individually here
+                // Note: To optimize, we could combine IDs from downloads and favorites
+                const { data: fontNames } = await supabase
+                    .from('fonts')
+                    .select('id, name')
+                    .in('id', topIds.map(t => t[0]));
+
+                if (fontNames) {
+                    const topFontsData = topIds.map(([id, count]) => {
+                        const font = fontNames.find(f => f.id === id);
+                        return { name: font?.name || 'Unknown Font', count };
+                    });
+                    setTopDownloadedFonts(topFontsData);
+                }
+            } else {
+                setTopDownloadedFonts([]);
+            }
+        }
+
+        // --- Process Favorites ---
+        if (favorites) {
+            const dateMap = new Map<string, number>();
+            // Initialize last 30 days with 0
+            for (let i = 0; i < 30; i++) {
+                const d = new Date();
+                d.setDate(d.getDate() - i);
+                const dateStr = d.toISOString().split('T')[0];
+                dateMap.set(dateStr, 0);
+            }
+
+            favorites.forEach(f => {
+                if (!f.created_at) return;
+                const dateStr = f.created_at.split('T')[0];
+                dateMap.set(dateStr, (dateMap.get(dateStr) || 0) + 1);
+            });
+
+            const chartData = Array.from(dateMap.entries())
+                .map(([date, count]) => ({ date, count }))
+                .sort((a, b) => a.date.localeCompare(b.date));
+
+            setFavoritesStats(chartData);
+
+            // Top Favorited Fonts
+            const fontCounts = new Map<string, number>();
+            favorites.forEach(f => {
+                fontCounts.set(f.font_id, (fontCounts.get(f.font_id) || 0) + 1);
             });
 
             const topIds = Array.from(fontCounts.entries())
@@ -155,12 +218,13 @@ export default function AdminDashboard() {
                         const font = fontNames.find(f => f.id === id);
                         return { name: font?.name || 'Unknown Font', count };
                     });
-                    setTopDownloadedFonts(topFontsData);
+                    setTopFavoritedFonts(topFontsData);
                 }
             } else {
-                setTopDownloadedFonts([]);
+                setTopFavoritedFonts([]);
             }
         }
+
         setLoading(false);
     };
 
@@ -345,7 +409,7 @@ export default function AdminDashboard() {
                 </div>
             </div>
 
-            <div className="bg-white border-2 border-black rounded-3xl p-8 min-h-[50vh]">
+            <div className="bg-white border-2 border-black rounded-3xl px-4 md:px-8 pt-8 md:pt-8 pb-4 md:pb-8 min-h-[50vh]">
                 {loading ? (
                     <div className="flex justify-center p-8">
                         <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-black"></div>
@@ -500,7 +564,7 @@ export default function AdminDashboard() {
                                 </div>
 
                                 {/* Summary Cards */}
-                                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                                <div className="grid grid-cols-4 md:grid-cols-4 gap-6 mb-8 overflow-x-auto">
                                     <div className="bg-gray-50 rounded-2xl p-6 border-2 border-black">
                                         <h3 className="font-bold text-gray-500 uppercase text-sm mb-2">Total Fonts</h3>
                                         <p className="text-4xl font-black">{totalFonts}</p>
@@ -698,66 +762,142 @@ export default function AdminDashboard() {
                                 </div>
                             </div>
                         )}
+
                         {activeTab === 'analytics' && (
                             <div>
                                 <h2 className="text-2xl font-bold flex items-center gap-3 mb-8">
                                     Analytics (Last 30 Days)
                                 </h2>
 
-                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                                    {/* Chart */}
-                                    <div className="bg-white p-6 rounded-3xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-                                        <h3 className="font-bold text-lg mb-6">Downloads Trend</h3>
-                                        <div className="h-64 w-full">
-                                            <ResponsiveContainer width="100%" height="100%">
-                                                <LineChart data={downloadStats}>
-                                                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                                                    <XAxis
-                                                        dataKey="date"
-                                                        tickFormatter={(str) => {
-                                                            const date = new Date(str);
-                                                            return `${date.getMonth() + 1}/${date.getDate()}`;
-                                                        }}
-                                                        tick={{ fontSize: 12 }}
-                                                        interval={4}
-                                                    />
-                                                    <YAxis allowDecimals={false} />
-                                                    <Tooltip
-                                                        contentStyle={{ borderRadius: '12px', border: '2px solid black', fontWeight: 'bold' }}
-                                                    />
-                                                    <Line
-                                                        type="monotone"
-                                                        dataKey="count"
-                                                        stroke="#000"
-                                                        strokeWidth={3}
-                                                        dot={{ r: 4, fill: '#000' }}
-                                                        activeDot={{ r: 6, fill: '#FF90E8' }}
-                                                    />
-                                                </LineChart>
-                                            </ResponsiveContainer>
+                                {/* Downloads Section */}
+                                <div className="mb-12">
+                                    <h3 className="text-xl font-bold flex items-center gap-2 mb-6 text-gray-800">
+                                        <div className="w-3 h-8 bg-black rounded-full"></div>
+                                        Downloads Overview
+                                    </h3>
+                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                        {/* Chart */}
+                                        <div className="flex flex-col justify-between bg-white p-6 rounded-3xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                                            <h3 className="font-bold text-lg mb-6">Downloads Trend</h3>
+                                            <div className="h-64 w-full -translate-x-5 md:-translate-x-8">
+                                                <ResponsiveContainer width="100%" height="100%">
+                                                    <LineChart data={downloadStats}>
+                                                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                                                        <XAxis
+                                                            dataKey="date"
+                                                            tickFormatter={(str) => {
+                                                                const date = new Date(str);
+                                                                return `${date.getMonth() + 1}/${date.getDate()}`;
+                                                            }}
+                                                            tick={{ fontSize: 12 }}
+                                                            interval={4}
+                                                        />
+                                                        <YAxis allowDecimals={false} />
+                                                        <Tooltip
+                                                            contentStyle={{ borderRadius: '12px', border: '2px solid black', fontWeight: 'bold' }}
+                                                        />
+                                                        <Line
+                                                            type="monotone"
+                                                            dataKey="count"
+                                                            stroke="#000"
+                                                            strokeWidth={3}
+                                                            dot={{ r: 4, fill: '#000' }}
+                                                            activeDot={{ r: 6, fill: '#FF90E8' }}
+                                                        />
+                                                    </LineChart>
+                                                </ResponsiveContainer>
+                                            </div>
+                                        </div>
+
+                                        {/* Top Fonts */}
+                                        <div className="bg-white p-6 rounded-3xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                                            <h3 className="font-bold text-lg mb-6">Top Downloaded Fonts</h3>
+                                                <div className='overflow-y-auto h-65'>
+                                                    {topDownloadedFonts.length > 0 ? (
+                                                        <div className="space-y-3">
+                                                            {topDownloadedFonts.map((font, idx) => (
+                                                                <div key={idx} className="flex justify-between items-center p-3 bg-gray-50 rounded-xl border border-gray-200">
+                                                                    <div className="flex items-center gap-3">
+                                                                        <span className="w-6 h-6 flex items-center justify-center bg-black text-white rounded-full text-xs font-bold">
+                                                                            {idx + 1}
+                                                                        </span>
+                                                                        <span className="font-bold">{font.name}</span>
+                                                                    </div>
+                                                                    <span className="font-mono font-bold text-blue-600">{font.count}</span>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    ) : (
+                                                        <div className="text-center text-gray-400 py-8">No data available</div>
+                                                    )}
+                                            </div>
                                         </div>
                                     </div>
+                                </div>
 
-                                    {/* Top Fonts */}
-                                    <div className="bg-white p-6 rounded-3xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-                                        <h3 className="font-bold text-lg mb-6">Top Downloaded Fonts</h3>
-                                        {topDownloadedFonts.length > 0 ? (
-                                            <div className="space-y-3">
-                                                {topDownloadedFonts.map((font, idx) => (
-                                                    <div key={idx} className="flex justify-between items-center p-3 bg-gray-50 rounded-xl border border-gray-200">
-                                                        <div className="flex items-center gap-3">
-                                                            <span className="w-6 h-6 flex items-center justify-center bg-black text-white rounded-full text-xs font-bold">
-                                                                {idx + 1}
-                                                            </span>
-                                                            <span className="font-bold">{font.name}</span>
-                                                        </div>
-                                                        <span className="font-mono font-bold text-blue-600">{font.count}</span>
-                                                    </div>
-                                                ))}
+                                {/* Favorites Section */}
+                                <div>
+                                    <h3 className="text-xl font-bold flex items-center gap-2 mb-6 text-gray-800">
+                                        <div className="w-3 h-8 bg-pink-500 rounded-full"></div>
+                                        Favorites Overview
+                                    </h3>
+                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                        {/* Chart */}
+                                        <div className="flex flex-col justify-between bg-white p-6 rounded-3xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                                            <h3 className="font-bold text-lg mb-6 text-pink-600">Favorites Trend</h3>
+                                            <div className="h-64 w-full -translate-x-5 md:-translate-x-8">
+                                                <ResponsiveContainer width="100%" height="100%">
+                                                    <LineChart data={favoritesStats}>
+                                                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                                                        <XAxis
+                                                            dataKey="date"
+                                                            tickFormatter={(str) => {
+                                                                const date = new Date(str);
+                                                                return `${date.getMonth() + 1}/${date.getDate()}`;
+                                                            }}
+                                                            tick={{ fontSize: 12 }}
+                                                            interval={4}
+                                                        />
+                                                        <YAxis allowDecimals={false} />
+                                                        <Tooltip
+                                                            contentStyle={{ borderRadius: '12px', border: '2px solid black', fontWeight: 'bold', borderColor: '#EC4899' }}
+                                                        />
+                                                        <Line
+                                                            type="monotone"
+                                                            dataKey="count"
+                                                            stroke="#EC4899"
+                                                            strokeWidth={3}
+                                                            dot={{ r: 4, fill: '#EC4899' }}
+                                                            activeDot={{ r: 6, fill: '#000' }}
+                                                        />
+                                                    </LineChart>
+                                                </ResponsiveContainer>
                                             </div>
-                                        ) : (
-                                            <div className="text-center text-gray-400 py-8">No data available</div>
-                                        )}
+                                        </div>
+
+                                        {/* Top Fonts */}
+                                        <div className="bg-white p-6 rounded-3xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                                            <h3 className="font-bold text-lg mb-6 text-pink-600">Top Favorited Fonts</h3>
+                                                <div className='overflow-y-auto h-80'>
+                                                {topFavoritedFonts.length > 0 ? (
+                                                    <div className="space-y-3">
+                                                        {topFavoritedFonts.map((font, idx) => (
+                                                            <div key={idx} className="flex justify-between items-center p-3 bg-pink-50 rounded-xl border border-pink-100">
+                                                                <div className="flex items-center gap-3">
+                                                                    <span className="w-6 h-6 flex items-center justify-center bg-pink-500 text-white rounded-full text-xs font-bold">
+                                                                        {idx + 1}
+                                                                    </span>
+                                                                    <span className="font-bold text-gray-800">{font.name}</span>
+                                                                </div>
+                                                                <span className="font-mono font-bold text-pink-600">{font.count}</span>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                ) : (
+                                                    <div className="text-center text-gray-400 py-8">No data available</div>
+                                                )}
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
