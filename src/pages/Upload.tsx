@@ -372,7 +372,25 @@ const Upload = () => {
                 for (const format of ['ttf', 'otf', 'woff', 'woff2'] as const) {
                     const file = variant.files[format];
                     if (file) {
-                        promises.push(uploadFile(file, format).then(url => {
+                        const fileName = file.name;
+                        // Use the specific folder structure for variants: [id]/[slug]/variants/[VariantName]/[filename]
+                        const variantPath = `${folderPath}/variants/${variant.name}/${fileName}`;
+
+                        const uploadVariantFile = async () => {
+                            const { error: uploadError } = await supabase.storage
+                                .from('fonts')
+                                .upload(variantPath, file, { upsert: true });
+
+                            if (uploadError) throw new Error(`Failed to upload ${variant.name} ${format.toUpperCase()}: ${uploadError.message}`);
+
+                            const { data: { publicUrl } } = supabase.storage
+                                .from('fonts')
+                                .getPublicUrl(variantPath);
+
+                            return publicUrl;
+                        };
+
+                        promises.push(uploadVariantFile().then(url => {
                             variantUrls[`${format}_url`] = url;
                             variantSizes[`file_size_${format}`] = file.size;
                         }));

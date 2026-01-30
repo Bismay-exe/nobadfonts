@@ -5,9 +5,10 @@ import { useEffect, useState } from 'react';
 
 interface FontCardProps {
     font: Font;
+    viewMode?: 'font' | 'image';
 }
 
-export default function FontCard({ font }: FontCardProps) {
+export default function FontCard({ font, viewMode = 'font' }: FontCardProps) {
     const [isFontLoaded, setIsFontLoaded] = useState(false);
 
     useEffect(() => {
@@ -47,17 +48,28 @@ export default function FontCard({ font }: FontCardProps) {
     return (
         <div className="group relative bg-white rounded-3xl border-2 border-black hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col h-full">
             {/* Preview Area */}
-            <Link to={`/fonts/${font.id}`} className="h-full w-full bg-gray-50 flex items-center justify-center p-6 relative overflow-hidden group/preview">
-                {/* Fallback text if no preview image, or overlay text */}
-                <p
-                    className="text-8xl md:text-6xl text-gray-800 text-center wrap-break-word w-full transition-opacity duration-300"
-                    style={{
-                        fontFamily: isFontLoaded ? `'font-${font.id}'` : 'sans-serif',
-                        opacity: isFontLoaded ? 1 : 0
-                    }}
-                >
-                    {font.name}
-                </p>
+            <Link to={`/fonts/${font.id}`} className="h-full w-full bg-gray-50 flex items-center justify-center relative overflow-hidden group/preview">
+                {/* Content Area: Font Preview or Image */}
+                {viewMode === 'image' && (font.preview_image_url || (font.gallery_images && font.gallery_images.length > 0)) ? (
+                    <div className="w-full h-full flex items-center justify-center bg-gray-100">
+                        <img
+                            src={font.preview_image_url || font.gallery_images?.[0]}
+                            alt={font.name}
+                            className="w-full h-full object-cover opacity-100 transition-opacity duration-300"
+                        />
+                    </div>
+                ) : (
+                    // Fallback to text preview
+                    <p
+                        className="p-6 text-8xl md:text-6xl text-gray-800 text-center wrap-break-word w-full transition-opacity duration-300"
+                        style={{
+                            fontFamily: isFontLoaded ? `'font-${font.id}'` : 'sans-serif',
+                            opacity: isFontLoaded ? 1 : 0
+                        }}
+                    >
+                        {font.name}
+                    </p>
+                )}
 
                 <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button

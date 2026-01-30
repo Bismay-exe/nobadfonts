@@ -1,10 +1,12 @@
-import { Search } from 'lucide-react';
+import { Search, ChevronDown, Check, Type, Image } from 'lucide-react';
 import type { FontFilterParams } from '../../types/font';
 import { useState } from 'react';
 
 interface FiltersProps {
     filters: FontFilterParams;
-    onChange: (newFilters: FontFilterParams) => void;
+    onChange: (filters: FontFilterParams) => void;
+    viewMode?: 'font' | 'image';
+    onViewModeChange?: (mode: 'font' | 'image') => void;
 }
 
 const CATEGORIES = [
@@ -103,7 +105,7 @@ const SORT_OPTIONS = [
     { id: 'alpha', label: 'A-Z' },
 ];
 
-export default function Filters({ filters, onChange }: FiltersProps) {
+export default function Filters({ filters, onChange, viewMode, onViewModeChange }: FiltersProps) {
     const handleChange = (key: keyof FontFilterParams, value: any) => {
         onChange({ ...filters, [key]: value });
     };
@@ -114,10 +116,10 @@ export default function Filters({ filters, onChange }: FiltersProps) {
     const currentSortLabel = SORT_OPTIONS.find(opt => opt.id === (filters.sortBy || 'trending'))?.label || 'Trending';
 
     return (
-        <div className="gap-8 sticky top-24 grid grid-cols-1 md:grid-cols-2">
+        <div className="gap-8 sticky top-24 flex flex-col">
 
             {/* Categories */}
-            <div className='col-span-1 md:col-span-2'>
+            <div>
                 <h4 className="font-semibold mb-3 text-sm uppercase tracking-wider text-gray-500">Categories</h4>
                 <div className="flex gap-2 flex-wrap max-h-96 overflow-y-auto p-1">
                     {CATEGORIES.map(cat => {
@@ -148,63 +150,94 @@ export default function Filters({ filters, onChange }: FiltersProps) {
                 </div>
             </div>
 
+            <div className='flex flex-col md:flex-row gap-2'>
+                <div className='flex gap-2'>
+                    {/* Search */}
+                    <div className="relative w-full">
+                        <input
+                            type="text"
+                            placeholder="Search fonts..."
+                            value={filters.query || ''}
+                            onChange={(e) => handleChange('query', e.target.value)}
+                            className="w-full pl-10 pr-4 py-2 border border-gray-700 bg-black/10 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                        />
+                        <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
+                    </div>
 
-            {/* Search */}
-            <div className="relative col-span-1">
-                <input
-                    type="text"
-                    placeholder="Search fonts..."
-                    value={filters.query || ''}
-                    onChange={(e) => handleChange('query', e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-700 bg-black/10 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                />
-                <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
-            </div>
-
-            {/* Sort */}
-            <div className='col-span-1 flex flex-col md:items-end gap-2 relative z-50'>
-                <div className="flex items-center gap-3 w-full md:justify-end">
-                    <h4 className="w-full md:w-auto font-semibold text-sm uppercase tracking-wider text-gray-500">Sort By</h4>
-                    <button
-                        onClick={() => setIsSortOpen(!isSortOpen)}
-                        className="w-full md:w-52 px-4 py-2 flex justify-between items-center border border-gray-700 bg-black/10 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-bold"
-                    >
-                        <span>{currentSortLabel}</span>
-                        <span className={`transform transition-transform ${isSortOpen ? 'rotate-180' : ''}`}>▼</span>
-                    </button>
+                    {/* View Toggle */}
+                    {onViewModeChange && (
+                        <div className="flex bg-gray-100 p-1 rounded-full border border-gray-200">
+                            <button
+                                onClick={() => onViewModeChange('font')}
+                                className={`p-2 rounded-full transition-all ${viewMode === 'font'
+                                    ? 'bg-black text-white shadow-sm'
+                                    : 'text-gray-500 hover:text-black'
+                                    }`}
+                                title="Font View"
+                            >
+                                <Type size={16} />
+                            </button>
+                            <button
+                                onClick={() => onViewModeChange('image')}
+                                className={`p-2 rounded-full transition-all ${viewMode === 'image'
+                                    ? 'bg-black text-white shadow-sm'
+                                    : 'text-gray-500 hover:text-black'
+                                    }`}
+                                title="Image View"
+                            >
+                                <Image size={16} />
+                            </button>
+                        </div>
+                    )}
                 </div>
 
-                {/* Dropdown Menu */}
-                <div
-                    className={`
-                        w-full md:w-52
-                        overflow-hidden
-                        transition-all
-                        duration-400
-                        ease-linear
-                        ${isSortOpen ? 'max-h-100 opacity-100 translate-y-0' : 'max-h-0 opacity-100 -translate-y-10 scale-0 pointer-events-none'}
-                    `}
-                >
-                    <div className="overflow-hidden flex flex-col gap-1">
-                        {SORT_OPTIONS.map(opt => (
+                {/* Sort & View Toggle */}
+                <div className='w-full flex flex-col justify-end md:items-end gap-2 relative z-50'>
+
+                        <div className="flex items-center gap-3">
+                            <h4 className="hidden md:block font-semibold text-sm uppercase tracking-wider text-gray-500">Sort By</h4>
                             <button
-                                key={opt.id}
-                                onClick={() => {
-                                    handleChange('sortBy', opt.id);
-                                    setIsSortOpen(false);
-                                }}
-                                className={`
-                                    text-left px-4 py-2 rounded-full border border-black font-bold transition-colors
-                                    ${filters.sortBy === opt.id
-                                        ? 'bg-black text-white'
-                                        : 'hover:bg-gray-100 text-gray-700'
-                                    }
-                                `}
+                                onClick={() => setIsSortOpen(!isSortOpen)}
+                                className="w-full md:w-52 px-4 py-2 flex justify-between items-center border border-gray-700 bg-black/10 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-bold"
                             >
-                                {opt.label}
+                                <span>{currentSortLabel}</span>
+                                <span className={`transform transition-transform ${isSortOpen ? 'rotate-180' : ''}`}>▼</span>
                             </button>
-                        ))}
-                    </div>
+                        </div>
+
+                        {/* Dropdown Menu */}
+                        <div
+                            className={`
+                            w-full md:w-52
+                            overflow-hidden
+                            transition-all
+                            duration-400
+                            ease-linear
+                            ${isSortOpen ? 'max-h-100 opacity-100 translate-y-0' : 'max-h-0 opacity-100 -translate-y-10 scale-0 pointer-events-none'}
+                        `}
+                        >
+                            <div className="overflow-hidden flex flex-col gap-1">
+                                {SORT_OPTIONS.map(opt => (
+                                    <button
+                                        key={opt.id}
+                                        onClick={() => {
+                                            handleChange('sortBy', opt.id);
+                                            setIsSortOpen(false);
+                                        }}
+                                        className={`
+                                        text-left px-4 py-2 rounded-full border border-black font-bold transition-colors
+                                        ${filters.sortBy === opt.id
+                                                ? 'bg-black text-white'
+                                                : 'hover:bg-gray-100 text-gray-700'
+                                            }
+                                    `}
+                                    >
+                                        {opt.label}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    
                 </div>
             </div>
         </div>

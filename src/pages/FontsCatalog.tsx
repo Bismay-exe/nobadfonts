@@ -14,6 +14,8 @@ export default function FontsCatalog() {
         sortBy: (searchParams.get('sortBy') as any) || 'trending',
     });
 
+    const [viewMode, setViewMode] = useState<'font' | 'image'>('font');
+
     const { fonts, loading, error } = useFonts(filters);
 
     // Update URL when filters change
@@ -29,15 +31,16 @@ export default function FontsCatalog() {
 
     return (
         <div className="min-h-screen w-full grid grid-cols-1 lg:grid-cols-4">
-            <div className="hidden col-span-1 lg:col-span-4 border-b-2 border-black bg-white rounded-3xl p-4">
-                <h1 className="text-4xl font-bold mb-2">Font Catalog</h1>
-                <p className="text-gray-600">Explore our curated collection of high-quality fonts.</p>
-            </div>
 
             <div className="col-span-1 lg:col-span-4 border-b-2 border-black flex flex-col lg:flex-col">
                 {/* Sidebar */}
-                <aside className="w-full shrink-0 bg-white rounded-3xl p-4">
-                    <Filters filters={filters} onChange={setFilters} />
+                <aside className="w-full shrink-0 bg-[#FF90D9] rounded-3xl p-4">
+                    <Filters
+                        filters={filters}
+                        onChange={setFilters}
+                        viewMode={viewMode}
+                        onViewModeChange={setViewMode}
+                    />
                 </aside>
 
                 {/* Content */}
@@ -49,7 +52,7 @@ export default function FontsCatalog() {
                     )}
 
                     {loading ? (
-                        <div className="columns-1 md:columns-3 lg:columns-6">
+                        <div className="columns-1 md:columns-3 lg:columns-6 gap-0">
                             {[...Array(6)].map((_, i) => (
                                 <div key={i} className="bg-gray-100 rounded-3xl h-64 animate-pulse" />
                             ))}
@@ -57,18 +60,11 @@ export default function FontsCatalog() {
                     ) : fonts.length > 0 ? (
                         <div className="columns-1 md:columns-3 lg:columns-6 gap-0">
                             {fonts.filter(f => f && f.id).map((font) => (
-                                <FontCard key={font.id} font={font} />
+                                <FontCard key={font.id} font={font} viewMode={viewMode} />
                             ))}
                         </div>
                     ) : (
                         <EmptyState />
-                    )}
-
-                    {!loading && fonts.length > 0 && (
-                        <div className="mt-12 text-center">
-                            <p className="text-gray-500 mb-4">Showing {fonts.length} results</p>
-                            {/* Pagination load more would go here */}
-                        </div>
                     )}
                 </div>
             </div>
