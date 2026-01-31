@@ -55,6 +55,8 @@ export default function Landing() {
                     <div className="absolute top-40 -right-20 -rotate-12 text-[40vw] font-black">g</div>
                 </div>
 
+                <div className="z-10 relative max-w-5xl mx-auto bg-[url('/banner/banner.png')]" />
+
                 <div className="z-10 relative max-w-5xl mx-auto">
                     <motion.div
                         initial={{ scale: 0.8, opacity: 0 }}

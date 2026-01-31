@@ -138,7 +138,6 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
             // OS/2 table is usually the most accurate for these values
             const capHeight = os2?.sCapHeight || (fontObject.charToGlyph('H').getBoundingBox().y2);
             const xHeight = os2?.sxHeight || (fontObject.charToGlyph('x').getBoundingBox().y2);
-            const ascender = hhea?.ascender || fontObject.ascender;
             const descender = hhea?.descender || fontObject.descender;
 
             // Calculate Metrics
