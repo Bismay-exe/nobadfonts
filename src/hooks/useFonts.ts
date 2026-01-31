@@ -22,9 +22,27 @@ export function useFonts({ query, categories, sortBy = 'trending' }: FontFilterP
         const { data, error } = await supabase.rpc('search_fonts', rpcParams);
 
         if (error) throw error;
+
+        // Manually fetch variants for these fonts since RPC doesn't include them
+        let fontsWithVariants = (data || []).filter((f: any) => f && typeof f === 'object');
         
-        // Ensure we don't set nulls if something weird comes back
-        setFonts((data || []).filter((f: any) => f && typeof f === 'object'));
+        if (fontsWithVariants.length > 0) {
+            const fontIds = fontsWithVariants.map((f: any) => f.id);
+            const { data: variantsData } = await supabase
+                .from('font_variants')
+                .select('*')
+                .in('font_id', fontIds);
+            
+            if (variantsData) {
+                // Attach variants to their respective fonts
+                fontsWithVariants = fontsWithVariants.map((f: any) => ({
+                    ...f,
+                    font_variants: variantsData.filter(v => v.font_id === f.id)
+                }));
+            }
+        }
+        
+        setFonts(fontsWithVariants);
         
       } catch (err: any) {
         console.error('Error fetching fonts:', err);

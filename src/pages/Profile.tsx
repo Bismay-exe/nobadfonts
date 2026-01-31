@@ -105,7 +105,7 @@ export default function Profile() {
                                 ? "Your request is under review by our admins."
                                 : profile.membership_status === 'rejected'
                                     ? "Your previous request was not approved."
-                                    : "Upload your own fonts and share them with the community."
+                                    : "Upload some fonts and share them with the community."
                             }
                         </p>
                     </div>

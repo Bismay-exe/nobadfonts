@@ -14,17 +14,27 @@ export default function MemberDetails() {
     const [fonts, setFonts] = useState<Font[]>([]);
     const [loading, setLoading] = useState(true);
     const [viewMode, setViewMode] = useState<'font' | 'image'>('font');
+    const [isExpanded, setIsExpanded] = useState(false);
 
     useEffect(() => {
         if (!id) return;
 
         const fetchData = async () => {
             // Fetch profile
-            const { data: profileData, error: profileError } = await supabase
+            // Fetch profile - smart check for ID (uuid) vs username (slug)
+            const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+
+            const query = supabase
                 .from('profiles')
-                .select('*')
-                .eq('id', id)
-                .single();
+                .select('*');
+
+            if (isUuid) {
+                query.eq('id', id);
+            } else {
+                query.eq('username', id);
+            }
+
+            const { data: profileData, error: profileError } = await query.single();
 
             if (profileError) {
                 console.error('Error fetching profile:', profileError);
@@ -34,10 +44,11 @@ export default function MemberDetails() {
             setProfile(profileData);
 
             // Fetch fonts uploaded by this member
+            // We need the profile ID first, which we now have in profileData.id
             const { data: fontsData, error: fontsError } = await supabase
                 .from('fonts')
                 .select('*')
-                .eq('uploaded_by', id)
+                .eq('uploaded_by', profileData.id)
                 .eq('is_published', true);
 
             if (fontsError) console.error('Error fetching fonts:', fontsError);
@@ -77,7 +88,7 @@ export default function MemberDetails() {
 
 
             {/* Header Profile Section */}
-            <div className="bg-white border-b border-black rounded-3xl px-8 pt-24 pb-8 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden">
+            <div className={`border-b border-black rounded-3xl px-8 pt-24 pb-8 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden ${profile.role === 'admin' ? 'bg-[#BDF522]' : 'bg-[#FF90E8]'}`}>
                 <button onClick={goBack} className="absolute top-8 left-8 flex items-center text-sm font-bold hover:text-gray-600 mb-8 transition-colors">
                     <ArrowLeft size={20} className="mr-2" />
                     Back to Members
@@ -106,14 +117,29 @@ export default function MemberDetails() {
                             Uploaded {fonts.length} Font{fonts.length !== 1 ? 's' : ''}
                         </span>
                     </div>
-                    {profile.bio && <p className="mt-4 text-gray-600 max-w-lg font-medium">{profile.bio}</p>}
+                    {profile.bio && (
+                        <div>
+                            <p className={`mt-4 text-gray-600 max-w-lg font-medium whitespace-pre-wrap ${!isExpanded ? 'line-clamp-5' : ''}`}>
+                                {profile.bio}
+                            </p>
+                            {(profile.bio.length > 150 || profile.bio.split('\n').length > 5) && (
+                                <button
+                                    onClick={() => setIsExpanded(!isExpanded)}
+                                    className="text-sm font-bold text-gray-500 hover:text-black mt-1"
+                                >
+                                    {isExpanded ? 'Show less' : '...more'}
+                                </button>
+                            )}
+                        </div>
+                    )}
                 </div>
             </div>
 
 
 
             {/* Fonts Header with Toggle */}
-            <div className="flex justify-between items-center my-8 px-4">
+            <div className={`flex justify-between items-center px-8 py-4 text-black rounded-3xl border-black border-y ${profile.role === 'admin' ? 'bg-[#ffbaf1]' : 'bg-[#BDF522]'}
+                        `}>
                 <h2 className="text-3xl font-black uppercase flex flex-col items-start">
                     Uploaded Fonts
                     <span className="text-gray-500 font-mono text-sm font-normal">Total {fonts.length} Font{fonts.length !== 1 ? 's' : ''}</span>
@@ -142,7 +168,10 @@ export default function MemberDetails() {
                 </div>
             </div>
 
-            <div className="columns-1 md:columns-3 lg:columns-5 gap-0">
+            <div className="gap-0"
+                style={{
+                    columnWidth: 'clamp(220px, 20vw, 320px)',
+                }}>
                 {fonts.map(font => (
                     <div key={font.id} className="mb-4 break-inside-avoid">
                         <FontCard font={font} viewMode={viewMode} />

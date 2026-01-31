@@ -616,7 +616,7 @@ export default function AdminDashboard() {
                                                                     <div className="w-full h-full flex items-center justify-center font-bold text-xs text-gray-400">Aa</div>
                                                                 )}
                                                             </div>
-                                                            <Link to={`/fonts/${font.id}`} className="font-bold hover:underline">
+                                                            <Link to={`/fonts/${font.slug || font.id}`} className="font-bold hover:underline">
                                                                 {font.name}
                                                             </Link>
                                                         </div>
@@ -749,7 +749,7 @@ export default function AdminDashboard() {
                                                     </td>
                                                     <td className="p-4 text-center">
                                                         <Link
-                                                            to={`/fonts/${font.id}`}
+                                                            to={`/fonts/${font.slug || font.id}`}
                                                             className="inline-block px-4 py-2 bg-white border-2 border-black rounded-lg font-bold hover:bg-gray-100 text-sm"
                                                         >
                                                             View
@@ -812,24 +812,24 @@ export default function AdminDashboard() {
                                         {/* Top Fonts */}
                                         <div className="bg-white p-6 rounded-3xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
                                             <h3 className="font-bold text-lg mb-6">Top Downloaded Fonts</h3>
-                                                <div className='overflow-y-auto h-65'>
-                                                    {topDownloadedFonts.length > 0 ? (
-                                                        <div className="space-y-3">
-                                                            {topDownloadedFonts.map((font, idx) => (
-                                                                <div key={idx} className="flex justify-between items-center p-3 bg-gray-50 rounded-xl border border-gray-200">
-                                                                    <div className="flex items-center gap-3">
-                                                                        <span className="w-6 h-6 flex items-center justify-center bg-black text-white rounded-full text-xs font-bold">
-                                                                            {idx + 1}
-                                                                        </span>
-                                                                        <span className="font-bold">{font.name}</span>
-                                                                    </div>
-                                                                    <span className="font-mono font-bold text-blue-600">{font.count}</span>
+                                            <div className='overflow-y-auto h-65'>
+                                                {topDownloadedFonts.length > 0 ? (
+                                                    <div className="space-y-3">
+                                                        {topDownloadedFonts.map((font, idx) => (
+                                                            <div key={idx} className="flex justify-between items-center p-3 bg-gray-50 rounded-xl border border-gray-200">
+                                                                <div className="flex items-center gap-3">
+                                                                    <span className="w-6 h-6 flex items-center justify-center bg-black text-white rounded-full text-xs font-bold">
+                                                                        {idx + 1}
+                                                                    </span>
+                                                                    <span className="font-bold">{font.name}</span>
                                                                 </div>
-                                                            ))}
-                                                        </div>
-                                                    ) : (
-                                                        <div className="text-center text-gray-400 py-8">No data available</div>
-                                                    )}
+                                                                <span className="font-mono font-bold text-blue-600">{font.count}</span>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                ) : (
+                                                    <div className="text-center text-gray-400 py-8">No data available</div>
+                                                )}
                                             </div>
                                         </div>
                                     </div>
@@ -878,7 +878,7 @@ export default function AdminDashboard() {
                                         {/* Top Fonts */}
                                         <div className="bg-white p-6 rounded-3xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
                                             <h3 className="font-bold text-lg mb-6 text-pink-600">Top Favorited Fonts</h3>
-                                                <div className='overflow-y-auto h-80'>
+                                            <div className='overflow-y-auto h-80'>
                                                 {topFavoritedFonts.length > 0 ? (
                                                     <div className="space-y-3">
                                                         {topFavoritedFonts.map((font, idx) => (

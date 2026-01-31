@@ -28,7 +28,10 @@ export default function FontGrid({ fonts, emptyMessage = "No fonts found.", load
     }
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-0 h-200 w-full">
+        <div className="gap-0"
+            style={{
+                columnWidth: 'clamp(220px, 20vw, 320px)',
+            }}>
             {fonts.map((font) => (
                 <div key={font.id} className="h-full">
                     <FontCard font={font} viewMode={viewMode} />

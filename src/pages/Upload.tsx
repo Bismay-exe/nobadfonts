@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { Upload as UploadIcon, File, X, Image as ImageIcon, Link as LinkIcon } from 'lucide-react';
+import { Upload as UploadIcon, X, Image as ImageIcon, Link as LinkIcon } from 'lucide-react';
 
 const Upload = () => {
     const { user, profile } = useAuth();
@@ -30,7 +30,11 @@ const Upload = () => {
             woff2: File | null;
         };
     };
-    const [variants, setVariants] = useState<FontVariant[]>([]);
+    const [variants, setVariants] = useState<FontVariant[]>([{
+        id: 'initial-1',
+        name: 'Regular',
+        files: { ttf: null, otf: null, woff: null, woff2: null }
+    }]);
 
     const VARIANT_NAMES = [
         "Extra Light", "Light", "Regular", "Medium", "Semi Bold", "Bold", "Extra Bold", "Black",
@@ -128,18 +132,7 @@ const Upload = () => {
 
 
 
-    // Store files for each format
-    const [files, setFiles] = useState<{
-        ttf: File | null;
-        otf: File | null;
-        woff: File | null;
-        woff2: File | null;
-    }>({
-        ttf: null,
-        otf: null,
-        woff: null,
-        woff2: null
-    });
+
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -154,15 +147,7 @@ const Upload = () => {
         });
     };
 
-    const handleFileChange = (format: keyof typeof files) => (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files[0]) {
-            setFiles(prev => ({ ...prev, [format]: e.target.files![0] }));
-        }
-    };
 
-    const removeFile = (format: keyof typeof files) => {
-        setFiles(prev => ({ ...prev, [format]: null }));
-    };
 
     const handleBannerFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
@@ -192,17 +177,26 @@ const Upload = () => {
 
     // Variant Helpers
     const addVariant = () => {
-        setVariants(prev => [
-            ...prev,
-            {
-                id: Math.random().toString(36).substring(7),
-                name: 'Regular',
-                files: { ttf: null, otf: null, woff: null, woff2: null }
-            }
-        ]);
+        if (variants.length >= VARIANT_NAMES.length) return;
+        setVariants(prev => {
+            const usedNames = prev.map(v => v.name);
+            const firstAvailableName = VARIANT_NAMES.find(name => !usedNames.includes(name)) || 'Regular';
+
+            return [
+                ...prev,
+                {
+                    id: Math.random().toString(36).substring(7),
+                    name: firstAvailableName,
+                    files: { ttf: null, otf: null, woff: null, woff2: null }
+                }
+            ]
+        });
     };
 
     const removeVariant = (id: string) => {
+        // Prevent removing the last variant if we want to enforce at least one, 
+        // but maybe allow removing and then validating on submit is better UX 
+        // or just re-add one if empty? Let's allow empty and validate on submit.
         setVariants(prev => prev.filter(v => v.id !== id));
     };
 
@@ -222,16 +216,32 @@ const Upload = () => {
         if (!user) return alert('You must be logged in to upload');
         if (formData.tags.length === 0) return alert('Please select at least one category.');
 
-        // Validate at least one file
-        const hasFile = Object.values(files).some(f => f !== null);
-        if (!hasFile) return alert('Please upload at least one font format (TTF, OTF, WOFF, or WOFF2).');
+        if (formData.tags.length === 0) return alert('Please select at least one category.');
+
+        // Validate variants
+        if (variants.length === 0) return alert('Please add at least one font variant.');
+
+        // Validate that at least one variant has files
+        const validVariants = variants.filter(v => Object.values(v.files).some(f => f !== null));
+        if (validVariants.length === 0) return alert('Please upload files for at least one variant.');
 
         setLoading(true);
 
         try {
             // Generate a unique slug by appending a random string
             const baseSlug = formData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-            const slug = `${baseSlug}-${Math.random().toString(36).substring(2, 6)}`;
+            const slug = baseSlug;
+
+            // Check if font name already exists
+            const { data: existingFont } = await supabase
+                .from('fonts')
+                .select('id')
+                .eq('slug', slug)
+                .maybeSingle();
+
+            if (existingFont) {
+                throw new Error('A font with same name is already exist!');
+            }
             const folderPath = `${user.id}/${slug}`;
             const uploadUrls: any = {};
             const galleryUrls: string[] = [];
@@ -272,52 +282,9 @@ const Upload = () => {
             // but the new column file_size_image_preview is for it.
             const previewImageSize = gallerySizes.length > 0 ? gallerySizes[0] : null;
 
-            // Helper to upload a single file
-            const uploadFile = async (file: File, format: string) => {
-                const filePath = `${folderPath}/${file.name}`;
-                const { error: uploadError } = await supabase.storage
-                    .from('fonts')
-                    .upload(filePath, file, { upsert: true });
 
-                if (uploadError) throw new Error(`Failed to upload ${format.toUpperCase()}: ${uploadError.message}`);
 
-                const { data: { publicUrl } } = supabase.storage
-                    .from('fonts')
-                    .getPublicUrl(filePath);
 
-                return publicUrl;
-            };
-
-            // Upload all selected files in parallel
-            const uploadPromises = [];
-            const fileSizes: any = {};
-
-            if (files.ttf) {
-                uploadPromises.push(uploadFile(files.ttf, 'ttf').then(url => {
-                    uploadUrls.ttf_url = url;
-                    fileSizes.file_size_ttf = files.ttf?.size;
-                }));
-            }
-            if (files.otf) {
-                uploadPromises.push(uploadFile(files.otf, 'otf').then(url => {
-                    uploadUrls.otf_url = url;
-                    fileSizes.file_size_otf = files.otf?.size;
-                }));
-            }
-            if (files.woff) {
-                uploadPromises.push(uploadFile(files.woff, 'woff').then(url => {
-                    uploadUrls.woff_url = url;
-                    fileSizes.file_size_woff = files.woff?.size;
-                }));
-            }
-            if (files.woff2) {
-                uploadPromises.push(uploadFile(files.woff2, 'woff2').then(url => {
-                    uploadUrls.woff2_url = url;
-                    fileSizes.file_size_woff2 = files.woff2?.size;
-                }));
-            }
-
-            await Promise.all(uploadPromises);
 
             console.log("Files uploaded. URLs:", uploadUrls);
 
@@ -335,8 +302,7 @@ const Upload = () => {
                         is_published: true,
                         user_id: user.id,
                         // Spread the uploaded URLs and Sizes
-                        ...uploadUrls,
-                        ...fileSizes,
+
                         preview_image_url: previewImageUrl,
                         file_size_image_preview: previewImageSize,
                         gallery_images: galleryUrls,
@@ -414,10 +380,10 @@ const Upload = () => {
             }
 
             alert('Font uploaded successfully!');
-            navigate('/profile');
+            navigate(`/fonts/${slug}`);
         } catch (error: any) {
             console.error('Full Error Object:', error);
-            alert(error.message || 'Error uploading font');
+            alert(error.message || 'A font with same name is already exist!');
         } finally {
             setLoading(false);
         }
@@ -451,7 +417,7 @@ const Upload = () => {
         <div className="mx-auto">
             <form onSubmit={handleSubmit} className="rounded-3xl grid grid-cols-1 md:grid-cols-2">
 
-                <h1 className="hidden col-span-1 md:col-span-2 text-4xl bg-white p-4 rounded-3xl border-b border-black text-center md:text-left font-black uppercase">Upload Font</h1>
+                <h1 className="md:hidden col-span-1 md:col-span-2 text-4xl bg-white p-4 rounded-3xl border-b border-black text-center md:text-left font-black uppercase">Upload Font</h1>
                 {/* Meta Inputs */}
                 <div className="col-span-1 space-y-4 bg-white p-8 rounded-3xl border-r border-b border-black">
                     <div>
@@ -461,7 +427,7 @@ const Upload = () => {
                             value={formData.name}
                             onChange={handleChange}
                             className="w-full border-2 border-black p-3 rounded-2xl font-bold focus:outline-none focus:ring-4 ring-[#FF90E8]"
-                            required
+
                         />
                     </div>
 
@@ -477,59 +443,22 @@ const Upload = () => {
                     </div>
                 </div>
 
-                <div className="col-span-1 bg-white p-8 rounded-3xl border-l border-y border-black">
-                    <label className="block font-bold mb-4 uppercase text-lg">Font Files <span className="text-sm text-red-500 normal-case ml-2">(At least one required)</span></label>
-                    <div className="grid grid-cols-1 gap-4">
-                        {(['ttf', 'otf', 'woff', 'woff2'] as const).map((format) => (
-                            <div key={format} className="flex items-center gap-4">
-                                <div className="w-20 font-black uppercase text-xl bg-gray-100 py-2 text-center rounded-lg border-2 border-black">
-                                    {format}
-                                </div>
 
-                                {files[format] ? (
-                                    <div className="flex-1 flex justify-between items-center bg-green-50 border-2 border-green-500 p-3 rounded-xl">
-                                        <div className="flex items-center gap-2 overflow-hidden">
-                                            <File className="text-green-600 shrink-0" />
-                                            <span className="font-bold truncate">{files[format]?.name}</span>
-                                        </div>
-                                        <button
-                                            type="button"
-                                            onClick={() => removeFile(format)}
-                                            className="p-1 hover:bg-green-200 rounded-full transition-colors"
-                                        >
-                                            <X size={20} className="text-green-700" />
-                                        </button>
-                                    </div>
-                                ) : (
-                                    <div className="flex-1 relative cursor-pointer group">
-                                        <input
-                                            type="file"
-                                            accept={`.${format}`}
-                                            onChange={handleFileChange(format)}
-                                            className="absolute inset-0 opacity-0 cursor-pointer z-10"
-                                        />
-                                        <div className="border-2 border-dashed border-gray-300 group-hover:border-black group-hover:bg-gray-50 p-3 rounded-xl flex items-center justify-center transition-all">
-                                            <span className="font-bold text-gray-400 group-hover:text-black flex items-center gap-2">
-                                                <UploadIcon size={16} /> Upload .{format}
-                                            </span>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                        ))}
-                    </div>
-                </div>
 
 
 
                 {/* Variants Section */}
-                <div className="col-span-1 md:col-span-2 bg-white p-8 rounded-3xl border-x border-b border-black">
+                <div className="col-span-1 md:col-span-2 bg-white p-8 rounded-3xl border-l border-y border-black border-t-0 md:border-t">
                     <div className="flex justify-between items-center mb-4">
-                        <label className="font-bold uppercase text-lg">Font Variants</label>
+                        <label className="font-bold uppercase text-lg">Font Variants <span className="text-sm text-red-500 normal-case ml-2">(At least one required)</span></label>
                         <button
                             type="button"
                             onClick={addVariant}
-                            className="bg-black text-white px-4 py-2 rounded-full font-bold text-sm hover:bg-gray-800"
+                            disabled={variants.length >= VARIANT_NAMES.length}
+                            className={`px-4 py-2 rounded-full font-bold text-sm transition-colors ${variants.length >= VARIANT_NAMES.length
+                                ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                                : 'bg-black text-white hover:bg-gray-800'
+                                }`}
                         >
                             + Add Variant
                         </button>
@@ -546,7 +475,7 @@ const Upload = () => {
                                             onChange={(e) => updateVariantName(variant.id, e.target.value)}
                                             className="border-2 border-black rounded-lg px-3 py-1 font-bold bg-white"
                                         >
-                                            {VARIANT_NAMES.map(name => (
+                                            {VARIANT_NAMES.filter(name => name === variant.name || !variants.some(v => v.name === name)).map(name => (
                                                 <option key={name} value={name}>{name}</option>
                                             ))}
                                         </select>
@@ -596,8 +525,8 @@ const Upload = () => {
                             </div>
                         ))}
                         {variants.length === 0 && (
-                            <p className="text-gray-400 text-center text-sm italic">
-                                No additional variants added. The main files above will be treated as the default variant.
+                            <p className="text-red-500 text-center text-sm italic font-bold">
+                                No variants added. Please add at least one variant.
                             </p>
                         )}
                     </div>

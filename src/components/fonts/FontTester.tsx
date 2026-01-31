@@ -24,10 +24,32 @@ export default function FontTester({ font }: FontTesterProps) {
         // Determine best URL to load
         // Order: woff2 -> woff -> ttf -> otf (Web standards priority)
         const getFontSource = () => {
+            // 1. Try to find 'Regular' in variants
+            if (font.font_variants && font.font_variants.length > 0) {
+                const regular = font.font_variants.find(v => v.variant_name === 'Regular');
+                if (regular) {
+                    if (regular.woff2_url) return { url: regular.woff2_url, format: 'woff2' };
+                    if (regular.woff_url) return { url: regular.woff_url, format: 'woff' };
+                    if (regular.ttf_url) return { url: regular.ttf_url, format: 'truetype' };
+                    if (regular.otf_url) return { url: regular.otf_url, format: 'opentype' };
+                }
+            }
+
+            // 2. Fallback to Main Font Files (Legacy Support)
             if (font.woff2_url) return { url: font.woff2_url, format: 'woff2' };
             if (font.woff_url) return { url: font.woff_url, format: 'woff' };
             if (font.ttf_url) return { url: font.ttf_url, format: 'truetype' };
             if (font.otf_url) return { url: font.otf_url, format: 'opentype' };
+
+            // 3. Fallback to ANY variant (New Uploads without 'Regular' explicitly named or just first one)
+            if (font.font_variants && font.font_variants.length > 0) {
+                const anyVariant = font.font_variants[0];
+                if (anyVariant.woff2_url) return { url: anyVariant.woff2_url, format: 'woff2' };
+                if (anyVariant.woff_url) return { url: anyVariant.woff_url, format: 'woff' };
+                if (anyVariant.ttf_url) return { url: anyVariant.ttf_url, format: 'truetype' };
+                if (anyVariant.otf_url) return { url: anyVariant.otf_url, format: 'opentype' };
+            }
+
             return null;
         };
 

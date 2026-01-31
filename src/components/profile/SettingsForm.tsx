@@ -5,6 +5,7 @@ import { useAuth } from '../../contexts/AuthContext';
 export default function SettingsForm({ onCancel }: { onCancel: () => void }) {
     const { user, profile, refreshProfile } = useAuth();
     const [fullName, setFullName] = useState(profile?.full_name || '');
+    const [username, setUsername] = useState(profile?.username || '');
     const [bio, setBio] = useState(profile?.bio || '');
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
@@ -22,6 +23,7 @@ export default function SettingsForm({ onCancel }: { onCancel: () => void }) {
                 .from('profiles')
                 .update({
                     full_name: fullName,
+                    username: username,
                     bio: bio,
                     updated_at: new Date().toISOString(),
                 })
@@ -46,12 +48,15 @@ export default function SettingsForm({ onCancel }: { onCancel: () => void }) {
 
             // Allow user to see success message briefly before closing/reloading if desired
             setTimeout(() => {
-                // Optional: call onCancel() to close form, or just let them stay
-                // onCancel(); 
+                onCancel();
             }, 1000);
 
         } catch (err: any) {
-            setMessage({ type: 'error', text: err.message });
+            if (err.code === '23505') { // Unique violation
+                setMessage({ type: 'error', text: 'Username already taken. Please choose another one.' });
+            } else {
+                setMessage({ type: 'error', text: err.message });
+            }
         } finally {
             setLoading(false);
         }
@@ -80,11 +85,33 @@ export default function SettingsForm({ onCancel }: { onCancel: () => void }) {
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Bio</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
+                    <div className="relative">
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-bold">@</span>
+                        <input
+                            type="text"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
+                            className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-3xl focus:ring-2 focus:ring-blue-500 outline-none font-mono"
+                            placeholder="username"
+                            required
+                        />
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1 ml-2">Only lowercase letters, numbers, and hyphens.</p>
+                </div>
+
+                <div>
+                    <div className="flex justify-between items-center mb-1">
+                        <label className="block text-sm font-medium text-gray-700">Bio</label>
+                        <span className={`text-xs ${bio.length === 150 ? 'text-red-500 font-bold' : 'text-gray-400'}`}>
+                            {bio.length}/150
+                        </span>
+                    </div>
                     <textarea
                         value={bio}
                         onChange={(e) => setBio(e.target.value)}
                         rows={4}
+                        maxLength={150}
                         className="w-full px-4 py-2 border border-gray-300 rounded-3xl focus:ring-2 focus:ring-blue-500 outline-none resize-none"
                         placeholder="Tell us a bit about yourself..."
                     />

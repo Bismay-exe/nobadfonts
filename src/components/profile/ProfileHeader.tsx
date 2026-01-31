@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Settings, LogOut } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -9,7 +10,12 @@ interface ProfileHeaderProps {
 export default function ProfileHeader({ onEditClick, isEditing }: ProfileHeaderProps) {
     const { user, profile, signOut } = useAuth();
 
+    const [isExpanded, setIsExpanded] = useState(false);
+
     if (!user) return null;
+
+    const bioLines = profile?.bio ? profile.bio.split('\n').length : 0;
+    const showReadMore = (profile?.bio && profile.bio.length > 150) || bioLines > 5;
 
     return (
         <div className="bg-white rounded-3xl shadow-sm border-b-2 border-black p-8">
@@ -24,7 +30,10 @@ export default function ProfileHeader({ onEditClick, isEditing }: ProfileHeaderP
                     <div className="flex flex-col md:flex-row items-center md:justify-between gap-4 mb-2">
                         <div>
                             <h1 className="text-2xl font-bold text-gray-900">{profile?.full_name || 'Fontique User'}</h1>
-                            <p className="text-gray-500">{user.email}</p>
+                            {profile?.username && (
+                                <p className="text-gray-500 font-mono text-sm">@{profile.username}</p>
+                            )}
+                            <p className="text-gray-500 text-sm">{user.email}</p>
                         </div>
 
                         <div className="flex items-center gap-3">
@@ -46,7 +55,19 @@ export default function ProfileHeader({ onEditClick, isEditing }: ProfileHeaderP
                     </div>
 
                     {profile?.bio && (
-                        <p className="text-gray-600 mt-2 max-w-2xl">{profile.bio}</p>
+                        <div>
+                            <p className={`text-gray-600 mt-2 max-w-2xl whitespace-pre-wrap ${!isExpanded ? 'line-clamp-5' : ''}`}>
+                                {profile.bio}
+                            </p>
+                            {showReadMore && (
+                                <button
+                                    onClick={() => setIsExpanded(!isExpanded)}
+                                    className="text-sm font-bold text-gray-500 hover:text-black mt-1"
+                                >
+                                    {isExpanded ? 'Show less' : '...more'}
+                                </button>
+                            )}
+                        </div>
                     )}
                 </div>
             </div>

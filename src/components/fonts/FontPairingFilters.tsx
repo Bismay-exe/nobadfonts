@@ -105,7 +105,7 @@ const SORT_OPTIONS = [
     { id: 'alpha', label: 'A-Z' },
 ];
 
-export default function Filters({ filters, onChange, viewMode, onViewModeChange }: FiltersProps) {
+export default function FontPairingFilters({ filters, onChange, viewMode, onViewModeChange }: FiltersProps) {
     const handleChange = (key: keyof FontFilterParams, value: any) => {
         onChange({ ...filters, [key]: value });
     };
@@ -116,10 +116,11 @@ export default function Filters({ filters, onChange, viewMode, onViewModeChange 
     const currentSortLabel = SORT_OPTIONS.find(opt => opt.id === (filters.sortBy || 'trending'))?.label || 'Trending';
 
     return (
-        <div className="gap-4 sticky top-24 flex flex-col">
+        <div className="gap-8 sticky top-24 flex flex-col">
 
             {/* Categories */}
             <div>
+                <h4 className="font-semibold mb-3 text-sm uppercase tracking-wider text-gray-500">Categories</h4>
                 <div className="flex gap-2 flex-wrap max-h-96 overflow-y-auto p-1">
                     {CATEGORIES.map(cat => {
                         const isSelected = filters.categories?.includes(cat.id);
@@ -135,10 +136,10 @@ export default function Filters({ filters, onChange, viewMode, onViewModeChange 
                                     handleChange('categories', newCategories);
                                 }}
                                 className={`
-                                    px-3 py-1.5 font-bold rounded-full border-2 text-xs md:text-sm transition-all duration-200 text-left
+                                    px-3 py-1.5 font-bold rounded-full border-2 text-sm transition-all duration-200 text-left
                                     ${isSelected
                                         ? "bg-black text-white border-black shadow-md"
-                                        : "bg-transparent text-gray-500 border-gray-400 hover:border-black hover:text-black hover:-translate-y-0.5"
+                                        : "bg-white text-gray-500 border-gray-200 hover:border-black hover:text-black hover:-translate-y-0.5"
                                     }
                                 `}
                             >
@@ -150,7 +151,7 @@ export default function Filters({ filters, onChange, viewMode, onViewModeChange 
             </div>
 
             {/* Search & View Toggle */}
-            <div className='flex flex-col md:flex-row gap-2'>
+            <div className='flex flex-col gap-2'>
                 <div className='flex gap-2 w-full'>
                     {/* Search */}
                     <div className="relative w-full">
@@ -159,12 +160,17 @@ export default function Filters({ filters, onChange, viewMode, onViewModeChange 
                             placeholder="Search fonts..."
                             value={filters.query || ''}
                             onChange={(e) => handleChange('query', e.target.value)}
-                            className="w-full md:w-100 lg:w-180 pl-10 pr-4 py-2 border border-gray-700 bg-black/10 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                            className="w-full pl-10 pr-4 py-2 border border-gray-700 bg-black/10 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                         />
                         <Search className="absolute left-3 top-3 text-gray-900" size={18} />
                     </div>
 
-                    {/* View Toggle */}
+                    
+                </div>
+
+                <div className='flex justify-between'>
+                    <div>
+                        {/* View Toggle */}
                     {onViewModeChange && (
                         <div className="flex bg-black/10 h-11 p-1 w-auto rounded-full border border-gray-700">
                             <button
@@ -189,54 +195,53 @@ export default function Filters({ filters, onChange, viewMode, onViewModeChange 
                             </button>
                         </div>
                     )}
-                </div>
+                    </div>
+                    <div className='flex flex-col justify-end md:items-end gap-2 relative z-50'>
 
-                
-                <div className='flex flex-col justify-end md:items-end gap-2 relative z-50'>
-
-                        <div className="flex items-center gap-3">
-                            <button
-                                onClick={() => setIsSortOpen(!isSortOpen)}
-                                className="w-full md:w-52 px-4 py-2 flex justify-between items-center border border-gray-700 bg-black/10 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-bold"
-                            >
-                                <span>{currentSortLabel}</span>
-                                <span className={`transform transition-transform ${isSortOpen ? 'rotate-180' : ''}`}>▼</span>
-                            </button>
-                        </div>
-
-                        {/* Dropdown Menu */}
-                        <div
-                            className={`
-                            w-full md:w-52
-                            overflow-hidden
-                            transition-all
-                            duration-400
-                            ease-linear
-                            ${isSortOpen ? 'max-h-100 opacity-100 translate-y-0' : 'max-h-0 opacity-100 -translate-y-10 scale-0 pointer-events-none'}
-                        `}
-                        >
-                            <div className="overflow-hidden flex flex-col gap-1">
-                                {SORT_OPTIONS.map(opt => (
-                                    <button
-                                        key={opt.id}
-                                        onClick={() => {
-                                            handleChange('sortBy', opt.id);
-                                            setIsSortOpen(false);
-                                        }}
-                                        className={`
-                                        text-left px-4 py-2 rounded-full border border-black font-bold transition-colors
-                                        ${filters.sortBy === opt.id
-                                                ? 'bg-black text-white'
-                                                : 'hover:bg-gray-100 text-gray-700'
-                                            }
-                                    `}
-                                    >
-                                        {opt.label}
-                                    </button>
-                                ))}
+                            <div className="flex items-center gap-3">
+                                <button
+                                    onClick={() => setIsSortOpen(!isSortOpen)}
+                                    className="w-full md:w-52 px-4 py-2 flex justify-between items-center border border-gray-700 bg-black/10 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-bold"
+                                >
+                                    <span>{currentSortLabel}</span>
+                                    <span className={`transform transition-transform ${isSortOpen ? 'rotate-180' : ''}`}>▼</span>
+                                </button>
                             </div>
-                        </div>
-                    
+
+                            {/* Dropdown Menu */}
+                            <div
+                                className={`
+                                w-full md:w-52
+                                overflow-hidden
+                                transition-all
+                                duration-400
+                                ease-linear
+                                ${isSortOpen ? 'max-h-100 opacity-100 translate-y-0' : 'max-h-0 opacity-100 -translate-y-10 scale-0 pointer-events-none'}
+                            `}
+                            >
+                                <div className="overflow-hidden flex flex-col gap-1">
+                                    {SORT_OPTIONS.map(opt => (
+                                        <button
+                                            key={opt.id}
+                                            onClick={() => {
+                                                handleChange('sortBy', opt.id);
+                                                setIsSortOpen(false);
+                                            }}
+                                            className={`
+                                            text-left px-4 py-2 rounded-full border border-black font-bold transition-colors
+                                            ${filters.sortBy === opt.id
+                                                    ? 'bg-black text-white'
+                                                    : 'hover:bg-gray-100 text-gray-700'
+                                                }
+                                        `}
+                                        >
+                                            {opt.label}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        
+                    </div>
                 </div>
             </div>
         </div>

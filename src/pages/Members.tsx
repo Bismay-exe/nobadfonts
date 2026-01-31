@@ -87,7 +87,7 @@ export default function Members() {
     }, []);
 
     const MemberCard = ({ member, rank }: { member: Profile, rank?: number }) => (
-        <Link to={`/members/${member.id}`} className="block group h-full">
+        <Link to={`/members/${member.username || member.id}`} className="block group h-full">
             <div className={`
                 bg-white border-2 border-black rounded-3xl p-6 relative h-full flex flex-col items-center transition-all duration-200
                 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1
@@ -187,7 +187,7 @@ export default function Members() {
                                         </td>
                                         <td className="p-4">
                                             <div className="relative flex items-center gap-4">
-                                                <Link to={`/members/${member.id}`} className="w-12 h-12 relative">
+                                                <Link to={`/members/${member.username || member.id}`} className="w-12 h-12 relative">
                                                     <div className="w-12 h-12 bg-gray-200 rounded-full border-2 border-black overflow-hidden shrink-0">
                                                         {member.avatar_url ? (
                                                             <img src={member.avatar_url} alt={member.full_name} className="w-full h-full object-cover" />
@@ -217,7 +217,7 @@ export default function Members() {
                                         </td>
                                         <td className="hidden md:block p-4 text-right">
                                             <Link
-                                                to={`/members/${member.id}`}
+                                                to={`/members/${member.username || member.id}`}
                                                 className="inline-block px-6 py-3 bg-black text-white font-bold rounded-full hover:bg-gray-800 transition-colors"
                                             >
                                                 View Profile

@@ -231,6 +231,7 @@ export type Database = {
           full_name: string
           id: string
           updated_at: string | null
+          username: string | null
           role: 'user' | 'member' | 'admin'
           membership_status: 'none' | 'pending' | 'approved' | 'rejected'
         }

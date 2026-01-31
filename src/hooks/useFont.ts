@@ -16,11 +16,15 @@ export function useFont(id: string | undefined) {
       setLoading(true);
       setError(null);
       try {
+        // Determine column
+        const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+        const column = isUuid ? 'id' : 'slug';
+
         // Fetch font data
         const { data: fontData, error: fontError } = await supabase
           .from('fonts')
           .select('*, font_variants(*)')
-          .eq('id', id)
+          .eq(column, id)
           .single();
 
         if (fontError) throw fontError;
@@ -32,7 +36,7 @@ export function useFont(id: string | undefined) {
              const { data: favData, error: favError } = await supabase
                 .from('favorites')
                 .select('id')
-                .eq('font_id', id)
+                .eq('font_id', fontData.id)
                 .eq('user_id', session.user.id)
                 .single();
             

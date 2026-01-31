@@ -9,8 +9,8 @@ import Upload from './pages/Upload';
 import Members from './pages/Members';
 import MemberDetails from './pages/MemberDetails';
 import AdminDashboard from './pages/AdminDashboard';
+import FontPairing from './pages/FontPairing';
 import { ScrollRestoration } from './components/layout/ScrollRestoration';
-
 import { AuthProvider } from './contexts/AuthContext';
 
 function App() {
@@ -23,6 +23,7 @@ function App() {
             <Route index element={<Home />} />
             <Route path="fonts" element={<FontsCatalog />} />
             <Route path="fonts/:id" element={<FontDetails />} />
+            <Route path="pairing" element={<FontPairing />} />
             <Route path="auth" element={<Auth />} />
             <Route path="upload" element={<Upload />} />
             <Route path="profile" element={<Profile />} />

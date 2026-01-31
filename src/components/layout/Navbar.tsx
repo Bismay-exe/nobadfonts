@@ -65,6 +65,9 @@ function NavLinks({
             <Link to="/fonts" onClick={onClick} className={base}>
                 Fonts
             </Link>
+            <Link to="/pairing" onClick={onClick} className={base}>
+                Pairing
+            </Link>
             <Link to="/members" onClick={onClick} className={base}>
                 Members
             </Link>
