@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Settings, LogOut } from 'lucide-react';
+import { Settings, LogOut, Globe, Twitter, Instagram, Linkedin, Coffee, Palette } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
 interface ProfileHeaderProps {
@@ -34,6 +34,40 @@ export default function ProfileHeader({ onEditClick, isEditing }: ProfileHeaderP
                                 <p className="text-gray-500 font-mono text-sm">@{profile.username}</p>
                             )}
                             <p className="text-gray-500 text-sm">{user.email}</p>
+
+                            {/* Social Links */}
+                            <div className="flex flex-wrap gap-3 mt-3 justify-center md:justify-start">
+                                {profile?.website && (
+                                    <a href={profile.website} target="_blank" rel="noopener noreferrer" className="p-2 bg-gray-50 rounded-full border border-gray-200 hover:border-black transition-colors text-gray-600 hover:text-black hover:-translate-y-1 hover:shadow-md">
+                                        <Globe size={18} />
+                                    </a>
+                                )}
+                                {profile?.behance && (
+                                    <a href={profile.behance} target="_blank" rel="noopener noreferrer" className="p-2 bg-gray-50 rounded-full border border-gray-200 hover:border-black transition-colors text-gray-600 hover:text-[#1769ff] hover:-translate-y-1 hover:shadow-md">
+                                        <Palette size={18} />
+                                    </a>
+                                )}
+                                {profile?.twitter && (
+                                    <a href={profile.twitter} target="_blank" rel="noopener noreferrer" className="p-2 bg-gray-50 rounded-full border border-gray-200 hover:border-black transition-colors text-gray-600 hover:text-[#1DA1F2] hover:-translate-y-1 hover:shadow-md">
+                                        <Twitter size={18} />
+                                    </a>
+                                )}
+                                {profile?.instagram && (
+                                    <a href={profile.instagram} target="_blank" rel="noopener noreferrer" className="p-2 bg-gray-50 rounded-full border border-gray-200 hover:border-black transition-colors text-gray-600 hover:text-[#E1306C] hover:-translate-y-1 hover:shadow-md">
+                                        <Instagram size={18} />
+                                    </a>
+                                )}
+                                {profile?.linkedin && (
+                                    <a href={profile.linkedin} target="_blank" rel="noopener noreferrer" className="p-2 bg-gray-50 rounded-full border border-gray-200 hover:border-black transition-colors text-gray-600 hover:text-[#0077b5] hover:-translate-y-1 hover:shadow-md">
+                                        <Linkedin size={18} />
+                                    </a>
+                                )}
+                                {profile?.paypal_me && (
+                                    <a href={`https://paypal.me/${profile.paypal_me}`} target="_blank" rel="noopener noreferrer" className="p-2 bg-indigo-50 rounded-full border border-indigo-200 hover:border-indigo-600 transition-colors text-indigo-600 hover:text-indigo-700 hover:-translate-y-1 hover:shadow-md ml-2" title="Donation Link Active">
+                                        <Coffee size={18} />
+                                    </a>
+                                )}
+                            </div>
                         </div>
 
                         <div className="flex items-center gap-3">

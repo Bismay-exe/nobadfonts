@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import FontCard from '../components/fonts/FontCard';
 import type { Database } from '../types/database.types';
-import { ArrowLeft, Type, Image as ImageIcon } from 'lucide-react';
+import { ArrowLeft, Type, Image as ImageIcon, Globe, Twitter, Instagram, Linkedin, Coffee, Palette } from 'lucide-react';
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
 type Font = Database['public']['Tables']['fonts']['Row'];
@@ -117,6 +117,36 @@ export default function MemberDetails() {
                             Uploaded {fonts.length} Font{fonts.length !== 1 ? 's' : ''}
                         </span>
                     </div>
+
+                    {/* Social Links */}
+                    <div className="flex flex-wrap gap-3 mt-4 justify-center md:justify-start">
+                        {profile.website && (
+                            <a href={profile.website} target="_blank" rel="noopener noreferrer" className="p-2 bg-white rounded-full border hover:border-black transition-colors text-gray-600 hover:text-black hover:-translate-y-1 hover:shadow-md">
+                                <Globe size={20} />
+                            </a>
+                        )}
+                        {profile.behance && (
+                            <a href={profile.behance} target="_blank" rel="noopener noreferrer" className="p-2 bg-white rounded-full border hover:border-black transition-colors text-gray-600 hover:text-[#1769ff] hover:-translate-y-1 hover:shadow-md">
+                                <Palette size={20} />
+                            </a>
+                        )}
+                        {profile.twitter && (
+                            <a href={profile.twitter} target="_blank" rel="noopener noreferrer" className="p-2 bg-white rounded-full border hover:border-black transition-colors text-gray-600 hover:text-[#1DA1F2] hover:-translate-y-1 hover:shadow-md">
+                                <Twitter size={20} />
+                            </a>
+                        )}
+                        {profile.instagram && (
+                            <a href={profile.instagram} target="_blank" rel="noopener noreferrer" className="p-2 bg-white rounded-full border hover:border-black transition-colors text-gray-600 hover:text-[#E1306C] hover:-translate-y-1 hover:shadow-md">
+                                <Instagram size={20} />
+                            </a>
+                        )}
+                        {profile.linkedin && (
+                            <a href={profile.linkedin} target="_blank" rel="noopener noreferrer" className="p-2 bg-white rounded-full border hover:border-black transition-colors text-gray-600 hover:text-[#0077b5] hover:-translate-y-1 hover:shadow-md">
+                                <Linkedin size={20} />
+                            </a>
+                        )}
+                    </div>
+
                     {profile.bio && (
                         <div>
                             <p className={`mt-4 text-gray-600 max-w-lg font-medium whitespace-pre-wrap ${!isExpanded ? 'line-clamp-5' : ''}`}>
@@ -130,6 +160,21 @@ export default function MemberDetails() {
                                     {isExpanded ? 'Show less' : '...more'}
                                 </button>
                             )}
+                        </div>
+                    )}
+
+                    {/* Donate Button */}
+                    {profile.paypal_me && (
+                        <div className="mt-6">
+                            <a
+                                href={`https://paypal.me/${profile.paypal_me}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-2 px-6 py-3 bg-[#0070BA] text-white font-bold rounded-xl hover:bg-[#003087] transition-all hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1"
+                            >
+                                <Coffee size={20} />
+                                Buy me a coffee
+                            </a>
                         </div>
                     )}
                 </div>
@@ -178,10 +223,9 @@ export default function MemberDetails() {
                     </div>
                 ))}
             </div>
-
             {
                 fonts.length === 0 && (
-                    <div className="text-center py-20 bg-gray-50 rounded-3xl border-2 border-dashed border-gray-300">
+                    <div className="text-center py-24 bg-gray-50 rounded-3xl border-2 border-dashed border-gray-300">
                         <p className="text-xl font-bold text-gray-400">This member hasn't uploaded any fonts yet.</p>
                     </div>
                 )

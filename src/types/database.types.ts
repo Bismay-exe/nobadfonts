@@ -234,6 +234,12 @@ export type Database = {
           username: string | null
           role: 'user' | 'member' | 'admin'
           membership_status: 'none' | 'pending' | 'approved' | 'rejected'
+          website: string | null
+          behance: string | null
+          twitter: string | null
+          instagram: string | null
+          linkedin: string | null
+          paypal_me: string | null
         }
         Insert: {
           avatar_url?: string | null
@@ -245,6 +251,12 @@ export type Database = {
           updated_at?: string | null
           role?: 'user' | 'member' | 'admin'
           membership_status?: 'none' | 'pending' | 'approved' | 'rejected'
+          website?: string | null
+          behance?: string | null
+          twitter?: string | null
+          instagram?: string | null
+          linkedin?: string | null
+          paypal_me?: string | null
         }
         Update: {
           avatar_url?: string | null
@@ -256,6 +268,12 @@ export type Database = {
           updated_at?: string | null
           role?: 'user' | 'member' | 'admin'
           membership_status?: 'none' | 'pending' | 'approved' | 'rejected'
+          website?: string | null
+          behance?: string | null
+          twitter?: string | null
+          instagram?: string | null
+          linkedin?: string | null
+          paypal_me?: string | null
         }
         Relationships: []
       }

@@ -7,6 +7,15 @@ export default function SettingsForm({ onCancel }: { onCancel: () => void }) {
     const [fullName, setFullName] = useState(profile?.full_name || '');
     const [username, setUsername] = useState(profile?.username || '');
     const [bio, setBio] = useState(profile?.bio || '');
+
+    // Social & Info
+    const [website, setWebsite] = useState(profile?.website || '');
+    const [behance, setBehance] = useState(profile?.behance || '');
+    const [twitter, setTwitter] = useState(profile?.twitter || '');
+    const [instagram, setInstagram] = useState(profile?.instagram || '');
+    const [linkedin, setLinkedin] = useState(profile?.linkedin || '');
+    const [paypalMe, setPaypalMe] = useState(profile?.paypal_me || '');
+
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
@@ -25,6 +34,12 @@ export default function SettingsForm({ onCancel }: { onCancel: () => void }) {
                     full_name: fullName,
                     username: username,
                     bio: bio,
+                    website: website,
+                    behance: behance,
+                    twitter: twitter,
+                    instagram: instagram,
+                    linkedin: linkedin,
+                    paypal_me: paypalMe,
                     updated_at: new Date().toISOString(),
                 })
                 .eq('id', user.id);
@@ -115,6 +130,61 @@ export default function SettingsForm({ onCancel }: { onCancel: () => void }) {
                         className="w-full px-4 py-2 border border-gray-300 rounded-3xl focus:ring-2 focus:ring-blue-500 outline-none resize-none"
                         placeholder="Tell us a bit about yourself..."
                     />
+                </div>
+
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Portfolio & Socials</label>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input
+                            type="url"
+                            value={website}
+                            onChange={(e) => setWebsite(e.target.value)}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-3xl focus:ring-2 focus:ring-blue-500 outline-none"
+                            placeholder="Personal Website URL"
+                        />
+                        <input
+                            type="url"
+                            value={behance}
+                            onChange={(e) => setBehance(e.target.value)}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-3xl focus:ring-2 focus:ring-blue-500 outline-none"
+                            placeholder="Behance URL"
+                        />
+                        <input
+                            type="url"
+                            value={twitter}
+                            onChange={(e) => setTwitter(e.target.value)}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-3xl focus:ring-2 focus:ring-blue-500 outline-none"
+                            placeholder="Twitter/X URL"
+                        />
+                        <input
+                            type="url"
+                            value={instagram}
+                            onChange={(e) => setInstagram(e.target.value)}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-3xl focus:ring-2 focus:ring-blue-500 outline-none"
+                            placeholder="Instagram URL"
+                        />
+                        <input
+                            type="url"
+                            value={linkedin}
+                            onChange={(e) => setLinkedin(e.target.value)}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-3xl focus:ring-2 focus:ring-blue-500 outline-none"
+                            placeholder="LinkedIn URL"
+                        />
+                    </div>
+                </div>
+
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Donations</label>
+                    <div className="relative">
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-bold">paypal.me/</span>
+                        <input
+                            type="text"
+                            value={paypalMe}
+                            onChange={(e) => setPaypalMe(e.target.value)}
+                            className="w-full pl-28 pr-4 py-2 border rounded-3xl focus:ring-2 focus:ring-blue-500 outline-none bg-blue-50 border-blue-200"
+                            placeholder="username"
+                        />
+                    </div>
                 </div>
 
                 <div className="flex justify-end gap-4">
