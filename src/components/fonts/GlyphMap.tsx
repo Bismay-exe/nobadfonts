@@ -332,14 +332,31 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
                 >
                     {/* Toolbar */}
                     <div className="relative z-20 flex flex-wrap justify-between border-b border-white/10 px-8 py-6 bg-[#0D0D0D]">
-                        <div className="flex items-center gap-6">
-                            <h2 className="text-xl font-bold tracking-tight">{setMode === 'basic' ? 'Basic Set' : `${availableGlyphs.length} Glyphs`}</h2>
-                            <div className="flex items-center gap-2 text-xs font-mono text-gray-400">
-                                <span>{selectedChar ? selectedChar.startsWith('U+') ? selectedChar : `U+${selectedChar.charCodeAt(0).toString(16).toUpperCase().padStart(4, '0')}` : ''}</span>
+                        <div className='flex justify-between w-full md:w-auto'>
+                            <div className="flex items-center gap-6">
+                                <h2 className="text-xl font-bold tracking-tight">{setMode === 'basic' ? 'Basic Set' : `${availableGlyphs.length} Glyphs`}</h2>
+                                <div className="flex items-center gap-2 text-xs font-mono text-gray-400">
+                                    <span>{selectedChar ? selectedChar.startsWith('U+') ? selectedChar : `U+${selectedChar.charCodeAt(0).toString(16).toUpperCase().padStart(4, '0')}` : ''}</span>
+                                </div>
+                            </div>
+                            {/* Set Toggle */}
+                            <div className="md:hidden flex items-center gap-4 text-sm font-medium text-gray-400 border-l border-white/10 pl-8">
+                                <button
+                                    onClick={() => setSetMode('basic')}
+                                    className={`transition-colors hover:text-white ${setMode === 'basic' ? 'text-white' : ''}`}
+                                >
+                                    Basic Set
+                                </button>
+                                <button
+                                    onClick={() => setSetMode('full')}
+                                    className={`transition-colors hover:text-white ${setMode === 'full' ? 'text-white' : ''}`}
+                                >
+                                    Full Set
+                                </button>
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-8 mt-4 md:mt-0">
+                        <div className="flex justify-between w-full md:w-auto items-center gap-0 md:gap-8 mt-4 md:mt-0">
                             {/* Variant Selector (if variants exist) */}
                             {variants.length > 0 && (
                                 <div className="border-r border-white/10 pr-8">
@@ -380,7 +397,7 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
                             </div>
 
                             {/* Set Toggle */}
-                            <div className="flex items-center gap-4 text-sm font-medium text-gray-400 border-l border-white/10 pl-8">
+                            <div className="hidden md:flex items-center gap-4 text-sm font-medium text-gray-400 border-l border-white/10 pl-8">
                                 <button
                                     onClick={() => setSetMode('basic')}
                                     className={`transition-colors hover:text-white ${setMode === 'basic' ? 'text-white' : ''}`}

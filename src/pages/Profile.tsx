@@ -5,12 +5,13 @@ import { supabase } from '../lib/supabase';
 import ProfileHeader from '../components/profile/ProfileHeader';
 import FontGrid from '../components/profile/FontGrid';
 import SettingsForm from '../components/profile/SettingsForm';
+import AnalyticsDashboard from '../components/profile/AnalyticsDashboard';
 import type { Font } from '../types/font';
 import { Type, Image as ImageIcon } from 'lucide-react';
 
 export default function Profile() {
     const { user, profile, loading, refreshProfile } = useAuth();
-    const [activeTab, setActiveTab] = useState<'favorites' | 'downloads' | 'settings'>('favorites');
+    const [activeTab, setActiveTab] = useState<'favorites' | 'downloads' | 'settings' | 'analytics'>('favorites');
     const [isEditing, setIsEditing] = useState(false);
     const [requestLoading, setRequestLoading] = useState(false);
     const [viewMode, setViewMode] = useState<'font' | 'image'>('font');
@@ -62,12 +63,6 @@ export default function Profile() {
                         .order('downloaded_at', { ascending: false });
 
                     if (error) throw error;
-                    // Format data: Extract the font object from the joined response
-                    // Use a Map to filtering duplicates if a user downloaded the same font multiple times, 
-                    // though typically the UI might just show the history. 
-                    // Let's deduplicate by ID for a cleaner "My Downloads" list if desired, 
-                    // or keep as history. For "My Download History" usually implies unique items or a log.
-                    // Given the content is a standard FontGrid, unique items make more sense.
                     const fontsList = data.map((item: any) => item.fonts) as Font[];
                     const uniqueFonts = Array.from(new Map(fontsList.map(item => [item['id'], item])).values());
                     setDownloads(uniqueFonts);
@@ -129,20 +124,21 @@ export default function Profile() {
             {!isEditing && (
                 <>
                     {/* Tabs */}
-                    <div className="flex">
+                    <div className="flex flex-col md:flex-row gap-2 md:gap-0">
                         <button
                             onClick={() => setActiveTab('favorites')}
-                            className={`w-full px-6 py-4 text-lg font-bold border-y border-r border-black rounded-3xl transition-colors ${activeTab === 'favorites'
+                            className={`flex-1 px-6 py-4 text-lg font-bold border-y md:border-r border-black rounded-3xl md:rounded-r-none transition-colors ${activeTab === 'favorites'
                                 ? 'bg-[#FFC900]'
                                 : 'bg-white'
                                 }`}
                         >
                             My Favorites
                         </button>
-                        <div className="flex flex-col md:flex-row bg-gray-100 h-full p-1 w-auto rounded-full border border-gray-200">
+
+                        <div className="flex md:flex-col bg-gray-100 p-1 rounded-3xl md:rounded-none border-y border-black items-center justify-center">
                             <button
                                 onClick={() => setViewMode('font')}
-                                className={`p-5 aspect-square rounded-full transition-all ${viewMode === 'font'
+                                className={`p-3 aspect-square rounded-full transition-all ${viewMode === 'font'
                                     ? 'bg-black text-white shadow-sm'
                                     : 'text-gray-500 hover:text-black'
                                     }`}
@@ -152,7 +148,7 @@ export default function Profile() {
                             </button>
                             <button
                                 onClick={() => setViewMode('image')}
-                                className={`p-5 aspect-square rounded-full transition-all ${viewMode === 'image'
+                                className={`p-3 aspect-square rounded-full transition-all ${viewMode === 'image'
                                     ? 'bg-black text-white shadow-sm'
                                     : 'text-gray-500 hover:text-black'
                                     }`}
@@ -161,38 +157,50 @@ export default function Profile() {
                                 <ImageIcon size={16} />
                             </button>
                         </div>
+
+                        <button
+                            onClick={() => setActiveTab('analytics')}
+                            className={`flex-1 px-6 py-4 text-lg font-bold border-y md:border-x border-black rounded-3xl md:rounded-none transition-colors ${activeTab === 'analytics'
+                                ? 'bg-[#ff90e8]' // Pink to match admin/member vibe
+                                : 'bg-white'
+                                }`}
+                        >
+                            Analytics
+                        </button>
+
                         <button
                             onClick={() => setActiveTab('downloads')}
-                            className={`w-full px-6 py-4 text-lg font-bold border-y border-l rounded-3xl border-black transition-colors ${activeTab === 'downloads'
+                            className={`flex-1 px-6 py-4 text-lg font-bold border-y border-l rounded-3xl md:rounded-l-none border-black transition-colors ${activeTab === 'downloads'
                                 ? 'bg-[#04ff96]'
                                 : 'bg-white'
                                 }`}
                         >
                             My Download History
                         </button>
-
                     </div>
 
                     {activeTab === 'favorites' && (
-                        <>
-                            <FontGrid
-                                fonts={favorites}
-                                loading={dataLoading}
-                                emptyMessage="You haven't favorited any fonts yet."
-                                viewMode={viewMode}
-                            />
-                        </>
+                        <FontGrid
+                            fonts={favorites}
+                            loading={dataLoading}
+                            emptyMessage="You haven't favorited any fonts yet."
+                            viewMode={viewMode}
+                        />
                     )}
 
                     {activeTab === 'downloads' && (
-                        <>
-                            <FontGrid
-                                fonts={downloads}
-                                loading={dataLoading}
-                                emptyMessage="You haven't downloaded any fonts yet."
-                                viewMode={viewMode}
-                            />
-                        </>
+                        <FontGrid
+                            fonts={downloads}
+                            loading={dataLoading}
+                            emptyMessage="You haven't downloaded any fonts yet."
+                            viewMode={viewMode}
+                        />
+                    )}
+
+                    {activeTab === 'analytics' && (
+                        <div className="pt-8 px-4">
+                            <AnalyticsDashboard />
+                        </div>
                     )}
                 </>
             )}

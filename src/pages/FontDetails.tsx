@@ -1,6 +1,9 @@
 import { useNavigate, useParams } from 'react-router-dom';
-import { Download, Heart, Share2, ArrowLeft, Check, X, Link as LinkIcon, Image as ImageIcon, MoveLeft, MoveRight, Save, Trash2, Edit2, Upload, Plus, Type } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { Download, Heart, Share2, ArrowLeft, Check, X, Link as LinkIcon, Image as ImageIcon, MoveLeft, MoveRight, Save, Trash2, Edit2, Upload, Plus, Type, Loader2 } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { toPng } from 'html-to-image';
+import SocialShareCard from '../components/fonts/SocialShareCard';
+import ShareModal from '../components/fonts/ShareModal';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import { useFont } from '../hooks/useFont';
@@ -22,8 +25,13 @@ export default function FontDetails() {
     const { user, profile } = useAuth();
     const navigate = useNavigate();
     const { font, loading, error, isFavorited, setIsFavorited } = useFont(id);
-    const [copied, setCopied] = useState(false);
     const [isFontLoaded, setIsFontLoaded] = useState(false);
+
+    // Social Share State
+    const [shareLoading, setShareLoading] = useState(false);
+    const [showShareModal, setShowShareModal] = useState(false);
+    const [shareImageSrc, setShareImageSrc] = useState<string | null>(null);
+    const shareRef = useRef<HTMLDivElement>(null);
 
     const [variantPreviewText, setVariantPreviewText] = useState('');
     const [variantPreviewSize, setVariantPreviewSize] = useState(48);
@@ -42,6 +50,19 @@ export default function FontDetails() {
 
     useEffect(() => {
         if (!font || !font.category) return;
+
+        // Increment Views
+        const incrementViews = async () => {
+            // Basic check to avoid counting own views or hot-reload double counts
+            // In production, we'd use session storage or similar to debounce, 
+            // but for now a simple on-mount call is fine.
+            const viewedKey = `viewed_${font.id}`;
+            if (sessionStorage.getItem(viewedKey)) return;
+
+            await supabase.rpc('increment_font_views', { font_id: font.id });
+            sessionStorage.setItem(viewedKey, 'true');
+        };
+        incrementViews();
 
         const fetchSimilar = async () => {
             const { data } = await supabase.rpc('search_fonts', {
@@ -587,7 +608,6 @@ export default function FontDetails() {
                     .from('favorites')
                     .delete()
                     .eq('font_id', font.id)
-                    .eq('user_id', user.id);
                 if (error) throw error;
             }
         } catch (error) {
@@ -597,10 +617,31 @@ export default function FontDetails() {
         }
     };
 
-    const handleShare = () => {
-        navigator.clipboard.writeText(window.location.href);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
+
+
+    const handleShare = async () => {
+        if (!shareRef.current || !font) return;
+        setShareLoading(true);
+
+        try {
+            // Wait a moment for fonts/styles to be ready in the hidden element
+            await new Promise(resolve => setTimeout(resolve, 100));
+
+            const dataUrl = await toPng(shareRef.current, {
+                quality: 1.0,
+                pixelRatio: 2,
+                width: 1200,
+                height: 630,
+            });
+
+            setShareImageSrc(dataUrl);
+            setShowShareModal(true);
+        } catch (err) {
+            console.error('Failed to generate image', err);
+            alert('Failed to generate share card.');
+        } finally {
+            setShareLoading(false);
+        }
     };
 
     const downloadFont = async (url: string, filename: string) => {
@@ -658,7 +699,7 @@ export default function FontDetails() {
                     '--mobile-ar': mobileAr,
                     '--desktop-ar': desktopAr,
                 } as React.CSSProperties}
-                className={`relative w-full bg-white rounded-3xl border-2 border-black flex justify-center items-center overflow-hidden group ${galleryImages.length > 0 ? 'aspect-(--mobile-ar) md:aspect-(--desktop-ar)' : 'h-[66vw] md:h-100'}`}
+                className={`relative w-full bg-white rounded-3xl border-black flex justify-center items-center overflow-hidden group ${galleryImages.length > 0 ? 'aspect-(--mobile-ar) md:aspect-(--desktop-ar)' : 'h-[66vw] md:h-100'}`}
             >
                 {galleryImages.length > 0 && (
                     <div className="absolute inset-0 z-20">
@@ -1045,47 +1086,51 @@ export default function FontDetails() {
                             >
                                 Delete Font
                             </button>
-                            <button
-                                onClick={() => alert('Edit functionality coming soon')}
-                                className="w-full flex items-center justify-center px-4 py-2 bg-white border border-black text-black rounded-xl hover:bg-gray-100 transition-colors font-bold text-sm"
-                            >
-                                Edit Font
-                            </button>
+
                         </div>
                     )}
 
-                    <button
-                        onClick={handleFavorite}
-                        className={`flex items-center w-full px-4 py-2 gap-2 border border-black rounded-3xl transition-colors ${isFavorited
-                            ? 'bg-red-500 text-pink-200'
-                            : 'bg-white hover:bg-black text-gray-600 hover:text-white'
-                            }`}
-                    >
-                        <Heart size={20} className={isFavorited ? 'fill-current' : ''} />
-                        <span>{isFavorited ? 'Favorited' : 'Favorite'}</span>
-                    </button>
-
-                    <button
-                        onClick={handleShare}
-                        className="flex items-center w-full h-full px-4 py-2 gap-2 border border-black bg-white hover:bg-black text-gray-600 hover:text-white rounded-3xl transition-colors"
-                    >
-                        {copied ? <Check size={20} className="text-green-600" /> : <Share2 size={20} className="text-gray-600" />}
-                        <span>{copied ? 'Copied!' : 'Share'}</span>
-                    </button>
-                    <a
-                        href='#download'
-                        className="flex items-center w-full px-4 py-2 gap-2 border border-black rounded-3xl transition-colors bg-white hover:bg-black text-gray-600 hover:text-white"
-                    >
-                        <Download size={20} className={isFavorited ? 'fill-current' : ''} />
-                        <span>Download</span>
-                    </a>
+                    <div className="flex w-full md:w-auto">
+                        <button
+                            onClick={() => font.otf_url && downloadFont(font.otf_url, `${font.slug}.otf`)}
+                            className="flex-1 px-8 py-4 bg-[#BDF522] hover:bg-[#a9db1e] text-black font-black uppercase rounded-3xl border-2 border-black transition-all hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex items-center justify-center gap-2 group"
+                        >
+                            <Download className="group-hover:animate-bounce" />
+                            Download Font
+                        </button>
+                        <button
+                            onClick={handleFavorite}
+                            className={`px-6 py-4 rounded-3xl border-2 border-black transition-all hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] ${isFavorited ? 'bg-[#FF90E8] text-black' : 'bg-white text-black hover:bg-gray-50'}`}
+                        >
+                            <Heart className={isFavorited ? "fill-current" : ""} />
+                        </button>
+                        <button
+                            onClick={handleShare}
+                            disabled={shareLoading}
+                            className="px-6 py-4 bg-white hover:bg-gray-50 text-black rounded-3xl border-2 border-black transition-all hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            {shareLoading ? <Loader2 className="animate-spin" /> : <Share2 />}
+                        </button>
+                    </div>
                 </div>
+
+                {/* Hidden Share Card for Generation */}
+                <div className="absolute -left-2499.75 -top-2499.75">
+                    <SocialShareCard ref={shareRef} font={font} />
+                </div>
+
+                <ShareModal
+                    isOpen={showShareModal}
+                    onClose={() => setShowShareModal(false)}
+                    imageSrc={shareImageSrc}
+                    fontName={font.name}
+                />
             </div>
 
             {/* Variant Previews Section */}
-            <div className='w-full bg-white/20 text-black rounded-3xl border-2 border-black overflow-hidden'>
+            < div className='w-full bg-white/20 text-black rounded-3xl border-2 border-black overflow-hidden' >
                 {/* Controller Row */}
-                <div className="flex flex-col md:flex-row items-center justify-between gap-6 p-6 rounded-3xl border-b border-black bg-white hover:bg-gray-100">
+                < div className="flex flex-col md:flex-row items-center justify-between gap-6 p-6 rounded-3xl border-b border-black bg-white hover:bg-gray-100" >
                     <input
                         type="text"
                         value={variantPreviewText}
@@ -1105,47 +1150,49 @@ export default function FontDetails() {
                         />
                         <span className="font-mono text-sm w-12 text-right">{variantPreviewSize}px</span>
                     </div>
-                </div>
+                </div >
                 {/* Variants List */}
-                {font.font_variants?.map(variant => (
-                    <div key={variant.id} className="p-8 rounded-3xl border-b border-black bg-white hover:bg-gray-100 transition-colors">
-                        <div className="flex justify-between items-center mb-4">
-                            <span className="text-[8px] font-bold uppercase tracking-wider text-gray-500 bg-gray-200 px-2 py-1 rounded-xl">{variant.variant_name}</span>
-                            <div className="flex gap-2">
-                                {(['ttf', 'otf', 'woff', 'woff2'] as const).map(format => {
-                                    const url = variant[`${format}_url` as keyof typeof variant] as string;
-                                    if (url) {
-                                        return (
-                                            <button
-                                                key={format}
-                                                onClick={() => downloadFont(url, `${font.name}-${variant.variant_name}.${format}`)}
-                                                className="flex items-center gap-1 px-3 py-1 bg-white border border-black rounded-full text-[10px] font-bold uppercase hover:bg-black hover:text-white transition-colors"
-                                                title={`Download ${format.toUpperCase()}`}
-                                            >
-                                                <Download size={12} /> {format}
-                                            </button>
-                                        );
-                                    }
-                                    return null;
-                                })}
+                {
+                    font.font_variants?.map(variant => (
+                        <div key={variant.id} className="p-8 rounded-3xl border-b border-black bg-white hover:bg-gray-100 transition-colors">
+                            <div className="flex justify-between items-center mb-4">
+                                <span className="text-[8px] font-bold uppercase tracking-wider text-gray-500 bg-gray-200 px-2 py-1 rounded-xl">{variant.variant_name}</span>
+                                <div className="flex gap-2">
+                                    {(['ttf', 'otf', 'woff', 'woff2'] as const).map(format => {
+                                        const url = variant[`${format}_url` as keyof typeof variant] as string;
+                                        if (url) {
+                                            return (
+                                                <button
+                                                    key={format}
+                                                    onClick={() => downloadFont(url, `${font.name}-${variant.variant_name}.${format}`)}
+                                                    className="flex items-center gap-1 px-3 py-1 bg-white border border-black rounded-full text-[10px] font-bold uppercase hover:bg-black hover:text-white transition-colors"
+                                                    title={`Download ${format.toUpperCase()}`}
+                                                >
+                                                    <Download size={12} /> {format}
+                                                </button>
+                                            );
+                                        }
+                                        return null;
+                                    })}
+                                </div>
                             </div>
+                            <p
+                                style={{
+                                    fontFamily: `'font-${font.id}-${variant.variant_name}'`,
+                                    fontSize: `${variantPreviewSize}px`,
+                                    lineHeight: 1.2
+                                }}
+                                className="wrap-break-word transition-all duration-200 w-full"
+                            >
+                                {variantPreviewText || `${font.name} ${variant.variant_name}`}
+                            </p>
                         </div>
-                        <p
-                            style={{
-                                fontFamily: `'font-${font.id}-${variant.variant_name}'`,
-                                fontSize: `${variantPreviewSize}px`,
-                                lineHeight: 1.2
-                            }}
-                            className="wrap-break-word transition-all duration-200 w-full"
-                        >
-                            {variantPreviewText || `${font.name} ${variant.variant_name}`}
-                        </p>
-                    </div>
-                ))}
-            </div>
+                    ))
+                }
+            </div >
 
             {/* Main Content Grid */}
-            <div>
+            < div >
                 <div className="space-y-8">
                     <section>
                         <h2 className="text-2xl font-bold py-4 px-4 bg-white rounded-3xl border-2 border-black">Interactive Tester</h2>
@@ -1176,7 +1223,7 @@ export default function FontDetails() {
                         );
                     })()}
                 </div>
-            </div>
+            </div >
 
             <div className="space-y-6">
 
@@ -1500,7 +1547,7 @@ export default function FontDetails() {
                     </div>
                 )
             }
-        </div>
+        </div >
     );
 }
 

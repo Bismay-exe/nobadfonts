@@ -120,7 +120,7 @@ export default function CustomizeSidebar({
                             </div>
                             <input
                                 type="range"
-                                min="0.8"
+                                min="0.5"
                                 max="3"
                                 step="0.1"
                                 value={currentStyle.leading}
@@ -137,8 +137,8 @@ export default function CustomizeSidebar({
                             </div>
                             <input
                                 type="range"
-                                min="-5"
-                                max="20"
+                                min="-10"
+                                max="30"
                                 step="0.5"
                                 value={currentStyle.tracking}
                                 onChange={(e) => handleStyleChange('tracking', Number(e.target.value))}

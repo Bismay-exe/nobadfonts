@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { AlignLeft, AlignCenter, AlignRight, Type, MoveVertical, MoveHorizontal } from 'lucide-react';
+import { AlignLeft, AlignCenter, AlignRight, Type, MoveVertical, MoveHorizontal, LayoutTemplate } from 'lucide-react';
+import ContextPreview from './ContextPreview';
 import type { Font } from '../../types/font';
 
 interface FontTesterProps {
@@ -14,6 +15,7 @@ export default function FontTester({ font }: FontTesterProps) {
     const [textAlign, setTextAlign] = useState<'left' | 'center' | 'right'>('left');
     const [textColor, setTextColor] = useState('#000000');
     const [bgColor, setBgColor] = useState('#FFFFFF');
+    const [viewMode, setViewMode] = useState<'type' | 'context'>('type');
 
     const fontName = `custom-font-${font.slug}`;
 
@@ -74,119 +76,146 @@ export default function FontTester({ font }: FontTesterProps) {
     }, [font, fontName]);
 
     return (
-        <div className="bg-white rounded-3xl border-2 border-black overflow-hidden">
-            {/* Toolbar */}
-            <div className="border-b border-gray-100 p-4 bg-gray-50 flex flex-wrap gap-6 items-center">
-
-                {/* Font Size */}
-                <div className="flex items-center space-x-2">
-                    <Type size={18} className="text-gray-400" />
-                    <input
-                        type="range"
-                        min="12"
-                        max="128"
-                        value={fontSize}
-                        onChange={(e) => setFontSize(Number(e.target.value))}
-                        className="w-32 accent-blue-600"
-                    />
-                    <span className="text-sm text-gray-600 w-8">{fontSize}px</span>
-                </div>
-
-                {/* Line Height */}
-                <div className="flex items-center space-x-2">
-                    <MoveVertical size={18} className="text-gray-400" />
-                    <input
-                        type="range"
-                        min="0.8"
-                        max="3"
-                        step="0.1"
-                        value={lineHeight}
-                        onChange={(e) => setLineHeight(Number(e.target.value))}
-                        className="w-24 accent-blue-600"
-                    />
-                </div>
-
-                {/* Letter Spacing */}
-                <div className="flex items-center space-x-2">
-                    <MoveHorizontal size={18} className="text-gray-400" />
-                    <input
-                        type="range"
-                        min="-5"
-                        max="20"
-                        value={letterSpacing}
-                        onChange={(e) => setLetterSpacing(Number(e.target.value))}
-                        className="w-24 accent-blue-600"
-                    />
-                </div>
-
-                {/* Alignment */}
-                <div className="flex items-center space-x-1 border-l border-gray-300 pl-6">
-                    <button
-                        onClick={() => setTextAlign('left')}
-                        className={`p-2 rounded hover:bg-gray-200 ${textAlign === 'left' ? 'bg-gray-200 text-blue-600' : 'text-gray-500'}`}
-                    >
-                        <AlignLeft size={18} />
-                    </button>
-                    <button
-                        onClick={() => setTextAlign('center')}
-                        className={`p-2 rounded hover:bg-gray-200 ${textAlign === 'center' ? 'bg-gray-200 text-blue-600' : 'text-gray-500'}`}
-                    >
-                        <AlignCenter size={18} />
-                    </button>
-                    <button
-                        onClick={() => setTextAlign('right')}
-                        className={`p-2 rounded hover:bg-gray-200 ${textAlign === 'right' ? 'bg-gray-200 text-blue-600' : 'text-gray-500'}`}
-                    >
-                        <AlignRight size={18} />
-                    </button>
-                </div>
+        <div className="bg-white rounded-3xl border-2 border-black overflow-hidden flex flex-col h-full">
+            {/* Header / Toggle */}
+            <div className="flex border-b border-gray-100">
+                <button
+                    onClick={() => setViewMode('type')}
+                    className={`flex-1 py-3 text-sm font-bold flex items-center justify-center gap-2 transition-colors
+                        ${viewMode === 'type' ? 'bg-gray-50 text-black' : 'text-gray-400 hover:text-black hover:bg-gray-50'}
+                    `}
+                >
+                    <Type size={16} /> Type Tester
+                </button>
+                <div className="w-px bg-gray-100"></div>
+                <button
+                    onClick={() => setViewMode('context')}
+                    className={`flex-1 py-3 text-sm font-bold flex items-center justify-center gap-2 transition-colors
+                        ${viewMode === 'context' ? 'bg-gray-50 text-black' : 'text-gray-400 hover:text-black hover:bg-gray-50'}
+                    `}
+                >
+                    <LayoutTemplate size={16} /> Real-World Context
+                </button>
             </div>
 
-            {/* Colors */}
-            <div className="flex items-center space-x-3 border-l border-gray-300 pl-6">
-                <div className="flex items-center gap-2" title="Text Color">
-                    <div className="w-6 h-6 rounded-full border border-gray-300 overflow-hidden relative">
-                        <input
-                            type="color"
-                            value={textColor}
-                            onChange={(e) => setTextColor(e.target.value)}
-                            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[150%] h-[150%] p-0 border-0 cursor-pointer"
+            {viewMode === 'type' ? (
+                <>
+                    {/* Toolbar */}
+                    <div className="border-b border-gray-100 p-4 bg-gray-50 flex flex-wrap gap-6 items-center">
+
+                        {/* Font Size */}
+                        <div className="flex items-center space-x-2">
+                            <Type size={18} className="text-gray-400" />
+                            <input
+                                type="range"
+                                min="12"
+                                max="128"
+                                value={fontSize}
+                                onChange={(e) => setFontSize(Number(e.target.value))}
+                                className="w-32 accent-blue-600"
+                            />
+                            <span className="text-sm text-gray-600 w-8">{fontSize}px</span>
+                        </div>
+
+                        {/* Line Height */}
+                        <div className="flex items-center space-x-2">
+                            <MoveVertical size={18} className="text-gray-400" />
+                            <input
+                                type="range"
+                                min="0.8"
+                                max="3"
+                                step="0.1"
+                                value={lineHeight}
+                                onChange={(e) => setLineHeight(Number(e.target.value))}
+                                className="w-24 accent-blue-600"
+                            />
+                        </div>
+
+                        {/* Letter Spacing */}
+                        <div className="flex items-center space-x-2">
+                            <MoveHorizontal size={18} className="text-gray-400" />
+                            <input
+                                type="range"
+                                min="-5"
+                                max="20"
+                                value={letterSpacing}
+                                onChange={(e) => setLetterSpacing(Number(e.target.value))}
+                                className="w-24 accent-blue-600"
+                            />
+                        </div>
+
+                        {/* Alignment */}
+                        <div className="flex items-center space-x-1 border-l border-gray-300 pl-6">
+                            <button
+                                onClick={() => setTextAlign('left')}
+                                className={`p-2 rounded hover:bg-gray-200 ${textAlign === 'left' ? 'bg-gray-200 text-blue-600' : 'text-gray-500'}`}
+                            >
+                                <AlignLeft size={18} />
+                            </button>
+                            <button
+                                onClick={() => setTextAlign('center')}
+                                className={`p-2 rounded hover:bg-gray-200 ${textAlign === 'center' ? 'bg-gray-200 text-blue-600' : 'text-gray-500'}`}
+                            >
+                                <AlignCenter size={18} />
+                            </button>
+                            <button
+                                onClick={() => setTextAlign('right')}
+                                className={`p-2 rounded hover:bg-gray-200 ${textAlign === 'right' ? 'bg-gray-200 text-blue-600' : 'text-gray-500'}`}
+                            >
+                                <AlignRight size={18} />
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Colors */}
+                    <div className="flex items-center space-x-3 border-l border-gray-300 pl-6">
+                        <div className="flex items-center gap-2" title="Text Color">
+                            <div className="w-6 h-6 rounded-full border border-gray-300 overflow-hidden relative">
+                                <input
+                                    type="color"
+                                    value={textColor}
+                                    onChange={(e) => setTextColor(e.target.value)}
+                                    className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[150%] h-[150%] p-0 border-0 cursor-pointer"
+                                />
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-2" title="Background Color">
+                            <div className="w-6 h-6 rounded-full border border-gray-300 overflow-hidden relative">
+                                <input
+                                    type="color"
+                                    value={bgColor}
+                                    onChange={(e) => setBgColor(e.target.value)}
+                                    className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[150%] h-[150%] p-0 border-0 cursor-pointer"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+
+                    {/* Preview Area */}
+                    <div
+                        className="p-8 min-h-75 flex items-center justify-center overflow-auto transition-colors duration-200"
+                        style={{ backgroundColor: bgColor }}
+                    >
+                        <textarea
+                            value={text}
+                            onChange={(e) => setText(e.target.value)}
+                            className="w-full h-full bg-transparent resize-none outline-none border-none text-gray-900 placeholder-gray-300 selection:bg-blue-100 selection:text-blue-900"
+                            style={{
+                                fontFamily: `"${fontName}", sans-serif`,
+                                fontSize: `${fontSize}px`,
+                                lineHeight: lineHeight,
+                                letterSpacing: `${letterSpacing}px`,
+                                textAlign: textAlign,
+                                color: textColor,
+                            }}
+                            spellCheck={false}
                         />
                     </div>
-                </div>
-                <div className="flex items-center gap-2" title="Background Color">
-                    <div className="w-6 h-6 rounded-full border border-gray-300 overflow-hidden relative">
-                        <input
-                            type="color"
-                            value={bgColor}
-                            onChange={(e) => setBgColor(e.target.value)}
-                            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[150%] h-[150%] p-0 border-0 cursor-pointer"
-                        />
-                    </div>
-                </div>
-            </div>
-
-
-            {/* Preview Area */}
-            <div
-                className="p-8 min-h-75 flex items-center justify-center overflow-auto transition-colors duration-200"
-                style={{ backgroundColor: bgColor }}
-            >
-                <textarea
-                    value={text}
-                    onChange={(e) => setText(e.target.value)}
-                    className="w-full h-full bg-transparent resize-none outline-none border-none text-gray-900 placeholder-gray-300 selection:bg-blue-100 selection:text-blue-900"
-                    style={{
-                        fontFamily: `"${fontName}", sans-serif`,
-                        fontSize: `${fontSize}px`,
-                        lineHeight: lineHeight,
-                        letterSpacing: `${letterSpacing}px`,
-                        textAlign: textAlign,
-                        color: textColor,
-                    }}
-                    spellCheck={false}
-                />
-            </div>
+                </>
+            ) : (
+                <ContextPreview fontFamily={fontName} />
+            )}
         </div >
     );
 }

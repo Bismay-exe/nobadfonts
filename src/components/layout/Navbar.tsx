@@ -7,11 +7,11 @@ export default function Navbar() {
     const [open, setOpen] = useState(false);
 
     return (
-        <nav className="w-full bg-[#7B46F8] border-y-2 border-black rounded-3xl p-4">
+        <nav className="w-full bg-[#87DB21] border-y-2 border-black rounded-3xl p-4">
             <div className="flex justify-between items-center">
                 <Link
                     to="/"
-                    className="h-10 w-10 flex items-center gap-2 font-black text-2xl tracking-tighter"
+                    className="h-10 w-10 flex items-center gap-2 font-black text-[#000000] text-2xl tracking-tighter"
                 >
                     <img src="/logo/logo.png" alt="" className='bg-black p-1 rounded-xl' />NoBadFonts
                 </Link>
@@ -19,7 +19,7 @@ export default function Navbar() {
                 {/* Mobile menu button */}
                 <button
                     onClick={() => setOpen(!open)}
-                    className="md:hidden border-2 border-black bg-[#BDF522] rounded-full px-6 py-2 font-bold"
+                    className="md:hidden border-2 border-black bg-[#000000] text-white rounded-full px-6 py-2 font-bold"
                     aria-label="Toggle menu"
                 >
                     ☰

@@ -176,16 +176,16 @@ export default function FontCard({ font, viewMode = 'font', onClick, disableLink
     );
 
     return (
-        <div className="group relative bg-white rounded-3xl border-2 border-black hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col h-full">
+        <div className="group relative rounded-3xl border border-black hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col h-full">
             {disableLink ? (
                 <div
                     onClick={() => onClick?.(font)}
-                    className="h-full w-full bg-gray-50 flex items-center justify-center relative overflow-hidden group/preview cursor-pointer"
+                    className="h-full w-full bg-[#f4f4f4] flex items-center justify-center relative overflow-hidden group/preview cursor-pointer"
                 >
                     {CardContent}
                 </div>
             ) : (
-                <Link to={`/fonts/${font.slug || font.id}`} className="h-full w-full bg-gray-50 flex items-center justify-center relative overflow-hidden group/preview">
+                <Link to={`/fonts/${font.slug || font.id}`} className="h-full w-full bg-[#FBFBFB] flex items-center justify-center relative overflow-hidden group/preview">
                     {CardContent}
                 </Link>
             )}

@@ -34,7 +34,7 @@ export default function FontsCatalog() {
 
             <div className="col-span-1 lg:col-span-4 border-b-2 border-black flex flex-col lg:flex-col">
                 {/* Sidebar */}
-                <aside className="w-full shrink-0 bg-[#FFF] rounded-3xl p-4">
+                <aside className="w-full shrink-0">
                     <Filters
                         filters={filters}
                         onChange={setFilters}
@@ -44,7 +44,7 @@ export default function FontsCatalog() {
                 </aside>
 
                 {/* Content */}
-                <div className="grow border-y-2 border-black">
+                <div className="grow border-t border-black">
                     {error && (
                         <div className="bg-red-50 text-red-600 p-4 rounded-3xl">
                             Error loading fonts: {error}

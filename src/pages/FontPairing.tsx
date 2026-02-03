@@ -342,7 +342,7 @@ export default function FontPairing() {
                                     letterSpacing: `${headerStyle.tracking}px`,
                                     color: headerStyle.color
                                 }}
-                                className="w-full h-full font-black bg-transparent border-none outline-none resize-none text-wrap hover:bg-black/5 rounded-xl transition-colors -ml-2"
+                                className="w-full h-full bg-transparent border-none outline-none resize-none text-wrap hover:bg-black/5 rounded-xl transition-colors -ml-2"
                                 rows={3}
                                 spellCheck={false}
                             />
