@@ -331,7 +331,7 @@ const Landing: React.FC = () => {
             </section>
 
             {/* Outro */}
-            <section className={`outro h-full ${centerFlexClasses} bg-white text-(--light) rounded-3xl border-b-2 border-black p-10`}>
+            <section className={`hidden outro h-full ${centerFlexClasses} bg-white text-(--light) rounded-3xl border-b-2 border-black p-10`}>
                 <h1 className="lg:w-full text-[5rem] lg:text-[6rem] font-rockinsoda tracking-[-0.02em] leading-[0.85] text-center">
                     Use Good Fonts from NoBadFonts.in
                 </h1>
