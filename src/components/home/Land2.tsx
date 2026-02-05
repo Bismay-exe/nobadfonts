@@ -56,22 +56,22 @@ const Land2: React.FC = () => {
     } as const;
 
     return (
-        <div ref={mainContainerRef} className="min-h-screen w-full bg-black text-black font-sans overflow-x-hidden">
+        <div ref={mainContainerRef} className="min-h-screen w-full bg-black text-black font-rockinsoda overflow-x-hidden">
 
 
             {/* === HERO SECTION === */}
-            <section className="relative bg-[#BDF522] rounded-3xl">
+            <section className="relative bg-white text-black rounded-3xl border-t-2 border-black">
                 <div className="p-4 sm:p-8 md:p-16 py-14 items-center text-center relative">
-                    <h1 className="text-[12vw] md:text-[7vw] leading-[0.9] font-black tracking-tighter mb-8">
+                    <h1 className="text-[13vw] md:text-[7vw] leading-[0.9] font-black mb-8">
                         Type is not decoration.<br />
-                        It’s the <span className="font-serif font-thin italic text-[#7B46F8]">voice</span> of your design.
+                        It’s the <span className="font-western font-thin italic text-red-500">voice</span> of your design.
                     </h1>
 
-                    <p className="text-xl md:text-2xl font-medium max-w-2xl mx-auto leading-tight text-neutral-700 mb-8">
-                        NoBadFonts is a curated library of typefaces built for designers who care about how things feel, not just how they look.
+                    <p className="text-lg md:text-2xl font-mono max-w-2xl mx-auto leading-tight text-neutral-700 mb-8">
+                        A curated directory of open-source typefaces that actually look good. No clutter, just type.
                     </p>
 
-                    <Link to="/fonts" className="inline-flex items-center gap-2 border-2 border-black px-6 py-3 group rounded-full font-serif font-thin italic hover:bg-[#7B46F8] hover:text-[#BDF522] transition-colors ">
+                    <Link to="/fonts" className="inline-flex items-center gap-2 bg-red-500 border-2 border-black px-6 py-3 group rounded-full font-serif italic hover:bg-black hover:text-white transition-colors ">
                         Explore Fonts <ArrowUpRight className='group-hover:rotate-45 transition-all duration-300' />
                     </Link>
                 </div>
@@ -80,16 +80,16 @@ const Land2: React.FC = () => {
 
 
             {/* === MARQUEE === */}
-            <section className="border-y-2 border-black overflow-hidden bg-white/0 rounded-3xl">
+            <section className="overflow-hidden bg-white/0 rounded-3xl border-t-2 border-black">
                 <div className="flex overflow-hidden">
-                    <div ref={marqueeRef} className="flex pl-4 items-center whitespace-nowrap">
+                    <div ref={marqueeRef} className="flex pl-4 items-center whitespace-nowrap tracking-wider font-trunks text-black">
                         {[...Array(4)].map((_, i) => (
                             <React.Fragment key={i}>
-                                <div className="bg-[#FFFFFF] text-[#FE8616] px-6 py-2 rounded-full border border-black font-bold">Pangram Pangram</div>
-                                <div className="bg-[#7B46F8] text-[#BDF522] px-6 py-2 rounded-full border border-black font-bold">Klim Type</div>
-                                <div className="bg-[#FA51A2] text-[#BDF522] px-6 py-2 rounded-full border border-black font-bold">Grilli Type</div>
-                                <div className="bg-[#FE8616] text-[#000000] px-6 py-2 rounded-full border border-black font-bold">Dinamo</div>
-                                <div className="bg-[#A609F0] text-[#BDF522] px-6 py-2 rounded-full border border-black font-bold">Sharp Type</div>
+                                <div className="bg-red-500 px-6 py-2 rounded-full border border-black">Pangram Pangram</div>
+                                <div className="bg-red-500 px-6 py-2 rounded-full border border-black">Klim Type</div>
+                                <div className="bg-red-500 px-6 py-2 rounded-full border border-black">Grilli Type</div>
+                                <div className="bg-red-500 px-6 py-2 rounded-full border border-black">Dinamo</div>
+                                <div className="bg-red-500 px-6 py-2 rounded-full border border-black">Sharp Type</div>
                             </React.Fragment>
                         ))}
                     </div>
@@ -97,14 +97,14 @@ const Land2: React.FC = () => {
             </section>
 
             {/* === ABOUT / INTRO SECTION === */}
-            <section className="p-8 md:p-16 grid md:grid-cols-2 gap-12 items-center relative bg-[#FA51A2] rounded-3xl border-y-2 border-black">
-                <div className="font-bold text-2xl md:text-4xl leading-tight">
+            <section className="p-8 md:p-16 grid md:grid-cols-2 gap-12 items-center relative bg-white rounded-3xl border-t-2 border-black">
+                <div className="text-2xl md:text-4xl leading-tight">
                     <span className="text-6xl block mb-4">///</span>
                     At NoBadFonts, we believe typography is the voice of your brand. We reject the bland and champion the brave, supplying kinetic type for digital maximalists.
                 </div>
                 <div className="flex justify-center relative">
                     <svg viewBox="0 0 300 150" className="w-full max-w-md rotate-[-5deg]">
-                        <ellipse cx="150" cy="75" rx="145" ry="70" fill="none" stroke="black" strokeWidth="3" />
+                        <ellipse cx="150" cy="75" rx="145" ry="70" fill="none" stroke="red" strokeWidth="3" />
                         <text x="150" y="50" textAnchor="middle" dominantBaseline="middle" fontSize="20" fontWeight="bold">ESTABLISHED</text>
                         <text x="150" y="95" textAnchor="middle" dominantBaseline="middle" fontSize="60" fontWeight="black">2026</text>
                     </svg>
@@ -115,14 +115,14 @@ const Land2: React.FC = () => {
 
 
             {/* === NEW SECTION 1: HOT DROPS (Horizontal Scroll) === */}
-            <section className="bg-[#7B46F8] relative rounded-3xl">
+            <section className="bg-red-500 relative rounded-3xl border-t-2 border-black">
                 <div className="flex justify-center text-center items-center py-10">
                     <h2 className="text-7xl font-black">Fresh<span className="font-serif font-thin italic hover:not-italic text-[#BDF522]">drops</span></h2>
                 </div>
             </section>
 
             {/* Horizontal Scroll Container */}
-            <section className="bg-[#FFFFFF] relative rounded-3xl">
+            <section className="bg-[#FFFFFF] relative rounded-3xl border-t-2 border-black">
                 <div className="flex gap-8 overflow-x-auto px-8 snap-x hide-scrollbar">
 
                 </div>
@@ -130,7 +130,7 @@ const Land2: React.FC = () => {
 
             {/* === NEW SECTION 2: TYPE TESTER === */}
             <motion.section
-                className="col-span-1 md:col-span-2 md:row-span-2 bg-[#C6FF34] rounded-3xl p-8 md:p-16 flex flex-col justify-between text-white"
+                className="col-span-1 md:col-span-2 md:row-span-2 bg-[#C6FF34] rounded-3xl p-8 md:p-16 flex flex-col justify-between text-white border-t-2 border-black"
             >
                 <div className="flex items-center gap-2 text-[#7E3BED] mb-4">
                     <SlidersHorizontal size={18} />
@@ -167,7 +167,7 @@ const Land2: React.FC = () => {
 
 
             <motion.section
-                className="rounded-3xl p-8 md:p-16 flex flex-col justify-between bg-[#7E3BED] text-[#C6FF34] overflow-hidden relative"
+                className="rounded-3xl p-8 md:p-16 flex flex-col justify-between bg-[#7E3BED] text-[#C6FF34] overflow-hidden relative border-t-2 border-black"
                 >
                 <div className="p-6 absolute top-0 left-0 z-10 w-full bg-linear-to-b from-[#7E3BED] to-transparent">
                     <div className="flex items-center gap-2">
@@ -178,7 +178,7 @@ const Land2: React.FC = () => {
 
                 {/* GSAP Scroller */}
                 <div className="h-full overflow-hidden flex items-center justify-center relative mask-image-vertical">
-                    <div className="flex flex-col gap-8 py-8 text-center font-black text-4xl md:text-5xl uppercase tracking-tight select-none">
+                    <div className="flex flex-col gap-8 py-8 text-center font-black text-4xl md:text-5xl uppercase select-none">
                         {/* Duplicated list for seamless loop */}
                         <span>Neue Mono</span>
                         <span>Editorial Serif</span>
@@ -197,7 +197,7 @@ const Land2: React.FC = () => {
 
 
             {/* === CATEGORIES (Services) SECTION === */}
-            <section className="p-8 md:p-16 bg-white rounded-3xl">
+            <section className="p-8 md:p-16 bg-white rounded-3xl border-t-2 border-black">
                 <h2 className="text-4xl font-black mb-12 uppercase">The Collection We Deliver</h2>
                 <div className="flex flex-col gap-4">
                     <motion.div whileHover={popHover} className="bg-[#FF90E8] p-6 rounded-[40px] border-2 border-black flex justify-between items-center cursor-pointer">
@@ -241,7 +241,7 @@ const Land2: React.FC = () => {
 
 
             {/* === NEW SECTION 4: LICENSING PLANS === */}
-            <section id="licensing" className="p-8 md:p-24 bg-[#FF90E8] border-y-2 border-black rounded-3xl">
+            <section id="licensing" className="p-8 md:p-24 bg-[#FF90E8] rounded-3xl border-t-2 border-black">
                 <div className="text-center mb-16">
                     <h2 className="text-5xl font-black uppercase">Simple Licensing</h2>
                     <p className="font-bold mt-4">No lawyers needed. Pick a plan and go.</p>
@@ -277,7 +277,7 @@ const Land2: React.FC = () => {
 
 
             {/* === TESTIMONIALS (Sticky Notes) === */}
-            <section className="p-8 md:p-16 relative min-h-212.5 md:min-h-150 overflow-hidden bg-white rounded-3xl">
+            <section className="p-8 md:p-16 relative min-h-212.5 md:min-h-150 overflow-hidden bg-white rounded-3xl border-t-2 border-black">
                 <h2 className="text-4xl font-black mb-12 uppercase">Word on the street</h2>
 
                 <div className="relative flex justify-center items-center h-full mt-20">
@@ -294,7 +294,7 @@ const Land2: React.FC = () => {
 
 
             {/* === CTA SECTION === */}
-            <section className="p-8 md:p-16 flex justify-center items-center py-32 border-y-2 border-black bg-white rounded-3xl relative overflow-hidden">
+            <section className="p-8 md:p-16 flex justify-center items-center py-32 border-t-2 border-black bg-white rounded-3xl relative overflow-hidden">
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20">
                     <svg viewBox="0 0 200 200" className="w-[150vw] h-[150vw] animate-spin-slow">
                         <path fill="#00C2FF" d="M100,0 L120,80 L200,100 L120,120 L100,200 L80,120 L0,100 L80,80 Z" />
@@ -315,7 +315,7 @@ const Land2: React.FC = () => {
 
 
             {/* === FOOTER === */}
-            <footer className="p-8 md:p-16 bg-white rounded-3xl relative overflow-hidden border-b-2 border-black">
+            <footer className="p-8 md:p-16 bg-white rounded-3xl relative overflow-hidden border-y-2 border-black">
                 <div className="flex flex-wrap justify-center gap-4 mb-24 relative z-10">
                     <motion.a href="#" whileHover={popHover} className="w-40 h-40 bg-[#A05A2C] rounded-full border-2 border-black flex items-center justify-center text-white">
                         <Twitter size={48} />
@@ -332,15 +332,15 @@ const Land2: React.FC = () => {
                 </div>
 
                 <div className="relative z-10">
-                    <h2 className="text-[10vw] font-black leading-none tracking-tighter">Email</h2>
+                    <h2 className="text-[10vw] font-black leading-none">Email</h2>
                     <p className="text-xl md:text-3xl font-bold mb-12">hello@NoBadFonts.com</p>
 
-                    <h2 className="text-[10vw] font-black leading-none tracking-tighter">Whatsapp</h2>
+                    <h2 className="text-[10vw] font-black leading-none">Whatsapp</h2>
                     <p className="text-xl md:text-3xl font-bold">+1 (555) 000-TYPE</p>
                 </div>
 
                 <div className="absolute bottom-[-5vw] right-[-5vw] rotate-12 opacity-20 pointer-events-none">
-                    <div className="text-[20vw] font-black text-black tracking-tighter">
+                    <div className="text-[20vw] font-black text-black">
                         NoBadFonts
                     </div>
                 </div>

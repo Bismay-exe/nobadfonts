@@ -1,19 +1,21 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useState } from 'react';
+import Red from '/logo/logo-red.png';
 
 export default function Navbar() {
     const { user, profile } = useAuth();
     const [open, setOpen] = useState(false);
 
     return (
-        <nav className="w-full bg-[#87DB21] border-y-2 border-black rounded-3xl p-4">
+        <nav className="w-full bg-red-500 border-y-2 border-black rounded-3xl p-3">
             <div className="flex justify-between items-center">
                 <Link
                     to="/"
-                    className="h-10 w-10 flex items-center gap-2 font-black text-[#000000] text-2xl tracking-tighter"
+                    className="h-10 w-10 flex items-center gap-2 font-black bg-black p-1.5 rounded-xl text-[#000000] text-2xl tracking-tighter"
                 >
-                    <img src="/logo/logo.png" alt="" className='bg-black p-1 rounded-xl' />NoBadFonts
+
+                    <img src={Red} alt="Logo" className='mr-2' />NoBadFonts
                 </Link>
 
                 {/* Mobile menu button */}
@@ -58,7 +60,7 @@ function NavLinks({
     onClick?: () => void;
 }) {
     const base =
-        'border-2 border-black px-4 py-1 font-bold rounded-full bg-white hover:bg-black hover:text-white transition-colors';
+        'border border-black px-4 py-1 font-mono uppercase font-bold rounded-full bg-red-500 hover:bg-black hover:text-white transition-colors';
 
     return (
         <div className="flex flex-col md:flex-row justify-between items-end gap-2">

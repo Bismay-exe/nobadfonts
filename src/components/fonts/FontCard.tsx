@@ -136,7 +136,7 @@ export default function FontCard({ font, viewMode = 'font', onClick, disableLink
             ) : (
                 // Fallback to text preview
                 <p
-                    className="p-6 text-8xl md:text-6xl text-gray-800 text-center wrap-break-word w-full transition-opacity duration-300"
+                    className="p-6 text-8xl md:text-7xl text-gray-900 text-center wrap-break-word w-full transition-opacity duration-300"
                     style={{
                         fontFamily: isFontLoaded ? `'font-${font.id}'` : 'sans-serif',
                         opacity: isFontLoaded ? 1 : 0
@@ -146,11 +146,11 @@ export default function FontCard({ font, viewMode = 'font', onClick, disableLink
                 </p>
             )}
 
-            <div className="absolute top-3 right-3 transition-opacity opacity-0 group-hover:opacity-100">
+            <div className="absolute top-2 right-2 transition-opacity opacity-0 group-hover:opacity-100">
                 <button
-                    className={`p-2 rounded-full shadow-sm transition-colors pointer-events-auto ${isFavorited
-                        ? 'bg-red-500 text-white hover:bg-red-600'
-                        : 'bg-black text-white hover:text-red-500'
+                    className={`p-2 rounded-full transition-colors pointer-events-auto ${isFavorited
+                        ? 'text-red-500 hover:text-red-700'
+                        : 'text-black hover:text-red-500'
                         }`}
                     onClick={toggleFavorite}
                 >
@@ -161,7 +161,7 @@ export default function FontCard({ font, viewMode = 'font', onClick, disableLink
             {/* Info Area */}
             <div className="absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/30 to-transparent p-4 grow flex flex-col justify-between opacity-0 group-hover:opacity-100 transition-opacity">
                 <div>
-                    <div className="flex justify-between items-start mb-1 gap-2">
+                    <div className="hidden justify-between items-start mb-1 gap-2">
                         <div className="flex flex-wrap gap-1">
                             {displayTags.map((tag, i) => (
                                 <div key={i} className="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full font-medium">
@@ -180,7 +180,7 @@ export default function FontCard({ font, viewMode = 'font', onClick, disableLink
             {disableLink ? (
                 <div
                     onClick={() => onClick?.(font)}
-                    className="h-full w-full bg-[#f4f4f4] flex items-center justify-center relative overflow-hidden group/preview cursor-pointer"
+                    className="h-full w-full bg-[#FBFBFB] flex items-center justify-center relative overflow-hidden group/preview cursor-pointer"
                 >
                     {CardContent}
                 </div>

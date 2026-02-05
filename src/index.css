@@ -1,4 +1,122 @@
 @import "tailwindcss";
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap");
+
+@theme {
+  --font-roboto-condensed: "Roboto Condensed", sans-serif;
+  --font-baleron: "Baleron", sans-serif;
+  --font-big-shoulders: "BigShoulders", sans-serif;
+  --font-rockinsoda: "Rockinsoda", sans-serif;
+  --font-western: "WesternHighland", serif;
+  --font-moldin: "Moldin", sans-serif;
+  --font-trunks: "TheLastTrunks", sans-serif;
+  --font-aestera: "Aestera", sans-serif;
+  --font-ahganirya: "Ahganirya", sans-serif;
+  --font-aspect-range: "AspectRange", sans-serif;
+  --font-authen-chastro: "AuthenChastro", sans-serif;
+  --font-categories-elegant: "CategoriesElegant", sans-serif;
+  --font-la-gagliane: "LaGagliane", sans-serif;
+  --font-marvella: "Marvella", sans-serif;
+  --font-mosca-laroke: "MoscaLaroke", sans-serif;
+  --font-ruigslay: "Ruigslay", sans-serif;
+}
+
+@font-face {
+  font-family: "Baleron";
+  src: url("/fonts/Baleron.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Rockinsoda";
+  src: url("/fonts/Rockinsoda.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "WesternHighland";
+  src: url("/fonts/Western Highland.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Moldin";
+  src: url("/fonts/moldin-demo.regular.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "TheLastTrunks";
+  src: url("/fonts/the-last-trunks.regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Aestera";
+  src: url("/fonts/aestera-personal-use.regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Ahganirya";
+  src: url("/fonts/ahganirya.personal-use.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "AspectRange";
+  src: url("/fonts/aspect-range-demo.regular.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "AuthenChastro";
+  src: url("/fonts/authen-chastro-demo.regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "CategoriesElegant";
+  src: url("/fonts/categories-elegant-demo.regular.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "LaGagliane";
+  src: url("/fonts/la-gagliane.personal-use.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Marvella";
+  src: url("/fonts/marvella-typeface.regular.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "MoscaLaroke";
+  src: url("/fonts/mosca-laroke.regular.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Ruigslay";
+  src: url("/fonts/ruigslay.regular.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
 
 body {
   margin: 0;
@@ -39,4 +157,18 @@ body {
 /* Pause animation on hover */
 .animate-scroll:hover {
   animation-play-state: paused;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin 8s linear infinite;
 }
