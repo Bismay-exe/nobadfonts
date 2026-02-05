@@ -8,7 +8,7 @@ export default function Navbar() {
     const [open, setOpen] = useState(false);
 
     return (
-        <nav className="w-full bg-red-500 border-y-2 border-black rounded-3xl p-3">
+        <nav className="w-full bg-[#ff0000] border-y-2 border-black rounded-3xl p-3">
             <div className="flex justify-between items-center">
                 <Link
                     to="/"
@@ -60,7 +60,7 @@ function NavLinks({
     onClick?: () => void;
 }) {
     const base =
-        'border border-black px-4 py-1 font-mono uppercase font-bold rounded-full bg-red-500 hover:bg-black hover:text-white transition-colors';
+        'border border-black px-4 py-1 font-mono uppercase font-bold rounded-full bg-[#ff0000] hover:bg-black hover:text-white transition-colors';
 
     return (
         <div className="flex flex-col md:flex-row justify-between items-end gap-2">

@@ -11,13 +11,6 @@ const Hero = () => {
         const ctx = gsap.context(() => {
             const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
 
-            // 1. Navigation Fade In
-            tl.from('nav', {
-                y: -20,
-                opacity: 0,
-                duration: 0.8,
-            });
-
             // 2. Main Title Stagger (Lines)
             tl.from('.hero-line', {
                 y: 100,
@@ -48,24 +41,24 @@ const Hero = () => {
     }, []);
 
     return (
-        <div ref={containerRef} className="w-full bg-black border-t-2 border-black rounded-3xl text-white font-rockinsoda selection:bg-red-500 selection:text-white overflow-hidden flex flex-col">
+        <div ref={containerRef} className="w-full h-full bg-black border-t-2 border-black rounded-3xl text-white font-rockinsoda selection:bg-[#ff0000] selection:text-white overflow-hidden flex flex-col">
 
             {/* Main Content */}
-            <main className="flex-1 flex flex-col justify-center items-center relative p-4 sm:p-8 md:p-16 py-14">
+            <main className="flex-1 flex flex-col justify-center items-center relative p-4 sm:p-8 md:p-26 py-14">
 
-                {/* Decorative background blur (Red-500 glow) */}
-                <div className="absolute top-0 left-0 -translate-x-1/2 -translate-y-1/2 w-[40vw] h-[40vw] bg-red-500/20 rounded-full blur-3xl pointer-events-none" />
-                <div className="absolute bottom-0 right-0 w-[20vw] h-[20vw] bg-red-500/20 rounded-full blur-3xl pointer-events-none" />
+                {/* Decorative background blur ([#ff0000] glow) */}
+                <div className="absolute top-0 left-0 -translate-x-1/2 -translate-y-1/2 w-[40vw] h-[40vw] bg-[#ff0000]/20 rounded-full blur-3xl pointer-events-none" />
+                <div className="absolute bottom-0 right-0 w-[20vw] h-[20vw] bg-[#ff0000]/20 rounded-full blur-3xl pointer-events-none" />
 
-                <div className="relative z-10 text-center max-w-5xl mx-auto">
+                <div className="relative z-10 text-center mx-auto">
                     {/* Heading */}
                     <h1 ref={titleRef} className="text-[12vw] md:text-[8vw] font-bold leading-[0.9] tracking-wide">
                         <div className="overflow-hidden">
                             <span className="hero-line block">Premium Quality.</span>
                         </div>
-                        <div className="overflow-">
+                        <div>
                             <span className="hero-line block text-white/90">
-                                Zero <span className="text-red-500 italic font-western font-normal tracking-tight">bad</span> Choices.
+                                Zero <span className="text-[#ff0000] italic font-western font-normal tracking-tight">bad</span> Choices.
                             </span>
                         </div>
                     </h1>
@@ -82,20 +75,20 @@ const Hero = () => {
                             <input
                                 type="text"
                                 placeholder="Try 'Inter' or 'Geist'..."
-                                className="w-full h-14 pl-6 pr-14 bg-gray-50 rounded-xl border border-transparent focus:border-red-500 focus:bg-white outline-none transition-all placeholder:text-gray-400 font-medium"
+                                className="w-full h-14 pl-6 pr-14 bg-gray-50 rounded-xl border border-transparent focus:border-[#ff0000] focus:bg-white outline-none transition-all placeholder:text-gray-400 font-medium"
                             />
-                            <button className="absolute right-2 top-2 h-10 w-10 bg-black text-white rounded-lg flex items-center justify-center group-focus-within:bg-red-500 transition-colors">
+                            <button className="absolute right-2 top-2 h-10 w-10 bg-black text-white rounded-lg flex items-center justify-center group-focus-within:bg-[#ff0000] transition-colors">
                                 <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                                 </svg>
                             </button>
                         </div>
 
-                        <div className="flex gap-4 text-sm font-semibold text-gray-400">
-                            <span>Popular:</span>
-                            <span className="text-black cursor-pointer hover:underline decoration-red-500 underline-offset-4">Helvetica</span>
-                            <span className="text-black cursor-pointer hover:underline decoration-red-500 underline-offset-4">Futura</span>
-                            <span className="text-black cursor-pointer hover:underline decoration-red-500 underline-offset-4">Garamond</span>
+                        <div className="flex gap-4 text-sm text-gray-300">
+                            <span className='text-gray-500'>Popular:</span>
+                            <span className="cursor-pointer hover:underline decoration-[#ff0000] underline-offset-4">Helvetica</span>
+                            <span className="cursor-pointer hover:underline decoration-[#ff0000] underline-offset-4">Futura</span>
+                            <span className="cursor-pointer hover:underline decoration-[#ff0000] underline-offset-4">Garamond</span>
                         </div>
                     </div>
                 </div>

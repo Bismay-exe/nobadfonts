@@ -267,17 +267,17 @@ const Landing: React.FC = () => {
             <style>{styles}</style>
 
             {/* Hero */}
-            <section className={`hero ${sectionClasses} ${centerFlexClasses} bg-(--dark) text-(--light)`}>
+            <section className={`hero phive-section relative w-full h-full py-15 bg-[#ff0000] text-black rounded-3xl overflow-hidden border-b-2 border-black ${centerFlexClasses}`}>
                 <h1 className="w-[calc(100%-4rem)] lg:w-1/2 uppercase text-5xl lg:text-[5rem] font-black tracking-[-0.02em] leading-[0.85] text-center">
-                    This space intentionally loud
+                    Fonts chosen with intent
                 </h1>
             </section>
 
             {/* Section 1 */}
             <section className={`sticky-text-1 ${sectionClasses} bg-(--light) text-(--dark) rounded-3xl`}>
                 <div className={`text-container ${absoluteCoverClasses}`}>
-                    <h1 className={`${bigTextClasses} text-[23vw] font-light`}>
-                        Overdrive
+                    <h1 className={`${bigTextClasses} text-[20vw] font-light`}>
+                        Handpicked
                     </h1>
                 </div>
             </section>
@@ -285,8 +285,8 @@ const Landing: React.FC = () => {
             {/* Section 2 */}
             <section className={`sticky-text-2 ${sectionClasses} bg-(--light) text-(--dark) rounded-3xl`}>
                 <div className={`text-container ${absoluteCoverClasses}`}>
-                    <h1 className={`${bigTextClasses} text-[35vw]`}>
-                        Static
+                    <h1 className={`${bigTextClasses} text-[38vw]`}>
+                        Clean
                     </h1>
                 </div>
             </section>
@@ -309,8 +309,8 @@ const Landing: React.FC = () => {
                 </div>
                 
                 <div className={`text-container ${absoluteCoverClasses} bg-(--dark) text-(--light)`}>
-                    <h1 className={`${bigTextClasses} text-[27vw]`}>
-                        Friction
+                    <h1 className={`${bigTextClasses} text-[18vw]`}>
+                        Typography
                     </h1>
                 </div>
 
@@ -331,9 +331,9 @@ const Landing: React.FC = () => {
             </section>
 
             {/* Outro */}
-            <section className={`hidden outro h-full ${centerFlexClasses} bg-white text-(--light) rounded-3xl border-b-2 border-black p-10`}>
+            <section className={`outro h-full ${centerFlexClasses} bg-white text-(--light) rounded-3xl border-b-2 border-black p-10`}>
                 <h1 className="lg:w-full text-[5rem] lg:text-[6rem] font-rockinsoda tracking-[-0.02em] leading-[0.85] text-center">
-                    Use Good Fonts from NoBadFonts.in
+                    Use fonts that actually work
                 </h1>
             </section>
         </div>

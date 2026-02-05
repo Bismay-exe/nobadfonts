@@ -230,7 +230,7 @@ const Landing5 = () => {
                                     <React.Fragment key={colIndex}>
                                         {item.type === 'text' ? (
                                             <div className="item with-text flex-1 md:flex-[1.5] flex justify-center items-center bg-transparent">
-                                                <h1 className="uppercase text-[60px] md:text-[140px] font-thin m-0 text-red-500">
+                                                <h1 className="uppercase text-[60px] md:text-[140px] font-thin m-0 text-[#ff0000]">
                                                     {item.content}
                                                 </h1>
                                             </div>
