@@ -3,6 +3,7 @@
 import React, { useLayoutEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import SplitType from 'split-type';
 import Lenis from 'lenis';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -113,6 +114,7 @@ const Landing5 = () => {
         const ctx = gsap.context(() => {
             // 1. Split Text
             // Note: We target the specific Tailwind class structure now
+            new SplitType('.item h1', { types: 'chars' });
 
             // 2. Marquee Animation
             const marqueeContainers = document.querySelectorAll('.marquee-container');

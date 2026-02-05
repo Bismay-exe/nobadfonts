@@ -3,6 +3,7 @@
 import { useLayoutEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import SplitType from 'split-type';
 import Lenis from 'lenis';
 
 // Register GSAP Plugin
@@ -25,6 +26,7 @@ const Landing = () => {
         // Context for GSAP (allows easy cleanup in React)
         const ctx = gsap.context(() => {
             // 1. Split Text Logic
+            new SplitType('.item h1', { types: 'chars' });
 
             // 2. Marquee Animation Logic
             const marqueeContainers = document.querySelectorAll('.marquee-container');

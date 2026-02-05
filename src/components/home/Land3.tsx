@@ -10,6 +10,7 @@ import { SplitText } from "gsap/SplitText";
 /* STYLES (Complex Transforms & Variables)                                    */
 /* -------------------------------------------------------------------------- */
 const styles = `
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap");
 
 :root {
   --dark: black;
@@ -261,7 +262,7 @@ const Landing: React.FC = () => {
     return (
         <div 
             ref={containerRef} 
-            className="phive-scroll-wrapper w-full overflow-x-hidden font-roboto-condensed"
+            className="phive-scroll-wrapper w-full overflow-x-hidden font-['Roboto_Condensed']"
         >
             <style>{styles}</style>
 

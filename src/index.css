@@ -3,6 +3,7 @@
 
 @theme {
   --font-roboto-condensed: "Roboto Condensed", sans-serif;
+  --font-big-shoulders-display: "Big Shoulders Display", sans-serif;
   --font-baleron: "Baleron", sans-serif;
   --font-big-shoulders: "BigShoulders", sans-serif;
   --font-rockinsoda: "Rockinsoda", sans-serif;
@@ -23,6 +24,13 @@
 @font-face {
   font-family: "Baleron";
   src: url("/fonts/Baleron.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "BigShoulders";
+  src: url("/fonts/BigShoulders.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
 }
