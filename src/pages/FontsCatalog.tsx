@@ -6,7 +6,6 @@ import EmptyState from '../components/shared/EmptyState';
 import { useFonts } from '../hooks/useFonts';
 import type { FontFilterParams } from '../types/font';
 
-import { useMediaQuery } from '../hooks/useMediaQuery';
 
 export default function FontsCatalog() {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -20,8 +19,6 @@ export default function FontsCatalog() {
     const [expandedFontId, setExpandedFontId] = useState<string | null>(null);
     const [globalExpanded, setGlobalExpanded] = useState(true);
     const [customText, setCustomText] = useState('');
-    const matches = useMediaQuery('(min-width: 768px)');
-    const isFontView = viewMode === 'font';
 
     const { fonts, loading, error } = useFonts(filters);
 
