@@ -12,9 +12,10 @@ interface FontCardProps {
     disableLink?: boolean;
     isExpanded?: boolean;
     onToggle?: () => void;
+    customText?: string;
 }
 
-export default function FontCard({ font, viewMode = 'font', onClick, disableLink = false, isExpanded: propIsExpanded, onToggle }: FontCardProps) {
+export default function FontCard({ font, viewMode = 'font', onClick, disableLink = false, isExpanded: propIsExpanded, onToggle, customText }: FontCardProps) {
     const { user } = useAuth();
     const navigate = useNavigate();
     const [isFontLoaded, setIsFontLoaded] = useState(false);
@@ -176,7 +177,7 @@ export default function FontCard({ font, viewMode = 'font', onClick, disableLink
                                 opacity: isFontLoaded ? 1 : 0
                             }}
                         >
-                            {font.name}
+                            {customText || font.name}
                         </p>
                     )}
                 </div>

@@ -19,7 +19,8 @@ export default function FontsCatalog() {
     const [viewMode, setViewMode] = useState<'font' | 'image'>('font');
     const [expandedFontId, setExpandedFontId] = useState<string | null>(null);
     const [globalExpanded, setGlobalExpanded] = useState(true);
-    const isDesktop = useMediaQuery('(min-width: 768px)');
+    const [customText, setCustomText] = useState('');
+    const matches = useMediaQuery('(min-width: 768px)');
     const isFontView = viewMode === 'font';
 
     const { fonts, loading, error } = useFonts(filters);
@@ -69,6 +70,8 @@ export default function FontsCatalog() {
                             setGlobalExpanded(!globalExpanded);
                             setExpandedFontId(null); // Clear individual selections when toggling all
                         }}
+                        customText={customText}
+                        onCustomTextChange={setCustomText}
                     />
                 </aside>
 
@@ -101,6 +104,7 @@ export default function FontsCatalog() {
                                     key={font.id}
                                     font={font}
                                     viewMode={viewMode}
+                                    customText={customText}
                                     {...getCardProps(font.id)}
                                 />
                             ))}
