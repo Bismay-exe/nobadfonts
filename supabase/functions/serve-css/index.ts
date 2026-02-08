@@ -63,7 +63,7 @@ Deno.serve(async (req) => {
                 // If CSS is at /css/foo, and we return ../font-file/bar, it works.
                 // Or just /font-file/bar (root relative).
                 // Let's use root relative: /font-file/
-                return `/font-file/${parts[1]}`;
+                return `https://www.nobadfonts.in/font-file/${parts[1]}`;
             }
             return storageUrl;
         };

@@ -8,5 +8,22 @@
       "source": "/font-file/:path*",
       "destination": "https://wcegdxhvgwbeskaidlxr.supabase.co/storage/v1/object/public/fonts/:path*"
     }
+  ],
+  "headers": [
+    {
+      "source": "/font-file/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET,OPTIONS" },
+        { "key": "Access-Control-Allow-Headers", "value": "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version" }
+      ]
+    },
+    {
+      "source": "/css/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET,OPTIONS" }
+      ]
+    }
   ]
 }
