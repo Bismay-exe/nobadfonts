@@ -125,7 +125,7 @@ export default function Filters({ filters, onChange, viewMode, onViewModeChange 
                     </button>
                 </div>
             )}
-    
+
 
             <div className="fixed bottom-8 inset-auto md:bottom-10 left-1/2 -translate-x-1/2 flex flex-col-reverse z-100">
 
@@ -178,40 +178,6 @@ export default function Filters({ filters, onChange, viewMode, onViewModeChange 
                                 <span className={`transform transition-transform ${isSortOpen ? 'rotate-180' : ''}`}>▼</span>
                             </button>
                         </div>
-
-                        {/* Dropdown Menu */}
-                        <div
-                            className={`
-                                w-46 -ml-32 md:w-73 md:-ml-50
-                                overflow-hidden
-                                transition-all
-                                duration-400
-                                ease-linear
-                                ${isSortOpen ? 'max-h-100 opacity-100 mb-0' : 'max-h-0 -mb-2 opacity-100 scale-0 pointer-events-none'}
-                            `}
-                        >
-                            <div className="overflow-hidden flex flex-col gap-1">
-                                {SORT_OPTIONS.map(opt => (
-                                    <button
-                                        key={opt.id}
-                                        onClick={() => {
-                                            handleChange('sortBy', opt.id);
-                                            setIsSortOpen(false);
-                                        }}
-                                        className={`
-                                            text-left px-4 py-2 rounded-full border border-black font-bold transition-colors cursor-pointer
-                                            ${filters.sortBy === opt.id
-                                                ? 'bg-black text-white'
-                                                : 'hover:bg-gray-100 text-gray-700'
-                                            }
-                                        `}
-                                    >
-                                        {opt.label}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-
                     </div>
                 </div>
 
@@ -252,6 +218,32 @@ export default function Filters({ filters, onChange, viewMode, onViewModeChange 
                                 </div>
                             </div>
                         ))}
+                    </div>
+                )}
+
+                {/* Sort Panel */}
+                {isSortOpen && (
+                    <div className="flex flex-col gap-3 rounded-4xl bg-[#EEEFEB]/50 backdrop-blur-2xl p-4 md:p-6 mb-5 border border-[#1C1D1E]/30">
+                        <h3 className="text-md font-black text-[#1C1D1E] uppercase px-1 cursor-default">
+                            Sort By
+                        </h3>
+                        <div className="flex gap-2 flex-wrap">
+                            {SORT_OPTIONS.map(opt => (
+                                <button
+                                    key={opt.id}
+                                    onClick={() => handleChange('sortBy', opt.id)}
+                                    className={`
+                                        px-3 py-1.5 font-bold rounded-full border text-xs md:text-sm transition-all duration-200 text-left cursor-pointer
+                                        ${(filters.sortBy || 'trending') === opt.id
+                                            ? "bg-[#1C1D1E] text-[#EEEFEB] border-[#1C1D1E]"
+                                            : "bg-transparent text-[#1C1D1E] border-[#1C1D1E] hover:bg-[#1C1D1E] hover:text-[#EEEFEB] hover:-translate-y-0.5"
+                                        }
+                                    `}
+                                >
+                                    {opt.label}
+                                </button>
+                            ))}
+                        </div>
                     </div>
                 )}
             </div>
