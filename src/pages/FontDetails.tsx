@@ -699,7 +699,7 @@ export default function FontDetails() {
                     '--mobile-ar': mobileAr,
                     '--desktop-ar': desktopAr,
                 } as React.CSSProperties}
-                className={`relative w-full bg-white rounded-3xl border-black flex justify-center items-center overflow-hidden group ${galleryImages.length > 0 ? 'aspect-(--mobile-ar) md:aspect-(--desktop-ar)' : 'h-[66vw] md:h-100'}`}
+                className={`relative w-full bg-white rounded-4xl border-black flex justify-center items-center overflow-hidden group ${galleryImages.length > 0 ? 'aspect-(--mobile-ar) md:aspect-(--desktop-ar)' : 'h-[66vw] md:h-100'}`}
             >
                 {galleryImages.length > 0 && (
                     <div className="absolute inset-0 z-20">
@@ -732,7 +732,7 @@ export default function FontDetails() {
                             <Edit2 size={16} /> Edit Gallery
                         </button>
                     ) : (
-                        <div className="bg-gray-50 border-2 border-black rounded-3xl p-6">
+                        <div className="bg-gray-50 border-2 border-black rounded-4xl p-6">
                             <div className="flex justify-between items-center mb-4">
                                 <h3 className="font-bold text-lg">Edit Gallery Images</h3>
                                 <div className="flex gap-2">
@@ -845,7 +845,7 @@ export default function FontDetails() {
 
             {/* Header */}
             <div className="relative justify-between items-start md:items-center">
-                <div className='flex flex-col items-start justify-end w-full md:w-auto bg-[#BDF522] rounded-3xl border-2 border-black p-4'>
+                <div className='flex flex-col items-start justify-end w-full md:w-auto bg-[#BDF522] rounded-4xl border-2 border-black p-4'>
                     {/* Back Button */}
                     {/* Back Button */}
                     <button
@@ -980,7 +980,7 @@ export default function FontDetails() {
                     </div>
                 </div>
 
-                <div className="flex flex-col items-start justify-end h-full w-auto bg-white rounded-3xl border-2 border-black p-4">
+                <div className="flex flex-col items-start justify-end h-full w-auto bg-white rounded-4xl border-2 border-black p-4">
                     <div className="flex flex-wrap gap-1">
                         {displayTags.map((tag, i) => (
                             <div key={i} className="bg-gray-900 text-gray-300 text-xs px-3 py-2 rounded-full font-medium">
@@ -1093,21 +1093,21 @@ export default function FontDetails() {
                     <div className="flex w-full md:w-auto">
                         <button
                             onClick={() => font.otf_url && downloadFont(font.otf_url, `${font.slug}.otf`)}
-                            className="flex-1 px-8 py-4 bg-[#BDF522] hover:bg-[#a9db1e] text-black font-black uppercase rounded-3xl border-2 border-black transition-all hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex items-center justify-center gap-2 group"
+                            className="flex-1 px-8 py-4 bg-[#BDF522] hover:bg-[#a9db1e] text-black font-black uppercase rounded-4xl border-2 border-black transition-all hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex items-center justify-center gap-2 group"
                         >
                             <Download className="group-hover:animate-bounce" />
                             Download Font
                         </button>
                         <button
                             onClick={handleFavorite}
-                            className={`px-6 py-4 rounded-3xl border-2 border-black transition-all hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] ${isFavorited ? 'bg-[#FF90E8] text-black' : 'bg-white text-black hover:bg-gray-50'}`}
+                            className={`px-6 py-4 rounded-4xl border-2 border-black transition-all hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] ${isFavorited ? 'bg-[#FF90E8] text-black' : 'bg-white text-black hover:bg-gray-50'}`}
                         >
                             <Heart className={isFavorited ? "fill-current" : ""} />
                         </button>
                         <button
                             onClick={handleShare}
                             disabled={shareLoading}
-                            className="px-6 py-4 bg-white hover:bg-gray-50 text-black rounded-3xl border-2 border-black transition-all hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="px-6 py-4 bg-white hover:bg-gray-50 text-black rounded-4xl border-2 border-black transition-all hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {shareLoading ? <Loader2 className="animate-spin" /> : <Share2 />}
                         </button>
@@ -1128,9 +1128,9 @@ export default function FontDetails() {
             </div>
 
             {/* Variant Previews Section */}
-            < div className='w-full bg-white/20 text-black rounded-3xl border-2 border-black overflow-hidden' >
+            < div className='w-full bg-white/20 text-black rounded-4xl border-2 border-black overflow-hidden' >
                 {/* Controller Row */}
-                < div className="flex flex-col md:flex-row items-center justify-between gap-6 p-6 rounded-3xl border-b border-black bg-white hover:bg-gray-100" >
+                < div className="flex flex-col md:flex-row items-center justify-between gap-6 p-6 rounded-4xl border-b border-black bg-white hover:bg-gray-100" >
                     <input
                         type="text"
                         value={variantPreviewText}
@@ -1154,7 +1154,7 @@ export default function FontDetails() {
                 {/* Variants List */}
                 {
                     font.font_variants?.map(variant => (
-                        <div key={variant.id} className="p-8 rounded-3xl border-b border-black bg-white hover:bg-gray-100 transition-colors">
+                        <div key={variant.id} className="p-8 rounded-4xl border-b border-black bg-white hover:bg-gray-100 transition-colors">
                             <div className="flex justify-between items-center mb-4">
                                 <span className="text-[8px] font-bold uppercase tracking-wider text-gray-500 bg-gray-200 px-2 py-1 rounded-xl">{variant.variant_name}</span>
                                 <div className="flex gap-2">
@@ -1195,7 +1195,7 @@ export default function FontDetails() {
             < div >
                 <div className="space-y-8">
                     <section>
-                        <h2 className="text-2xl font-bold py-4 px-4 bg-white rounded-3xl border-2 border-black">Interactive Tester</h2>
+                        <h2 className="text-2xl font-bold py-4 px-4 bg-white rounded-4xl border-2 border-black">Interactive Tester</h2>
                         <FontTester font={font} />
                     </section>
                 </div>
@@ -1227,7 +1227,7 @@ export default function FontDetails() {
 
             <div className="space-y-6">
 
-                <div className="bg-white rounded-3xl border border-gray-200 p-6">
+                <div className="bg-white rounded-4xl border border-gray-200 p-6">
                     <h3 className="font-bold text-2xl mb-4">Font Stats</h3>
                     <div className="space-y-2">
                         <div className="flex justify-between">
@@ -1243,7 +1243,7 @@ export default function FontDetails() {
             </div>
 
             {/* Variants Section */}
-            <div className="bg-white border border-black rounded-3xl p-6">
+            <div className="bg-white border border-black rounded-4xl p-6">
                 <div className="flex justify-between items-center mb-6">
                     <h3 className="font-bold text-lg">Font Variants</h3>
                     {profile?.role === 'admin' && (
@@ -1402,7 +1402,7 @@ export default function FontDetails() {
                                                 <button
                                                     key={format}
                                                     onClick={() => downloadFont(url as string, `${font.slug}-${variant.variant_name}.${format}`)}
-                                                    className="flex items-center justify-between px-6 py-4 bg-black text-white rounded-3xl hover:bg-[#00C2FF] hover:text-black border-2 border-transparent transition-all font-black uppercase text-sm"
+                                                    className="flex items-center justify-between px-6 py-4 bg-black text-white rounded-4xl hover:bg-[#00C2FF] hover:text-black border-2 border-transparent transition-all font-black uppercase text-sm"
                                                 >
                                                     <span className="flex items-center gap-2">
                                                         <Download size={18} />
@@ -1511,8 +1511,8 @@ export default function FontDetails() {
             {
                 similarFonts.length > 0 && (
                     <div>
-                        <div className="flex justify-between items-center gap-2 bg-white rounded-3xl border-y border-black p-1">
-                            <h3 className="bg-white rounded-3xl p-5 font-black text-3xl uppercase tracking-tight">Similar Fonts</h3>
+                        <div className="flex justify-between items-center gap-2 bg-white rounded-4xl border-y border-black p-1">
+                            <h3 className="bg-white rounded-4xl p-5 font-black text-3xl uppercase tracking-tight">Similar Fonts</h3>
 
                             <div className="flex items-center mr-2">
                                 <div className="flex bg-gray-100 h-11 p-1 w-auto rounded-full border border-gray-200">

@@ -10,6 +10,7 @@ import Members from './pages/Members';
 import MemberDetails from './pages/MemberDetails';
 import AdminDashboard from './pages/AdminDashboard';
 import FontPairing from './pages/FontPairing';
+import Cli from './pages/Cli';
 import { ScrollRestoration } from './components/layout/ScrollRestoration';
 import { AuthProvider } from './contexts/AuthContext';
 
@@ -30,6 +31,7 @@ function App() {
             <Route path="members" element={<Members />} />
             <Route path="members/:id" element={<MemberDetails />} />
             <Route path="admin" element={<AdminDashboard />} />
+            <Route path="cli" element={<Cli />} />
           </Route>
         </Routes>
       </Router>

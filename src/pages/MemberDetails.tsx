@@ -88,7 +88,7 @@ export default function MemberDetails() {
 
 
             {/* Header Profile Section */}
-            <div className={`border-b border-black rounded-3xl px-8 pt-24 pb-8 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden ${profile.role === 'admin' ? 'bg-[#BDF522]' : 'bg-[#FF90E8]'}`}>
+            <div className={`border-b border-black rounded-4xl px-8 pt-24 pb-8 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden ${profile.role === 'admin' ? 'bg-[#BDF522]' : 'bg-[#FF90E8]'}`}>
                 <button onClick={goBack} className="absolute top-8 left-8 flex items-center text-sm font-bold hover:text-gray-600 mb-8 transition-colors">
                     <ArrowLeft size={20} className="mr-2" />
                     Back to Members
@@ -183,7 +183,7 @@ export default function MemberDetails() {
 
 
             {/* Fonts Header with Toggle */}
-            <div className={`flex justify-between items-center px-8 py-4 text-black rounded-3xl border-black border-y ${profile.role === 'admin' ? 'bg-[#ffbaf1]' : 'bg-[#BDF522]'}
+            <div className={`flex justify-between items-center px-8 py-4 text-black rounded-4xl border-black border-y ${profile.role === 'admin' ? 'bg-[#ffbaf1]' : 'bg-[#BDF522]'}
                         `}>
                 <h2 className="text-3xl font-black uppercase flex flex-col items-start">
                     Uploaded Fonts
@@ -225,7 +225,7 @@ export default function MemberDetails() {
             </div>
             {
                 fonts.length === 0 && (
-                    <div className="text-center py-24 bg-gray-50 rounded-3xl border-2 border-dashed border-gray-300">
+                    <div className="text-center py-24 bg-gray-50 rounded-4xl border-2 border-dashed border-gray-300">
                         <p className="text-xl font-bold text-gray-400">This member hasn't uploaded any fonts yet.</p>
                     </div>
                 )

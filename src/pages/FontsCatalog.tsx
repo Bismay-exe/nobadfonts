@@ -34,7 +34,7 @@ export default function FontsCatalog() {
 
             <div className="col-span-1 lg:col-span-4 border-b-2 border-black flex flex-col lg:flex-col">
                 {/* Sidebar */}
-                <aside className="w-full shrink-0">
+                <aside className="w-full shrink-0 transition-all duration-300 ease-in-out">
                     <Filters
                         filters={filters}
                         onChange={setFilters}
@@ -46,19 +46,19 @@ export default function FontsCatalog() {
                 {/* Content */}
                 <div className="grow border-t border-black">
                     {error && (
-                        <div className="bg-red-50 text-red-600 p-4 rounded-3xl">
+                        <div className="bg-red-50 text-red-600 p-4 rounded-4xl">
                             Error loading fonts: {error}
                         </div>
                     )}
 
                     {loading ? (
-                        <div className="gap-1"
+                        <div className="gap-0"
                             style={{
                                 columnWidth: 'clamp(220px, 20vw, 320px)',
                             }}
                         >
-                            {[...Array(15)].map((_, i) => (
-                                <div key={i} className="bg-gray-100 rounded-3xl h-64 animate-pulse" />
+                            {[...Array(35)].map((_, i) => (
+                                <div key={i} className="bg-gray-100 rounded-4xl border border-[#1C1D1E] h-64 animate-pulse" />
                             ))}
                         </div>
                     ) : fonts.length > 0 ? (

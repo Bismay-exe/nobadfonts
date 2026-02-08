@@ -18,7 +18,7 @@ export default function ProfileHeader({ onEditClick, isEditing }: ProfileHeaderP
     const showReadMore = (profile?.bio && profile.bio.length > 150) || bioLines > 5;
 
     return (
-        <div className="bg-white rounded-3xl shadow-sm border-b-2 border-black p-8">
+        <div className="bg-white rounded-4xl shadow-sm border-b-2 border-black p-8">
             <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
                 {/* Avatar */}
                 <div className="w-24 h-24 rounded-full bg-linear-to-br from-blue-100 to-purple-100 flex items-center justify-center text-3xl font-bold text-gray-700 overflow-hidden shrink-0">

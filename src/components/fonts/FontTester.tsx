@@ -76,7 +76,7 @@ export default function FontTester({ font }: FontTesterProps) {
     }, [font, fontName]);
 
     return (
-        <div className="bg-white rounded-3xl border-2 border-black overflow-hidden flex flex-col h-full">
+        <div className="bg-white rounded-4xl border-2 border-black overflow-hidden flex flex-col h-full">
             {/* Header / Toggle */}
             <div className="flex border-b border-gray-100">
                 <button

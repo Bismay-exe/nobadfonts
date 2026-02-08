@@ -42,7 +42,7 @@ export default function AnalyticsDashboard() {
     if (loading) return <div className="p-8 text-center text-gray-500">Loading stats...</div>;
 
     if (stats.length === 0) return (
-        <div className="flex flex-col items-center justify-center py-16 bg-white border border-dashed border-gray-300 rounded-3xl">
+        <div className="flex flex-col items-center justify-center py-16 bg-white border border-dashed border-gray-300 rounded-4xl">
             <BarChart3 className="text-gray-300 mb-4" size={48} />
             <h3 className="text-xl font-bold text-gray-900">No Data Yet</h3>
             <p className="text-gray-500">Upload your first font to start tracking analytics.</p>
@@ -53,7 +53,7 @@ export default function AnalyticsDashboard() {
         <div className="space-y-8 animate-in fade-in duration-500">
             {/* Overview Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-black text-white p-6 rounded-3xl relative overflow-hidden group">
+                <div className="bg-black text-white p-6 rounded-4xl relative overflow-hidden group">
                     <div className="absolute top-0 right-0 p-6 opacity-20 group-hover:scale-110 transition-transform">
                         <Eye size={48} />
                     </div>
@@ -61,7 +61,7 @@ export default function AnalyticsDashboard() {
                     <h3 className="text-5xl font-black">{totals.views.toLocaleString()}</h3>
                 </div>
 
-                <div className="bg-[#BDF522] text-black p-6 rounded-3xl border-2 border-black relative overflow-hidden group">
+                <div className="bg-[#BDF522] text-black p-6 rounded-4xl border-2 border-black relative overflow-hidden group">
                     <div className="absolute top-0 right-0 p-6 opacity-20 group-hover:scale-110 transition-transform">
                         <Download size={48} />
                     </div>
@@ -69,7 +69,7 @@ export default function AnalyticsDashboard() {
                     <h3 className="text-5xl font-black">{totals.downloads.toLocaleString()}</h3>
                 </div>
 
-                <div className="bg-white text-black p-6 rounded-3xl border-2 border-black relative overflow-hidden group">
+                <div className="bg-white text-black p-6 rounded-4xl border-2 border-black relative overflow-hidden group">
                     <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:scale-110 transition-transform">
                         <Heart size={48} />
                     </div>
@@ -79,7 +79,7 @@ export default function AnalyticsDashboard() {
             </div>
 
             {/* Detailed Table */}
-            <div className="bg-white border-2 border-black rounded-3xl overflow-hidden">
+            <div className="bg-white border-2 border-black rounded-4xl overflow-hidden">
                 <div className="p-6 border-b border-gray-100 flex items-center justify-between">
                     <h3 className="text-xl font-black flex items-center gap-2">
                         <TrendingUp size={20} />

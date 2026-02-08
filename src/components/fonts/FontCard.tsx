@@ -126,7 +126,7 @@ export default function FontCard({ font, viewMode = 'font', onClick, disableLink
         <>
             {/* Content Area: Font Preview or Image */}
             {viewMode === 'image' && (font.preview_image_url || (font.gallery_images && font.gallery_images.length > 0)) ? (
-                <div className="w-full h-full flex items-center justify-center bg-gray-100">
+                <div className="w-full h-full flex items-center justify-center bg-[#EEEFEB] border border-[#1C1D1E]">
                     <img
                         src={font.preview_image_url || font.gallery_images?.[0]}
                         alt={font.name}
@@ -136,7 +136,7 @@ export default function FontCard({ font, viewMode = 'font', onClick, disableLink
             ) : (
                 // Fallback to text preview
                 <p
-                    className="p-6 text-8xl md:text-7xl text-gray-900 text-center wrap-break-word w-full transition-opacity duration-300"
+                    className="p-6 text-8xl md:text-8xl text-[#1C1D1E] text-center wrap-break-word w-full transition-opacity duration-300"
                     style={{
                         fontFamily: isFontLoaded ? `'font-${font.id}'` : 'sans-serif',
                         opacity: isFontLoaded ? 1 : 0
@@ -146,15 +146,15 @@ export default function FontCard({ font, viewMode = 'font', onClick, disableLink
                 </p>
             )}
 
-            <div className="absolute top-2 right-2 transition-opacity opacity-0 group-hover:opacity-100">
+            <div className="absolute bottom-2 left-2 transition-opacity opacity-0 group-hover:opacity-100">
                 <button
-                    className={`p-2 rounded-full transition-colors pointer-events-auto ${isFavorited
+                    className={`p-4 rounded-full transition-colors pointer-events-auto ${isFavorited
                         ? 'text-red-500 hover:text-red-700'
                         : 'text-black hover:text-red-500'
                         }`}
                     onClick={toggleFavorite}
                 >
-                    <Heart size={18} fill={isFavorited ? "currentColor" : "none"} />
+                    <Heart size={24} fill={isFavorited ? "currentColor" : "none"} />
                 </button>
             </div>
 
@@ -176,16 +176,16 @@ export default function FontCard({ font, viewMode = 'font', onClick, disableLink
     );
 
     return (
-        <div className="group relative rounded-3xl border border-black hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col h-full">
+        <div className="group relative rounded-4xl border border-black hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col h-full">
             {disableLink ? (
                 <div
                     onClick={() => onClick?.(font)}
-                    className="h-full w-full bg-[#FBFBFB] flex items-center justify-center relative overflow-hidden group/preview cursor-pointer"
+                    className="h-full w-full bg-[#EEEFEB] flex items-center justify-center relative overflow-hidden group/preview cursor-pointer"
                 >
                     {CardContent}
                 </div>
             ) : (
-                <Link to={`/fonts/${font.slug || font.id}`} className="h-full w-full bg-[#FBFBFB] flex items-center justify-center relative overflow-hidden group/preview">
+                <Link to={`/fonts/${font.slug || font.id}`} className="h-full w-full bg-[#EEEFEB] flex items-center justify-center relative overflow-hidden group/preview">
                     {CardContent}
                 </Link>
             )}

@@ -279,7 +279,7 @@ export default function FontPairing() {
             </div>
 
             {/* Hero / Instruction */}
-            <div className="bg-[#BDF522] rounded-3xl border-b-2 border-black px-6 py-12">
+            <div className="bg-[#BDF522] rounded-4xl border-b-2 border-black px-6 py-12">
                 <div className="max-w-7xl mx-auto">
                     <h1 className="text-5xl md:text-7xl font-black mb-6 tracking-tighter">
                         FONT PAIRING PLAYGROUND
@@ -295,7 +295,7 @@ export default function FontPairing() {
 
                 {/* Unified Playground Container */}
                 <div
-                    className="rounded-3xl border-y-2 border-black p-6 md:p-12 min-h-150 h-full relative transition-all duration-300"
+                    className="rounded-4xl border-y-2 border-black p-6 md:p-12 min-h-150 h-full relative transition-all duration-300"
                     style={{ backgroundColor: bgColor }}
                 >
 

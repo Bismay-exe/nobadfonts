@@ -55,7 +55,7 @@ export default function FontPickerSidebar({ isOpen, onClose, onSelect, activeSec
                     <div>
 
                         {/* Filters Section */}
-                        <div className="bg-white p-6 rounded-3xl border-y border-black">
+                        <div className="bg-white p-6 rounded-4xl border-y border-black">
                             <FontPairingFilters
                                 filters={filters}
                                 onChange={setFilters}
@@ -67,7 +67,7 @@ export default function FontPickerSidebar({ isOpen, onClose, onSelect, activeSec
                         {/* Results Section */}
                         <div>
                             {error && (
-                                <div className="bg-red-50 text-red-600 p-4 rounded-3xl border-y border-red-200">
+                                <div className="bg-red-50 text-red-600 p-4 rounded-4xl border-y border-red-200">
                                     Error loading fonts: {error}
                                 </div>
                             )}
@@ -75,7 +75,7 @@ export default function FontPickerSidebar({ isOpen, onClose, onSelect, activeSec
                             {loading ? (
                                 <div className="columns-1 gap-0">
                                     {[...Array(6)].map((_, i) => (
-                                        <div key={i} className="bg-white rounded-3xl h-48 animate-pulse border-2 border-gray-200" />
+                                        <div key={i} className="bg-white rounded-4xl h-48 animate-pulse border-2 border-gray-200" />
                                     ))}
                                 </div>
                             ) : fonts.length > 0 ? (

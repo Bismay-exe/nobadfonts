@@ -136,7 +136,7 @@ export default function Auth() {
                     </div>
                 )}
 
-                <div className="w-full bg-white/0 text-white p-2 md:p-16 rounded-3xl">
+                <div className="w-full bg-white/0 text-white p-2 md:p-16 rounded-4xl">
                     <h2 className="text-3xl font-bold mb-2">
                         {isVerifying ? 'Verify Email' : (isLogin ? 'Welcome Back' : 'Create Account')}
                     </h2>
@@ -278,7 +278,7 @@ export default function Auth() {
             </div>
 
             {/* Branding Side */}
-            <div className="flex w-full h-[40%] md:h-full bg-black border-10 border-[#FFF] rounded-3xl overflow-hidden p-0">
+            <div className="flex w-full h-[40%] md:h-full bg-black border-10 border-[#FFF] rounded-4xl overflow-hidden p-0">
                 <PreviewAccordion
                     vertical={true}
                     images={[

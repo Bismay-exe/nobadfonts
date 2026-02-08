@@ -1,0 +1,9 @@
+﻿{
+    "success":  true,
+    "results":  {
+                    "twitter":  "Failed: Twitter Tweet failed: {\"account_id\":2020064317912309760,\"title\":\"CreditsDepleted\",\"detail\":\"Your enrolled account [2020064317912309760] does not have any credits to fulfill this request.\",\"type\":\"https://api.twitter.com/2/problems/credits\"}",
+                    "facebook":  "Failed: FB Post failed: {\"error\":{\"message\":\"Error validating access token: The session is invalid because the user logged out.\",\"type\":\"OAuthException\",\"code\":190,\"error_subcode\":467,\"fbtrace_id\":\"A5eYtR2rhRvB6PnFtShUeRL\"}}",
+                    "instagram":  "Failed: IG Container creation failed: {\"error\":{\"message\":\"Error validating access token: The session is invalid because the user logged out.\",\"type\":\"OAuthException\",\"code\":190,\"error_subcode\":467,\"fbtrace_id\":\"Az4mQ4lqhTuVxhB3hAP3FLr\"}}",
+                    "linkedin":  "Skipped (No Token or Person URN)"
+                }
+}

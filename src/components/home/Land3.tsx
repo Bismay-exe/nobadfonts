@@ -13,8 +13,8 @@ const styles = `
 @import url("https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap");
 
 :root {
-  --dark: black;
-  --light: red;
+  --dark: #1C1D1E;
+  --light: #EEEFEB;
 }
 
 /* Initial state for text scaling animation (Must remain in CSS for precision) */
@@ -267,14 +267,14 @@ const Landing: React.FC = () => {
             <style>{styles}</style>
 
             {/* Hero */}
-            <section className={`hero phive-section relative w-full h-full py-15 bg-[#ff0000] text-black rounded-3xl overflow-hidden border-b-2 border-black ${centerFlexClasses}`}>
+            <section className={`hero phive-section relative w-full h-full py-15 bg-(--light) text-black rounded-4xl overflow-hidden border-y border-(--dark) ${centerFlexClasses}`}>
                 <h1 className="w-[calc(100%-4rem)] lg:w-1/2 uppercase text-5xl lg:text-[5rem] font-black tracking-[-0.02em] leading-[0.85] text-center">
                     Fonts chosen with intent
                 </h1>
             </section>
 
             {/* Section 1 */}
-            <section className={`sticky-text-1 ${sectionClasses} bg-(--light) text-(--dark) rounded-3xl`}>
+            <section className={`sticky-text-1 ${sectionClasses} bg-(--light) text-(--dark) rounded-4xl`}>
                 <div className={`text-container ${absoluteCoverClasses}`}>
                     <h1 className={`${bigTextClasses} text-[20vw] font-light`}>
                         Handpicked
@@ -283,7 +283,7 @@ const Landing: React.FC = () => {
             </section>
 
             {/* Section 2 */}
-            <section className={`sticky-text-2 ${sectionClasses} bg-(--light) text-(--dark) rounded-3xl`}>
+            <section className={`sticky-text-2 ${sectionClasses} bg-(--light) text-(--dark) rounded-4xl`}>
                 <div className={`text-container ${absoluteCoverClasses}`}>
                     <h1 className={`${bigTextClasses} text-[38vw]`}>
                         Clean
@@ -292,7 +292,7 @@ const Landing: React.FC = () => {
             </section>
 
             {/* Section 3 */}
-            <section className={`sticky-text-3 ${sectionClasses} text-(--light) rounded-3xl`}>
+            <section className={`sticky-text-3 ${sectionClasses} text-(--light) rounded-4xl`}>
                 <div className="bg-img absolute inset-0 w-full h-full z-0">
                     <img 
                         src="/images/bg.avif" 
@@ -315,7 +315,7 @@ const Landing: React.FC = () => {
                 </div>
 
                 <div className="header absolute h-full w-full flex justify-center items-center z-0">
-                    <h1 className="w-screen uppercase text-[18vw] md:text-[14vw] lg:text-[10vw] font-categories-elegant tracking-tight leading-[1.3] text-center">
+                    <h1 className="w-screen text-[#ff0000] uppercase text-[18vw] md:text-[14vw] lg:text-[10vw] font-categories-elegant tracking-tight leading-[1.3] text-center">
                         <div className="hidden lg:block">Seriously</div>
                         <div className="lg:hidden">Just</div>
                         <h2 className="flex flex-col lg:flex-row lg:justify-center lg:gap-[16vw] gap-0">
@@ -331,9 +331,9 @@ const Landing: React.FC = () => {
             </section>
 
             {/* Outro */}
-            <section className={`outro h-full ${centerFlexClasses} bg-white text-(--light) rounded-3xl border-b-2 border-black p-10`}>
-                <h1 className="lg:w-full text-[5rem] lg:text-[6rem] font-rockinsoda tracking-[-0.02em] leading-[0.85] text-center">
-                    Use fonts that actually work
+            <section className={`hidden outro h-full ${centerFlexClasses} bg-[#EEEFEB] text-(--light) rounded-4xl border-y border-[#1C1D1E] p-10`}>
+                <h1 className="lg:w-full text-[5rem] lg:text-[6rem] font- tracking-[-0.02em] leading-[0.85] text-center">
+                    Use Good Fonts from NoBadFonts.in
                 </h1>
             </section>
         </div>

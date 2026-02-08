@@ -1,0 +1,27 @@
+{
+  "name": "nobadfonts-cli",
+  "version": "1.1.11",
+  "description": "CLI tool to instantly install fonts from NoBadFonts",
+  "files": [
+    "index.js",
+    "package.json",
+    "README.md",
+    "PUBLISHING.md"
+  ],
+  "preferGlobal": true,
+  "bin": {
+    "nobadfonts-cli": "index.js",
+    "nobadfonts": "index.js"
+  },
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "node-fetch": "^2.6.7",
+    "ora": "^5.4.1",
+    "fs-extra": "^10.0.0"
+  },
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js"
+  }
+}

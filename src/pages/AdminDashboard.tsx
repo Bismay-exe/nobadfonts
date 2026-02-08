@@ -360,13 +360,13 @@ export default function AdminDashboard() {
     if (!user || profile?.role !== 'admin') return <Navigate to="/" replace />;
 
     return (
-        <div className="mx-auto bg-white/0 rounded-3xl">
-            <div className="bg-[#BDF522] rounded-3xl p-8 border-y border-black">
+        <div className="mx-auto bg-white/0 rounded-4xl">
+            <div className="bg-[#BDF522] rounded-4xl p-8 border-y border-black">
                 <h1 className="text-4xl text-center md:text-left font-black uppercase">Admin Dashboard</h1>
             </div>
 
             {/* Tabs */}
-            <div className='bg-white rounded-3xl p-2 border-y border-black'>
+            <div className='bg-white rounded-4xl p-2 border-y border-black'>
                 <div className="flex flex-wrap gap-4 px-1 py-4">
                     <button
                         onClick={() => setActiveTab('requests')}
@@ -409,7 +409,7 @@ export default function AdminDashboard() {
                 </div>
             </div>
 
-            <div className="bg-white border-2 border-black rounded-3xl px-4 md:px-8 pt-8 md:pt-8 pb-4 md:pb-8 min-h-[50vh]">
+            <div className="bg-white border-2 border-black rounded-4xl px-4 md:px-8 pt-8 md:pt-8 pb-4 md:pb-8 min-h-[50vh]">
                 {loading ? (
                     <div className="flex justify-center p-8">
                         <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-black"></div>
@@ -777,7 +777,7 @@ export default function AdminDashboard() {
                                     </h3>
                                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                                         {/* Chart */}
-                                        <div className="flex flex-col justify-between bg-white p-6 rounded-3xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                                        <div className="flex flex-col justify-between bg-white p-6 rounded-4xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
                                             <h3 className="font-bold text-lg mb-6">Downloads Trend</h3>
                                             <div className="h-64 w-full -translate-x-5 md:-translate-x-8">
                                                 <ResponsiveContainer width="100%" height="100%">
@@ -810,7 +810,7 @@ export default function AdminDashboard() {
                                         </div>
 
                                         {/* Top Fonts */}
-                                        <div className="bg-white p-6 rounded-3xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                                        <div className="bg-white p-6 rounded-4xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
                                             <h3 className="font-bold text-lg mb-6">Top Downloaded Fonts</h3>
                                             <div className='overflow-y-auto h-65'>
                                                 {topDownloadedFonts.length > 0 ? (
@@ -843,7 +843,7 @@ export default function AdminDashboard() {
                                     </h3>
                                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                                         {/* Chart */}
-                                        <div className="flex flex-col justify-between bg-white p-6 rounded-3xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                                        <div className="flex flex-col justify-between bg-white p-6 rounded-4xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
                                             <h3 className="font-bold text-lg mb-6 text-pink-600">Favorites Trend</h3>
                                             <div className="h-64 w-full -translate-x-5 md:-translate-x-8">
                                                 <ResponsiveContainer width="100%" height="100%">
@@ -876,7 +876,7 @@ export default function AdminDashboard() {
                                         </div>
 
                                         {/* Top Fonts */}
-                                        <div className="bg-white p-6 rounded-3xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                                        <div className="bg-white p-6 rounded-4xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
                                             <h3 className="font-bold text-lg mb-6 text-pink-600">Top Favorited Fonts</h3>
                                             <div className='overflow-y-auto h-80'>
                                                 {topFavoritedFonts.length > 0 ? (

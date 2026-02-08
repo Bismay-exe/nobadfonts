@@ -13,7 +13,7 @@ export default function FontGrid({ fonts, emptyMessage = "No fonts found.", load
         return (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {[...Array(4)].map((_, i) => (
-                    <div key={i} className="bg-gray-100 rounded-3xl h-64 animate-pulse" />
+                    <div key={i} className="bg-gray-100 rounded-4xl h-64 animate-pulse" />
                 ))}
             </div>
         );
@@ -21,7 +21,7 @@ export default function FontGrid({ fonts, emptyMessage = "No fonts found.", load
 
     if (fonts.length === 0) {
         return (
-            <div className="text-center py-12 bg-gray-50 rounded-3xl border border-dashed border-gray-200">
+            <div className="text-center py-12 bg-gray-50 rounded-4xl border border-dashed border-gray-200">
                 <p className="text-gray-500">{emptyMessage}</p>
             </div>
         );

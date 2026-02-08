@@ -30,7 +30,7 @@ class ErrorBoundary extends Component<Props, State> {
         if (this.state.hasError) {
             return (
                 <div className="min-h-screen flex items-center justify-center bg-red-50 p-8">
-                    <div className="bg-white p-8 rounded-3xl shadow-xl max-w-2xl w-full border-2 border-red-200">
+                    <div className="bg-white p-8 rounded-4xl shadow-xl max-w-2xl w-full border-2 border-red-200">
                         <h1 className="text-3xl font-bold text-red-600 mb-4">Something went wrong</h1>
                         <div className="bg-gray-100 p-4 rounded-xl overflow-auto mb-4">
                             <p className="font-mono text-red-800 font-bold mb-2">

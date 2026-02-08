@@ -36,7 +36,7 @@ const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, imageSrc, font
             ></div>
 
             {/* Modal Content */}
-            <div className="relative z-10 bg-white rounded-3xl p-6 md:p-8 max-w-4xl w-full shadow-2xl flex flex-col gap-6 animate-in fade-in zoom-in duration-200">
+            <div className="relative z-10 bg-white rounded-4xl p-6 md:p-8 max-w-4xl w-full shadow-2xl flex flex-col gap-6 animate-in fade-in zoom-in duration-200">
                 {/* Header */}
                 <div className="flex justify-between items-center">
                     <h2 className="text-2xl font-black uppercase">Share Font</h2>

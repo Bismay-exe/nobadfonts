@@ -91,7 +91,7 @@ export function PreviewAccordion({ images, vertical = false }: { images: string[
     return (
         <div
             ref={containerRef}
-            className={`w-full h-full flex overflow-hidden bg-white group ${vertical ? 'flex-col rounded-3xl' : 'flex-col md:flex-row rounded-3xl border-2 border-black'}`}
+            className={`w-full h-full flex overflow-hidden bg-white group ${vertical ? 'flex-col rounded-4xl' : 'flex-col md:flex-row rounded-4xl border-2 border-black'}`}
             onMouseEnter={() => setPaused(true)}
             onMouseLeave={() => setPaused(false)}
             onTouchStart={handleTouchStart}

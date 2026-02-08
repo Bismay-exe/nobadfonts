@@ -1,34 +1,34 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useState } from 'react';
-import Red from '/logo/logo-red.png';
+import White from '/logo/logo-white.png';
 
 export default function Navbar() {
     const { user, profile } = useAuth();
     const [open, setOpen] = useState(false);
 
     return (
-        <nav className="w-full bg-[#ff0000] border-y-2 border-black rounded-3xl p-3">
+        <nav className="w-full bg-[#EEEFEB] border-y border-[#1C1D1E] rounded-4xl p-3">
             <div className="flex justify-between items-center">
                 <Link
                     to="/"
-                    className="h-10 w-10 flex items-center gap-2 font-black bg-black p-1.5 rounded-xl text-[#000000] text-2xl tracking-tighter"
+                    className="h-15 w-15 flex items-center gap-2 font-black bg-[#1C1D1E] p-1.5 rounded-2xl text-[#1C1D1E] text-3xl lg:text-5xl tracking-tighter"
                 >
 
-                    <img src={Red} alt="Logo" className='mr-2' />NoBadFonts
+                    <img src={White} alt="Logo" className='mr-2' />NoBadFonts
                 </Link>
 
                 {/* Mobile menu button */}
                 <button
                     onClick={() => setOpen(!open)}
-                    className="md:hidden border-2 border-black bg-[#000000] text-white rounded-full px-6 py-2 font-bold"
+                    className="lg:hidden border-2 border-[#1C1D1E] bg-[#1C1D1E] text-[#EEEFEB] rounded-full px-6 py-4 font-bold"
                     aria-label="Toggle menu"
                 >
                     ☰
                 </button>
 
                 {/* Desktop menu */}
-                <div className="hidden md:flex md:space-x-4 items-center">
+                <div className="hidden lg:flex lg:space-x-4 items-center">
                     <NavLinks user={user} profile={profile} />
                 </div>
             </div>
@@ -36,7 +36,7 @@ export default function Navbar() {
             {/* Mobile menu with animation */}
             <div
                 className={`
-                md:hidden
+                lg:hidden
                 overflow-hidden
                 transition-all
                 duration-400
@@ -60,15 +60,21 @@ function NavLinks({
     onClick?: () => void;
 }) {
     const base =
-        'border border-black px-4 py-1 font-mono uppercase font-bold rounded-full bg-[#ff0000] hover:bg-black hover:text-white transition-colors';
+        'relative border border-[#1C1D1E] px-6 lg:px-8 py-3 lg:py-4 font-mono uppercase font-bold rounded-full bg-[#1C1D1E] hover:bg-[#1C1D1E] text-[#EEEFEB] hover:text-[#EEEFEB] transition-colors';
 
     return (
-        <div className="flex flex-col md:flex-row justify-between items-end gap-2">
+        <div className="flex flex-col lg:flex-row justify-between items-end gap-2">
             <Link to="/fonts" onClick={onClick} className={base}>
                 Fonts
             </Link>
             <Link to="/pairing" onClick={onClick} className={base}>
                 Pairing
+            </Link>
+            <Link to="/cli" onClick={onClick} className={`${base} relative group overflow-visible`}>
+                <div className="absolute -top-2 -left-2 lg:left-auto right-auto lg:-right-2 bg-[#BDF522] text-black text-[14px] px-2.5 py-0.5 rounded-full border border-black font-black animate-bounce">
+                    NEW
+                </div>
+                CLI
             </Link>
             <Link to="/members" onClick={onClick} className={base}>
                 Members

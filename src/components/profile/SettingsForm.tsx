@@ -78,7 +78,7 @@ export default function SettingsForm({ onCancel }: { onCancel: () => void }) {
     };
 
     return (
-        <div className="bg-white rounded-3xl shadow-sm border-b-2 border-black p-8 mx-auto">
+        <div className="bg-white rounded-4xl shadow-sm border-b-2 border-black p-8 mx-auto">
             <h2 className="text-xl font-bold mb-6">Edit Profile</h2>
 
             {message && (
@@ -94,7 +94,7 @@ export default function SettingsForm({ onCancel }: { onCancel: () => void }) {
                         type="text"
                         value={fullName}
                         onChange={(e) => setFullName(e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-3xl focus:ring-2 focus:ring-blue-500 outline-none"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-4xl focus:ring-2 focus:ring-blue-500 outline-none"
                         required
                     />
                 </div>
@@ -107,7 +107,7 @@ export default function SettingsForm({ onCancel }: { onCancel: () => void }) {
                             type="text"
                             value={username}
                             onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
-                            className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-3xl focus:ring-2 focus:ring-blue-500 outline-none font-mono"
+                            className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-4xl focus:ring-2 focus:ring-blue-500 outline-none font-mono"
                             placeholder="username"
                             required
                         />
@@ -127,7 +127,7 @@ export default function SettingsForm({ onCancel }: { onCancel: () => void }) {
                         onChange={(e) => setBio(e.target.value)}
                         rows={4}
                         maxLength={150}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-3xl focus:ring-2 focus:ring-blue-500 outline-none resize-none"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-4xl focus:ring-2 focus:ring-blue-500 outline-none resize-none"
                         placeholder="Tell us a bit about yourself..."
                     />
                 </div>
@@ -139,35 +139,35 @@ export default function SettingsForm({ onCancel }: { onCancel: () => void }) {
                             type="url"
                             value={website}
                             onChange={(e) => setWebsite(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-3xl focus:ring-2 focus:ring-blue-500 outline-none"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-4xl focus:ring-2 focus:ring-blue-500 outline-none"
                             placeholder="Personal Website URL"
                         />
                         <input
                             type="url"
                             value={behance}
                             onChange={(e) => setBehance(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-3xl focus:ring-2 focus:ring-blue-500 outline-none"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-4xl focus:ring-2 focus:ring-blue-500 outline-none"
                             placeholder="Behance URL"
                         />
                         <input
                             type="url"
                             value={twitter}
                             onChange={(e) => setTwitter(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-3xl focus:ring-2 focus:ring-blue-500 outline-none"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-4xl focus:ring-2 focus:ring-blue-500 outline-none"
                             placeholder="Twitter/X URL"
                         />
                         <input
                             type="url"
                             value={instagram}
                             onChange={(e) => setInstagram(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-3xl focus:ring-2 focus:ring-blue-500 outline-none"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-4xl focus:ring-2 focus:ring-blue-500 outline-none"
                             placeholder="Instagram URL"
                         />
                         <input
                             type="url"
                             value={linkedin}
                             onChange={(e) => setLinkedin(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-3xl focus:ring-2 focus:ring-blue-500 outline-none"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-4xl focus:ring-2 focus:ring-blue-500 outline-none"
                             placeholder="LinkedIn URL"
                         />
                     </div>
@@ -181,7 +181,7 @@ export default function SettingsForm({ onCancel }: { onCancel: () => void }) {
                             type="text"
                             value={paypalMe}
                             onChange={(e) => setPaypalMe(e.target.value)}
-                            className="w-full pl-28 pr-4 py-2 border rounded-3xl focus:ring-2 focus:ring-blue-500 outline-none bg-blue-50 border-blue-200"
+                            className="w-full pl-28 pr-4 py-2 border rounded-4xl focus:ring-2 focus:ring-blue-500 outline-none bg-blue-50 border-blue-200"
                             placeholder="username"
                         />
                     </div>
