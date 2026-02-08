@@ -316,9 +316,11 @@ const Upload = () => {
                 for (const format of ['ttf', 'otf', 'woff', 'woff2'] as const) {
                     const file = variant.files[format];
                     if (file) {
-                        const fileName = file.name;
+                        const variantSlug = variant.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+                        // Force appropriate extension based on format to ensure consistency
+                        const newFileName = `${slug}-${variantSlug}.${format}`;
                         // Use the specific folder structure for variants: [id]/[slug]/variants/[VariantName]/[filename]
-                        const variantPath = `${folderPath}/variants/${variant.name}/${fileName}`;
+                        const variantPath = `${folderPath}/variants/${variant.name}/${newFileName}`;
 
                         const uploadVariantFile = async () => {
                             const { error: uploadError } = await supabase.storage

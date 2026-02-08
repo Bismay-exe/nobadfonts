@@ -1,0 +1,15 @@
+@import url("https://www.nobadfonts.in/css/lct-mogi");
+@import url("https://www.nobadfonts.in/css/gendy-npr2");
+@import url("https://www.nobadfonts.in/css/bold-mype-eeyq");
+
+@theme {
+  --font-bold-mype-eeyq: "BOLD MYPE", sans-serif;
+}
+
+@theme {
+  --font-gendy-npr2: "Gendy", sans-serif;
+}
+
+@theme {
+  --font-lct-mogi: "LCT-Mogi", sans-serif;
+}

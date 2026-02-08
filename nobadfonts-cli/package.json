@@ -1,6 +1,6 @@
 {
   "name": "nobadfonts-cli",
-  "version": "1.1.11",
+  "version": "1.1.13",
   "description": "CLI tool to instantly install fonts from NoBadFonts",
   "files": [
     "index.js",

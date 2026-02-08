@@ -12,26 +12,43 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 const args = process.argv.slice(2);
 const command = args[0];
-const targetFont = args[1];
+const targetFonts = args.slice(1);
 
 if (!command) {
-    console.log(chalk.yellow('Usage: npx nobadfonts add <font-name>'));
+    console.log(chalk.yellow('Usage: npx nobadfonts <command> <font-name> [font-name-2] ...'));
+    console.log(chalk.yellow('Commands:'));
+    console.log(chalk.yellow('  add <fonts...>       Import fonts via CSS (Lightweight)'));
+    console.log(chalk.yellow('  download <fonts...>  Download font files locally'));
+    console.log(chalk.yellow('  list                 List available fonts'));
     process.exit(1);
 }
 
-if (command === 'add') {
-    if (!targetFont) {
-        console.log(chalk.red('Please specify a font name. Example: npx nobadfonts add "Inter"'));
+// Wrap main logic in async IIFE to use await
+(async () => {
+    if (command === 'add') {
+        if (targetFonts.length === 0) {
+            console.log(chalk.red('Please specify at least one font name. Example: npx nobadfonts add "Inter" "Roboto"'));
+            process.exit(1);
+        }
+        for (const font of targetFonts) {
+            await addFont(font);
+        }
+    } else if (command === 'download') {
+        if (targetFonts.length === 0) {
+            console.log(chalk.red('Please specify at least one font name. Example: npx nobadfonts download "Inter" "Roboto"'));
+            process.exit(1);
+        }
+        for (const font of targetFonts) {
+            await downloadFont(font);
+        }
+    } else if (command === 'list') {
+        await listFonts();
+    } else {
+        console.log(chalk.red(`Unknown command: ${command}`));
+        console.log(chalk.yellow('Available commands: add, download, list'));
         process.exit(1);
     }
-    addFont(targetFont);
-} else if (command === 'list') {
-    listFonts();
-} else {
-    console.log(chalk.red(`Unknown command: ${command}`));
-    console.log(chalk.yellow('Available commands: add <font>, list'));
-    process.exit(1);
-}
+})();
 
 async function listFonts() {
     const spinner = ora('Fetching available fonts...').start();
@@ -51,47 +68,117 @@ async function listFonts() {
             const categories = f.tags && f.tags.length > 0 ? f.tags.join(', ') : f.category;
             console.log(`${chalk.green('•')} ${chalk.white(f.name)} ${chalk.gray(`(${categories})`)}`);
         });
-        console.log('\nTo install: ' + chalk.yellow('npx nobadfonts-cli add "Font Name"'));
+        console.log('\nTo install (CSS Import): ' + chalk.yellow('npx nobadfonts-cli add "Font Name"'));
+        console.log('To download (Local Files): ' + chalk.yellow('npx nobadfonts-cli download "Font Name"'));
 
     } catch (e) {
         spinner.fail('Error fetching fonts: ' + e.message);
     }
 }
 
+async function getFontData(fontName, spinner) {
+    // Search for font by name or slug
+    const searchUrl = `${SUPABASE_URL}/rest/v1/fonts?or=(name.ilike.*${fontName}*,slug.ilike.*${fontName}*)&select=*,font_variants(*)&limit=1`;
+
+    const response = await fetch(searchUrl, {
+        headers: {
+            'apikey': SUPABASE_ANON_KEY,
+            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+        }
+    });
+
+    if (!response.ok) {
+        throw new Error(`Failed to fetch font data: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+
+    if (!data || data.length === 0) {
+        spinner.fail(chalk.red(`Font "${fontName}" not found.`));
+        return null;
+    }
+
+    const font = data[0];
+    spinner.succeed(chalk.green(`Found font: ${font.name}`));
+    return font;
+}
+
+// New lightweight add command (CSS Import)
 async function addFont(fontName) {
     const spinner = ora(`Searching for font: ${fontName}...`).start();
 
     try {
-        // Search for font by name or slug
-        const searchUrl = `${SUPABASE_URL}/rest/v1/fonts?or=(name.ilike.*${fontName}*,slug.ilike.*${fontName}*)&select=*,font_variants(*)&limit=1`;
+        const font = await getFontData(fontName, spinner);
+        if (!font) return;
 
-        const response = await fetch(searchUrl, {
-            headers: {
-                'apikey': SUPABASE_ANON_KEY,
-                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-            }
-        });
+        const outputCssPath = path.join(process.cwd(), 'src', 'fonts.css');
 
-        if (!response.ok) {
-            throw new Error(`Failed to fetch font data: ${response.statusText}`);
+        // Ensure fonts.css exists
+        if (!(await fs.pathExists(outputCssPath))) {
+            await fs.outputFile(outputCssPath, '');
         }
 
-        const data = await response.json();
+        let existingCss = await fs.readFile(outputCssPath, 'utf8');
 
-        if (!data || data.length === 0) {
-            spinner.fail(chalk.red(`Font "${fontName}" not found.`));
+        // Check if already imported
+        if (existingCss.includes(`/css/${font.slug}`)) {
+            spinner.info(chalk.yellow(`Font "${font.name}" is already imported in src/fonts.css`));
             return;
         }
 
-        const font = data[0];
-        spinner.succeed(chalk.green(`Found font: ${font.name}`));
+        spinner.start('Updating src/fonts.css...');
+
+        const importLine = `@import url("https://www.nobadfonts.in/css/${font.slug}");`;
+        const themeBlock = `
+@theme {
+  --font-${font.slug}: "${font.name}", sans-serif;
+}
+`;
+        // Prepend import, Append theme config (roughly)
+        // Actually, to keep it valid (imports at top), we need to carefully insert.
+        // Simple strategy: 
+        // 1. Gather existing imports.
+        // 2. Gather existing theme blocks or other CSS.
+        // 3. Reconstruct.
+
+        // OR simply prepend the import to the string and append the theme block?
+        // But if there are other rules at top, prepending works for imports.
+        // But we want to avoid putting import after @theme.
+
+        // Let's just prepend the import line to the very top.
+        // And append the theme block to the end.
+        // This assumes the user hasn't put other non-import rules at the very top (like @tailwind).
+        // If they have @tailwind at top, our import needs to be BEFORE it.
+
+        const newContent = `${importLine}\n${existingCss}${themeBlock}`;
+
+        await fs.outputFile(outputCssPath, newContent);
+
+        spinner.succeed(chalk.green(`Imported "${font.name}" to src/fonts.css`));
+        console.log(chalk.blue(`\nSuccess! To use the font:`));
+        console.log(chalk.cyan(`1. In CSS: font-family: var(--font-${font.slug});`));
+        console.log(chalk.cyan(`2. In Tailwind: class="font-${font.slug}"`));
+        console.log(chalk.gray(`(Make sure './fonts.css' is imported in your main CSS file)`));
+
+    } catch (error) {
+        spinner.fail(chalk.red(`Error: ${error.message}`));
+    }
+}
+
+// Renamed original addFont to downloadFont
+async function downloadFont(fontName) {
+    const spinner = ora(`Searching for font: ${fontName}...`).start();
+
+    try {
+        const font = await getFontData(fontName, spinner);
+        if (!font) return;
 
         // download files
         const downloadDir = path.join(process.cwd(), 'public', 'fonts', font.slug);
         await fs.ensureDir(downloadDir);
 
         const cssContent = [];
-        const cssPath = path.join(process.cwd(), 'src', 'index.css'); // Default assumption, maybe configure later? Or creates dedicated file.
+        // const cssPath = path.join(process.cwd(), 'src', 'index.css'); 
         let imports = '';
 
         // Function to download file
@@ -221,10 +308,6 @@ async function addFont(fontName) {
         // Write CSS
         // Create specific CSS file
         const outputCssPath = path.join(process.cwd(), 'src', 'fonts.css');
-
-        // Check if file exists to append or create
-        // If we append, we check if font-family is already defined to avoid duplicates?
-        // For simplicity, just append.
 
         spinner.start('Updating CSS...');
 
