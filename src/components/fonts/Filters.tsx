@@ -148,7 +148,10 @@ export default function Filters({ filters, onChange, viewMode, onViewModeChange 
                         </div>
                         <div>
                             <button
-                                onClick={() => setIsCategoriesOpen(!isCategoriesOpen)}
+                                onClick={() => {
+                                    if (window.innerWidth < 768 && !isCategoriesOpen) setIsSortOpen(false);
+                                    setIsCategoriesOpen(!isCategoriesOpen);
+                                }}
                                 className={`w-14 h-14 md:w-23 md:h-23 flex justify-center items-center
                                     p-2 aspect-square rounded-2xl md:rounded-3xl transition-all border border-[#1C1D1E]/10 cursor-pointer
                                     ${isCategoriesOpen
@@ -170,7 +173,10 @@ export default function Filters({ filters, onChange, viewMode, onViewModeChange 
 
                         <div className="flex items-center gap-3">
                             <button
-                                onClick={() => setIsSortOpen(!isSortOpen)}
+                                onClick={() => {
+                                    if (window.innerWidth < 768 && !isSortOpen) setIsCategoriesOpen(false);
+                                    setIsSortOpen(!isSortOpen);
+                                }}
                                 className="w-14 h-14 md:w-23 md:h-23 aspect-square px-4 py-2 flex justify-center gap-1 items-center border border-[#1C1D1E] bg-[#1C1D1E] text-[#EEEFEB] rounded-2xl md:rounded-3xl focus:outline-none transition-all font-bold cursor-pointer"
                             >
                                 <span className="hidden md:block">SORT</span>
