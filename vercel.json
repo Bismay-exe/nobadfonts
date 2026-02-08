@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/css/:family",
+      "destination": "https://wcegdxhvgwbeskaidlxr.supabase.co/functions/v1/serve-css?family=:family"
+    }
+  ]
+}

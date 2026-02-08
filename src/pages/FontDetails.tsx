@@ -1111,6 +1111,12 @@ export default function FontDetails() {
                         >
                             {shareLoading ? <Loader2 className="animate-spin" /> : <Share2 />}
                         </button>
+                        <button
+                            onClick={() => document.getElementById('embed-section')?.scrollIntoView({ behavior: 'smooth' })}
+                            className="px-6 py-4 bg-black text-white rounded-4xl border-2 border-transparent hover:bg-gray-800 transition-all font-bold uppercase ml-2"
+                        >
+                            &lt;/&gt; Embed
+                        </button>
                     </div>
                 </div>
 
@@ -1197,6 +1203,91 @@ export default function FontDetails() {
                     <section>
                         <h2 className="text-2xl font-bold py-4 px-4 bg-white rounded-4xl border-2 border-black">Interactive Tester</h2>
                         <FontTester font={font} />
+                    </section>
+
+                    {/* Embedding Section */}
+                    <section id="embed-section" className="bg-white rounded-4xl border-2 border-black overflow-hidden scroll-mt-24">
+                        <div className="p-6 border-b border-black bg-gray-50">
+                            <h2 className="text-2xl font-black uppercase">Embed Font</h2>
+                            <p className="text-gray-600 mt-2">Use this font in your web projects with a simple link.</p>
+                        </div>
+                        <div className="p-6 space-y-6">
+                            {/* Configuration */}
+                            <div className="space-y-4">
+                                <h3 className="font-bold uppercase text-sm text-gray-500">1. Select Weights</h3>
+                                <div className="flex flex-wrap gap-2">
+                                    {/* Infer weights from variants or default to 400/700 */}
+                                    {(() => {
+                                        // Helper to infer weight from name
+                                        const getWeight = (name: string) => {
+                                            const lower = name.toLowerCase();
+                                            if (lower.includes('thin')) return 100;
+                                            if (lower.includes('extra light')) return 200;
+                                            if (lower.includes('light')) return 300;
+                                            if (lower.includes('medium')) return 500;
+                                            if (lower.includes('semi bold')) return 600;
+                                            if (lower.includes('extra bold')) return 800;
+                                            if (lower.includes('black')) return 900;
+                                            if (lower.includes('bold')) return 700;
+                                            return 400;
+                                        };
+
+                                        const availableWeights = Array.from(new Set(
+                                            font.font_variants?.map(v => getWeight(v.variant_name)) || [400]
+                                        )).sort();
+                                        if (availableWeights.length === 0) availableWeights.push(400);
+
+                                        // We use state for selected weights, but initializing it inside render is bad.
+                                        // So we'll use a local component or just use all for now as default?
+                                        // Let's implement a simple selection if possible, otherwise default all.
+                                        // For simplicity in this edit, let's just show all available or "Regular (400)" + "Bold (700)" if detected.
+
+                                        return (
+                                            <div className="flex flex-wrap gap-2">
+                                                {availableWeights.map(w => (
+                                                    <span key={w} className="px-3 py-1 bg-black text-white rounded-full text-xs font-bold">
+                                                        {w}
+                                                    </span>
+                                                ))}
+                                                <span className="px-3 py-1 bg-gray-100 text-gray-500 rounded-full text-xs font-bold">
+                                                    All Included by Default
+                                                </span>
+                                            </div>
+                                        );
+                                    })()}
+                                </div>
+                            </div>
+
+                            {/* Code Snippets */}
+                            <div className="grid md:grid-cols-2 gap-6">
+                                <div className="space-y-2">
+                                    <h3 className="font-bold uppercase text-sm text-gray-500">2. Copy Code</h3>
+                                    <div className="bg-gray-900 rounded-xl overflow-hidden text-gray-300 text-sm font-mono">
+                                        <div className="flex border-b border-gray-700">
+                                            <button className="px-4 py-2 text-white bg-gray-800 font-bold border-t-2 border-blue-500">HTML</button>
+                                            <button className="px-4 py-2 hover:bg-gray-800 opacity-50 cursor-not-allowed">@import</button>
+                                        </div>
+                                        <div className="p-4 overflow-x-auto whitespace-pre">
+                                            {`<link rel="stylesheet" href="${window.location.origin}/css/${font.slug}">`}
+                                        </div>
+                                    </div>
+                                    <div className="mt-2 bg-gray-900 rounded-xl overflow-hidden text-gray-300 text-sm font-mono">
+                                        <div className="p-2 bg-gray-800 text-xs font-bold text-gray-400 uppercase">CSS Rule</div>
+                                        <div className="p-4 overflow-x-auto whitespace-pre text-green-400">
+                                            {`font-family: '${font.name}', sans-serif;`}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="space-y-4 text-sm text-gray-600">
+                                    <h3 className="font-bold uppercase text-sm text-gray-500">Notes</h3>
+                                    <ul className="list-disc pl-5 space-y-2">
+                                        <li>Font files are served via Supabase Edge Network.</li>
+                                        <li>Automatically optimized for performance (WOFF2 preferred).</li>
+                                        <li>Includes available weights.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
                     </section>
                 </div>
                 <div>

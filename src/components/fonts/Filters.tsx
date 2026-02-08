@@ -130,7 +130,7 @@ export default function Filters({ filters, onChange, viewMode, onViewModeChange,
     const currentSortLabel = SORT_OPTIONS.find(opt => opt.id === (filters.sortBy || 'trending'))?.label || 'Trending';
 
     return (
-        <div className="fixed bottom-8 inset-x-4 lg:bottom-18 lg:inset-auto lg:left-1/2 lg:-translate-x-1/2 flex flex-col-reverse items-center z-50 pointer-events-none">
+        <div className="fixed bottom-8 inset-x-4 lg:bottom-18 lg:inset-auto lg:left-1/2 lg:-translate-x-1/2 flex flex-col-reverse items-center z-50">
 
             {/* Main Filter Dock */}
             <div className="pointer-events-auto flex items-center gap-1 lg:gap-2 p-1 lg:p-2 bg-[#EEEFEB]/80 backdrop-blur-xl border border-[#1C1D1E]/10 rounded-full shadow-2xl w-auto max-w-full transition-all duration-300 hover:shadow-[0_20px_40px_-5px_rgba(0,0,0,0.1)] hover:border-[#1C1D1E]/20">
