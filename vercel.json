@@ -3,6 +3,10 @@
     {
       "source": "/css/:family",
       "destination": "https://wcegdxhvgwbeskaidlxr.supabase.co/functions/v1/serve-css?family=:family"
+    },
+    {
+      "source": "/font-file/:path*",
+      "destination": "https://wcegdxhvgwbeskaidlxr.supabase.co/storage/v1/object/public/fonts/:path*"
     }
   ]
 }
