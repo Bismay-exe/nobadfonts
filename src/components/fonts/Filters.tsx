@@ -1,7 +1,6 @@
 import { Search, Type, Image, SlidersHorizontal, ArrowUpDown } from 'lucide-react';
 import type { FontFilterParams } from '../../types/font';
 import { useState } from 'react';
-import White from '/logo/logo-white.png';
 
 interface FiltersProps {
     filters: FontFilterParams;
