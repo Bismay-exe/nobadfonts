@@ -6,6 +6,8 @@ import EmptyState from '../components/shared/EmptyState';
 import { useFonts } from '../hooks/useFonts';
 import type { FontFilterParams } from '../types/font';
 
+import { useMediaQuery } from '../hooks/useMediaQuery';
+
 export default function FontsCatalog() {
     const [searchParams, setSearchParams] = useSearchParams();
     const [filters, setFilters] = useState<FontFilterParams>({
@@ -15,6 +17,10 @@ export default function FontsCatalog() {
     });
 
     const [viewMode, setViewMode] = useState<'font' | 'image'>('font');
+    const [expandedFontId, setExpandedFontId] = useState<string | null>(null);
+    const [globalExpanded, setGlobalExpanded] = useState(true);
+    const isDesktop = useMediaQuery('(min-width: 768px)');
+    const isFontView = viewMode === 'font';
 
     const { fonts, loading, error } = useFonts(filters);
 
@@ -29,6 +35,23 @@ export default function FontsCatalog() {
         setSearchParams(params, { replace: true });
     }, [filters, setSearchParams]);
 
+    // Derived State for FontCard
+    const getCardProps = (fontId: string) => {
+        if (globalExpanded) {
+            // Global Expand ON: All expanded, no toggle
+            return {
+                isExpanded: true,
+                onToggle: undefined
+            };
+        } else {
+            // Global Expand OFF: Accordion behavior (Mobile-like)
+            return {
+                isExpanded: expandedFontId === fontId,
+                onToggle: () => setExpandedFontId(expandedFontId === fontId ? null : fontId)
+            };
+        }
+    };
+
     return (
         <div className="min-h-screen w-full grid grid-cols-1 lg:grid-cols-4">
 
@@ -40,6 +63,12 @@ export default function FontsCatalog() {
                         onChange={setFilters}
                         viewMode={viewMode}
                         onViewModeChange={setViewMode}
+                        showExpandToggle={true} // Enable on all screens
+                        allExpanded={globalExpanded}
+                        onToggleAll={() => {
+                            setGlobalExpanded(!globalExpanded);
+                            setExpandedFontId(null); // Clear individual selections when toggling all
+                        }}
                     />
                 </aside>
 
@@ -57,7 +86,7 @@ export default function FontsCatalog() {
                                 columnWidth: 'clamp(220px, 20vw, 320px)',
                             }}
                         >
-                            {[...Array(35)].map((_, i) => (
+                            {[...Array(25)].map((_, i) => (
                                 <div key={i} className="bg-gray-100 rounded-4xl border border-[#1C1D1E] h-64 animate-pulse" />
                             ))}
                         </div>
@@ -68,7 +97,12 @@ export default function FontsCatalog() {
                             }}
                         >
                             {fonts.filter(f => f && f.id).map((font) => (
-                                <FontCard key={font.id} font={font} viewMode={viewMode} />
+                                <FontCard
+                                    key={font.id}
+                                    font={font}
+                                    viewMode={viewMode}
+                                    {...getCardProps(font.id)}
+                                />
                             ))}
                         </div>
                     ) : (

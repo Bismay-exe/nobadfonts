@@ -10,13 +10,18 @@ interface FontCardProps {
     viewMode?: 'font' | 'image';
     onClick?: (font: Font) => void;
     disableLink?: boolean;
+    isExpanded?: boolean;
+    onToggle?: () => void;
 }
 
-export default function FontCard({ font, viewMode = 'font', onClick, disableLink = false }: FontCardProps) {
+export default function FontCard({ font, viewMode = 'font', onClick, disableLink = false, isExpanded: propIsExpanded, onToggle }: FontCardProps) {
     const { user } = useAuth();
     const navigate = useNavigate();
     const [isFontLoaded, setIsFontLoaded] = useState(false);
     const [isFavorited, setIsFavorited] = useState(false);
+    const [localIsExpanded, setLocalIsExpanded] = useState(false);
+
+    const isExpanded = propIsExpanded ?? localIsExpanded;
 
     useEffect(() => {
         if (!user || !font) return;
@@ -100,6 +105,10 @@ export default function FontCard({ font, viewMode = 'font', onClick, disableLink
 
         const newStatus = !isFavorited;
         setIsFavorited(newStatus); // Optimistic update
+        // We might want to update local favorite count state here too for immediate feedback, 
+        // but for now we rely on the prop or a re-fetch if needed. 
+        // Since `font` prop isn't updated instantly, the count won't change immediately unless we track it locally.
+        // For simplicity in this step, we'll just toggle the icon state.
 
         try {
             if (newStatus) {
@@ -122,73 +131,95 @@ export default function FontCard({ font, viewMode = 'font', onClick, disableLink
         }
     };
 
-    const CardContent = (
-        <>
-            {/* Content Area: Font Preview or Image */}
-            {viewMode === 'image' && (font.preview_image_url || (font.gallery_images && font.gallery_images.length > 0)) ? (
-                <div className="w-full h-full flex items-center justify-center bg-[#EEEFEB] border border-[#1C1D1E]">
-                    <img
-                        src={font.preview_image_url || font.gallery_images?.[0]}
-                        alt={font.name}
-                        className="w-full h-full object-cover opacity-100 transition-opacity duration-300"
-                    />
-                </div>
-            ) : (
-                // Fallback to text preview
-                <p
-                    className="p-6 text-8xl md:text-8xl text-[#1C1D1E] text-center wrap-break-word w-full transition-opacity duration-300"
-                    style={{
-                        fontFamily: isFontLoaded ? `'font-${font.id}'` : 'sans-serif',
-                        opacity: isFontLoaded ? 1 : 0
-                    }}
-                >
-                    {font.name}
-                </p>
-            )}
+    const handleCardClick = () => {
+        if (disableLink) {
+            onClick?.(font);
+            return;
+        }
 
-            <div className="absolute bottom-2 left-2 transition-opacity opacity-0 group-hover:opacity-100">
-                <button
-                    className={`p-4 rounded-full transition-colors pointer-events-auto ${isFavorited
-                        ? 'text-red-500 hover:text-red-700'
-                        : 'text-black hover:text-red-500'
-                        }`}
-                    onClick={toggleFavorite}
-                >
-                    <Heart size={24} fill={isFavorited ? "currentColor" : "none"} />
-                </button>
-            </div>
+        // Prevent expanding if clicking specific controls if we had any bubbling issues, 
+        // but current structure separates them well.
+        if (onToggle) {
+            onToggle();
+        } else {
+            setLocalIsExpanded(!localIsExpanded);
+        }
+    };
 
-            {/* Info Area */}
-            <div className="absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/30 to-transparent p-4 grow flex flex-col justify-between opacity-0 group-hover:opacity-100 transition-opacity">
-                <div>
-                    <div className="hidden justify-between items-start mb-1 gap-2">
-                        <div className="flex flex-wrap gap-1">
-                            {displayTags.map((tag, i) => (
-                                <div key={i} className="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full font-medium">
-                                    {tag}
-                                </div>
-                            ))}
+    return (
+        <div
+            className={`group relative rounded-4xl border border-black hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col bg-[#EEEFEB] ${isExpanded ? 'row-span-2' : ''}`}
+            onClick={handleCardClick}
+        >
+            <div className="flex flex-col h-full relative cursor-pointer">
+                {/* Preview Section - Fixed Height or ratio? 
+                    In original, it was h-full. Now we want it to be the main part.
+                    We keeping h-64 as a base or letting it fill?
+                    Masonry usually expects items to define height.
+                    Let's use a min-height for the preview part.
+                */}
+                <div className={`w-full relative flex items-center justify-center overflow-hidden transition-all duration-300`}>
+                    {viewMode === 'image' && (font.preview_image_url || (font.gallery_images && font.gallery_images.length > 0)) ? (
+                        <div className={`w-full h-full flex items-center justify-center transition-all duration-300 ease-in-out
+                        ${isExpanded ? 'p-2' : 'p-0'}`}>
+                            <img
+                                src={font.preview_image_url || font.gallery_images?.[0]}
+                                alt={font.name}
+                                className="w-full h-full object-cover rounded-3xl shadow-[0_0_10px_0_rgba(0,0,0,0.3)]"
+                            />
                         </div>
+                    ) : (
+                        <p
+                            className="p-6 text-8xl md:text-8xl text-[#1C1D1E] text-center wrap-break-word w-full"
+                            style={{
+                                fontFamily: isFontLoaded ? `'font-${font.id}'` : 'sans-serif',
+                                opacity: isFontLoaded ? 1 : 0
+                            }}
+                        >
+                            {font.name}
+                        </p>
+                    )}
+                </div>
+
+                {/* Expanded Content Section */}
+                <div className={`
+                    w-full px-4 bg-[#EEEFEB] flex flex-col gap-3 transition-all duration-500 ease-in-out overflow-hidden
+                    ${isExpanded ? 'max-h-40 opacity-100 py-4' : 'max-h-0 opacity-0 py-0'}
+                `}>
+                    {/* Top Row: Likes & View Button */}
+                    <div className="flex items-center justify-between w-full">
+                        {/* Likes */}
+                        <button
+                            onClick={toggleFavorite}
+                            className="flex items-center gap-2 text-[#1C1D1E] hover:text-red-500 transition-colors group/like"
+                        >
+                            <Heart
+                                size={20}
+                                className={`transition-transform duration-300 ${isFavorited ? 'fill-red-500 text-red-500' : 'group-hover/like:scale-110'}`}
+                            />
+                            <span className="font-medium text-sm">{font.favorites_count || 0}</span>
+                        </button>
+
+                        {/* View Font Button */}
+                        <Link
+                            to={`/fonts/${font.slug || font.id}`}
+                            onClick={(e) => e.stopPropagation()} // Prevent card toggle when clicking link
+                            className="bg-black text-white text-xs px-4 py-2 rounded-full font-medium hover:bg-gray-800 transition-colors"
+                        >
+                            View Font
+                        </Link>
+                    </div>
+
+                    {/* Bottom Row: Tags */}
+                    <div className="flex flex-wrap gap-1 mt-1">
+                        {displayTags.slice(0, 3).map((tag, i) => ( // Limit to 3 tags to fit nicely
+                            <div key={i} className="bg-[#c5c5c5] border border-black/10 text-gray-80 text-[10px] px-2 py-1 rounded-full uppercase tracking-wider">
+                                {tag}
+                            </div>
+                        ))}
                     </div>
                 </div>
             </div>
-        </>
-    );
-
-    return (
-        <div className="group relative rounded-4xl border border-black hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col h-full">
-            {disableLink ? (
-                <div
-                    onClick={() => onClick?.(font)}
-                    className="h-full w-full bg-[#EEEFEB] flex items-center justify-center relative overflow-hidden group/preview cursor-pointer"
-                >
-                    {CardContent}
-                </div>
-            ) : (
-                <Link to={`/fonts/${font.slug || font.id}`} className="h-full w-full bg-[#EEEFEB] flex items-center justify-center relative overflow-hidden group/preview">
-                    {CardContent}
-                </Link>
-            )}
         </div>
     );
 }

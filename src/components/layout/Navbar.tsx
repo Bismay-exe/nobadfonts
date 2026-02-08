@@ -41,7 +41,7 @@ export default function Navbar() {
                 transition-all
                 duration-400
                 ease-linear
-                ${open ? 'max-h-96 opacity-100 translate-x-0 mt-4' : 'max-h-0 opacity-90 scale-0 -translate-x-60'}
+                ${open ? 'max-h-100 opacity-100 translate-x-0 mt-4' : 'max-h-0 opacity-90 scale-0 -translate-x-60'}
                 `}
             >
                 <NavLinks user={user} profile={profile} onClick={() => setOpen(false)} />
@@ -71,7 +71,7 @@ function NavLinks({
                 Pairing
             </Link>
             <Link to="/cli" onClick={onClick} className={`${base} relative group overflow-visible`}>
-                <div className="absolute -top-2 -left-2 lg:left-auto right-auto lg:-right-2 bg-[#BDF522] text-black text-[14px] px-2.5 py-0.5 rounded-full border border-black font-black animate-bounce">
+                <div className="absolute -top-2 -left-2 lg:left-auto right-auto lg:-right-2 bg-[#BDF522] text-[#1C1D1E] text-[14px] px-2.5 py-0.5 rounded-full border border-[#1C1D1E] font-[#1C1D1E] animate-bounce">
                     NEW
                 </div>
                 CLI
@@ -81,7 +81,7 @@ function NavLinks({
             </Link>
 
             {profile?.role === 'admin' && (
-                <Link to="/admin" onClick={onClick} className="border-2 border-black px-4 py-1 font-bold rounded-full bg-[#FF90E8] text-black hover:bg-black hover:text-[#FF90E8] transition-colors">
+                <Link to="/admin" onClick={onClick} className="border border-[#1C1D1E]/40 px-6 lg:px-8 py-3 lg:py-4 uppercase font-mono font-bold rounded-full bg-[#FF90E8] text-[#1C1D1E] hover:bg-[#1C1D1E] hover:text-[#FF90E8] transition-colors">
                     Admin Panel
                 </Link>
             )}

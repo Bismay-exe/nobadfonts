@@ -1,4 +1,4 @@
-import { Search, Type, Image, SlidersHorizontal, ArrowUpDown } from 'lucide-react';
+import { Search, Type, Image, SlidersHorizontal, ArrowUpDown, Maximize2, Minimize2 } from 'lucide-react';
 import type { FontFilterParams } from '../../types/font';
 import { useState } from 'react';
 
@@ -7,6 +7,9 @@ interface FiltersProps {
     onChange: (filters: FontFilterParams) => void;
     viewMode?: 'font' | 'image';
     onViewModeChange?: (mode: 'font' | 'image') => void;
+    showExpandToggle?: boolean;
+    allExpanded?: boolean;
+    onToggleAll?: () => void;
 }
 
 const CATEGORIES = [
@@ -84,7 +87,7 @@ const SORT_OPTIONS = [
     { id: 'alpha', label: 'A-Z' },
 ];
 
-export default function Filters({ filters, onChange, viewMode, onViewModeChange }: FiltersProps) {
+export default function Filters({ filters, onChange, viewMode, onViewModeChange, showExpandToggle, allExpanded, onToggleAll }: FiltersProps) {
     const handleChange = (key: keyof FontFilterParams, value: any) => {
         onChange({ ...filters, [key]: value });
     };
@@ -125,10 +128,10 @@ export default function Filters({ filters, onChange, viewMode, onViewModeChange 
                         setIsCategoriesOpen(!isCategoriesOpen);
                     }}
                     className={`
-                        group relative flex items-center gap-2 p-2 px-3 md:px-4 h-10 md:h-12 rounded-full transition-all duration-300 font-bold text-sm md:text-base cursor-pointer hover:-translate-y-0.5
+                        group relative flex items-center gap-2 p-2 px-3 md:px-4 h-10 md:h-12 rounded-full transition-all duration-300 font-bold text-sm md:text-base cursor-pointer
                         ${isCategoriesOpen
                             ? "bg-[#1C1D1E] text-[#EEEFEB] shadow-md"
-                            : "bg-transparent text-[#1C1D1E] hover:bg-[#1C1D1E]/5"
+                            : "bg-[#1C1D1E]/5 text-[#1C1D1E] hover:bg-[#1C1D1E]/10"
                         }
                     `}
                 >
@@ -143,10 +146,10 @@ export default function Filters({ filters, onChange, viewMode, onViewModeChange 
                         setIsSortOpen(!isSortOpen);
                     }}
                     className={`
-                        group relative flex items-center gap-1 md:gap-2 p-2 px-3 md:px-4 h-10 md:h-12 rounded-full transition-all duration-300 font-bold text-sm md:text-base cursor-pointer hover:-translate-y-0.5
+                        group relative flex items-center gap-1 md:gap-2 p-2 px-3 md:px-4 h-10 md:h-12 rounded-full transition-all duration-300 font-bold text-sm md:text-base cursor-pointer
                         ${isSortOpen
                             ? "bg-[#1C1D1E] text-[#EEEFEB] shadow-md"
-                            : "bg-transparent text-[#1C1D1E] hover:bg-[#1C1D1E]/5"
+                            : "bg-[#1C1D1E]/5 text-[#1C1D1E] hover:bg-[#1C1D1E]/10"
                         }
                     `}
                 >
@@ -180,6 +183,24 @@ export default function Filters({ filters, onChange, viewMode, onViewModeChange 
                             >
                                 <Image size={16} strokeWidth={2.5} />
                             </button>
+
+                            {/* Separator & Expand Toggle */}
+                            {showExpandToggle && onToggleAll && (
+                                <>
+                                    <div className="w-px h-6 bg-[#1C1D1E]/10 mx-1"></div>
+                                    <button
+                                        onClick={onToggleAll}
+                                        className="p-2 rounded-full text-[#1C1D1E]/60 hover:text-[#1C1D1E] hover:bg-[#1C1D1E]/10 transition-all duration-300"
+                                        title={allExpanded ? "Collapse All" : "Expand All"}
+                                    >
+                                        {allExpanded ? (
+                                            <Minimize2 size={16} strokeWidth={2.5} />
+                                        ) : (
+                                            <Maximize2 size={16} strokeWidth={2.5} />
+                                        )}
+                                    </button>
+                                </>
+                            )}
                         </div>
                     </>
                 )}
