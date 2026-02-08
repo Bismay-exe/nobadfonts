@@ -318,14 +318,14 @@ const Landing: React.FC = () => {
                     <h1 className="w-screen text-[#ff0000] uppercase text-[18vw] md:text-[14vw] lg:text-[10vw] font-categories-elegant tracking-tight leading-[1.3] text-center">
                         <div className="hidden lg:block">Seriously</div>
                         <div className="lg:hidden">Just</div>
-                        <h2 className="flex flex-col lg:flex-row lg:justify-center lg:gap-[16vw] gap-0">
+                        <div className="flex flex-col lg:flex-row lg:justify-center lg:gap-[16vw] gap-0">
                             <span>Stop</span>
                             <span> Using</span>
-                        </h2>
-                        <h2 className="flex flex-col lg:flex-row lg:justify-center lg:gap-[16vw] gap-0">
+                        </div>
+                        <div className="flex flex-col lg:flex-row lg:justify-center lg:gap-[16vw] gap-0">
                             <span>Bad</span>
                             <span> Fonts!</span>
-                        </h2>
+                        </div>
                     </h1>
                 </div>
             </section>
