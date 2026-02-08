@@ -52,7 +52,7 @@ const Hero = () => {
 
                 <div className="relative z-10 text-center mx-auto">
                     {/* Heading */}
-                    <h1 ref={titleRef} className="text-[12vw] md:text-[8vw] font-freshid-condensed font-bold leading-[0.9] tracking-wide">
+                    <h1 ref={titleRef} className="text-[12vw] md:text-[8vw] font-cimo-nsgk font-bold leading-[0.9] tracking-wide">
                         <div className="overflow-hidden">
                             <span className="hero-line block">Premium Quality.</span>
                         </div>
