@@ -1,4 +1,4 @@
-import { Search, Type, Image, SlidersHorizontal } from 'lucide-react';
+import { Search, Type, Image, SlidersHorizontal, ArrowUpDown } from 'lucide-react';
 import type { FontFilterParams } from '../../types/font';
 import { useState } from 'react';
 import White from '/logo/logo-white.png';
@@ -97,162 +97,160 @@ export default function Filters({ filters, onChange, viewMode, onViewModeChange 
     const currentSortLabel = SORT_OPTIONS.find(opt => opt.id === (filters.sortBy || 'trending'))?.label || 'Trending';
 
     return (
-        <>
-            {/* View Toggle */}
-            {onViewModeChange && (
-                <div className="
-                    fixed bottom-4 right-4 z-999
-                    flex bg-[#EEEFEB]/50 backdrop-blur-xl h-11 p-1 w-auto rounded-full border border-[#1C1D1E] shadow-black shadow-[0px_10px_60px_0px_rgba(0,0,0,0.25)] transition-transform ">
-                    <button
-                        onClick={() => onViewModeChange('font')}
-                        className={`p-2 aspect-square rounded-full transition-all cursor-pointer ${viewMode === 'font'
-                            ? 'bg-black text-white shadow-sma border border-black'
-                            : 'text-black hover:text-white'
-                            }`}
-                        title="Font View"
-                    >
-                        <Type size={16} />
-                    </button>
-                    <button
-                        onClick={() => onViewModeChange('image')}
-                        className={`p-2 aspect-square rounded-full transition-all cursor-pointer ${viewMode === 'image'
-                            ? 'bg-black text-white shadow-sm border border-black'
-                            : 'text-black hover:text-white'
-                            }`}
-                        title="Image View"
-                    >
-                        <Image size={16} />
-                    </button>
+        <div className="fixed bottom-8 inset-x-4 md:bottom-18 md:inset-auto md:left-1/2 md:-translate-x-1/2 flex flex-col-reverse items-center z-50 pointer-events-none">
+
+            {/* Main Filter Dock */}
+            <div className="pointer-events-auto flex items-center gap-2 p-2 bg-[#EEEFEB]/80 backdrop-blur-xl border border-[#1C1D1E]/10 rounded-full shadow-2xl w-full md:w-auto max-w-2xl transition-all duration-300 hover:shadow-[0_20px_40px_-5px_rgba(0,0,0,0.1)] hover:border-[#1C1D1E]/20">
+
+                {/* Search Icon */}
+                <div className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center bg-[#1C1D1E] text-[#EEEFEB] rounded-full shrink-0 shadow-lg">
+                    <Search size={20} strokeWidth={2.5} />
+                </div>
+
+                {/* Search Input */}
+                <input
+                    type="text"
+                    placeholder="Search fonts..."
+                    value={filters.query || ''}
+                    onChange={(e) => handleChange('query', e.target.value)}
+                    className="flex-1 w-0 min-w-10 md:min-w-50 bg-transparent border-none outline-none text-[#1C1D1E] font-bold placeholder:text-[#1C1D1E]/40 px-2 md:px-4 text-sm md:text-base"
+                />
+
+                {/* Vertical Divider */}
+                <div className="w-px h-6 bg-[#1C1D1E]/10 mx-1 hidden md:block"></div>
+
+                {/* Categories Toggle */}
+                <button
+                    onClick={() => {
+                        if (window.innerWidth < 768 && !isCategoriesOpen) setIsSortOpen(false);
+                        setIsCategoriesOpen(!isCategoriesOpen);
+                    }}
+                    className={`
+                        group relative flex items-center gap-2 p-2 px-3 md:px-4 h-10 md:h-12 rounded-full transition-all duration-300 font-bold text-sm md:text-base cursor-pointer hover:-translate-y-0.5
+                        ${isCategoriesOpen
+                            ? "bg-[#1C1D1E] text-[#EEEFEB] shadow-md"
+                            : "bg-transparent text-[#1C1D1E] hover:bg-[#1C1D1E]/5"
+                        }
+                    `}
+                >
+                    <SlidersHorizontal size={18} strokeWidth={2.5} />
+                    <span className="hidden md:inline">Filters</span>
+                </button>
+
+                {/* Sort Toggle */}
+                <button
+                    onClick={() => {
+                        if (window.innerWidth < 768 && !isSortOpen) setIsCategoriesOpen(false);
+                        setIsSortOpen(!isSortOpen);
+                    }}
+                    className={`
+                        group relative flex items-center gap-1 md:gap-2 p-2 px-3 md:px-4 h-10 md:h-12 rounded-full transition-all duration-300 font-bold text-sm md:text-base cursor-pointer hover:-translate-y-0.5
+                        ${isSortOpen
+                            ? "bg-[#1C1D1E] text-[#EEEFEB] shadow-md"
+                            : "bg-transparent text-[#1C1D1E] hover:bg-[#1C1D1E]/5"
+                        }
+                    `}
+                >
+                    <ArrowUpDown size={18} strokeWidth={2.5} className="md:hidden" />
+                    <span className="hidden md:inline">{currentSortLabel}</span>
+                    <span className={`transform transition-transform duration-300 hidden md:block ${isSortOpen ? 'rotate-180' : ''}`}>▼</span>
+                </button>
+
+                {/* View Toggle */}
+                {onViewModeChange && (
+                    <>
+                        <div className="w-px h-6 bg-[#1C1D1E]/10 mx-1 hidden md:block"></div>
+                        <div className="flex bg-[#1C1D1E]/5 p-2 rounded-full">
+                            <button
+                                onClick={() => onViewModeChange('font')}
+                                className={`p-2 rounded-full transition-all duration-300 ${viewMode === 'font'
+                                    ? 'bg-[#1C1D1E] text-[#EEEFEB] shadow-sm'
+                                    : 'text-[#1C1D1E]/60 hover:text-[#1C1D1E] hover:bg-[#1C1D1E]/10'
+                                    }`}
+                                title="Font View"
+                            >
+                                <Type size={16} strokeWidth={2.5} />
+                            </button>
+                            <button
+                                onClick={() => onViewModeChange('image')}
+                                className={`p-2 rounded-full transition-all duration-300 ${viewMode === 'image'
+                                    ? 'bg-[#1C1D1E] text-[#EEEFEB] shadow-sm'
+                                    : 'text-[#1C1D1E]/60 hover:text-[#1C1D1E] hover:bg-[#1C1D1E]/10'
+                                    }`}
+                                title="Image View"
+                            >
+                                <Image size={16} strokeWidth={2.5} />
+                            </button>
+                        </div>
+                    </>
+                )}
+
+            </div>
+
+            {/* Categories */}
+            {isCategoriesOpen && (
+                <div className="flex flex-col md:flex-row gap-6 max-h-full overflow-y-auto rounded-4xl bg-[#EEEFEB]/50 backdrop-blur-2xl p-4 md:p-6 mb-5 border border-[#1C1D1E]/30">
+                    {CATEGORIES.map((group, groupIndex) => (
+                        <div key={groupIndex} className="flex flex-col gap-3">
+                            <h3 className="text-md font-black text-[#1C1D1E] uppercase px-1 cursor-default">
+                                {group.group}
+                            </h3>
+                            <div className="flex gap-2 flex-wrap">
+                                {group.items.map(cat => {
+                                    const isSelected = filters.categories?.includes(cat.id);
+                                    return (
+                                        <button
+                                            key={cat.id}
+                                            type="button"
+                                            onClick={() => {
+                                                const current = filters.categories || [];
+                                                const newCategories = current.includes(cat.id)
+                                                    ? current.filter(c => c !== cat.id)
+                                                    : [...current, cat.id];
+                                                handleChange('categories', newCategories);
+                                            }}
+                                            className={`
+                                                px-3 py-1.5 font-bold rounded-full border text-xs md:text-sm transition-all duration-200 text-left cursor-pointer ${isSelected
+                                                    ? "bg-[#1C1D1E] text-[#EEEFEB] border-[#1C1D1E]"
+                                                    : "bg-transparent text-[#1C1D1E] border-[#1C1D1E] hover:bg-[#1C1D1E] hover:text-[#EEEFEB] hover:-translate-y-0.5"
+                                                }
+                                            `}
+                                        >
+                                            {cat.label}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    ))}
                 </div>
             )}
 
-
-            <div className="fixed bottom-8 inset-auto md:bottom-10 left-1/2 -translate-x-1/2 flex flex-col-reverse z-100">
-
-                {/* Search and Categories button */}
-                <div className='flex flex-row md:flex-row gap-2 p-1 rounded-2xl md:rounded-3xl bg-black/30 backdrop-blur-xl border-2 border-[#1C1D1E]/20'>
-                    <div className='w-full flex gap-2'>
-                        {/* Search */}
-                        <div className="relative w-14 h-14 md:w-23 md:h-23 flex justify-center items-center bg-[#1C1D1E] p-2 md:p-8 rounded-2xl md:rounded-3xl">
-                            <img src={White} alt="" className='w-1/2 h-1/2 absolute object-contain animate-spin-slow' />
-                            <Search className="text-[#EEEFEB] opacity-0" size={28} />
-                        </div>
-                        <div className='w-30 h-14 md:w-full md:h-23 transition-all duration-300 ease-in-out'>
-                            <input
-                                type="text"
-                                placeholder="Search fonts..."
-                                value={filters.query || ''}
-                                onChange={(e) => handleChange('query', e.target.value)}
-                                className="w-full h-full pl-2 md:pl-5 border border-[#1C1D1E]/10 bg-[#EEEFEB] rounded-2xl md:rounded-3xl focus:outline-none focus:border-transparent transition-all"
-                            />
-                        </div>
-                        <div>
+            {/* Sort Panel */}
+            {isSortOpen && (
+                <div className="flex flex-col gap-3 rounded-4xl bg-[#EEEFEB]/50 backdrop-blur-2xl p-4 md:p-6 mb-5 border border-[#1C1D1E]/30">
+                    <h3 className="text-md font-black text-[#1C1D1E] uppercase px-1 cursor-default">
+                        Sort By
+                    </h3>
+                    <div className="flex gap-2 flex-wrap">
+                        {SORT_OPTIONS.map(opt => (
                             <button
-                                onClick={() => {
-                                    if (window.innerWidth < 768 && !isCategoriesOpen) setIsSortOpen(false);
-                                    setIsCategoriesOpen(!isCategoriesOpen);
-                                }}
-                                className={`w-14 h-14 md:w-23 md:h-23 flex justify-center items-center
-                                    p-2 aspect-square rounded-2xl md:rounded-3xl transition-all border border-[#1C1D1E]/10 cursor-pointer
-                                    ${isCategoriesOpen
-                                        ? "bg-[#1C1D1E] text-[#EEEFEB]"
-                                        : "bg-[#EEEFEB] text-[#1C1D1E] hover:bg-black/20"
+                                key={opt.id}
+                                onClick={() => handleChange('sortBy', opt.id)}
+                                className={`
+                                    px-3 py-1.5 font-bold rounded-full border text-xs md:text-sm transition-all duration-200 text-left cursor-pointer
+                                    ${(filters.sortBy || 'trending') === opt.id
+                                        ? "bg-[#1C1D1E] text-[#EEEFEB] border-[#1C1D1E]"
+                                        : "bg-transparent text-[#1C1D1E] border-[#1C1D1E] hover:bg-[#1C1D1E] hover:text-[#EEEFEB] hover:-translate-y-0.5"
                                     }
                                 `}
-                                title="Toggle Categories"
                             >
-                                <SlidersHorizontal size={20} />
+                                {opt.label}
                             </button>
-                        </div>
-
-                    </div>
-
-
-                    {/* Sort */}
-                    <div className='flex flex-col justify-end items-end gap-2 relative w-auto md:w-auto z-50'>
-
-                        <div className="flex items-center gap-3">
-                            <button
-                                onClick={() => {
-                                    if (window.innerWidth < 768 && !isSortOpen) setIsCategoriesOpen(false);
-                                    setIsSortOpen(!isSortOpen);
-                                }}
-                                className="w-14 h-14 md:w-23 md:h-23 aspect-square px-4 py-2 flex justify-center gap-1 items-center border border-[#1C1D1E] bg-[#1C1D1E] text-[#EEEFEB] rounded-2xl md:rounded-3xl focus:outline-none transition-all font-bold cursor-pointer"
-                            >
-                                <span className="hidden md:block">SORT</span>
-                                <span className="hidden">{currentSortLabel}</span>
-                                <span className={`transform transition-transform ${isSortOpen ? 'rotate-180' : ''}`}>▼</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Categories */}
-                {isCategoriesOpen && (
-                    <div className="flex flex-col md:flex-row gap-6 max-h-full overflow-y-auto rounded-4xl bg-[#EEEFEB]/50 backdrop-blur-2xl p-4 md:p-6 mb-5 border border-[#1C1D1E]/30">
-                        {CATEGORIES.map((group, groupIndex) => (
-                            <div key={groupIndex} className="flex flex-col gap-3">
-                                <h3 className="text-md font-black text-[#1C1D1E] uppercase px-1 cursor-default">
-                                    {group.group}
-                                </h3>
-                                <div className="flex gap-2 flex-wrap">
-                                    {group.items.map(cat => {
-                                        const isSelected = filters.categories?.includes(cat.id);
-                                        return (
-                                            <button
-                                                key={cat.id}
-                                                type="button"
-                                                onClick={() => {
-                                                    const current = filters.categories || [];
-                                                    const newCategories = current.includes(cat.id)
-                                                        ? current.filter(c => c !== cat.id)
-                                                        : [...current, cat.id];
-                                                    handleChange('categories', newCategories);
-                                                }}
-                                                className={`
-                                                    px-3 py-1.5 font-bold rounded-full border text-xs md:text-sm transition-all duration-200 text-left cursor-pointer
-                                                    ${isSelected
-                                                        ? "bg-[#1C1D1E] text-[#EEEFEB] border-[#1C1D1E]"
-                                                        : "bg-transparent text-[#1C1D1E] border-[#1C1D1E] hover:bg-[#1C1D1E] hover:text-[#EEEFEB] hover:-translate-y-0.5"
-                                                    }
-                                                `}
-                                            >
-                                                {cat.label}
-                                            </button>
-                                        );
-                                    })}
-                                </div>
-                            </div>
                         ))}
                     </div>
-                )}
-
-                {/* Sort Panel */}
-                {isSortOpen && (
-                    <div className="flex flex-col gap-3 rounded-4xl bg-[#EEEFEB]/50 backdrop-blur-2xl p-4 md:p-6 mb-5 border border-[#1C1D1E]/30">
-                        <h3 className="text-md font-black text-[#1C1D1E] uppercase px-1 cursor-default">
-                            Sort By
-                        </h3>
-                        <div className="flex gap-2 flex-wrap">
-                            {SORT_OPTIONS.map(opt => (
-                                <button
-                                    key={opt.id}
-                                    onClick={() => handleChange('sortBy', opt.id)}
-                                    className={`
-                                        px-3 py-1.5 font-bold rounded-full border text-xs md:text-sm transition-all duration-200 text-left cursor-pointer
-                                        ${(filters.sortBy || 'trending') === opt.id
-                                            ? "bg-[#1C1D1E] text-[#EEEFEB] border-[#1C1D1E]"
-                                            : "bg-transparent text-[#1C1D1E] border-[#1C1D1E] hover:bg-[#1C1D1E] hover:text-[#EEEFEB] hover:-translate-y-0.5"
-                                        }
-                                    `}
-                                >
-                                    {opt.label}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                )}
-            </div>
-        </>
+                </div>
+            )}
+        </div>
     );
 }
