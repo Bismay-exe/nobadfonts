@@ -4,7 +4,7 @@ import React, { useLayoutEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import SplitType from 'split-type';
-import Lenis from 'lenis';
+import { useLenis } from '../../hooks/useLenis';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -102,14 +102,10 @@ const MARQUEE_DATA = [
 ];
 
 const Landing5 = () => {
+    useLenis();
     const containerRef = useRef<HTMLDivElement>(null);
 
     useLayoutEffect(() => {
-        const lenis = new Lenis();
-
-        lenis.on('scroll', ScrollTrigger.update);
-        gsap.ticker.add((time) => lenis.raf(time * 1000));
-        gsap.ticker.lagSmoothing(0);
 
         const ctx = gsap.context(() => {
             // 1. Split Text
@@ -178,7 +174,6 @@ const Landing5 = () => {
 
         return () => {
             ctx.revert();
-            lenis.destroy();
         };
     }, []);
 

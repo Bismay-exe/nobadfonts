@@ -1,7 +1,7 @@
 import React, { useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import Lenis from "lenis";
+import { useLenis } from "../../hooks/useLenis";
 
 // NOTE: SplitText is a premium Club GSAP plugin.
 import { SplitText } from "gsap/SplitText";
@@ -34,6 +34,7 @@ const styles = `
 `;
 
 const Landing: React.FC = () => {
+    useLenis();
     const containerRef = useRef<HTMLDivElement>(null);
 
     useLayoutEffect(() => {
@@ -49,15 +50,7 @@ const Landing: React.FC = () => {
             gsap.registerPlugin(ScrollTrigger);
         }
 
-        // 2. Initialize Lenis
-        const lenis = new Lenis();
-        lenis.on("scroll", ScrollTrigger.update);
 
-        const tickerFn = (time: number) => {
-            lenis.raf(time * 1000);
-        };
-        gsap.ticker.add(tickerFn);
-        gsap.ticker.lagSmoothing(0);
 
         // 3. GSAP Context
         const ctx = gsap.context((self) => {
@@ -244,8 +237,6 @@ const Landing: React.FC = () => {
 
         return () => {
             ctx.revert();
-            gsap.ticker.remove(tickerFn);
-            lenis.destroy();
             window.removeEventListener("resize", () => { });
         };
     }, []);
@@ -260,8 +251,8 @@ const Landing: React.FC = () => {
     const absoluteCoverClasses = "absolute inset-0 w-full h-full z-10";
 
     return (
-        <div 
-            ref={containerRef} 
+        <div
+            ref={containerRef}
             className="phive-scroll-wrapper w-full overflow-x-hidden font-['Roboto_Condensed']"
         >
             <style>{styles}</style>
@@ -294,20 +285,20 @@ const Landing: React.FC = () => {
             {/* Section 3 */}
             <section className={`sticky-text-3 ${sectionClasses} text-(--light) rounded-4xl`}>
                 <div className="bg-img absolute inset-0 w-full h-full z-0">
-                    <img 
-                        src="/images/bg.avif" 
-                        alt="Abstract Background" 
+                    <img
+                        src="/images/bg.avif"
+                        alt="Abstract Background"
                         className="w-full h-full object-cover"
                     />
                 </div>
                 <div className="fg-img absolute bottom-0 w-full h-1/2 md:h-2/3 lg:h-full z-10">
-                    <img 
-                        src="/images/fg.png" 
-                        alt="Abstract Background" 
+                    <img
+                        src="/images/fg.png"
+                        alt="Abstract Background"
                         className="w-full h-full object-cover"
                     />
                 </div>
-                
+
                 <div className={`text-container ${absoluteCoverClasses} bg-(--dark) text-(--light)`}>
                     <h1 className={`${bigTextClasses} text-[18vw]`}>
                         Typography
