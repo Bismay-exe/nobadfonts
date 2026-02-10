@@ -327,13 +327,13 @@ export default function Filters({ filters, onChange, viewMode, onViewModeChange,
 
             {/* 3. Categories Panel */}
             {isCategoriesOpen && (
-                <div className="flex flex-col lg:flex-row gap-6 max-h-full overflow-y-auto rounded-4xl bg-[#EEEFEB]/50 backdrop-blur-2xl p-4 lg:p-6 mb-5 border border-[#1C1D1E]/30">
+                <div className="grid grid-cols-2 md:flex md:flex-row gap-6 max-h-full overflow-y-auto rounded-4xl bg-[#EEEFEB]/50 backdrop-blur-2xl p-4 lg:p-6 mb-5 border border-[#1C1D1E]/30">
                     {CATEGORIES.map((group, groupIndex) => (
-                        <div key={groupIndex} className="flex flex-col gap-3">
-                            <h3 className="text-md font-black text-[#1C1D1E] uppercase px-1 cursor-default">
+                        <div key={groupIndex} className="flex flex-col gap-2 md:gap-3">
+                            <h3 className="text-xs md:text-md font-black text-[#1C1D1E] uppercase px-1 cursor-default">
                                 {group.group}
                             </h3>
-                            <div className="flex gap-2 flex-wrap">
+                            <div className="flex gap-1 md:gap-2 flex-wrap">
                                 {group.items.map(cat => {
                                     const isSelected = filters.categories?.includes(cat.id);
                                     return (
@@ -348,9 +348,9 @@ export default function Filters({ filters, onChange, viewMode, onViewModeChange,
                                                 handleChange('categories', newCategories);
                                             }}
                                             className={`
-                                                px-3 py-1.5 font-bold rounded-full border text-xs lg:text-sm transition-all duration-200 text-left cursor-pointer ${isSelected
+                                                px-2 py-1 md:px-3 md:py-1.5 font-bold rounded-full border text-[11px] md:text-sm transition-all duration-200 text-left cursor-pointer ${isSelected
                                                     ? "bg-[#1C1D1E] text-[#EEEFEB] border-[#1C1D1E]"
-                                                    : "bg-transparent text-[#1C1D1E] border-[#1C1D1E] hover:bg-[#1C1D1E] hover:text-[#EEEFEB] hover:-translate-y-0.5"
+                                                    : "bg-transparent text-[#1C1D1E] border-[#1C1D1E]/30 hover:bg-[#1C1D1E] hover:text-[#EEEFEB]"
                                                 }
                                             `}
                                         >

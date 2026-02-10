@@ -431,11 +431,7 @@ const Upload = () => {
                         />
                     </div>
                 </div>
-
-
-
-
-
+                
                 {/* Variants Section */}
                 <div className="col-span-1 md:col-span-2 bg-white p-8 rounded-4xl border-l border-y border-black border-t-0 md:border-t">
                     <div className="flex justify-between items-center mb-4">

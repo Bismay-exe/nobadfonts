@@ -314,7 +314,7 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
 
 
     return (
-        <div className="w-full bg-[#0D0D0D] text-white mt-8 border border-white/10">
+        <div className="w-full bg-[#0D0D0D] text-white rounded-4xl border border-white/20">
 
             <div className="lg:flex items-start relative">
                 {/* Left: sticky ONLY inside this section */}
@@ -326,12 +326,11 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
                         lg:sticky
                         lg:top-0
                         self-start
-                        bg-[#0D0D0D]
                         border-r border-white/10
                     "
                 >
                     {/* Toolbar */}
-                    <div className="relative z-20 flex flex-wrap justify-between border-b border-white/10 px-8 py-6 bg-[#0D0D0D]">
+                    <div className="relative z-20 flex flex-wrap justify-between rounded-4xl px-8 py-6 bg-transparent">
                         <div className='flex justify-between w-full md:w-auto'>
                             <div className="flex items-center gap-6">
                                 <h2 className="text-xl font-bold tracking-tight">{setMode === 'basic' ? 'Basic Set' : `${availableGlyphs.length} Glyphs`}</h2>
@@ -364,16 +363,44 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
                                         value={activeVariant?.name || (variants.some(v => v.url === fontUrl) ? variants.find(v => v.url === fontUrl)?.name : 'Regular')}
                                         onChange={(e) => {
                                             const val = e.target.value;
-                                            if (val === 'Regular') setActiveVariant(null);
-                                            else {
-                                                const v = variants.find(v => v.name === val);
-                                                if (v) setActiveVariant(v);
+                                            const v = variants.find(v => v.name === val);
+                                            // Always prioritize the actual variant if it exists
+                                            if (v) {
+                                                setActiveVariant(v);
+                                            } else if (val === 'Regular') {
+                                                setActiveVariant(null);
                                             }
                                         }}
                                         className="bg-[#1A1A1A] border border-white/20 text-white text-sm px-4 py-2 rounded-lg focus:outline-none focus:border-white cursor-pointer"
                                     >
                                         {!variants.some(v => v.url === fontUrl) && <option value="Regular">Regular</option>}
-                                        {variants.map(v => (
+                                        {variants.slice().sort((a, b) => {
+                                            const getWeight = (name: string) => {
+                                                const n = name.toLowerCase();
+                                                if (n.includes('thin')) return 100;
+                                                if (n.includes('extra light') || n.includes('extralight')) return 200;
+                                                if (n.includes('light')) return 300;
+                                                if (n.includes('regular')) return 400;
+                                                if (n.includes('medium')) return 500;
+                                                if (n.includes('semi bold') || n.includes('semibold')) return 600;
+                                                if (n.includes('bold')) return 700;
+                                                if (n.includes('extra bold') || n.includes('extrabold')) return 800;
+                                                if (n.includes('black') || n.includes('heavy')) return 900;
+                                                return 400; // default
+                                            };
+                                            const weightA = getWeight(a.name);
+                                            const weightB = getWeight(b.name);
+
+                                            // Primary sort by weight (Descending)
+                                            if (weightA !== weightB) return weightB - weightA;
+
+                                            // Secondary sort: Non-italic before Italic
+                                            const isItalicA = a.name.toLowerCase().includes('italic');
+                                            const isItalicB = b.name.toLowerCase().includes('italic');
+                                            if (isItalicA !== isItalicB) return isItalicA ? 1 : -1;
+
+                                            return 0;
+                                        }).map(v => (
                                             <option key={v.name} value={v.name}>{v.name}</option>
                                         ))}
                                     </select>
@@ -424,55 +451,14 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
                 <div className="lg:w-1/2 p-8 pb-32">
 
                     {setMode === 'basic' ? (
-                        <div className="space-y-12">
-                            {/* Uppercase */}
-                            <div>
-                                <h3 className="text-xs font-mono text-gray-500 uppercase mb-4 text-right">Uppercase</h3>
-                                <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-px bg-white/10 border border-white/10">
-                                    {basicUppercase.map(char => (
-                                        <button
-                                            key={char}
-                                            onClick={() => setSelectedChar(char)}
-                                            className={`aspect-square flex items-center justify-center bg-[#0D0D0D] hover:bg-white/5 transition-colors ${selectedChar === char ? 'ring-1 ring-white z-10' : ''}`}
-                                        >
-                                            <span style={{ fontFamily: `"${fontFamily}"` }} className="text-2xl">{char}</span>
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Lowercase */}
-                            <div>
-                                <h3 className="text-xs font-mono text-gray-500 uppercase mb-4 text-right">Lowercase</h3>
-                                <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-px bg-white/10 border border-white/10">
-                                    {basicLowercase.map(char => (
-                                        <button
-                                            key={char}
-                                            onClick={() => setSelectedChar(char)}
-                                            className={`aspect-square flex items-center justify-center bg-[#0D0D0D] hover:bg-white/5 transition-colors ${selectedChar === char ? 'ring-1 ring-white z-10' : ''}`}
-                                        >
-                                            <span style={{ fontFamily: `"${fontFamily}"` }} className="text-2xl">{char}</span>
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Numerals */}
-                            <div>
-                                <h3 className="text-xs font-mono text-gray-500 uppercase mb-4 text-right">Numerals</h3>
-                                <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-px bg-white/10 border border-white/10">
-                                    {basicNumerals.map(char => (
-                                        <button
-                                            key={char}
-                                            onClick={() => setSelectedChar(char)}
-                                            className={`aspect-square flex items-center justify-center bg-[#0D0D0D] hover:bg-white/5 transition-colors ${selectedChar === char ? 'ring-1 ring-white z-10' : ''}`}
-                                        >
-                                            <span style={{ fontFamily: `"${fontFamily}"` }} className="text-2xl">{char}</span>
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
+                        <CategoryView
+                            fontFamily={fontFamily}
+                            basicUppercase={basicUppercase}
+                            basicLowercase={basicLowercase}
+                            basicNumerals={basicNumerals}
+                            selectedChar={selectedChar}
+                            setSelectedChar={setSelectedChar}
+                        />
                     ) : (
                         <div className="space-y-6">
                             {/* Filter Dropdown */}
@@ -508,6 +494,75 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
                             )}
                         </div>
                     )}
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function CategoryView({ fontFamily, basicUppercase, basicLowercase, basicNumerals, selectedChar, setSelectedChar }: any) {
+    const [activeTab, setActiveTab] = useState<'Uppercase' | 'Lowercase' | 'Numerals'>('Uppercase');
+
+    return (
+        <div className="space-y-6 md:space-y-12">
+            {/* Mobile Tabs */}
+            <div className="flex justify-center gap-4 md:hidden border-b border-white/10 pb-4">
+                {(['Uppercase', 'Lowercase', 'Numerals'] as const).map(tab => (
+                    <button
+                        key={tab}
+                        onClick={() => setActiveTab(tab)}
+                        className={`text-sm font-medium transition-colors ${activeTab === tab ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
+                    >
+                        {tab}
+                    </button>
+                ))}
+            </div>
+
+            {/* Uppercase */}
+            <div className={activeTab === 'Uppercase' ? 'block' : 'hidden md:block'}>
+                <h3 className="hidden md:block text-xs font-mono text-gray-500 uppercase mb-4 text-right">Uppercase</h3>
+                <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-px bg-white/10 border border-white/10">
+                    {basicUppercase.map((char: string) => (
+                        <button
+                            key={char}
+                            onClick={() => setSelectedChar(char)}
+                            className={`aspect-square flex items-center justify-center bg-[#0D0D0D] hover:bg-white/5 transition-colors ${selectedChar === char ? 'ring-1 ring-white z-10' : ''}`}
+                        >
+                            <span style={{ fontFamily: `"${fontFamily}"` }} className="text-2xl">{char}</span>
+                        </button>
+                    ))}
+                </div>
+            </div>
+
+            {/* Lowercase */}
+            <div className={activeTab === 'Lowercase' ? 'block' : 'hidden md:block'}>
+                <h3 className="hidden md:block text-xs font-mono text-gray-500 uppercase mb-4 text-right">Lowercase</h3>
+                <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-px bg-white/10 border border-white/10">
+                    {basicLowercase.map((char: string) => (
+                        <button
+                            key={char}
+                            onClick={() => setSelectedChar(char)}
+                            className={`aspect-square flex items-center justify-center bg-[#0D0D0D] hover:bg-white/5 transition-colors ${selectedChar === char ? 'ring-1 ring-white z-10' : ''}`}
+                        >
+                            <span style={{ fontFamily: `"${fontFamily}"` }} className="text-2xl">{char}</span>
+                        </button>
+                    ))}
+                </div>
+            </div>
+
+            {/* Numerals */}
+            <div className={activeTab === 'Numerals' ? 'block' : 'hidden md:block'}>
+                <h3 className="hidden md:block text-xs font-mono text-gray-500 uppercase mb-4 text-right">Numerals</h3>
+                <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-px bg-white/10 border border-white/10">
+                    {basicNumerals.map((char: string) => (
+                        <button
+                            key={char}
+                            onClick={() => setSelectedChar(char)}
+                            className={`aspect-square flex items-center justify-center bg-[#0D0D0D] hover:bg-white/5 transition-colors ${selectedChar === char ? 'ring-1 ring-white z-10' : ''}`}
+                        >
+                            <span style={{ fontFamily: `"${fontFamily}"` }} className="text-2xl">{char}</span>
+                        </button>
+                    ))}
                 </div>
             </div>
         </div>

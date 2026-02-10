@@ -1,6 +1,10 @@
+@import url("https://www.nobadfonts.in/css/moldin");
+@import url("https://www.nobadfonts.in/css/rayton-brink");
+@import url("https://www.nobadfonts.in/css/hatori");
+@import url("https://www.nobadfonts.in/css/devina-garden");
+@import url("https://www.nobadfonts.in/css/thunder");
 @import url("https://www.nobadfonts.in/css/reign");
 @import url("https://www.nobadfonts.in/css/categories-elegant");
-@import url("https://www.nobadfonts.in/css/devina-garden");
 @import url("https://www.nobadfonts.in/css/chunko-bold");
 @import url("https://www.nobadfonts.in/css/nobulina");
 @import url("https://www.nobadfonts.in/css/kunatic");
@@ -33,13 +37,28 @@
 }
 
 @theme {
-  --font-devina-garden: "Devina Garden", sans-serif;
-}
-
-@theme {
   --font-categories-elegant: "Categories Elegant", sans-serif;
 }
 
 @theme {
   --font-reign: "Reign", sans-serif;
+}
+
+@theme {
+  --font-thunder: "Thunder", sans-serif;
+}
+@theme {
+  --font-devina-garden: "Devina Garden", sans-serif;
+}
+
+@theme {
+  --font-hatori: "HATORI", sans-serif;
+}
+
+@theme {
+  --font-rayton-brink: "Rayton Brink", sans-serif;
+}
+
+@theme {
+  --font-moldin: "Moldin", sans-serif;
 }

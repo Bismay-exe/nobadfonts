@@ -77,8 +77,8 @@ async function listFonts() {
 }
 
 async function getFontData(fontName, spinner) {
-    // Search for font by name or slug
-    const searchUrl = `${SUPABASE_URL}/rest/v1/fonts?or=(name.ilike.*${fontName}*,slug.ilike.*${fontName}*)&select=*,font_variants(*)&limit=1`;
+    // Search for font by name or slug (Exact case-insensitive match)
+    const searchUrl = `${SUPABASE_URL}/rest/v1/fonts?or=(slug.ilike.${fontName},name.ilike.${fontName})&select=*,font_variants(*)&limit=1`;
 
     const response = await fetch(searchUrl, {
         headers: {

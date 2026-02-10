@@ -732,7 +732,7 @@ export default function FontDetails() {
                             <Edit2 size={16} /> Edit Gallery
                         </button>
                     ) : (
-                        <div className="bg-gray-50 border-2 border-black rounded-4xl p-6">
+                        <div className="bg-gray-50 border-y border-black rounded-4xl p-6">
                             <div className="flex justify-between items-center mb-4">
                                 <h3 className="font-bold text-lg">Edit Gallery Images</h3>
                                 <div className="flex gap-2">
@@ -744,7 +744,7 @@ export default function FontDetails() {
                                     </button>
                                     <button
                                         onClick={handleSaveGallery}
-                                        className="flex items-center gap-2 px-6 py-2 bg-[#BDF522] text-black border-2 border-black rounded-full font-bold text-sm hover:scale-105 transition-transform"
+                                        className="flex items-center gap-2 px-6 py-2 bg-[#BDF522] text-black border-y border-black rounded-full font-bold text-sm hover:scale-105 transition-transform"
                                     >
                                         <Save size={16} /> Save Changes
                                     </button>
@@ -753,7 +753,7 @@ export default function FontDetails() {
 
                             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-6">
                                 {galleryState.map((item, index) => (
-                                    <div key={item.id} className="relative group aspect-square bg-white rounded-xl border-2 border-gray-200 overflow-hidden">
+                                    <div key={item.id} className="relative group aspect-square bg-white rounded-xl border-y border-gray-200 overflow-hidden">
                                         <img src={item.url} alt="" className="w-full h-full object-cover" />
 
                                         {/* Overlay Controls */}
@@ -794,7 +794,7 @@ export default function FontDetails() {
 
                                 {/* Add New Button */}
                                 <div className="aspect-square flex flex-col gap-2">
-                                    <label className="flex-1 flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-xl hover:border-black hover:bg-white cursor-pointer transition-colors bg-white">
+                                    <label className="flex-1 flex flex-col items-center justify-center border-y border-dashed border-gray-300 rounded-xl hover:border-black hover:bg-white cursor-pointer transition-colors bg-white">
                                         <input
                                             type="file"
                                             accept="image/*"
@@ -813,7 +813,7 @@ export default function FontDetails() {
                                                 value={urlInput}
                                                 onChange={e => setUrlInput(e.target.value)}
                                                 placeholder="https://..."
-                                                className="flex-1 min-w-0 border-2 border-black rounded-lg px-2 text-xs focus:outline-none"
+                                                className="flex-1 min-w-0 border-y border-black rounded-lg px-2 text-xs focus:outline-none"
                                                 autoFocus
                                                 onKeyDown={e => e.key === 'Enter' && handleAddGalleryUrl()}
                                             />
@@ -827,7 +827,7 @@ export default function FontDetails() {
                                     ) : (
                                         <button
                                             onClick={() => setShowUrlInput(true)}
-                                            className="h-8 flex items-center justify-center gap-1 border-2 border-dashed border-gray-300 rounded-xl hover:border-black hover:bg-white transition-colors bg-white text-xs font-bold text-gray-500"
+                                            className="h-8 flex items-center justify-center gap-1 border-y border-dashed border-gray-300 rounded-xl hover:border-black hover:bg-white transition-colors bg-white text-xs font-bold text-gray-500"
                                         >
                                             <LinkIcon size={12} /> Add URL
                                         </button>
@@ -845,8 +845,7 @@ export default function FontDetails() {
 
             {/* Header */}
             <div className="relative justify-between items-start md:items-center">
-                <div className='flex flex-col items-start justify-end w-full md:w-auto bg-[#BDF522] rounded-4xl border-2 border-black p-4'>
-                    {/* Back Button */}
+                <div className='flex flex-col items-start justify-end w-full md:w-auto bg-[#BDF522] rounded-4xl border-y border-black p-4'>
                     {/* Back Button */}
                     <button
                         onClick={() => {
@@ -980,7 +979,7 @@ export default function FontDetails() {
                     </div>
                 </div>
 
-                <div className="flex flex-col items-start justify-end h-full w-auto bg-white rounded-4xl border-2 border-black p-4">
+                <div className="flex flex-col items-start justify-end h-full w-auto bg-white rounded-4xl border-y border-black p-4">
                     <div className="flex flex-wrap gap-1">
                         {displayTags.map((tag, i) => (
                             <div key={i} className="bg-gray-900 text-gray-300 text-xs px-3 py-2 rounded-full font-medium">
@@ -1090,30 +1089,30 @@ export default function FontDetails() {
                         </div>
                     )}
 
-                    <div className="flex w-full md:w-auto">
+                    <div className="flex w-full">
                         <button
-                            onClick={() => font.otf_url && downloadFont(font.otf_url, `${font.slug}.otf`)}
-                            className="flex-1 px-8 py-4 bg-[#BDF522] hover:bg-[#a9db1e] text-black font-black uppercase rounded-4xl border-2 border-black transition-all hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex items-center justify-center gap-2 group"
+                            onClick={() => document.getElementById('download-section')?.scrollIntoView({ behavior: 'smooth' })}
+                            className="flex-1 md:px-8 md:py-4 bg-[#BDF522] hover:bg-[#a9db1e] text-black font-black uppercase rounded-4xl border-y border-black transition-all hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex items-center justify-center gap-2 group"
                         >
                             <Download className="group-hover:animate-bounce" />
                             Download Font
                         </button>
                         <button
                             onClick={handleFavorite}
-                            className={`px-6 py-4 rounded-4xl border-2 border-black transition-all hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] ${isFavorited ? 'bg-[#FF90E8] text-black' : 'bg-white text-black hover:bg-gray-50'}`}
+                            className={`md:px-6 md:py-4 rounded-4xl border-y border-black transition-all hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] ${isFavorited ? 'bg-[#FF90E8] text-black' : 'bg-white text-black hover:bg-gray-50'}`}
                         >
                             <Heart className={isFavorited ? "fill-current" : ""} />
                         </button>
                         <button
                             onClick={handleShare}
                             disabled={shareLoading}
-                            className="px-6 py-4 bg-white hover:bg-gray-50 text-black rounded-4xl border-2 border-black transition-all hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="md:px-6 md:py-4 bg-white hover:bg-gray-50 text-black rounded-4xl border-y border-black transition-all hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {shareLoading ? <Loader2 className="animate-spin" /> : <Share2 />}
                         </button>
                         <button
                             onClick={() => document.getElementById('embed-section')?.scrollIntoView({ behavior: 'smooth' })}
-                            className="px-6 py-4 bg-black text-white rounded-4xl border-2 border-transparent hover:bg-gray-800 transition-all font-bold uppercase ml-2"
+                            className="md:px-6 md:py-4 bg-black text-white rounded-4xl border-y border-transparent hover:bg-gray-800 transition-all font-bold uppercase ml-2"
                         >
                             &lt;/&gt; Embed
                         </button>
@@ -1134,15 +1133,15 @@ export default function FontDetails() {
             </div>
 
             {/* Variant Previews Section */}
-            < div className='w-full bg-white/20 text-black rounded-4xl border-2 border-black overflow-hidden' >
+            < div className='w-full bg-white/20 text-black rounded-4xl border-y border-black overflow-hidden' >
                 {/* Controller Row */}
-                < div className="flex flex-col md:flex-row items-center justify-between gap-6 p-6 rounded-4xl border-b border-black bg-white hover:bg-gray-100" >
+                < div className="flex flex-col md:flex-row items-center justify-between gap-6 p-6 rounded-4xl border-y border-black bg-white hover:bg-gray-100" >
                     <input
                         type="text"
                         value={variantPreviewText}
                         onChange={(e) => setVariantPreviewText(e.target.value)}
                         placeholder="Type something to preview..."
-                        className="w-full md:w-1/2 text-xl bg-transparent border-b-2 border-gray-300 focus:border-black outline-none px-2 py-2 transition-colors placeholder:text-gray-400"
+                        className="w-full md:w-1/2 text-xl bg-transparent border-y border-gray-300 focus:border-black outline-none px-2 py-2 transition-colors placeholder:text-gray-400"
                     />
                     <div className="flex items-center gap-4 w-full md:w-auto bg-white px-4 py-2 rounded-full border border-gray-200">
                         <span className="text-xs font-bold uppercase text-gray-500">Size</span>
@@ -1158,9 +1157,36 @@ export default function FontDetails() {
                     </div>
                 </div >
                 {/* Variants List */}
+                {/* Variants List */}
                 {
-                    font.font_variants?.map(variant => (
-                        <div key={variant.id} className="p-8 rounded-4xl border-b border-black bg-white hover:bg-gray-100 transition-colors">
+                    font.font_variants?.slice().sort((a, b) => {
+                        const getWeight = (name: string) => {
+                            const n = name.toLowerCase();
+                            if (n.includes('thin')) return 100;
+                            if (n.includes('extra light') || n.includes('extralight')) return 200;
+                            if (n.includes('light')) return 300;
+                            if (n.includes('regular')) return 400;
+                            if (n.includes('medium')) return 500;
+                            if (n.includes('semi bold') || n.includes('semibold')) return 600;
+                            if (n.includes('extra bold') || n.includes('extrabold')) return 800;
+                            if (n.includes('bold')) return 700;
+                            if (n.includes('black') || n.includes('heavy')) return 900;
+                            return 400; // default
+                        };
+                        const weightA = getWeight(a.variant_name);
+                        const weightB = getWeight(b.variant_name);
+
+                        // Primary sort by weight (Descending)
+                        if (weightA !== weightB) return weightB - weightA;
+
+                        // Secondary sort: Non-italic before Italic
+                        const isItalicA = a.variant_name.toLowerCase().includes('italic');
+                        const isItalicB = b.variant_name.toLowerCase().includes('italic');
+                        if (isItalicA !== isItalicB) return isItalicA ? 1 : -1;
+
+                        return 0;
+                    }).map(variant => (
+                        <div key={variant.id} className="p-8 rounded-4xl border-y border-black bg-white hover:bg-gray-100 transition-colors">
                             <div className="flex justify-between items-center mb-4">
                                 <span className="text-[8px] font-bold uppercase tracking-wider text-gray-500 bg-gray-200 px-2 py-1 rounded-xl">{variant.variant_name}</span>
                                 <div className="flex gap-2">
@@ -1199,15 +1225,15 @@ export default function FontDetails() {
 
             {/* Main Content Grid */}
             < div >
-                <div className="space-y-8">
+                <div>
                     <section>
-                        <h2 className="text-2xl font-bold py-4 px-4 bg-white rounded-4xl border-2 border-black">Interactive Tester</h2>
+                        <h2 className="text-2xl font-bold py-4 px-4 bg-white rounded-4xl border-y border-black">Interactive Tester</h2>
                         <FontTester font={font} />
                     </section>
 
                     {/* Embedding Section */}
-                    <section id="embed-section" className="bg-white rounded-4xl border-2 border-black overflow-hidden scroll-mt-24">
-                        <div className="p-6 border-b border-black bg-gray-50">
+                    <section id="embed-section" className="bg-white rounded-4xl border-y border-black overflow-hidden scroll-mt-24">
+                        <div className="p-6 border-y border-black bg-gray-50">
                             <h2 className="text-2xl font-black uppercase">Embed Font</h2>
                             <p className="text-gray-600 mt-2">Use this font in your web projects with a simple link.</p>
                         </div>
@@ -1226,9 +1252,9 @@ export default function FontDetails() {
                                             if (lower.includes('light')) return 300;
                                             if (lower.includes('medium')) return 500;
                                             if (lower.includes('semi bold')) return 600;
+                                            if (lower.includes('bold')) return 700;
                                             if (lower.includes('extra bold')) return 800;
                                             if (lower.includes('black')) return 900;
-                                            if (lower.includes('bold')) return 700;
                                             return 400;
                                         };
 
@@ -1263,7 +1289,7 @@ export default function FontDetails() {
                                 <div className="space-y-2">
                                     <h3 className="font-bold uppercase text-sm text-gray-500">2. Copy Code</h3>
                                     <div className="bg-gray-900 rounded-xl overflow-hidden text-gray-300 text-sm font-mono">
-                                        <div className="flex border-b border-gray-700">
+                                        <div className="flex border-y border-gray-700">
                                             <button className="px-4 py-2 text-white bg-gray-800 font-bold border-t-2 border-blue-500">HTML</button>
                                             <button className="px-4 py-2 hover:bg-gray-800 opacity-50 cursor-not-allowed">@import</button>
                                         </div>
@@ -1334,7 +1360,7 @@ export default function FontDetails() {
             </div>
 
             {/* Variants Section */}
-            <div className="bg-white border border-black rounded-4xl p-6">
+            <div id="download-section" className="bg-white border border-black rounded-4xl p-6">
                 <div className="flex justify-between items-center mb-6">
                     <h3 className="font-bold text-lg">Font Variants</h3>
                     {profile?.role === 'admin' && (
@@ -1393,7 +1419,7 @@ export default function FontDetails() {
                                             return (
                                                 <div key={format} className="relative h-24">
                                                     {showAsFilled ? (
-                                                        <div className={`absolute inset-0 z-0 border-2 rounded-xl flex flex-col items-center justify-center group overflow-hidden ${isPendingUpload
+                                                        <div className={`absolute inset-0 z-0 border-y rounded-xl flex flex-col items-center justify-center group overflow-hidden ${isPendingUpload
                                                             ? 'bg-yellow-50 border-yellow-300 transition-colors'
                                                             : 'bg-green-100 border-green-300 transition-colors'
                                                             }`}>
@@ -1448,7 +1474,7 @@ export default function FontDetails() {
                                                                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                                                                 title="Drag & Drop to Upload"
                                                             />
-                                                            <div className={`w-full h-full border-2 border-dashed rounded-xl flex flex-col items-center justify-center transition-colors ${isPendingDelete
+                                                            <div className={`w-full h-full border-y border-dashed rounded-xl flex flex-col items-center justify-center transition-colors ${isPendingDelete
                                                                 ? 'border-red-300 bg-red-50'
                                                                 : 'border-gray-300 bg-gray-50 group-hover:border-black group-hover:bg-white text-gray-400 group-hover:text-black'
                                                                 }`}>
@@ -1493,11 +1519,11 @@ export default function FontDetails() {
                                                 <button
                                                     key={format}
                                                     onClick={() => downloadFont(url as string, `${font.slug}-${variant.variant_name}.${format}`)}
-                                                    className="flex items-center justify-between px-6 py-4 bg-black text-white rounded-4xl hover:bg-[#00C2FF] hover:text-black border-2 border-transparent transition-all font-black uppercase text-sm"
+                                                    className="flex items-center justify-between px-4 md:px-6 py-2.5 md:py-4 bg-black text-white rounded-4xl hover:bg-[#00C2FF] hover:text-black border-y border-transparent transition-all font-black uppercase text-xs"
                                                 >
                                                     <span className="flex items-center gap-2">
                                                         <Download size={18} />
-                                                        <span>Download {format.toUpperCase()}</span>
+                                                        <span className='flex gap-2'><span className='hidden md:block'>Download</span> {format.toUpperCase()}</span>
                                                     </span>
                                                 </button>
                                             )
@@ -1543,7 +1569,7 @@ export default function FontDetails() {
                                         <select
                                             value={variant.name}
                                             onChange={(e) => updateAddedVariantName(variant.id, e.target.value)}
-                                            className="border-2 border-dashed border-gray-300 rounded-xl px-4 py-2 w-full font-bold bg-white"
+                                            className="border-y border-dashed border-gray-300 rounded-xl px-4 py-2 w-full font-bold bg-white"
                                         >
                                             {VARIANT_NAMES.filter(name => {
                                                 const existingNames = font?.font_variants?.map(v => v.variant_name) || [];
@@ -1581,7 +1607,7 @@ export default function FontDetails() {
                                                             }}
                                                             className="absolute inset-0 opacity-0 cursor-pointer z-10 w-full h-full"
                                                         />
-                                                        <div className="border-2 border-dashed border-gray-300 bg-white rounded-xl p-3 text-center text-xs font-bold text-gray-500 group-hover:border-black group-hover:text-black transition-colors">
+                                                        <div className="border-y border-dashed border-gray-300 bg-white rounded-xl p-3 text-center text-xs font-bold text-gray-500 group-hover:border-black group-hover:text-black transition-colors">
                                                             {format.toUpperCase()} +
                                                         </div>
                                                     </div>
