@@ -46,7 +46,7 @@ const Hero = () => {
 
                 <div className="relative z-10 text-center mx-auto">
                     {/* Heading */}
-                    <h1 ref={titleRef} className="text-[14vw] md:text-[12vw] font-kunatic uppercase leading-[0.8]">
+                    <h1 ref={titleRef} className="text-[11vw] md:text-[10vw] font-lct-mogi uppercase leading-[0.8]">
                         <div className="overflow-hidden">
                             <span className="hero-line block">No Bad Fonts.</span>
                         </div>
