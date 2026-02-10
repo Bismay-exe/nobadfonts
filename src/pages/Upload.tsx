@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { Upload as UploadIcon, X, Image as ImageIcon, Link as LinkIcon } from 'lucide-react';
+import { useUpload } from '../contexts/UploadContext';
 
 const Upload = () => {
     const { user, profile } = useAuth();
@@ -46,12 +47,15 @@ const Upload = () => {
         {
             group: 'Classification',
             items: [
-                { id: 'sans-serif', label: 'Sans Serif' },
+                { id: 'sans', label: 'Sans' },
                 { id: 'serif', label: 'Serif' },
                 { id: 'slab-serif', label: 'Slab Serif' },
-                { id: 'script', label: 'Script' },
-                { id: 'monospace', label: 'Monospace' },
                 { id: 'display', label: 'Display' },
+                { id: 'monospace', label: 'Monospace' },
+                { id: 'script', label: 'Script' },
+                { id: 'calligraphy', label: 'Calligraphy' },
+                { id: 'brush', label: 'Brush' },
+                { id: 'handwritten', label: 'Handwritten' },
             ],
         },
 
@@ -88,10 +92,10 @@ const Upload = () => {
             items: [
                 { id: 'light', label: 'Light' },
                 { id: 'regular', label: 'Regular' },
-                { id: 'heavy', label: 'Heavy' },
+                { id: 'fat', label: 'Fat' },
                 { id: 'condensed', label: 'Condensed' },
                 { id: 'wide', label: 'Wide' },
-                { id: 'tall', label: 'Tall' },      // NEW
+                { id: 'tall', label: 'Tall' },
                 { id: 'rounded', label: 'Rounded' },
             ],
         },
@@ -99,10 +103,12 @@ const Upload = () => {
         {
             group: 'Era & Vibe',
             items: [
+                { id: 'casual', label: 'Casual' },
                 { id: 'retro', label: 'Retro' },
                 { id: 'vintage', label: 'Vintage' },
-                { id: 'futuristic', label: 'Futuristic' }, // CONFIRMED
+                { id: 'futuristic', label: 'Futuristic' },
                 { id: 'gothic', label: 'Gothic' },
+                { id: 'y2k', label: 'Y2K' }
             ],
         },
     ];
@@ -189,11 +195,11 @@ const Upload = () => {
         } : v));
     };
 
+    const { queueWoff2Conversion } = useUpload();
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!user) return alert('You must be logged in to upload');
-        if (formData.tags.length === 0) return alert('Please select at least one category.');
-
         if (formData.tags.length === 0) return alert('Please select at least one category.');
 
         // Validate variants
@@ -221,7 +227,6 @@ const Upload = () => {
                 throw new Error('A font with same name is already exist!');
             }
             const folderPath = `${user.id}/${slug}`;
-            const uploadUrls: any = {};
             const galleryUrls: string[] = [];
 
             const gallerySizes: number[] = [];
@@ -230,7 +235,7 @@ const Upload = () => {
             for (const item of bannerItems) {
                 if (item.type === 'file') {
                     const file = item.content as File;
-                    gallerySizes.push(file.size); // Track size
+                    gallerySizes.push(file.size);
 
                     // Use timestamp to allow same filename multiple times
                     const bannerPath = `${folderPath}/gallery/${Date.now()}-${file.name}`;
@@ -249,22 +254,13 @@ const Upload = () => {
 
                     galleryUrls.push(publicUrl);
                 } else if (item.type === 'url') {
-                    // For URLs, we can't easily get size without fetching, so 0 or null
                     gallerySizes.push(0);
                     galleryUrls.push(item.content as string);
                 }
             }
 
             const previewImageUrl = galleryUrls.length > 0 ? galleryUrls[0] : null;
-            // Assuming first gallery image is preview, tracking its size separately as well if needed, 
-            // but the new column file_size_image_preview is for it.
             const previewImageSize = gallerySizes.length > 0 ? gallerySizes[0] : null;
-
-
-
-
-
-            console.log("Files uploaded. URLs:", uploadUrls);
 
             // Insert Record
             const { error: dbError } = await supabase
@@ -279,7 +275,6 @@ const Upload = () => {
                         slug: slug,
                         is_published: true,
                         user_id: user.id,
-                        // Spread the uploaded URLs and Sizes
 
                         preview_image_url: previewImageUrl,
                         file_size_image_preview: previewImageSize,
@@ -294,11 +289,7 @@ const Upload = () => {
                 throw new Error(`Database insert failed: ${dbError.message}`);
             }
 
-
-            // Actually, we need the ID. Let's assume the insert returns data if we ask.
-            // But standard insert doesn't return unless .select() is chained.
-
-            // Refetch or use a select insert
+            // Retrieve new font ID
             const { data: insertedFont, error: insertError } = await supabase
                 .from('fonts')
                 .select('id')
@@ -307,11 +298,22 @@ const Upload = () => {
 
             if (insertError || !insertedFont) throw new Error('Failed to retrieve new font ID');
 
-            // Upload and Insert Variants
+            // Upload and Insert Variants (Original Files)
+            const variantsToConvert: { id: string; name: string; files: { ttf: File | null; otf: File | null } }[] = [];
+
             for (const variant of variants) {
                 const variantUrls: any = {};
                 const variantSizes: any = {};
                 const promises = [];
+
+                // Prepare for conversion queue if WOFF2 is missing but source exists
+                if (!variant.files.woff2 && (variant.files.ttf || variant.files.otf)) {
+                    variantsToConvert.push({
+                        id: variant.id,
+                        name: variant.name,
+                        files: { ttf: variant.files.ttf, otf: variant.files.otf }
+                    });
+                }
 
                 for (const format of ['ttf', 'otf', 'woff', 'woff2'] as const) {
                     const file = variant.files[format];
@@ -359,11 +361,18 @@ const Upload = () => {
                 }
             }
 
-            alert('Font uploaded successfully!');
+            // Queue background conversion for missing WOFF2
+            console.log("Variants to convert:", variantsToConvert.length);
+            if (variantsToConvert.length > 0) {
+                queueWoff2Conversion(insertedFont.id, slug, variantsToConvert);
+            }
+
+            // Redirect immediately
             navigate(`/fonts/${slug}`);
+
         } catch (error: any) {
             console.error('Full Error Object:', error);
-            alert(error.message || 'A font with same name is already exist!');
+            alert(error.message || 'An error occurred during upload.');
         } finally {
             setLoading(false);
         }

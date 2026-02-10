@@ -18,12 +18,15 @@ const CATEGORIES = [
     {
         group: 'Classification',
         items: [
-            { id: 'sans-serif', label: 'Sans Serif' },
+            { id: 'sans', label: 'Sans' },
             { id: 'serif', label: 'Serif' },
             { id: 'slab-serif', label: 'Slab Serif' },
-            { id: 'script', label: 'Script' },
-            { id: 'monospace', label: 'Monospace' },
             { id: 'display', label: 'Display' },
+            { id: 'monospace', label: 'Monospace' },
+            { id: 'script', label: 'Script' },
+            { id: 'calligraphy', label: 'Calligraphy' },
+            { id: 'brush', label: 'Brush' },
+            { id: 'handwritten', label: 'Handwritten' },
         ],
     },
 
@@ -60,10 +63,10 @@ const CATEGORIES = [
         items: [
             { id: 'light', label: 'Light' },
             { id: 'regular', label: 'Regular' },
-            { id: 'heavy', label: 'Heavy' },
+            { id: 'fat', label: 'Fat' },
             { id: 'condensed', label: 'Condensed' },
             { id: 'wide', label: 'Wide' },
-            { id: 'tall', label: 'Tall' },      // NEW
+            { id: 'tall', label: 'Tall' },
             { id: 'rounded', label: 'Rounded' },
         ],
     },
@@ -71,10 +74,12 @@ const CATEGORIES = [
     {
         group: 'Era & Vibe',
         items: [
+            { id: 'casual', label: 'Casual' },
             { id: 'retro', label: 'Retro' },
             { id: 'vintage', label: 'Vintage' },
-            { id: 'futuristic', label: 'Futuristic' }, // CONFIRMED
+            { id: 'futuristic', label: 'Futuristic' },
             { id: 'gothic', label: 'Gothic' },
+            { id: 'y2k', label: 'Y2K' }
         ],
     },
 ];

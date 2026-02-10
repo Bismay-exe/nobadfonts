@@ -7,5 +7,5 @@ export type Font = Database['public']['Tables']['fonts']['Row'] & {
 export interface FontFilterParams {
   query?: string;
   categories?: string[];
-  sortBy?: 'trending' | 'popular' | 'editor-picks' | 'featured' | 'newest' | 'alphabetical';
+  sortBy?: 'trending' | 'popular' | 'editor-picks' | 'featured' | 'newest' | 'alphabetical' | 'alpha';
 }

@@ -11,30 +11,37 @@ import MemberDetails from './pages/MemberDetails';
 import AdminDashboard from './pages/AdminDashboard';
 import FontPairing from './pages/FontPairing';
 import Cli from './pages/Cli';
+import DesignerFonts from './pages/DesignerFonts';
 import { ScrollRestoration } from './components/layout/ScrollRestoration';
 import { AuthProvider } from './contexts/AuthContext';
+import { UploadProvider } from './contexts/UploadContext';
+import UploadProgressPopup from './components/UploadProgressPopup';
 
 function App() {
   return (
     <AuthProvider>
-      <Router>
-        <ScrollRestoration />
-        <Routes>
-          <Route path="/" element={<Layout />}>
-            <Route index element={<Home />} />
-            <Route path="fonts" element={<FontsCatalog />} />
-            <Route path="fonts/:id" element={<FontDetails />} />
-            <Route path="pairing" element={<FontPairing />} />
-            <Route path="auth" element={<Auth />} />
-            <Route path="upload" element={<Upload />} />
-            <Route path="profile" element={<Profile />} />
-            <Route path="members" element={<Members />} />
-            <Route path="members/:id" element={<MemberDetails />} />
-            <Route path="admin" element={<AdminDashboard />} />
-            <Route path="cli" element={<Cli />} />
-          </Route>
-        </Routes>
-      </Router>
+      <UploadProvider>
+        <Router>
+          <ScrollRestoration />
+          <UploadProgressPopup />
+          <Routes>
+            <Route path="/" element={<Layout />}>
+              <Route index element={<Home />} />
+              <Route path="fonts" element={<FontsCatalog />} />
+              <Route path="fonts/:id" element={<FontDetails />} />
+              <Route path="pairing" element={<FontPairing />} />
+              <Route path="auth" element={<Auth />} />
+              <Route path="upload" element={<Upload />} />
+              <Route path="profile" element={<Profile />} />
+              <Route path="members" element={<Members />} />
+              <Route path="members/:id" element={<MemberDetails />} />
+              <Route path="designers/:designerName" element={<DesignerFonts />} />
+              <Route path="admin" element={<AdminDashboard />} />
+              <Route path="cli" element={<Cli />} />
+            </Route>
+          </Routes>
+        </Router>
+      </UploadProvider>
     </AuthProvider>
   );
 }

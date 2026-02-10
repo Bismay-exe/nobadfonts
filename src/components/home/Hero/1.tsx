@@ -27,13 +27,7 @@ const Hero = () => {
                 duration: 0.8,
             }, '-=0.8');
 
-            // 4. Floating Elements (Subtle parallax on load)
-            tl.from('.floating-badge', {
-                scale: 0,
-                opacity: 0,
-                duration: 1,
-                ease: 'back.out(1.7)',
-            }, '-=0.6');
+
 
         }, containerRef);
 
@@ -52,13 +46,13 @@ const Hero = () => {
 
                 <div className="relative z-10 text-center mx-auto">
                     {/* Heading */}
-                    <h1 ref={titleRef} className="text-[12vw] md:text-[8vw] font-lct-mogi font-bold leading-[0.9]">
+                    <h1 ref={titleRef} className="text-[14vw] md:text-[12vw] font-kunatic uppercase leading-[0.8]">
                         <div className="overflow-hidden">
-                            <span className="hero-line block">Premium Quality.</span>
+                            <span className="hero-line block">No Bad Fonts.</span>
                         </div>
                         <div>
                             <span className="hero-line block">
-                                Zero <span className="text-[#ff0000] italic font-western font-normal tracking-tight">bad</span> Choices.
+                                Only <span className="text-[#ff0000] italic font-western font-normal normal-case tracking-tight">good</span> Type.
                             </span>
                         </div>
                     </h1>

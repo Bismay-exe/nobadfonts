@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Heart } from 'lucide-react';
 import type { Font } from '../../types/font';
 import { useEffect, useState } from 'react';
@@ -18,9 +18,11 @@ interface FontCardProps {
 export default function FontCard({ font, viewMode = 'font', onClick, disableLink = false, isExpanded: propIsExpanded, onToggle, customText }: FontCardProps) {
     const { user } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
     const [isFontLoaded, setIsFontLoaded] = useState(false);
     const [isFavorited, setIsFavorited] = useState(false);
     const [localIsExpanded, setLocalIsExpanded] = useState(false);
+    const [favoritesCount, setFavoritesCount] = useState(font?.favorites_count || 0);
 
     const isExpanded = propIsExpanded ?? localIsExpanded;
 
@@ -37,6 +39,10 @@ export default function FontCard({ font, viewMode = 'font', onClick, disableLink
         };
         checkFavorite();
     }, [user, font]);
+
+    useEffect(() => {
+        setFavoritesCount(font?.favorites_count || 0);
+    }, [font?.favorites_count]);
 
 
     useEffect(() => {
@@ -111,6 +117,12 @@ export default function FontCard({ font, viewMode = 'font', onClick, disableLink
         // Since `font` prop isn't updated instantly, the count won't change immediately unless we track it locally.
         // For simplicity in this step, we'll just toggle the icon state.
 
+        if (newStatus) {
+            setFavoritesCount(prev => prev + 1);
+        } else {
+            setFavoritesCount(prev => Math.max(0, prev - 1));
+        }
+
         try {
             if (newStatus) {
                 const { error } = await supabase
@@ -128,6 +140,7 @@ export default function FontCard({ font, viewMode = 'font', onClick, disableLink
         } catch (error) {
             console.error('Error updating favorite:', error);
             setIsFavorited(!newStatus); // Revert on error
+            setFavoritesCount(prev => newStatus ? prev - 1 : prev + 1); // Revert count
             alert('Failed to update favorites');
         }
     };
@@ -185,36 +198,51 @@ export default function FontCard({ font, viewMode = 'font', onClick, disableLink
                 {/* Expanded Content Section */}
                 <div className={`
                     w-full px-4 bg-[#EEEFEB] flex flex-col gap-3 transition-all duration-500 ease-in-out overflow-hidden
-                    ${isExpanded ? 'max-h-40 opacity-100 py-4' : 'max-h-0 opacity-0 py-0'}
+                    ${isExpanded ? 'max-h-96 opacity-100 py-4' : 'max-h-0 opacity-0 py-0'}
                 `}>
                     {/* Top Row: Likes & View Button */}
-                    <div className="flex items-center justify-between w-full">
+                    <div className="flex items-center justify-between w-full -my-2">
                         {/* Likes */}
                         <button
                             onClick={toggleFavorite}
-                            className="flex items-center gap-2 text-[#1C1D1E] hover:text-red-500 transition-colors group/like"
+                            className="flex items-center gap-1 text-[#1C1D1E] transition-colors group/like"
                         >
                             <Heart
-                                size={20}
-                                className={`transition-transform duration-300 ${isFavorited ? 'fill-red-500 text-red-500' : 'group-hover/like:scale-110'}`}
+                                size={22}
+                                className={`transition-transform duration-300 ${isFavorited ? 'fill-[#ff0000] text-[#ff0000]' : 'group-hover/like:scale-105'}`}
                             />
-                            <span className="font-medium text-sm">{font.favorites_count || 0}</span>
+                            <span className="font-bold text-[16px]">{favoritesCount}</span>
+
                         </button>
 
                         {/* View Font Button */}
                         <Link
                             to={`/fonts/${font.slug || font.id}`}
                             onClick={(e) => e.stopPropagation()} // Prevent card toggle when clicking link
-                            className="bg-black text-white text-xs px-4 py-2 rounded-full font-medium hover:bg-gray-800 transition-colors"
+                            className="bg-[#1C1D1E] text-[#EEEFEB] text-xs px-4 py-2 rounded-full font-medium hover:bg-[#3b3b3b] transition-colors"
                         >
                             View Font
                         </Link>
                     </div>
 
+                    <div className="w-full h-full">
+                        <p className="text-2xl font-bold tracking-tight mb-1">{font.name}</p>
+                        <p className="text-sm text-neutral-500 tracking-wide">
+                            by <Link
+                                to={`/designers/${encodeURIComponent(font.designer || '')}`}
+                                state={{ from: location }}
+                                onClick={(e) => e.stopPropagation()}
+                                className="hover:text-[#1C1D1E] hover:underline transition-colors"
+                            >
+                                {font.designer}
+                            </Link>
+                        </p>
+                    </div>
+
                     {/* Bottom Row: Tags */}
                     <div className="flex flex-wrap gap-1 mt-1">
-                        {displayTags.slice(0, 3).map((tag, i) => ( // Limit to 3 tags to fit nicely
-                            <div key={i} className="bg-[#c5c5c5] border border-black/10 text-gray-80 text-[10px] px-2 py-1 rounded-full uppercase tracking-wider">
+                        {displayTags.slice().map((tag, i) => (
+                            <div key={i} className="bg-neutral-300 border border-black/0 text-neutral-600 hover:bg-[#1C1D1E] hover:text-[#EEEFEB] font-bold text-[11px] px-2 py-1 rounded-full capitalize">
                                 {tag}
                             </div>
                         ))}

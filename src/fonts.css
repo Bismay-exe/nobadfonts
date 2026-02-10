@@ -1,3 +1,9 @@
+@import url("https://www.nobadfonts.in/css/reign");
+@import url("https://www.nobadfonts.in/css/categories-elegant");
+@import url("https://www.nobadfonts.in/css/devina-garden");
+@import url("https://www.nobadfonts.in/css/chunko-bold");
+@import url("https://www.nobadfonts.in/css/nobulina");
+@import url("https://www.nobadfonts.in/css/kunatic");
 @import url("https://www.nobadfonts.in/css/lct-mogi");
 @import url("https://www.nobadfonts.in/css/gendy-npr2");
 @import url("https://www.nobadfonts.in/css/bold-mype-eeyq");
@@ -12,4 +18,28 @@
 
 @theme {
   --font-lct-mogi: "LCT-Mogi", sans-serif;
+}
+
+@theme {
+  --font-kunatic: "Kunatic", sans-serif;
+}
+
+@theme {
+  --font-nobulina: "Nobulina", sans-serif;
+}
+
+@theme {
+  --font-chunko-bold: "Chunko Bold", sans-serif;
+}
+
+@theme {
+  --font-devina-garden: "Devina Garden", sans-serif;
+}
+
+@theme {
+  --font-categories-elegant: "Categories Elegant", sans-serif;
+}
+
+@theme {
+  --font-reign: "Reign", sans-serif;
 }

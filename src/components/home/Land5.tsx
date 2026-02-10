@@ -90,7 +90,7 @@ const MARQUEE_DATA = [
         ]
     },
     {
-        id: "marquee-8",
+        id: "marquee-9",
         items: [
             { type: 'image', src: 'https://st.1001fonts.net/img/illustrations/s/k/skybold-demo-font-2-large.avif' },
             { type: 'text', content: 'Use' },

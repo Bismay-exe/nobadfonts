@@ -1,5 +1,7 @@
-import { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useState, useEffect, useLayoutEffect } from 'react';
+import { useSearchParams, useLocation } from 'react-router-dom';
+import { scrollPositions } from '../components/layout/ScrollRestoration';
+import { useViewMode } from '../hooks/useViewMode';
 import Filters from '../components/fonts/Filters';
 import FontCard from '../components/fonts/FontCard';
 import EmptyState from '../components/shared/EmptyState';
@@ -7,6 +9,7 @@ import { useFonts } from '../hooks/useFonts';
 import type { FontFilterParams } from '../types/font';
 
 export default function FontsCatalog() {
+    const location = useLocation();
     const [searchParams, setSearchParams] = useSearchParams();
     const [filters, setFilters] = useState<FontFilterParams>({
         query: searchParams.get('query') || '',
@@ -14,7 +17,7 @@ export default function FontsCatalog() {
         sortBy: (searchParams.get('sortBy') as any) || 'trending',
     });
 
-    const [viewMode, setViewMode] = useState<'font' | 'image'>('font');
+    const [viewMode, setViewMode] = useViewMode();
     const [expandedFontId, setExpandedFontId] = useState<string | null>(null);
     const [globalExpanded, setGlobalExpanded] = useState(true);
     const [customText, setCustomText] = useState('');
@@ -31,6 +34,19 @@ export default function FontsCatalog() {
         if (filters.sortBy && filters.sortBy !== 'trending') params.sortBy = filters.sortBy;
         setSearchParams(params, { replace: true });
     }, [filters, setSearchParams]);
+
+    // Restore scroll position when fonts are loaded
+    useLayoutEffect(() => {
+        if (!loading && fonts.length > 0) {
+            const savedPosition = scrollPositions.get((location as any).key);
+            if (savedPosition !== undefined) {
+                // Small timeout to ensure DOM is fully painted
+                setTimeout(() => {
+                    window.scrollTo(0, savedPosition);
+                }, 0);
+            }
+        }
+    }, [loading, fonts.length, (location as any).key]);
 
     // Derived State for FontCard
     const getCardProps = (fontId: string) => {
@@ -50,7 +66,7 @@ export default function FontsCatalog() {
     };
 
     return (
-        <div className="min-h-screen w-full grid grid-cols-1 lg:grid-cols-4">
+        <div className="w-full grid grid-cols-1 lg:grid-cols-4">
 
             <div className="col-span-1 lg:col-span-4 border-b-2 border-black flex flex-col lg:flex-col">
                 {/* Sidebar */}
