@@ -1,7 +1,7 @@
-
+"use client";
 
 import Landing5 from '../components/home/Land5';
-import Landing from '../components/home/Land3';
+import Landing from '../components/home/Land8';
 import Hero from '../components/home/Hero/1';
 
 import { useLenis } from '../hooks/useLenis';

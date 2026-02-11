@@ -118,7 +118,7 @@ const Landing: React.FC = () => {
             ScrollTrigger.create({
                 trigger: ".sticky-text-1",
                 start: "top top",
-                end: `+=${window.innerHeight * 1}px`,
+                end: () => `+=${window.innerHeight * 1}px`,
                 pin: true,
                 pinSpacing: false,
                 scrub: 1,
@@ -143,7 +143,7 @@ const Landing: React.FC = () => {
             ScrollTrigger.create({
                 trigger: ".sticky-text-2",
                 start: "top top",
-                end: `+=${window.innerHeight * 1}px`,
+                end: () => `+=${window.innerHeight * 1}px`,
                 pin: true,
                 pinSpacing: false,
                 scrub: 1,
@@ -168,7 +168,7 @@ const Landing: React.FC = () => {
             ScrollTrigger.create({
                 trigger: ".sticky-text-3",
                 start: "top top",
-                end: `+=${window.innerHeight * 4}px`,
+                end: () => `+=${window.innerHeight * 4}px`,
                 pin: true,
                 pinSpacing: true,
                 scrub: 1,
@@ -265,7 +265,7 @@ const Landing: React.FC = () => {
             </section>
 
             {/* Section 1 */}
-            <section className={`sticky-text-1 ${sectionClasses} bg-(--light) text-(--dark) rounded-4xl`}>
+            <section className={`sticky-text-1 ${sectionClasses} bg-(--light) text-(--dark) rounded-4xl z-10`}>
                 <div className={`text-container ${absoluteCoverClasses}`}>
                     <h1 className={`${bigTextClasses} text-[20vw] font-light`}>
                         Handpicked
@@ -274,7 +274,7 @@ const Landing: React.FC = () => {
             </section>
 
             {/* Section 2 */}
-            <section className={`sticky-text-2 ${sectionClasses} bg-(--light) text-(--dark) rounded-4xl`}>
+            <section className={`sticky-text-2 ${sectionClasses} bg-(--light) text-(--dark) rounded-4xl z-20`}>
                 <div className={`text-container ${absoluteCoverClasses}`}>
                     <h1 className={`${bigTextClasses} text-[38vw]`}>
                         Clean
@@ -283,7 +283,7 @@ const Landing: React.FC = () => {
             </section>
 
             {/* Section 3 */}
-            <section className={`sticky-text-3 ${sectionClasses} text-(--light) rounded-4xl`}>
+            <section className={`sticky-text-3 ${sectionClasses} text-(--light) rounded-4xl z-30`}>
                 <div className="bg-img absolute inset-0 w-full h-full z-0">
                     <img
                         src="/images/bg.avif"
