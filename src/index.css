@@ -10,7 +10,6 @@
   --font-big-shoulders-display: "Big Shoulders Display", sans-serif;
   --font-baleron: "Baleron", sans-serif;
   --font-big-shoulders: "BigShoulders", sans-serif;
-  --font-rockinsoda: "Rockinsoda", sans-serif;
   --font-western: "WesternHighland", serif;
   --font-moldin: "Moldin", sans-serif;
   --font-trunks: "TheLastTrunks", sans-serif;
@@ -35,13 +34,6 @@
 @font-face {
   font-family: "BigShoulders";
   src: url("/fonts/BigShoulders.ttf") format("truetype");
-  font-weight: normal;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "Rockinsoda";
-  src: url("/fonts/Rockinsoda.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
 }

@@ -1300,84 +1300,104 @@ export default function FontDetails() {
                     <section id="embed-section" className="bg-white rounded-4xl border-y border-black overflow-hidden scroll-mt-24">
                         <div className="p-6 border-y border-black bg-gray-50">
                             <h2 className="text-2xl font-black uppercase">Embed Font</h2>
-                            <p className="text-gray-600 mt-2">Use this font in your web projects with a simple link.</p>
+                            <p className="text-gray-600 mt-2">Use this font in your web projects.</p>
                         </div>
-                        <div className="p-6 space-y-6">
-                            {/* Configuration */}
-                            <div className="space-y-4">
-                                <h3 className="font-bold uppercase text-sm text-gray-500">1. Select Weights</h3>
-                                <div className="flex flex-wrap gap-2">
-                                    {/* Infer weights from variants or default to 400/700 */}
+                        <div className="p-6 space-y-8">
+
+                            {/* Option 1: Head Link */}
+                            <div>
+                                <h3 className="font-bold text-lg mb-2">1. Add to the head section of web page.</h3>
+                                <div className="bg-gray-900 rounded-xl overflow-hidden text-gray-300 text-sm font-mono p-4 overflow-x-auto whitespace-pre">
+                                    {`<link href="${window.location.origin}/css/${font.slug}" rel="stylesheet">`}
+                                </div>
+                            </div>
+
+                            {/* Option 2: Import */}
+                            <div>
+                                <h3 className="font-bold text-lg mb-2">OR Using @import CSS directive</h3>
+                                <div className="bg-gray-900 rounded-xl overflow-hidden text-gray-300 text-sm font-mono p-4 overflow-x-auto whitespace-pre">
+                                    {`@import url(${window.location.origin}/css/${font.slug});`}
+                                </div>
+                            </div>
+
+                            {/* Option 3: Font Face */}
+                            <div>
+                                <h3 className="font-bold text-lg mb-2">OR Use font-face declaration</h3>
+                                <div className="bg-gray-900 rounded-xl overflow-hidden text-gray-300 text-sm font-mono p-4 overflow-x-auto whitespace-pre">
                                     {(() => {
-                                        // Helper to infer weight from name
-                                        const getWeight = (name: string) => {
-                                            const lower = name.toLowerCase();
-                                            if (lower.includes('thin')) return 100;
-                                            if (lower.includes('extra light')) return 200;
-                                            if (lower.includes('light')) return 300;
-                                            if (lower.includes('medium')) return 500;
-                                            if (lower.includes('semi bold')) return 600;
-                                            if (lower.includes('bold')) return 700;
-                                            if (lower.includes('extra bold')) return 800;
-                                            if (lower.includes('black')) return 900;
-                                            return 400;
+                                        const generateFontFace = (name: string, weight: number, style: string, urls: any) => {
+                                            const sources = [];
+                                            if (urls.eot) sources.push(`url("${urls.eot}") format("embedded-opentype")`);
+                                            if (urls.woff2) sources.push(`url("${urls.woff2}") format("woff2")`);
+                                            if (urls.woff) sources.push(`url("${urls.woff}") format("woff")`);
+                                            if (urls.ttf) sources.push(`url("${urls.ttf}") format("truetype")`);
+                                            if (urls.otf) sources.push(`url("${urls.otf}") format("opentype")`);
+                                            if (urls.svg) sources.push(`url("${urls.svg}") format("svg")`);
+
+                                            if (sources.length === 0) return '';
+
+                                            return `@font-face {
+    font-family: "${name}";
+    src: ${sources.join(',\n         ')};
+    font-weight: ${weight};
+    font-style: ${style};
+}`;
                                         };
 
-                                        const availableWeights = Array.from(new Set(
-                                            font.font_variants?.map(v => getWeight(v.variant_name)) || [400]
-                                        )).sort();
-                                        if (availableWeights.length === 0) availableWeights.push(400);
+                                        const variants = font.font_variants || [];
+                                        // Include main font if no variants or separately? 
+                                        // If variants exist, they usually cover the main font.
+                                        // Let's iterate all variants.
 
-                                        // We use state for selected weights, but initializing it inside render is bad.
-                                        // So we'll use a local component or just use all for now as default?
-                                        // Let's implement a simple selection if possible, otherwise default all.
-                                        // For simplicity in this edit, let's just show all available or "Regular (400)" + "Bold (700)" if detected.
+                                        const blocks = variants.map(v => {
+                                            const name = font.name;
+                                            // Infer weight/style
+                                            const lower = v.variant_name.toLowerCase();
+                                            let weight = 400;
+                                            if (lower.includes('thin')) weight = 100;
+                                            else if (lower.includes('extra light')) weight = 200;
+                                            else if (lower.includes('light')) weight = 300;
+                                            else if (lower.includes('medium')) weight = 500;
+                                            else if (lower.includes('semi bold')) weight = 600;
+                                            else if (lower.includes('bold')) weight = 700;
+                                            else if (lower.includes('extra bold')) weight = 800;
+                                            else if (lower.includes('black') || lower.includes('heavy')) weight = 900;
 
-                                        return (
-                                            <div className="flex flex-wrap gap-2">
-                                                {availableWeights.map(w => (
-                                                    <span key={w} className="px-3 py-1 bg-black text-white rounded-full text-xs font-bold">
-                                                        {w}
-                                                    </span>
-                                                ))}
-                                                <span className="px-3 py-1 bg-gray-100 text-gray-500 rounded-full text-xs font-bold">
-                                                    All Included by Default
-                                                </span>
-                                            </div>
-                                        );
+                                            const style = lower.includes('italic') ? 'italic' : 'normal';
+
+                                            const urls = {
+                                                woff2: v.woff2_url,
+                                                woff: v.woff_url,
+                                                ttf: v.ttf_url,
+                                                otf: v.otf_url
+                                            };
+
+                                            return generateFontFace(name, weight, style, urls);
+                                        }).filter(Boolean);
+
+                                        // Fallback if no variants but main files exist
+                                        if (blocks.length === 0 && (font.woff2_url || font.ttf_url)) {
+                                            blocks.push(generateFontFace(font.name, 400, 'normal', {
+                                                woff2: font.woff2_url,
+                                                woff: font.woff_url,
+                                                ttf: font.ttf_url,
+                                                otf: font.otf_url
+                                            }));
+                                        }
+
+                                        return blocks.join('\n\n');
                                     })()}
                                 </div>
                             </div>
 
-                            {/* Code Snippets */}
-                            <div className="grid md:grid-cols-2 gap-6">
-                                <div className="space-y-2">
-                                    <h3 className="font-bold uppercase text-sm text-gray-500">2. Copy Code</h3>
-                                    <div className="bg-gray-900 rounded-xl overflow-hidden text-gray-300 text-sm font-mono">
-                                        <div className="flex border-y border-gray-700">
-                                            <button className="px-4 py-2 text-white bg-gray-800 font-bold border-t-2 border-blue-500">HTML</button>
-                                            <button className="px-4 py-2 hover:bg-gray-800 opacity-50 cursor-not-allowed">@import</button>
-                                        </div>
-                                        <div className="p-4 overflow-x-auto whitespace-pre">
-                                            {`<link rel="stylesheet" href="${window.location.origin}/css/${font.slug}">`}
-                                        </div>
-                                    </div>
-                                    <div className="mt-2 bg-gray-900 rounded-xl overflow-hidden text-gray-300 text-sm font-mono">
-                                        <div className="p-2 bg-gray-800 text-xs font-bold text-gray-400 uppercase">CSS Rule</div>
-                                        <div className="p-4 overflow-x-auto whitespace-pre text-green-400">
-                                            {`font-family: '${font.name}', sans-serif;`}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="space-y-4 text-sm text-gray-600">
-                                    <h3 className="font-bold uppercase text-sm text-gray-500">Notes</h3>
-                                    <ul className="list-disc pl-5 space-y-2">
-                                        <li>Font files are served via Supabase Edge Network.</li>
-                                        <li>Automatically optimized for performance (WOFF2 preferred).</li>
-                                        <li>Includes available weights.</li>
-                                    </ul>
+                            {/* Section 2: CSS Rules */}
+                            <div>
+                                <h3 className="font-bold text-lg mb-2">2. CSS rules to specify fonts</h3>
+                                <div className="bg-gray-900 rounded-xl overflow-hidden text-green-400 text-sm font-mono p-4 overflow-x-auto whitespace-pre">
+                                    {`font-family: "${font.name}", sans-serif;`}
                                 </div>
                             </div>
+
                         </div>
                     </section>
                 </div>

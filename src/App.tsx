@@ -1,21 +1,23 @@
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from './components/layout/Layout';
 import Home from './pages/Home';
-import FontsCatalog from './pages/FontsCatalog';
-import FontDetails from './pages/FontDetails';
-import Auth from './pages/Auth';
-import Profile from './pages/Profile';
-import Upload from './pages/Upload';
-import Members from './pages/Members';
-import MemberDetails from './pages/MemberDetails';
-import AdminDashboard from './pages/AdminDashboard';
-import FontPairing from './pages/FontPairing';
-import Cli from './pages/Cli';
-import DesignerFonts from './pages/DesignerFonts';
 import { ScrollRestoration } from './components/layout/ScrollRestoration';
 import { AuthProvider } from './contexts/AuthContext';
 import { UploadProvider } from './contexts/UploadContext';
 import UploadProgressPopup from './components/UploadProgressPopup';
+
+const FontsCatalog = React.lazy(() => import('./pages/FontsCatalog'));
+const FontDetails = React.lazy(() => import('./pages/FontDetails'));
+const Auth = React.lazy(() => import('./pages/Auth'));
+const Profile = React.lazy(() => import('./pages/Profile'));
+const Upload = React.lazy(() => import('./pages/Upload'));
+const Members = React.lazy(() => import('./pages/Members'));
+const MemberDetails = React.lazy(() => import('./pages/MemberDetails'));
+const AdminDashboard = React.lazy(() => import('./pages/AdminDashboard'));
+const FontPairing = React.lazy(() => import('./pages/FontPairing'));
+const Cli = React.lazy(() => import('./pages/Cli'));
+const DesignerFonts = React.lazy(() => import('./pages/DesignerFonts'));
 
 function App() {
   return (

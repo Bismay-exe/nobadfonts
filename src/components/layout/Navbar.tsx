@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useState } from 'react';
-import White from '/logo/logo-white.png';
+import Logo from '/logo/logo.png';
 
 export default function Navbar() {
     const { user, profile } = useAuth();
@@ -12,10 +12,11 @@ export default function Navbar() {
             <div className="flex justify-between items-center">
                 <Link
                     to="/"
-                    className="h-15 w-15 flex items-center gap-2 font-thunder font-black bg-[#1C1D1E] p-1.5 rounded-2xl text-[#1C1D1E] text-3xl lg:text-5xl tsracking-tighter"
+                    className="h-15 w-15 flex items-center gap-2 bg-[#1C1D1E] p-1.5 rounded-2xl"
                 >
 
-                    <img src={White} alt="Logo" className='mr-2' />NoBadFonts
+                    <img src={Logo} alt="Logo" className='mr-2' />
+                    <span className='h-full font-moldin font-medium uppercase text-[#1C1D1E] text-3xl lg:text-5xl mt-3'>NoBadFonts</span>
                 </Link>
 
                 {/* Mobile menu button */}

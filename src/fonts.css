@@ -1,3 +1,8 @@
+@import url("https://www.nobadfonts.in/css/rockinsoda");
+@import url("https://www.nobadfonts.in/css/quivert");
+@import url("https://www.nobadfonts.in/css/gf-krater");
+@import url("https://www.nobadfonts.in/css/game-paused");
+@import url("https://www.nobadfonts.in/css/firstly");
 @import url("https://www.nobadfonts.in/css/advine");
 @import url("https://www.nobadfonts.in/css/moldin");
 @import url("https://www.nobadfonts.in/css/rayton-brink");
@@ -66,4 +71,23 @@
 
 @theme {
   --font-advine: "Advine", sans-serif;
+}
+
+@theme {
+  --font-firstly: "Firstly", sans-serif;
+}
+
+@theme {
+  --font-game-paused: "Game Paused", sans-serif;
+}
+
+@theme {
+  --font-gf-krater: "GF Krater", sans-serif;
+}
+@theme {
+  --font-quivert: "Quivert", sans-serif;
+}
+
+@theme {
+  --font-rockinsoda: "Rockinsoda", sans-serif;
 }
