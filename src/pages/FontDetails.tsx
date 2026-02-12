@@ -12,6 +12,7 @@ import { PreviewAccordion } from '../components/fonts/PreviewAccordion';
 import FontCard from '../components/fonts/FontCard';
 import type { Font } from '../types/font';
 import GlyphMap from '../components/fonts/GlyphMap';
+import { generateDescription, generateFontFeaturesList, generateHeaderTagline, generateFooterTagline } from '../utils/fontDescriptionGenerator';
 
 const VARIANT_NAMES = [
     'Regular', 'Italic', 'Bold', 'Bold Italic', 'Light', 'Light Italic',
@@ -1133,7 +1134,7 @@ export default function FontDetails() {
             </div>
 
             {/* Variant Previews Section */}
-            < div className='w-full bg-white/20 text-black rounded-4xl border-y border-black overflow-hidden' >
+            < div className='w-full text-black rounded-4xl overflow-hidden' >
                 {/* Controller Row */}
                 < div className="flex flex-col md:flex-row items-center justify-between gap-6 p-6 rounded-4xl border-y border-black bg-white hover:bg-gray-100" >
                     <input
@@ -1159,73 +1160,137 @@ export default function FontDetails() {
                 {/* Variants List */}
                 {/* Variants List */}
                 {
-                    font.font_variants?.slice().sort((a, b) => {
-                        const getWeight = (name: string) => {
-                            const n = name.toLowerCase();
-                            if (n.includes('thin')) return 100;
-                            if (n.includes('extra light') || n.includes('extralight')) return 200;
-                            if (n.includes('light')) return 300;
-                            if (n.includes('regular')) return 400;
-                            if (n.includes('medium')) return 500;
-                            if (n.includes('semi bold') || n.includes('semibold')) return 600;
-                            if (n.includes('extra bold') || n.includes('extrabold')) return 800;
-                            if (n.includes('bold')) return 700;
-                            if (n.includes('black') || n.includes('heavy')) return 900;
-                            return 400; // default
-                        };
-                        const weightA = getWeight(a.variant_name);
-                        const weightB = getWeight(b.variant_name);
+                    (() => {
+                        const variants = font.font_variants?.slice() || [];
+                        const isAllCustom = variants.every(v => !VARIANT_NAMES.includes(v.variant_name));
 
-                        // Primary sort by weight (Descending)
-                        if (weightA !== weightB) return weightB - weightA;
+                        const sortedVariants = isAllCustom
+                            ? variants
+                            : variants.sort((a, b) => {
+                                const getWeight = (name: string) => {
+                                    const n = name.toLowerCase();
+                                    if (n.includes('thin')) return 100;
+                                    if (n.includes('extra light') || n.includes('extralight')) return 200;
+                                    if (n.includes('light')) return 300;
+                                    if (n.includes('regular')) return 400;
+                                    if (n.includes('medium')) return 500;
+                                    if (n.includes('semi bold') || n.includes('semibold')) return 600;
+                                    if (n.includes('extra bold') || n.includes('extrabold')) return 800;
+                                    if (n.includes('bold')) return 700;
+                                    if (n.includes('black') || n.includes('heavy')) return 900;
+                                    return 400; // default
+                                };
+                                const weightA = getWeight(a.variant_name);
+                                const weightB = getWeight(b.variant_name);
 
-                        // Secondary sort: Non-italic before Italic
-                        const isItalicA = a.variant_name.toLowerCase().includes('italic');
-                        const isItalicB = b.variant_name.toLowerCase().includes('italic');
-                        if (isItalicA !== isItalicB) return isItalicA ? 1 : -1;
+                                // Primary sort by weight (Descending)
+                                if (weightA !== weightB) return weightB - weightA;
 
-                        return 0;
-                    }).map(variant => (
-                        <div key={variant.id} className="p-8 rounded-4xl border-y border-black bg-white hover:bg-gray-100 transition-colors">
-                            <div className="flex justify-between items-center mb-4">
-                                <span className="text-[8px] font-bold uppercase tracking-wider text-gray-500 bg-gray-200 px-2 py-1 rounded-xl">{variant.variant_name}</span>
-                                <div className="flex gap-2">
-                                    {(['ttf', 'otf', 'woff', 'woff2'] as const).map(format => {
-                                        const url = variant[`${format}_url` as keyof typeof variant] as string;
-                                        if (url) {
-                                            return (
-                                                <button
-                                                    key={format}
-                                                    onClick={() => downloadFont(url, `${font.name}-${variant.variant_name}.${format}`)}
-                                                    className="flex items-center gap-1 px-3 py-1 bg-white border border-black rounded-full text-[10px] font-bold uppercase hover:bg-black hover:text-white transition-colors"
-                                                    title={`Download ${format.toUpperCase()}`}
-                                                >
-                                                    <Download size={12} /> {format}
-                                                </button>
-                                            );
-                                        }
-                                        return null;
-                                    })}
+                                // Secondary sort: Non-italic before Italic
+                                const isItalicA = a.variant_name.toLowerCase().includes('italic');
+                                const isItalicB = b.variant_name.toLowerCase().includes('italic');
+                                if (isItalicA !== isItalicB) return isItalicA ? 1 : -1;
+
+                                return 0;
+                            });
+
+                        return sortedVariants.map(variant => (
+                            <div key={variant.id} className="p-8 rounded-4xl border-y border-black bg-white hover:bg-gray-100 transition-colors">
+                                <div className="flex justify-between items-center mb-4">
+                                    <span className="text-[8px] font-bold uppercase tracking-wider text-gray-500 bg-gray-200 px-2 py-1 rounded-xl">{variant.variant_name}</span>
+                                    <div className="flex gap-2">
+                                        {(['ttf', 'otf', 'woff', 'woff2'] as const).map(format => {
+                                            const url = variant[`${format}_url` as keyof typeof variant] as string;
+                                            if (url) {
+                                                return (
+                                                    <button
+                                                        key={format}
+                                                        onClick={() => downloadFont(url, `${font.name}-${variant.variant_name}.${format}`)}
+                                                        className="flex items-center gap-1 px-3 py-1 bg-white border border-black rounded-full text-[10px] font-bold uppercase hover:bg-black hover:text-white transition-colors"
+                                                        title={`Download ${format.toUpperCase()}`}
+                                                    >
+                                                        <Download size={12} /> {format}
+                                                    </button>
+                                                );
+                                            }
+                                            return null;
+                                        })}
+                                    </div>
                                 </div>
+                                <p
+                                    style={{
+                                        fontFamily: `'font-${font.id}-${variant.variant_name}'`,
+                                        fontSize: `${variantPreviewSize}px`,
+                                        lineHeight: 1.2
+                                    }}
+                                    className="wrap-break-word transition-all duration-200 w-full"
+                                >
+                                    {variantPreviewText || `${font.name} ${variant.variant_name}`}
+                                </p>
                             </div>
-                            <p
-                                style={{
-                                    fontFamily: `'font-${font.id}-${variant.variant_name}'`,
-                                    fontSize: `${variantPreviewSize}px`,
-                                    lineHeight: 1.2
-                                }}
-                                className="wrap-break-word transition-all duration-200 w-full"
-                            >
-                                {variantPreviewText || `${font.name} ${variant.variant_name}`}
-                            </p>
-                        </div>
-                    ))
+                        ));
+                    })()
                 }
             </div >
 
             {/* Main Content Grid */}
             < div >
                 <div>
+                    {/* Auto-Generated Description Section */}
+                    <div className="grid lg:grid-cols-3">
+                        <div className="lg:col-span-2">
+                            <section className="bg-white rounded-4xl border-y lg:border-r border-black p-8 h-full">
+                                <h2 className="text-2xl font-black uppercase mb-6">Description</h2>
+
+                                {/* Header Tagline */}
+                                <h3 className="text-xl font-bold mb-4 leading-tight">
+                                    {generateHeaderTagline(font)}
+                                </h3>
+
+                                <div className="prose prose-lg max-w-none text-gray-800">
+                                    <p className="whitespace-pre-line leading-relaxed">
+                                        {generateDescription(font)}
+                                    </p>
+
+                                    {/* Footer Tagline */}
+                                    <p className="mt-8 font-serif italic text-xl text-gray-900 border-l-4 border-[#BDF522] pl-4">
+                                        "{generateFooterTagline(font)}"
+                                    </p>
+
+                                    <p className="mt-8 text-gray-500 italic text-sm">
+                                        Having a great day,<br />
+                                        <span className="font-bold not-italic text-black">{font.designer || 'The Designer'}</span>
+                                    </p>
+                                </div>
+                            </section>
+                        </div>
+
+                        <div className="">
+                            <section className="bg-white rounded-4xl border-y lg:border-l border-black p-8">
+                                <h2 className="text-xl font-black uppercase mb-4">Font Features</h2>
+                                <ul className="space-y-3">
+                                    {generateFontFeaturesList(font).map((feature, i) => (
+                                        <li key={i} className="flex items-start gap-3 text-sm font-medium text-gray-700">
+                                            <Check size={16} className="mt-0.5 text-[#BDF522] shrink-0 fill-black stroke-white" />
+                                            <span>{feature}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </section>
+
+                            <section className="bg-white rounded-4xl border-y lg:border-l border-black p-8">
+                                <h2 className="text-xl font-black uppercase mb-4">Item Tags</h2>
+                                <div className="flex flex-wrap gap-2">
+                                    {displayTags.map((tag, i) => (
+                                        <span key={i} className="px-3 py-1.5 bg-gray-100 rounded-full text-xs font-bold text-gray-600 hover:bg-black hover:text-[#BDF522] transition-colors cursor-default">
+                                            {tag}
+                                        </span>
+                                    ))}
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+
                     <section>
                         <h2 className="text-2xl font-bold py-4 px-4 bg-white rounded-4xl border-y border-black">Interactive Tester</h2>
                         <FontTester font={font} />

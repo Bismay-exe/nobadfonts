@@ -54,21 +54,36 @@ const CATEGORIES = [
             { id: 'headline', label: 'Headline' },
             { id: 'poster', label: 'Poster' },
             { id: 'corporate', label: 'Corporate' },
-            { id: 'tech', label: 'Tech' },
+            { id: 'tech', label: 'Tech / UI' },
+            { id: "social-media", label: "Social Media" }
         ],
     },
 
     {
         group: 'Weight & Shape',
         items: [
+            { id: "hairline", label: "Hairline" },
             { id: 'light', label: 'Light' },
-            { id: 'regular', label: 'Regular' },
-            { id: 'fat', label: 'Fat' },
+            { id: "normal-width", label: "Normal Width" },
+            { id: 'heavy', label: 'Heavy' },
+            { id: 'tall', label: 'Tall' },
             { id: 'condensed', label: 'Condensed' },
             { id: 'wide', label: 'Wide' },
-            { id: 'tall', label: 'Tall' },
-            { id: 'rounded', label: 'Rounded' },
+            { id: "extended", label: "Extended" },
         ],
+    },
+
+    {
+        group: "Construction & Features",
+        items: [
+            { id: "inktrap", label: "Ink Trap" },
+            { id: "rounded", label: "Rounded" },
+            { id: "square", label: "Square" },
+            { id: "stencil", label: "Stencil" },
+            { id: "outline", label: "Outline" },
+            { id: "inline", label: "Inline" },
+            { id: "pixel", label: "Pixel / Bitmap" }
+        ]
     },
 
     {
@@ -77,6 +92,7 @@ const CATEGORIES = [
             { id: 'casual', label: 'Casual' },
             { id: 'retro', label: 'Retro' },
             { id: 'vintage', label: 'Vintage' },
+            { id: 'cyberpunk', label: 'Cyberpunk' },
             { id: 'futuristic', label: 'Futuristic' },
             { id: 'gothic', label: 'Gothic' },
             { id: 'y2k', label: 'Y2K' }

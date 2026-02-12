@@ -12,7 +12,7 @@ export function useFont(id: string | undefined) {
   useEffect(() => {
     async function fetchFontAndFavoriteStatus() {
       if (!id) return;
-      
+
       setLoading(true);
       setError(null);
       try {
@@ -25,6 +25,7 @@ export function useFont(id: string | undefined) {
           .from('fonts')
           .select('*, font_variants(*)')
           .eq(column, id)
+          .order('id', { foreignTable: 'font_variants', ascending: true })
           .single();
 
         if (fontError) throw fontError;
@@ -33,19 +34,19 @@ export function useFont(id: string | undefined) {
         // Check favorite status if user is logged in
         const { data: { session } } = await supabase.auth.getSession();
         if (session?.user) {
-             const { data: favData, error: favError } = await supabase
-                .from('favorites')
-                .select('id')
-                .eq('font_id', fontData.id)
-                .eq('user_id', session.user.id)
-                .single();
-            
-             // .single() returns error if no row found, which means not favorited
-             if (!favError && favData) {
-                 setIsFavorited(true);
-             } else {
-                 setIsFavorited(false);
-             }
+          const { data: favData, error: favError } = await supabase
+            .from('favorites')
+            .select('id')
+            .eq('font_id', fontData.id)
+            .eq('user_id', session.user.id)
+            .single();
+
+          // .single() returns error if no row found, which means not favorited
+          if (!favError && favData) {
+            setIsFavorited(true);
+          } else {
+            setIsFavorited(false);
+          }
         }
       } catch (err: any) {
         console.error('Error fetching font:', err);

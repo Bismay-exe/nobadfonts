@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { Upload as UploadIcon, X, Image as ImageIcon, Link as LinkIcon } from 'lucide-react';
 import { useUpload } from '../contexts/UploadContext';
+import { FixWoff2Scanner } from '../components/admin/FixWoff2Scanner';
 
 const Upload = () => {
     const { user, profile } = useAuth();
@@ -24,6 +25,7 @@ const Upload = () => {
     type FontVariant = {
         id: string;
         name: string;
+        isCustom?: boolean;
         files: {
             ttf: File | null;
             otf: File | null;
@@ -67,6 +69,7 @@ const Upload = () => {
                 { id: 'minimal', label: 'Minimal' },
                 { id: 'bold', label: 'Bold' },
                 { id: 'elegant', label: 'Elegant' },
+                { id: 'luxury', label: 'Luxury' },
                 { id: 'playful', label: 'Playful' },
                 { id: 'experimental', label: 'Experimental' },
                 { id: 'brutalist', label: 'Brutalist' },
@@ -83,21 +86,36 @@ const Upload = () => {
                 { id: 'headline', label: 'Headline' },
                 { id: 'poster', label: 'Poster' },
                 { id: 'corporate', label: 'Corporate' },
-                { id: 'tech', label: 'Tech' },
+                { id: 'tech', label: 'Tech / UI' },
+                { id: "social-media", label: "Social Media" }
             ],
         },
 
         {
             group: 'Weight & Shape',
             items: [
+                { id: "hairline", label: "Hairline" },
                 { id: 'light', label: 'Light' },
-                { id: 'regular', label: 'Regular' },
-                { id: 'fat', label: 'Fat' },
+                { id: "normal-width", label: "Normal Width" },
+                { id: 'heavy', label: 'Heavy' },
+                { id: 'tall', label: 'Tall' },
                 { id: 'condensed', label: 'Condensed' },
                 { id: 'wide', label: 'Wide' },
-                { id: 'tall', label: 'Tall' },
-                { id: 'rounded', label: 'Rounded' },
+                { id: "extended", label: "Extended" },
             ],
+        },
+
+        {
+            group: "Construction & Features",
+            items: [
+                { id: "inktrap", label: "Ink Trap" },
+                { id: "rounded", label: "Rounded" },
+                { id: "square", label: "Square" },
+                { id: "stencil", label: "Stencil" },
+                { id: "outline", label: "Outline" },
+                { id: "inline", label: "Inline" },
+                { id: "pixel", label: "Pixel / Bitmap" }
+            ]
         },
 
         {
@@ -106,6 +124,7 @@ const Upload = () => {
                 { id: 'casual', label: 'Casual' },
                 { id: 'retro', label: 'Retro' },
                 { id: 'vintage', label: 'Vintage' },
+                { id: 'cyberpunk', label: 'Cyberpunk' },
                 { id: 'futuristic', label: 'Futuristic' },
                 { id: 'gothic', label: 'Gothic' },
                 { id: 'y2k', label: 'Y2K' }
@@ -161,7 +180,7 @@ const Upload = () => {
 
     // Variant Helpers
     const addVariant = () => {
-        if (variants.length >= VARIANT_NAMES.length) return;
+        if (variants.length >= VARIANT_NAMES.length + 10) return; // Cap total variants to reasonable number
         setVariants(prev => {
             const usedNames = prev.map(v => v.name);
             const firstAvailableName = VARIANT_NAMES.find(name => !usedNames.includes(name)) || 'Regular';
@@ -175,6 +194,18 @@ const Upload = () => {
                 }
             ]
         });
+    };
+
+    const addCustomVariant = () => {
+        setVariants(prev => [
+            ...prev,
+            {
+                id: Math.random().toString(36).substring(7),
+                name: '',
+                isCustom: true,
+                files: { ttf: null, otf: null, woff: null, woff2: null }
+            }
+        ]);
     };
 
     const removeVariant = (id: string) => {
@@ -431,22 +462,31 @@ const Upload = () => {
                         />
                     </div>
                 </div>
-                
+
                 {/* Variants Section */}
                 <div className="col-span-1 md:col-span-2 bg-white p-8 rounded-4xl border-l border-y border-black border-t-0 md:border-t">
                     <div className="flex justify-between items-center mb-4">
                         <label className="font-bold uppercase text-lg">Font Variants <span className="text-sm text-red-500 normal-case ml-2">(At least one required)</span></label>
-                        <button
-                            type="button"
-                            onClick={addVariant}
-                            disabled={variants.length >= VARIANT_NAMES.length}
-                            className={`px-4 py-2 rounded-full font-bold text-sm transition-colors ${variants.length >= VARIANT_NAMES.length
-                                ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                                : 'bg-black text-white hover:bg-gray-800'
-                                }`}
-                        >
-                            + Add Variant
-                        </button>
+                        <div className="flex gap-2">
+                            <button
+                                type="button"
+                                onClick={addCustomVariant}
+                                className="px-4 py-2 rounded-full font-bold text-sm bg-white border-2 border-black text-black hover:bg-gray-100 transition-colors"
+                            >
+                                + Custom Variant
+                            </button>
+                            <button
+                                type="button"
+                                onClick={addVariant}
+                                disabled={variants.length >= VARIANT_NAMES.length + 10}
+                                className={`px-4 py-2 rounded-full font-bold text-sm transition-colors ${variants.length >= VARIANT_NAMES.length + 10
+                                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                                    : 'bg-black text-white hover:bg-gray-800'
+                                    }`}
+                            >
+                                + Add Std Variant
+                            </button>
+                        </div>
                     </div>
 
                     <div className="space-y-6">
@@ -455,15 +495,26 @@ const Upload = () => {
                                 <div className="flex justify-between items-start mb-4">
                                     <div>
                                         <label className="block text-xs font-bold uppercase mb-1">Variant Name</label>
-                                        <select
-                                            value={variant.name}
-                                            onChange={(e) => updateVariantName(variant.id, e.target.value)}
-                                            className="border-2 border-black rounded-lg px-3 py-1 font-bold bg-white"
-                                        >
-                                            {VARIANT_NAMES.filter(name => name === variant.name || !variants.some(v => v.name === name)).map(name => (
-                                                <option key={name} value={name}>{name}</option>
-                                            ))}
-                                        </select>
+                                        {variant.isCustom ? (
+                                            <input
+                                                type="text"
+                                                value={variant.name}
+                                                onChange={(e) => updateVariantName(variant.id, e.target.value)}
+                                                className="border-2 border-black rounded-lg px-3 py-1 font-bold bg-white w-full"
+                                                placeholder="e.g. Demi Bold"
+                                                autoFocus
+                                            />
+                                        ) : (
+                                            <select
+                                                value={variant.name}
+                                                onChange={(e) => updateVariantName(variant.id, e.target.value)}
+                                                className="border-2 border-black rounded-lg px-3 py-1 font-bold bg-white"
+                                            >
+                                                {VARIANT_NAMES.filter(name => name === variant.name || !variants.some(v => v.name === name)).map(name => (
+                                                    <option key={name} value={name}>{name}</option>
+                                                ))}
+                                            </select>
+                                        )}
                                     </div>
                                     <button
                                         type="button"
@@ -642,6 +693,10 @@ const Upload = () => {
                     {loading ? 'Uploading...' : 'Submit Font'}
                 </button>
             </form>
+            {/* Admin Tools Section */}
+            {profile?.role === 'admin' && (
+                <FixWoff2Scanner />
+            )}
         </div>
     );
 };
