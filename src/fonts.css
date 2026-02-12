@@ -1,3 +1,4 @@
+@import url("https://www.nobadfonts.in/css/advine");
 @import url("https://www.nobadfonts.in/css/moldin");
 @import url("https://www.nobadfonts.in/css/rayton-brink");
 @import url("https://www.nobadfonts.in/css/hatori");
@@ -61,4 +62,8 @@
 
 @theme {
   --font-moldin: "Moldin", sans-serif;
+}
+
+@theme {
+  --font-advine: "Advine", sans-serif;
 }
