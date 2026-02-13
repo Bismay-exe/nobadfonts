@@ -8,7 +8,7 @@ export default function Navbar() {
     const [open, setOpen] = useState(false);
 
     return (
-        <nav className="w-full bg-[#EEEFEB] border-y border-[#1C1D1E] rounded-4xl p-3">
+        <nav className="w-full bg-[#EEEFEB] border-y border-[#1C1D1E] rounded-b-4xl p-3">
             <div className="flex justify-between items-center">
                 <Link
                     to="/"
@@ -16,7 +16,7 @@ export default function Navbar() {
                 >
 
                     <img src={Logo} alt="Logo" className='mr-2' />
-                    <span className='h-full font-moldin font-medium uppercase text-[#1C1D1E] text-3xl lg:text-5xl mt-3'>NoBadFonts</span>
+                    <span className='h-full font-bricolage-grotesque uppercase text-[#1C1D1E] text-3xl lg:text-5xl mt-3'>NoBadFonts</span>
                 </Link>
 
                 {/* Mobile menu button */}

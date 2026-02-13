@@ -5,9 +5,10 @@
 
 
 @theme {
-  --font-qurova-4zud: "Qurova", sans-serif;
+  --font-bricolage-grotesque: "Bricolage Grotesque", sans-serif;
   --font-roboto-condensed: "Roboto Condensed", sans-serif;
   --font-big-shoulders-display: "Big Shoulders Display", sans-serif;
+  --font-inter: "Inter", sans-serif;
   --font-baleron: "Baleron", sans-serif;
   --font-big-shoulders: "BigShoulders", sans-serif;
   --font-western: "WesternHighland", serif;
