@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">NoBadFonts</string>
+    <string name="title_activity_main">NoBadFonts</string>
+    <string name="package_name">com.nobadfonts.app</string>
+    <string name="custom_url_scheme">com.nobadfonts.app</string>
+</resources>
