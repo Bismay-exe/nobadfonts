@@ -1,14 +1,14 @@
 import { useState } from 'react';
-import { Smartphone, Monitor, Image as ImageIcon, Menu, Battery, Wifi, Signal, ChevronDown, MoreHorizontal, Music, Heart, Shuffle, SkipBack, Play, SkipForward, Repeat, CreditCard, ArrowDown, ArrowUp, TrendingUp, Bell, ArrowUpRight, Star, ShoppingBag, ArrowLeft, ArrowRight, Search, MapPin, Grid, Settings, Tv, Lightbulb, Flame, Wind, Lock, HomeIcon, ChevronRight, CloudRain, Zap, Plus, Sun, Cloud, Droplets, Eye, LayoutGrid, PieChart, Users, RotateCw } from 'lucide-react';
+import { Smartphone, Monitor, Image as ImageIcon, Menu, Battery, Wifi, Signal, ChevronDown, MoreHorizontal, Music, Heart, Shuffle, SkipBack, Play, SkipForward, Repeat, CreditCard, ArrowDown, ArrowUp, TrendingUp, Bell, ArrowUpRight, Star, ShoppingBag, ArrowLeft, ArrowRight, Search, MapPin, Grid, Settings, Tv, Lightbulb, Flame, Wind, Lock, HomeIcon, ChevronRight, CloudRain, Zap, Plus, Sun, Cloud, Droplets, Eye, RotateCw, Shield, CheckCircle } from 'lucide-react';
 
 interface ContextPreviewProps {
     fontFamily: string;
 }
 
-type Tab = 'hero' | 'app' | 'poster';
+type Tab = 'poster' | 'app' | 'hero';
 
 export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
-    const [activeTab, setActiveTab] = useState<Tab>('hero');
+    const [activeTab, setActiveTab] = useState<Tab>('poster');
 
     const getLongShadow = (color: string, length = 60) => {
         let shadow = '';
@@ -23,12 +23,12 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
             {/* Tabs */}
             <div className="flex gap-2 p-4 border-b border-gray-200 overflow-x-auto">
                 <button
-                    onClick={() => setActiveTab('hero')}
+                    onClick={() => setActiveTab('poster')}
                     className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm  transition-all whitespace-nowrap
-                        ${activeTab === 'hero' ? 'bg-black text-white shadow-md' : 'bg-white text-gray-500 hover:bg-gray-100'}
+                        ${activeTab === 'poster' ? 'bg-black text-white shadow-md' : 'bg-white text-gray-500 hover:bg-gray-100'}
                     `}
                 >
-                    <Monitor size={16} /> Website Hero
+                    <ImageIcon size={16} /> Typographic Poster
                 </button>
                 <button
                     onClick={() => setActiveTab('app')}
@@ -39,21 +39,21 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                     <Smartphone size={16} /> Mobile App
                 </button>
                 <button
-                    onClick={() => setActiveTab('poster')}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm  transition-all whitespace-nowrap
-                        ${activeTab === 'poster' ? 'bg-black text-white shadow-md' : 'bg-white text-gray-500 hover:bg-gray-100'}
+                    onClick={() => setActiveTab('hero')}
+                    className={`hidden lg:flex items-center gap-2 px-4 py-2 rounded-full text-sm  transition-all whitespace-nowrap
+                        ${activeTab === 'hero' ? 'bg-black text-white shadow-md' : 'bg-white text-gray-500 hover:bg-gray-100'}
                     `}
                 >
-                    <ImageIcon size={16} /> Typographic Poster
+                    <Monitor size={16} /> Website Hero
                 </button>
             </div>
 
             {/* Preview Container */}
-            <div className="flex-1 p-4 md:p-8 flex items-center justify-center overflow-auto min-h-125">
+            <div className="flex-1 py-4 md:py-8 flex items-center justify-center overflow-auto min-h-125">
 
                 {/* HERO VIEW */}
                 {activeTab === 'hero' && (
-                    <div className='grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-5'>
+                    <div className='hidden lg:flex flex-wrap justify-center items-center gap-5'>
                         <div className="w-full max-w-4xl bg-white rounded-xl shadow-xl overflow-hidden border border-gray-200 animate-in fade-in duration-300">
                             {/* Fake Browser Chrome */}
                             <div className="bg-gray-100 px-4 py-3 flex items-center gap-4 border-b border-gray-200">
@@ -96,224 +96,151 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                         <div className="w-full max-w-5xl aspect-16/10 bg-white rounded-xl shadow-2xl overflow-hidden border border-gray-200 flex flex-col font-sans animate-in fade-in zoom-in duration-300">
 
                             {/* --- Browser Chrome / Toolbar --- */}
-                            <div className="bg-[#F3F4F6] border-b border-gray-200 h-12 flex items-center px-4 gap-4 shrink-0">
-
+                            <div className="bg-white border-b border-gray-200 h-10 flex items-center px-4 gap-4 shrink-0 z-50 relative">
                                 {/* Window Controls */}
-                                <div className="flex gap-2">
-                                    <div className="w-3 h-3 rounded-full bg-red-500 border border-red-600/20"></div>
-                                    <div className="w-3 h-3 rounded-full bg-yellow-500 border border-yellow-600/20"></div>
-                                    <div className="w-3 h-3 rounded-full bg-green-500 border border-green-600/20"></div>
+                                <div className="flex gap-1.5">
+                                    <div className="w-2.5 h-2.5 rounded-full bg-red-400"></div>
+                                    <div className="w-2.5 h-2.5 rounded-full bg-yellow-400"></div>
+                                    <div className="w-2.5 h-2.5 rounded-full bg-green-400"></div>
                                 </div>
 
-                                {/* Navigation Controls */}
-                                <div className="flex gap-3 text-gray-400">
-                                    <ArrowLeft size={16} className="cursor-pointer hover:text-gray-600" />
-                                    <ArrowRight size={16} className="cursor-pointer hover:text-gray-600" />
-                                    <RotateCw size={16} className="cursor-pointer hover:text-gray-600" />
-                                </div>
-
-                                {/* Address Bar */}
-                                <div className="flex-1 bg-white border border-gray-300 rounded-md h-8 flex items-center px-3 gap-2 shadow-sm text-xs text-gray-600">
-                                    <Lock size={12} className="text-gray-400" />
-                                    <span className="text-gray-400">https://</span>
-                                    <span className="text-gray-800 font-medium">analytics.dashboard.io</span>
-                                    <span className="text-gray-400">/overview</span>
-                                </div>
-
-                                {/* User Profile (Browser Level) */}
-                                <div className="w-6 h-6 rounded-full bg-indigo-600 text-white flex items-center justify-center text-[10px] font-bold">
-                                    JD
+                                {/* Navigation & Address */}
+                                <div className="flex-1 flex items-center gap-3 ml-2">
+                                    <div className="flex gap-2 text-gray-400">
+                                        <ArrowLeft size={14} />
+                                        <ArrowRight size={14} />
+                                        <RotateCw size={14} />
+                                    </div>
+                                    <div className="flex-1 bg-gray-100 rounded-md h-6 flex items-center px-2 gap-2 text-[10px] text-gray-500 max-w-md mx-auto">
+                                        <Lock size={10} className="text-green-600" />
+                                        <span>untitledui.com/product</span>
+                                    </div>
                                 </div>
                             </div>
 
-                            {/* --- Main Viewport Content --- */}
-                            <div className="flex-1 flex overflow-hidden bg-white">
+                            {/* --- Website Content --- */}
+                            <div className="bg-white relative">
 
-                                {/* Sidebar Navigation */}
-                                <div className="w-64 border-r border-gray-100 bg-white flex-col p-4 hidden md:flex">
-                                    {/* Logo */}
-                                    <div className="flex items-center gap-2 mb-8 px-2">
-                                        <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white">
-                                            <PieChart size={18} />
-                                        </div>
-                                        <span style={{ fontFamily }} className="font-bold text-lg tracking-tight">Nexus<span className="text-indigo-600">.io</span></span>
-                                    </div>
+                                {/* Background Decoration */}
+                                <div className="absolute top-0 right-0 -translate-y-12 translate-x-1/4 w-200 h-200 bg-indigo-50/50 rounded-full blur-3xl pointer-events-none"></div>
+                                <div className="absolute bottom-0 left-0 translate-y-1/4 -translate-x-1/4 w-150 h-150 bg-blue-50/50 rounded-full blur-3xl pointer-events-none"></div>
 
-                                    {/* Menu Items */}
-                                    <div className="space-y-1 flex-1">
-                                        <div className="flex items-center gap-3 px-3 py-2 bg-indigo-50 text-indigo-700 rounded-lg text-sm font-medium cursor-pointer">
-                                            <LayoutGrid size={18} />
-                                            Dashboard
-                                        </div>
-                                        <div className="flex items-center gap-3 px-3 py-2 text-gray-500 hover:bg-gray-50 rounded-lg text-sm font-medium cursor-pointer transition-colors">
-                                            <Users size={18} />
-                                            Customers
-                                        </div>
-                                        <div className="flex items-center gap-3 px-3 py-2 text-gray-500 hover:bg-gray-50 rounded-lg text-sm font-medium cursor-pointer transition-colors">
-                                            <PieChart size={18} />
-                                            Reports
-                                        </div>
-                                        <div className="flex items-center gap-3 px-3 py-2 text-gray-500 hover:bg-gray-50 rounded-lg text-sm font-medium cursor-pointer transition-colors">
-                                            <Settings size={18} />
-                                            Settings
-                                        </div>
-                                    </div>
+                                {/* Hero Section */}
+                                <section className="px-8 pt-12 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10 max-w-6xl mx-auto">
 
-                                    {/* Sidebar Footer Card */}
-                                    <div className="bg-gray-50 rounded-xl p-4 mt-auto">
-                                        <div className="flex items-center gap-2 mb-2">
-                                            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                                            <span className="text-xs font-bold text-gray-600">System Status</span>
+                                    {/* Left Content */}
+                                    <div className="flex flex-col items-start gap-6">
+                                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-700 text-xs font-medium">
+                                            <span className="flex h-2 w-2 rounded-full bg-indigo-600"></span>
+                                            New feature released!
+                                            <ChevronRight size={12} />
                                         </div>
-                                        <p className="text-[10px] text-gray-400 leading-tight">All systems operational. Last check: 2 mins ago.</p>
-                                    </div>
-                                </div>
 
-                                {/* Main Content Area */}
-                                <div className="flex-1 flex flex-col overflow-y-auto bg-gray-50/50">
+                                        <h1 style={{ fontFamily }} className="text-5xl md:text-6xl text-gray-900 leading-[1.1]">
+                                            Beautiful analytics to grow smarter
+                                        </h1>
 
-                                    {/* App Header */}
-                                    <header className="h-16 border-b border-gray-100 bg-white flex justify-between items-center px-8 sticky top-0 z-10">
-                                        <div>
-                                            <h1 style={{ fontFamily }} className="text-xl font-bold text-gray-900">Dashboard</h1>
-                                            <p className="text-xs text-gray-400">Welcome back, John Doe</p>
-                                        </div>
-                                        <div className="flex items-center gap-4">
-                                            <div className="relative">
-                                                <Search size={20} className="text-gray-400" />
-                                            </div>
-                                            <div className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-50 cursor-pointer relative">
-                                                <Bell size={16} />
-                                                <div className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full border border-white"></div>
-                                            </div>
-                                            <button className="bg-black text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 hover:bg-gray-800 transition-colors">
-                                                <Plus size={14} /> Add Widget
+                                        <p className="text-lg text-gray-500 leading-relaxed max-w-lg">
+                                            Powerful, self-serve product and growth analytics to help you convert, engage, and retain more users. Trusted by over 4,000 startups.
+                                        </p>
+
+                                        <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto pt-2">
+                                            <button className="flex items-center justify-center gap-2 text-base font-bold text-white bg-indigo-600 hover:bg-indigo-700 px-6 py-3 rounded-xl transition-all shadow-lg shadow-indigo-200 hover:shadow-indigo-300">
+                                                <Play size={18} fill="currentColor" />
+                                                Demo
+                                            </button>
+                                            <button className="flex items-center justify-center gap-2 text-base font-bold text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 px-6 py-3 rounded-xl transition-all">
+                                                Sign up
                                             </button>
                                         </div>
-                                    </header>
 
-                                    {/* Dashboard Content */}
-                                    <div className="p-8">
-
-                                        {/* Stats Grid */}
-                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                                            {/* Stat Card 1 */}
-                                            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
-                                                <div className="flex justify-between items-start mb-4">
-                                                    <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
-                                                        <Users size={20} />
-                                                    </div>
-                                                    <span className="text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded-full">+12.5%</span>
-                                                </div>
-                                                <h3 className="text-2xl font-bold text-gray-900 mb-1">24.5k</h3>
-                                                <p className="text-xs text-gray-500 font-medium uppercase tracking-wide">Total Users</p>
-                                            </div>
-
-                                            {/* Stat Card 2 */}
-                                            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
-                                                <div className="flex justify-between items-start mb-4">
-                                                    <div className="w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center text-purple-600">
-                                                        <PieChart size={20} />
-                                                    </div>
-                                                    <span className="text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded-full">+8.2%</span>
-                                                </div>
-                                                <h3 className="text-2xl font-bold text-gray-900 mb-1">$48.2k</h3>
-                                                <p className="text-xs text-gray-500 font-medium uppercase tracking-wide">Total Revenue</p>
-                                            </div>
-
-                                            {/* Stat Card 3 */}
-                                            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
-                                                <div className="flex justify-between items-start mb-4">
-                                                    <div className="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-orange-600">
-                                                        <LayoutGrid size={20} />
-                                                    </div>
-                                                    <span className="text-xs font-bold text-red-600 bg-red-50 px-2 py-1 rounded-full">-2.4%</span>
-                                                </div>
-                                                <h3 className="text-2xl font-bold text-gray-900 mb-1">1,204</h3>
-                                                <p className="text-xs text-gray-500 font-medium uppercase tracking-wide">Active Sessions</p>
-                                            </div>
+                                        <div className="flex items-center gap-6 pt-4 text-sm text-gray-500 font-medium">
+                                            <span className="flex items-center gap-1"><CheckCircle size={16} className="text-green-500" /> Free 14-day trial</span>
+                                            <span className="flex items-center gap-1"><CheckCircle size={16} className="text-green-500" /> No credit card</span>
                                         </div>
-
-                                        {/* Main Chart Section */}
-                                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-                                            {/* Big Chart Area */}
-                                            <div className="lg:col-span-2 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                                                <div className="flex justify-between items-center mb-6">
-                                                    <h3 className="font-bold text-lg">Revenue Overview</h3>
-                                                    <div className="flex gap-2">
-                                                        <span className="text-xs font-bold text-white bg-black px-3 py-1 rounded-md cursor-pointer">12 Months</span>
-                                                        <span className="text-xs font-bold text-gray-500 bg-gray-100 px-3 py-1 rounded-md cursor-pointer hover:bg-gray-200">30 Days</span>
-                                                    </div>
-                                                </div>
-
-                                                {/* CSS Bar Chart Simulation */}
-                                                <div className="h-64 flex items-end justify-between gap-4 px-2">
-                                                    {[40, 65, 45, 80, 55, 90, 70, 85, 60, 75, 50, 95].map((height, i) => (
-                                                        <div key={i} className="w-full bg-gray-100 rounded-t-lg relative group overflow-hidden">
-                                                            <div
-                                                                style={{ height: `${height}%` }}
-                                                                className="absolute bottom-0 w-full bg-indigo-600 rounded-t-lg transition-all duration-500 group-hover:bg-indigo-500"
-                                                            ></div>
-                                                            {/* Tooltip on hover */}
-                                                            <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
-                                                                ${height}k
-                                                            </div>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                                <div className="flex justify-between mt-4 text-xs text-gray-400 font-medium uppercase">
-                                                    <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span>
-                                                    <span>Jul</span><span>Aug</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dec</span>
-                                                </div>
-                                            </div>
-
-                                            {/* Side List / Recent Activity */}
-                                            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col">
-                                                <div className="flex justify-between items-center mb-6">
-                                                    <h3 className="font-bold text-lg">Recent Sales</h3>
-                                                    <MoreHorizontal size={18} className="text-gray-400 cursor-pointer" />
-                                                </div>
-
-                                                <div className="flex-1 flex flex-col gap-4 overflow-hidden">
-                                                    {[1, 2, 3, 4].map((item) => (
-                                                        <div key={item} className="flex items-center justify-between group cursor-pointer p-2 hover:bg-gray-50 rounded-xl transition-colors">
-                                                            <div className="flex items-center gap-3">
-                                                                <div className="w-10 h-10 rounded-full bg-gray-200 overflow-hidden">
-                                                                    <img src={`/api/placeholder/100/100?text=${item}`} alt="User" className="w-full h-full object-cover" />
-                                                                </div>
-                                                                <div>
-                                                                    <p className="text-sm font-bold text-gray-900">User Name {item}</p>
-                                                                    <p className="text-xs text-gray-500">Pro Subscription</p>
-                                                                </div>
-                                                            </div>
-                                                            <div className="text-right">
-                                                                <p className="text-sm font-bold text-gray-900">+$240</p>
-                                                                <p className="text-[10px] text-gray-400">2m ago</p>
-                                                            </div>
-                                                        </div>
-                                                    ))}
-                                                </div>
-
-                                                <button className="w-full mt-4 py-3 border border-gray-200 rounded-xl text-xs font-bold text-gray-600 hover:bg-gray-50 transition-colors flex items-center justify-center gap-2">
-                                                    View All Transactions <ArrowUpRight size={14} />
-                                                </button>
-                                            </div>
-
-                                        </div>
-
                                     </div>
-                                </div>
 
+                                    {/* Right Visual (Abstract UI Composition) */}
+                                    <div className="relative w-full flex items-center justify-center perspective-[1000px]">
+                                        {/* Background Glow */}
+                                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4 bg-indigo-500/10 rounded-full blur-3xl"></div>
+
+                                        {/* Main Dashboard Card */}
+                                        <div className="absolute w-[90%] bg-white rounded-2xl shadow-2xl border border-gray-100 p-4 transform rotate-y-[-5deg] rotate-x-[5deg] transition-transform hover:rotate-0 duration-700 ease-out">
+
+                                            {/* Fake Header */}
+                                            <div className="flex justify-between items-center mb-6 border-b border-gray-50 pb-4">
+                                                <div>
+                                                    <h3 className="text-lg font-bold text-gray-900">Overview</h3>
+                                                    <p className="text-xs text-gray-400">Welcome back, Olivia</p>
+                                                </div>
+                                                <div className="flex gap-2">
+                                                    <div className="w-8 h-8 rounded-md bg-gray-50 border border-gray-100"></div>
+                                                    <div className="w-8 h-8 rounded-md bg-indigo-50 border border-indigo-100 text-indigo-600 flex items-center justify-center"><TrendingUp size={16} /></div>
+                                                </div>
+                                            </div>
+
+                                            {/* Chart Simulation */}
+                                            <div className="flex items-end gap-3 h-32 px-2 mb-6">
+                                                {[30, 45, 25, 60, 40, 70, 50, 80].map((h, i) => (
+                                                    <div key={i} className="flex-1 bg-indigo-50 rounded-t-sm relative group overflow-hidden">
+                                                        <div style={{ height: `${h}%` }} className="absolute bottom-0 w-full bg-indigo-500 rounded-t-sm group-hover:bg-indigo-600 transition-colors"></div>
+                                                    </div>
+                                                ))}
+                                            </div>
+
+                                            {/* Bottom Stats */}
+                                            <div className="grid grid-cols-3 gap-4">
+                                                <div className="p-3 bg-gray-50 rounded-lg">
+                                                    <p className="text-[10px] text-gray-400 font-bold uppercase">Users</p>
+                                                    <p className="text-lg font-bold text-gray-900">2.4k</p>
+                                                </div>
+                                                <div className="p-3 bg-gray-50 rounded-lg">
+                                                    <p className="text-[10px] text-gray-400 font-bold uppercase">Sessions</p>
+                                                    <p className="text-lg font-bold text-gray-900">48k</p>
+                                                </div>
+                                                <div className="p-3 bg-indigo-50 rounded-lg border border-indigo-100">
+                                                    <p className="text-[10px] text-indigo-400 font-bold uppercase">Growth</p>
+                                                    <p className="text-lg font-bold text-indigo-600">+12%</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Floating Badge 1 (Users) */}
+                                        <div className="absolute top-10 -left-4 bg-white p-3 rounded-xl shadow-xl border border-gray-100 flex items-center gap-3 animate-bounce [animation-duration:3s]">
+                                            <div className="flex -space-x-2">
+                                                <div className="w-8 h-8 rounded-full border-2 border-white bg-red-100"></div>
+                                                <div className="w-8 h-8 rounded-full border-2 border-white bg-blue-100"></div>
+                                                <div className="w-8 h-8 rounded-full border-2 border-white bg-green-100"></div>
+                                            </div>
+                                            <div>
+                                                <p className="text-xs font-bold text-gray-900">New Users</p>
+                                                <p className="text-[10px] text-gray-500">+24 today</p>
+                                            </div>
+                                        </div>
+
+                                        {/* Floating Badge 2 (Security) */}
+                                        <div className="absolute -bottom-6 -right-2 bg-white p-3 rounded-xl shadow-xl border border-gray-100 flex items-center gap-3 animate-bounce [animation-duration:4s]">
+                                            <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600">
+                                                <Shield size={20} />
+                                            </div>
+                                            <div>
+                                                <p className="text-xs font-bold text-gray-900">Audit Log</p>
+                                                <p className="text-[10px] text-green-600">Secure & Encrypted</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
                             </div>
+
                         </div>
                     </div>
                 )}
 
                 {/* APP VIEW */}
                 {activeTab === 'app' && (
-                    <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5'>
-                        <div className="relative w-[320px] h-160 bg-black rounded-[3rem] p-4 shadow-2xl animate-in fade-in zoom-in duration-300">
+                    <div className='flex flex-wrap justify-center items-center gap-5'>
+                        <div className="relative min-w-[320px] max-w-[320px] h-160 bg-black rounded-[3rem] p-4 shadow-2xl animate-in fade-in zoom-in duration-300">
                             {/* Island */}
                             <div className="absolute top-0 left-1/2 -translate-x-1/2 h-10 w-30 bg-black rounded-b-xl z-20"></div>
 
@@ -372,7 +299,7 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                         </div>
 
                         {/* APP VIEW - Music Player Variant */}
-                        <div className="relative w-[320px] h-160 bg-black rounded-[3rem] p-4 shadow-2xl animate-in fade-in zoom-in duration-300">
+                        <div className="relative min-w-[320px] max-w-[320px] h-160 bg-black rounded-[3rem] p-4 shadow-2xl animate-in fade-in zoom-in duration-300">
                             {/* Island */}
                             <div className="absolute top-0 left-1/2 -translate-x-1/2 h-10 w-30 bg-black rounded-b-xl z-20"></div>
 
@@ -394,7 +321,7 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                                 </div>
 
                                 {/* App Content */}
-                                <div className="p-6 flex-1 flex flex-col z-10">
+                                <div className="p-6 w-full flex flex-col z-10">
                                     {/* Header */}
                                     <div className="flex justify-between items-center mb-8">
                                         <ChevronDown size={24} className="text-white/70" />
@@ -449,7 +376,7 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                         </div>
 
                         {/* APP VIEW - Finance/Crypto Wallet */}
-                        <div className="relative w-[320px] h-160 bg-black rounded-[3rem] p-4 shadow-2xl animate-in fade-in zoom-in duration-300">
+                        <div className="relative min-w-[320px] max-w-[320px] h-160 bg-black rounded-[3rem] p-4 shadow-2xl animate-in fade-in zoom-in duration-300">
                             {/* Island */}
                             <div className="absolute top-0 left-1/2 -translate-x-1/2 h-10 w-30 bg-black rounded-b-xl z-20"></div>
 
@@ -567,7 +494,7 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                             </div>
                         </div>
 
-                        <div className="relative w-[320px] h-160 bg-black rounded-[3rem] p-4 shadow-2xl animate-in fade-in zoom-in duration-300">
+                        <div className="relative min-w-[320px] max-w-[320px] h-160 bg-black rounded-[3rem] p-4 shadow-2xl animate-in fade-in zoom-in duration-300">
                             {/* Island */}
                             <div className="absolute top-0 left-1/2 -translate-x-1/2 h-10 w-30 bg-black rounded-b-xl z-20"></div>
 
@@ -655,7 +582,7 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                             </div>
                         </div>
 
-                        <div className="relative w-[320px] h-160 bg-black rounded-[3rem] p-4 shadow-2xl animate-in fade-in zoom-in duration-300">
+                        <div className="relative min-w-[320px] max-w-[320px] h-160 bg-black rounded-[3rem] p-4 shadow-2xl animate-in fade-in zoom-in duration-300">
                             {/* Island */}
                             <div className="absolute top-0 left-1/2 -translate-x-1/2 h-10 w-30 bg-black rounded-b-xl z-20"></div>
 
@@ -692,6 +619,11 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                                 {/* Main Content Area */}
                                 <div className="flex-1 flex flex-col justify-end p-6 z-30 text-white">
 
+                                    {/* Main Heading */}
+                                    <h1 style={{ fontFamily }} className="text-6xl leading-[0.9] mb-4">
+                                        The<br />Alps
+                                    </h1>
+
                                     {/* Location Tag */}
                                     <div className="flex items-center gap-2 mb-2">
                                         <div className="bg-white/20 backdrop-blur-md px-3 py-1 rounded-full flex items-center gap-1 border border-white/20">
@@ -699,11 +631,6 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                                             <span className="text-[10px] font-bold uppercase tracking-wider">Switzerland</span>
                                         </div>
                                     </div>
-
-                                    {/* Main Heading */}
-                                    <h1 style={{ fontFamily }} className="text-5xl font-black leading-[0.9] mb-4">
-                                        The<br />Alps
-                                    </h1>
 
                                     {/* Stats / Info */}
                                     <div className="flex gap-6 mb-6">
@@ -746,7 +673,7 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                             </div>
                         </div>
 
-                        <div className="relative w-[320px] h-160 bg-black rounded-[3rem] p-4 shadow-2xl animate-in fade-in zoom-in duration-300">
+                        <div className="relative min-w-[320px] max-w-[320px] h-160 bg-black rounded-[3rem] p-4 shadow-2xl animate-in fade-in zoom-in duration-300">
                             {/* Island */}
                             <div className="absolute top-0 left-1/2 -translate-x-1/2 h-10 w-30 bg-black rounded-b-xl z-20"></div>
 
@@ -891,7 +818,7 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                             </div>
                         </div>
 
-                        <div className="relative w-[320px] h-160 bg-black rounded-[3rem] p-4 shadow-2xl animate-in fade-in zoom-in duration-300">
+                        <div className="relative min-w-[320px] max-w-[320px] h-160 bg-black rounded-[3rem] p-4 shadow-2xl animate-in fade-in zoom-in duration-300">
                             {/* Island */}
                             <div className="absolute top-0 left-1/2 -translate-x-1/2 h-10 w-30 bg-black rounded-b-xl z-20"></div>
 
@@ -1010,7 +937,7 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                             </div>
                         </div>
 
-                        <div className="relative w-[320px] h-160 bg-black rounded-[3rem] p-4 shadow-2xl animate-in fade-in zoom-in duration-300">
+                        <div className="relative min-w-[320px] max-w-[320px] h-160 bg-black rounded-[3rem] p-4 shadow-2xl animate-in fade-in zoom-in duration-300">
                             {/* Island */}
                             <div className="absolute top-0 left-1/2 -translate-x-1/2 h-10 w-30 bg-black rounded-b-xl z-20"></div>
 
@@ -1054,7 +981,7 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                                         <Sun size={24} className="text-yellow-300 absolute -top-2 -right-2 z-0 animate-pulse" fill="#FDE047" />
                                     </div>
 
-                                    <h1 style={{ fontFamily }} className="text-8xl font-black tracking-tighter drop-shadow-sm">
+                                    <h1 style={{ fontFamily }} className="text-8xl font-black drop-shadow-sm">
                                         18°
                                     </h1>
                                     <p className="text-lg font-medium opacity-90">Rainy Cloudy</p>
@@ -1130,9 +1057,9 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
 
                 {/* POSTER VIEW */}
                 {activeTab === 'poster' && (
-                    <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5'>
+                    <div className='flex flex-wrap justify-center items-center gap-5'>
                         {/* 1. Poster */}
-                        <div className="relative w-full max-w-md aspect-3/4 bg-[#F4F1EA] border border-black/10 shadow-xl p-3 md:p-8 flex flex-col justify-between animate-in fade-in duration-300">
+                        <div className="relative w-[320px] md:w-full max-w-md aspect-3/4 bg-[#F4F1EA] border border-black/10 shadow-xl p-3 md:p-8 flex flex-col justify-between animate-in fade-in duration-300">
                             {/* Texture Overlay */}
                             <div className="absolute inset-0 opacity-10 pointer-events-none mix-blend-multiply bg-[url('https://www.transparenttextures.com/patterns/noise-lines.png')]"></div>
 
@@ -1170,7 +1097,7 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                         </div>
 
                         {/* 2. Poster */}
-                        <div className="relative w-full max-w-md aspect-3/4 bg-[#0A2635] p-4 shadow-2xl flex flex-col items-center justify-center overflow-hidden animate-in fade-in zoom-in duration-300 border-4 border-[#0A2635]">
+                        <div className="relative w-[320px] md:w-full max-w-md aspect-3/4 bg-[#0A2635] p-4 shadow-2xl flex flex-col items-center justify-center overflow-hidden animate-in fade-in zoom-in duration-300 border-4 border-[#0A2635]">
 
                             {/* --- Background Stars/Dots --- */}
                             {/* Small dots scattered */}
@@ -1237,57 +1164,57 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                         </div>
 
                         {/* 3. Poster */}
-                        <div className="relative w-full max-w-md aspect-3/4 bg-white p-4 shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in duration-300 border border-gray-200">
+                        <div className="relative w-[320px] md:w-full max-w-md aspect-3/4 bg-white p-4 shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in duration-300 border border-gray-200">
 
                             {/* 1. Abstract Yellow Shapes (Background) */}
-                            <div className="absolute top-[10%] -left-10 w-[120%] h-32 bg-[#FFEF00] -rotate-6 transform origin-center mix-blend-multiply pointer-events-none"></div>
-                            <div className="absolute top-[35%] -right-10 w-[120%] h-40 bg-[#FFEF00] rotate-3 transform origin-center mix-blend-multiply pointer-events-none"></div>
-                            <div className="absolute bottom-[15%] left-10 w-full h-48 bg-[#FFEF00] -rotate-12 transform origin-center mix-blend-multiply pointer-events-none"></div>
+                            <div className="absolute top-[10%] -left-10 w-[120%] h-22 md:h-40 bg-[#FFEF00] -rotate-6 transform origin-center mix-blend-multiply pointer-events-none"></div>
+                            <div className="absolute top-[35%] -right-10 w-[120%] h-22 md:h-40 bg-[#FFEF00] rotate-3 transform origin-center mix-blend-multiply pointer-events-none"></div>
+                            <div className="absolute bottom-[15%] left-10 w-full h-22 md:h-40 bg-[#FFEF00] -rotate-12 transform origin-center mix-blend-multiply pointer-events-none"></div>
 
                             {/* 2. Top Navigation / Header */}
-                            <div className="flex justify-between items-start z-10 mb-8">
+                            <div className="flex justify-between items-start z-10 mb-4 md:mb-8">
                                 <div className="flex flex-col">
-                                    <span className="bg-black text-white px-2 py-1 text-xs  uppercase tracking-widest inline-block mb-1 w-fit">
+                                    <span className="bg-black text-white px-2 py-1 text-[8px] md:text-xs uppercase tracking-widest inline-block mb-1 w-fit">
                                         Collection 2026
                                     </span>
-                                    <span className="text-xs  text-black uppercase tracking-widest">
+                                    <span className="text-[10px] md:text-xs text-black uppercase tracking-widest">
                                         New York City
                                     </span>
                                 </div>
-                                <ArrowUpRight size={32} className="text-black stroke-3" />
+                                <ArrowUpRight className="w-6 h-6 md:w-8 md:h-8 text-black stroke-3" />
                             </div>
 
                             {/* 3. Main Massive Typography */}
                             {/* Using negative margin and massive text to mimic the 'FITNESS' and 'LOREM' posters */}
-                            <div className="relative z-20 flex-1 flex flex-col justify-center pointer-events-none">
-                                <h1 style={{ fontFamily }} className="text-8xl md:text-9xl text-black leading-[0.8] mix-blend-hard-light">
+                            <div className="relative z-20 flex-1 flex flex-col justify-center text-7xl md:text-9xl text-black leading-[0.8] pointer-events-none">
+                                <h1 style={{ fontFamily }} className="mix-blend-hard-light">
                                     URBAN
                                 </h1>
-                                <h1 style={{ fontFamily }} className="text-8xl md:text-9xl text-black leading-[0.8] ml-10 italic">
+                                <h1 style={{ fontFamily }} className="ml-10 italic">
                                     MODE
                                 </h1>
-                                <h1 style={{ fontFamily }} className="text-8xl md:text-9xl text-black leading-[0.8]">
+                                <h1 style={{ fontFamily }}>
                                     STYLE
                                 </h1>
                             </div>
 
                             {/* 4. Text Content / Description Block */}
                             <div className="grid grid-cols-2 gap-8 z-10 mt-auto items-end">
-                                <div className="text-sm  leading-tight">
+                                <div className="text-xs md:text-sm leading-tight">
                                     <p className="mb-4">
                                         A VISUAL EXPLORATION OF MODERN STREETWEAR AND BOLD TYPOGRAPHY.
                                     </p>
-                                    <button className="bg-black text-white px-6 py-3 text-xs  uppercase tracking-wider hover:bg-[#FFEF00] hover:text-black transition-colors">
+                                    <button className="bg-black text-white px-3 md:px-6 py-2 md:py-3 text-[8px] md:text-xs uppercase tracking-wider hover:bg-[#FFEF00] hover:text-black transition-colors">
                                         Get Tickets
                                     </button>
                                 </div>
 
                                 {/* 5. Date / Number Detail */}
                                 <div className="flex flex-col items-end text-black">
-                                    <span className="text-6xl font-black leading-none">
+                                    <span className="text-5xl md:text-6xl font-black leading-none">
                                         24
                                     </span>
-                                    <span className="text-xl uppercase tracking-wide border-t-4 border-black pt-2 mt-1 w-full text-right">
+                                    <span className="text-lg md:text-xl uppercase tracking-wide border-t-2 md:border-t-4 border-black pt-0 mt-1 w-full text-right">
                                         October
                                     </span>
                                 </div>
@@ -1295,7 +1222,7 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                         </div>
 
                         {/* 4. Poster */}
-                        <div className="relative w-full max-w-md aspect-3/4 bg-[#E5E5E5] p-4 md:p-8 border border-black/5 shadow-2xl flex flex-col font-sans animate-in fade-in zoom-in duration-300">
+                        <div className="relative w-[320px] md:w-full max-w-md aspect-3/4 bg-[#E5E5E5] p-4 md:p-8 border border-black/5 shadow-2xl flex flex-col font-sans animate-in fade-in zoom-in duration-300">
 
                             {/* 1. Main Speech Bubble Container */}
                             <div className="relative w-full bg-black text-white p-6 md:p-10 flex flex-col mb-12">
@@ -1307,10 +1234,10 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
 
                                 {/* Massive Typography */}
                                 <div className="flex-1 flex flex-col justify-center leading-[0.85]">
-                                    <h1 style={{ fontFamily }} className="text-[8rem] md:text-[10rem]   uppercase">
+                                    <h1 style={{ fontFamily }} className="text-[6rem] md:text-[8rem] uppercase">
                                         LAY
                                     </h1>
-                                    <h1 style={{ fontFamily }} className="text-[8rem] md:text-[10rem]   uppercase">
+                                    <h1 style={{ fontFamily }} className="text-[6rem] md:text-[8rem] uppercase">
                                         OUT
                                     </h1>
                                 </div>
@@ -1353,7 +1280,7 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                         </div>
 
                         {/* 5. Poster */}
-                        <div className="relative w-full max-w-md aspect-3/4 bg-[#0F1016] text-white overflow-hidden shadow-2xl flex flex-col p-6 md:p-8 animate-in fade-in zoom-in duration-300 border-4 border-[#0F1016]">
+                        <div className="relative w-[320px] md:w-full max-w-md aspect-3/4 bg-[#0F1016] text-white overflow-hidden shadow-2xl flex flex-col p-6 md:p-8 animate-in fade-in zoom-in duration-300 border-4 border-[#0F1016]">
 
                             {/* Starry Background Texture */}
                             <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-70 pointer-events-none"></div>
@@ -1362,12 +1289,12 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                             <div className="relative h-full w-full flex flex-col justify-center items-center z-10 font-sans">
 
                                 {/* Top Quote Section */}
-                                <div className="absolute top-0 left-0 w-full">
-                                    <p className="text-[10px] md:text-xs max-w-1/2 leading-relaxed opacity-80 font-medium tracking-wide text-gray-300 mb-4">
+                                <div className="absolute top-0 left-0 w-full items-start">
+                                    <p className="text-[8px] md:text-xs max-w-1/2 leading-relaxed opacity-80 font-medium tracking-wide text-gray-300">
                                         "Yours is the light by which my spirit's born: - you are my sun, my moon, and all my stars."
                                     </p>
                                     {/* Horizontal Line */}
-                                    <div className="w-1/2 h-0.5 bg-white mb-2 absolute right-0"></div>
+                                    <div className="w-1/2 h-0.5 bg-white absolute right-0"></div>
                                 </div>
 
                                 {/* Central Typography Stack */}
@@ -1396,7 +1323,7 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
 
                                 {/* The Central Moon Graphic */}
                                 {/* Positioned absolutely to sit on top of the text stack */}
-                                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 md:w-56 md:h-56 bg-[#FFE55C] rounded-full shadow-[0_0_60px_rgba(255,229,92,0.2)] z-10 flex items-center justify-center pointer-events-none mt-4">
+                                <div className="scale-75 md:scale-100 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 md:w-56 md:h-56 bg-[#FFE55C] rounded-full shadow-[0_0_60px_rgba(255,229,92,0.2)] z-10 flex items-center justify-center pointer-events-none mt-4">
                                     {/* Craters (CSS Circles) */}
                                     <div className="absolute top-8 left-10 w-8 h-8 bg-[#FACC15] rounded-full opacity-60"></div>
                                     <div className="absolute top-16 left-8 w-3 h-3 bg-[#FACC15] rounded-full opacity-60"></div>
@@ -1409,7 +1336,7 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                                 <div className="absolute bottom-0 right-0 w-full flex flex-col items-end text-right">
                                     {/* Horizontal Line */}
                                     <div className="w-1/2 h-0.5 bg-white mb-4 absolute left-0"></div>
-                                    <p className="text-[10px] md:text-xs max-w-1/2 leading-relaxed opacity-80 font-medium tracking-wide text-gray-300">
+                                    <p className="text-[8px] md:text-xs max-w-1/2 leading-relaxed opacity-80 font-medium tracking-wide text-gray-300">
                                         "Do not swear by the moon, for she changes constantly. then your love would also change."
                                     </p>
                                 </div>
@@ -1418,7 +1345,7 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                         </div>
 
                         {/* 6. Poster */}
-                        <div className="relative w-full max-w-md aspect-3/4 bg-gray-100 overflow-hidden shadow-2xl flex flex-col justify-end animate-in fade-in zoom-in duration-300 font-sans border-8 border-white">
+                        <div className="relative w-[320px] md:w-full max-w-md aspect-3/4 bg-gray-100 overflow-hidden shadow-2xl flex flex-col justify-end animate-in fade-in zoom-in duration-300 font-sans border-8 border-white">
 
                             {/* --- 1. Paper Texture & Creases Overlay --- */}
                             {/* Main Wrinkled Paper Texture */}
@@ -1431,13 +1358,13 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
 
                             {/* --- 2. Main Typography Content --- */}
                             {/* Using a flex container to stack the words tightly */}
-                            <div className="relative z-10 flex flex-col leading-[0.85] text-[7rem] md:text-[6rem] text-[#FFE600] p-2 mb-20">
+                            <div className="relative z-10 flex flex-col leading-[0.85] text-[5rem] md:text-[6rem] text-[#FFE600] p-2 mb-20">
 
                                 {/* WORD 1: GOOD (Yellow on Purple) */}
                                 <h1 className="transform origin-bottom-left"
                                     style={{
                                         fontFamily,
-                                        textShadow: getLongShadow('#6D28D9', 80) // Purple shadow
+                                        textShadow: getLongShadow('#6D28D9', 180) // Purple shadow
                                     }}>
                                     GOOD
                                 </h1>
@@ -1453,7 +1380,7 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                                 </h1>
 
                                 {/* WORD 3: ONLY (Yellow on Navy Blue) */}
-                                <h1 className="z-20 transform origin-bottom-left pl-30"
+                                <h1 className="z-20 transform origin-bottom-left pl-20"
                                     style={{
                                         fontFamily,
                                         textShadow: getLongShadow('#172554', 220) // Dark Navy shadow
