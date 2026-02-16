@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useState } from 'react';
-import Logo from '/logo/logo.png';
+import Logo from '/logo/logo-black.png';
 
 export default function Navbar() {
     const { user, profile } = useAuth();
