@@ -16,7 +16,7 @@ export default function Navbar() {
                 >
 
                     <img src={Logo} alt="Logo" className='mr-2' />
-                    <span className='h-full font-bricolage-grotesque uppercase text-[#1C1D1E] text-3xl lg:text-5xl mt-3'>NoBadFonts</span>
+                    <span className='h-full font-advine font-black text-[#1C1D1E] text-3xl lg:text-5xl mt-3'>NoBadFonts</span>
                 </Link>
 
                 {/* Mobile menu button */}

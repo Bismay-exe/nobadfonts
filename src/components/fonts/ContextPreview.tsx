@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Smartphone, Monitor, Image as ImageIcon, Menu, Battery, Wifi, Signal } from 'lucide-react';
+import { Smartphone, Monitor, Image as ImageIcon, Menu, Battery, Wifi, Signal, ChevronDown, MoreHorizontal, Music, Heart, Shuffle, SkipBack, Play, SkipForward, Repeat, CreditCard, ArrowDown, ArrowUp, TrendingUp, Bell, ArrowUpRight, Star, ShoppingBag, ArrowLeft, ArrowRight, Search, MapPin, Grid, Settings, Tv, Lightbulb, Flame, Wind, Lock, HomeIcon, ChevronRight, CloudRain, Zap, Plus, Sun, Cloud, Droplets, Eye, LayoutGrid, PieChart, Users, RotateCw } from 'lucide-react';
 
 interface ContextPreviewProps {
     fontFamily: string;
@@ -10,13 +10,21 @@ type Tab = 'hero' | 'app' | 'poster';
 export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
     const [activeTab, setActiveTab] = useState<Tab>('hero');
 
+    const getLongShadow = (color: string, length = 60) => {
+        let shadow = '';
+        for (let i = 1; i <= length; i++) {
+            shadow += `-${i}px ${i}px 0px ${color}${i === length ? '' : ','}`;
+        }
+        return shadow;
+    };
+
     return (
-        <div className="flex flex-col h-full bg-gray-50">
+        <div className="flex flex-col h-full">
             {/* Tabs */}
             <div className="flex gap-2 p-4 border-b border-gray-200 overflow-x-auto">
                 <button
                     onClick={() => setActiveTab('hero')}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap
+                    className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm  transition-all whitespace-nowrap
                         ${activeTab === 'hero' ? 'bg-black text-white shadow-md' : 'bg-white text-gray-500 hover:bg-gray-100'}
                     `}
                 >
@@ -24,7 +32,7 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                 </button>
                 <button
                     onClick={() => setActiveTab('app')}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap
+                    className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm  transition-all whitespace-nowrap
                         ${activeTab === 'app' ? 'bg-black text-white shadow-md' : 'bg-white text-gray-500 hover:bg-gray-100'}
                     `}
                 >
@@ -32,7 +40,7 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                 </button>
                 <button
                     onClick={() => setActiveTab('poster')}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap
+                    className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm  transition-all whitespace-nowrap
                         ${activeTab === 'poster' ? 'bg-black text-white shadow-md' : 'bg-white text-gray-500 hover:bg-gray-100'}
                     `}
                 >
@@ -45,41 +53,258 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
 
                 {/* HERO VIEW */}
                 {activeTab === 'hero' && (
-                    <div className="w-full max-w-4xl bg-white rounded-xl shadow-xl overflow-hidden border border-gray-200 animate-in fade-in duration-300">
-                        {/* Fake Browser Chrome */}
-                        <div className="bg-gray-100 px-4 py-3 flex items-center gap-4 border-b border-gray-200">
-                            <div className="flex gap-2">
-                                <div className="w-3 h-3 rounded-full bg-red-400"></div>
-                                <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
-                                <div className="w-3 h-3 rounded-full bg-green-400"></div>
+                    <div className='grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-5'>
+                        <div className="w-full max-w-4xl bg-white rounded-xl shadow-xl overflow-hidden border border-gray-200 animate-in fade-in duration-300">
+                            {/* Fake Browser Chrome */}
+                            <div className="bg-gray-100 px-4 py-3 flex items-center gap-4 border-b border-gray-200">
+                                <div className="flex gap-2">
+                                    <div className="w-3 h-3 rounded-full bg-red-400"></div>
+                                    <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
+                                    <div className="w-3 h-3 rounded-full bg-green-400"></div>
+                                </div>
+                                <div className="flex-1 bg-white h-6 rounded-md shadow-sm opacity-50"></div>
                             </div>
-                            <div className="flex-1 bg-white h-6 rounded-md shadow-sm opacity-50"></div>
-                        </div>
 
-                        {/* Content */}
-                        <div className="flex flex-col md:flex-row h-100">
-                            <div className="flex-1 p-12 flex flex-col justify-center gap-6">
-                                <span style={{ fontFamily }} className="text-sm tracking-widest uppercase text-blue-600">
-                                    Introducing
-                                </span>
-                                <h1 style={{ fontFamily }} className="text-5xl md:text-6xl leading-tight text-gray-900">
-                                    Future of Typography.
-                                </h1>
-                                <p className="text-gray-500 leading-relaxed max-w-md">
-                                    Experience the perfect blend of aesthetics and readability.
-                                    Designed for modern interfaces and bold statements.
-                                </p>
-                                <div className="flex gap-4 pt-4">
-                                    <button style={{ fontFamily }} className="px-8 py-3 bg-black text-white rounded-lg">
-                                        Get Started
-                                    </button>
-                                    <button style={{ fontFamily }} className="px-8 py-3 bg-gray-100 text-black rounded-lg">
-                                        Learn More
-                                    </button>
+                            {/* Content */}
+                            <div className="flex flex-col md:flex-row h-100">
+                                <div className="flex-1 p-12 flex flex-col justify-center gap-6">
+                                    <span style={{ fontFamily }} className="text-sm tracking-widest uppercase text-blue-600">
+                                        Introducing
+                                    </span>
+                                    <h1 style={{ fontFamily }} className="text-5xl md:text-6xl leading-tight text-gray-900">
+                                        Future of Typography.
+                                    </h1>
+                                    <p className="text-gray-500 leading-relaxed max-w-md">
+                                        Experience the perfect blend of aesthetics and readability.
+                                        Designed for modern interfaces and bold statements.
+                                    </p>
+                                    <div className="flex gap-4 pt-4">
+                                        <button style={{ fontFamily }} className="px-8 py-3 bg-black text-white rounded-lg">
+                                            Get Started
+                                        </button>
+                                        <button style={{ fontFamily }} className="px-8 py-3 bg-gray-100 text-black rounded-lg">
+                                            Learn More
+                                        </button>
+                                    </div>
+                                </div>
+                                <div className="w-1/3 bg-gray-100 m-8 rounded-2xl hidden md:flex items-center justify-center text-gray-300">
+                                    <ImageIcon size={64} />
                                 </div>
                             </div>
-                            <div className="w-1/3 bg-gray-100 m-8 rounded-2xl hidden md:flex items-center justify-center text-gray-300">
-                                <ImageIcon size={64} />
+                        </div>
+
+                        <div className="w-full max-w-5xl aspect-16/10 bg-white rounded-xl shadow-2xl overflow-hidden border border-gray-200 flex flex-col font-sans animate-in fade-in zoom-in duration-300">
+
+                            {/* --- Browser Chrome / Toolbar --- */}
+                            <div className="bg-[#F3F4F6] border-b border-gray-200 h-12 flex items-center px-4 gap-4 shrink-0">
+
+                                {/* Window Controls */}
+                                <div className="flex gap-2">
+                                    <div className="w-3 h-3 rounded-full bg-red-500 border border-red-600/20"></div>
+                                    <div className="w-3 h-3 rounded-full bg-yellow-500 border border-yellow-600/20"></div>
+                                    <div className="w-3 h-3 rounded-full bg-green-500 border border-green-600/20"></div>
+                                </div>
+
+                                {/* Navigation Controls */}
+                                <div className="flex gap-3 text-gray-400">
+                                    <ArrowLeft size={16} className="cursor-pointer hover:text-gray-600" />
+                                    <ArrowRight size={16} className="cursor-pointer hover:text-gray-600" />
+                                    <RotateCw size={16} className="cursor-pointer hover:text-gray-600" />
+                                </div>
+
+                                {/* Address Bar */}
+                                <div className="flex-1 bg-white border border-gray-300 rounded-md h-8 flex items-center px-3 gap-2 shadow-sm text-xs text-gray-600">
+                                    <Lock size={12} className="text-gray-400" />
+                                    <span className="text-gray-400">https://</span>
+                                    <span className="text-gray-800 font-medium">analytics.dashboard.io</span>
+                                    <span className="text-gray-400">/overview</span>
+                                </div>
+
+                                {/* User Profile (Browser Level) */}
+                                <div className="w-6 h-6 rounded-full bg-indigo-600 text-white flex items-center justify-center text-[10px] font-bold">
+                                    JD
+                                </div>
+                            </div>
+
+                            {/* --- Main Viewport Content --- */}
+                            <div className="flex-1 flex overflow-hidden bg-white">
+
+                                {/* Sidebar Navigation */}
+                                <div className="w-64 border-r border-gray-100 bg-white flex-col p-4 hidden md:flex">
+                                    {/* Logo */}
+                                    <div className="flex items-center gap-2 mb-8 px-2">
+                                        <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white">
+                                            <PieChart size={18} />
+                                        </div>
+                                        <span style={{ fontFamily }} className="font-bold text-lg tracking-tight">Nexus<span className="text-indigo-600">.io</span></span>
+                                    </div>
+
+                                    {/* Menu Items */}
+                                    <div className="space-y-1 flex-1">
+                                        <div className="flex items-center gap-3 px-3 py-2 bg-indigo-50 text-indigo-700 rounded-lg text-sm font-medium cursor-pointer">
+                                            <LayoutGrid size={18} />
+                                            Dashboard
+                                        </div>
+                                        <div className="flex items-center gap-3 px-3 py-2 text-gray-500 hover:bg-gray-50 rounded-lg text-sm font-medium cursor-pointer transition-colors">
+                                            <Users size={18} />
+                                            Customers
+                                        </div>
+                                        <div className="flex items-center gap-3 px-3 py-2 text-gray-500 hover:bg-gray-50 rounded-lg text-sm font-medium cursor-pointer transition-colors">
+                                            <PieChart size={18} />
+                                            Reports
+                                        </div>
+                                        <div className="flex items-center gap-3 px-3 py-2 text-gray-500 hover:bg-gray-50 rounded-lg text-sm font-medium cursor-pointer transition-colors">
+                                            <Settings size={18} />
+                                            Settings
+                                        </div>
+                                    </div>
+
+                                    {/* Sidebar Footer Card */}
+                                    <div className="bg-gray-50 rounded-xl p-4 mt-auto">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                                            <span className="text-xs font-bold text-gray-600">System Status</span>
+                                        </div>
+                                        <p className="text-[10px] text-gray-400 leading-tight">All systems operational. Last check: 2 mins ago.</p>
+                                    </div>
+                                </div>
+
+                                {/* Main Content Area */}
+                                <div className="flex-1 flex flex-col overflow-y-auto bg-gray-50/50">
+
+                                    {/* App Header */}
+                                    <header className="h-16 border-b border-gray-100 bg-white flex justify-between items-center px-8 sticky top-0 z-10">
+                                        <div>
+                                            <h1 style={{ fontFamily }} className="text-xl font-bold text-gray-900">Dashboard</h1>
+                                            <p className="text-xs text-gray-400">Welcome back, John Doe</p>
+                                        </div>
+                                        <div className="flex items-center gap-4">
+                                            <div className="relative">
+                                                <Search size={20} className="text-gray-400" />
+                                            </div>
+                                            <div className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-50 cursor-pointer relative">
+                                                <Bell size={16} />
+                                                <div className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full border border-white"></div>
+                                            </div>
+                                            <button className="bg-black text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 hover:bg-gray-800 transition-colors">
+                                                <Plus size={14} /> Add Widget
+                                            </button>
+                                        </div>
+                                    </header>
+
+                                    {/* Dashboard Content */}
+                                    <div className="p-8">
+
+                                        {/* Stats Grid */}
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                                            {/* Stat Card 1 */}
+                                            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+                                                <div className="flex justify-between items-start mb-4">
+                                                    <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
+                                                        <Users size={20} />
+                                                    </div>
+                                                    <span className="text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded-full">+12.5%</span>
+                                                </div>
+                                                <h3 className="text-2xl font-bold text-gray-900 mb-1">24.5k</h3>
+                                                <p className="text-xs text-gray-500 font-medium uppercase tracking-wide">Total Users</p>
+                                            </div>
+
+                                            {/* Stat Card 2 */}
+                                            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+                                                <div className="flex justify-between items-start mb-4">
+                                                    <div className="w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center text-purple-600">
+                                                        <PieChart size={20} />
+                                                    </div>
+                                                    <span className="text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded-full">+8.2%</span>
+                                                </div>
+                                                <h3 className="text-2xl font-bold text-gray-900 mb-1">$48.2k</h3>
+                                                <p className="text-xs text-gray-500 font-medium uppercase tracking-wide">Total Revenue</p>
+                                            </div>
+
+                                            {/* Stat Card 3 */}
+                                            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+                                                <div className="flex justify-between items-start mb-4">
+                                                    <div className="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-orange-600">
+                                                        <LayoutGrid size={20} />
+                                                    </div>
+                                                    <span className="text-xs font-bold text-red-600 bg-red-50 px-2 py-1 rounded-full">-2.4%</span>
+                                                </div>
+                                                <h3 className="text-2xl font-bold text-gray-900 mb-1">1,204</h3>
+                                                <p className="text-xs text-gray-500 font-medium uppercase tracking-wide">Active Sessions</p>
+                                            </div>
+                                        </div>
+
+                                        {/* Main Chart Section */}
+                                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                                            {/* Big Chart Area */}
+                                            <div className="lg:col-span-2 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                                                <div className="flex justify-between items-center mb-6">
+                                                    <h3 className="font-bold text-lg">Revenue Overview</h3>
+                                                    <div className="flex gap-2">
+                                                        <span className="text-xs font-bold text-white bg-black px-3 py-1 rounded-md cursor-pointer">12 Months</span>
+                                                        <span className="text-xs font-bold text-gray-500 bg-gray-100 px-3 py-1 rounded-md cursor-pointer hover:bg-gray-200">30 Days</span>
+                                                    </div>
+                                                </div>
+
+                                                {/* CSS Bar Chart Simulation */}
+                                                <div className="h-64 flex items-end justify-between gap-4 px-2">
+                                                    {[40, 65, 45, 80, 55, 90, 70, 85, 60, 75, 50, 95].map((height, i) => (
+                                                        <div key={i} className="w-full bg-gray-100 rounded-t-lg relative group overflow-hidden">
+                                                            <div
+                                                                style={{ height: `${height}%` }}
+                                                                className="absolute bottom-0 w-full bg-indigo-600 rounded-t-lg transition-all duration-500 group-hover:bg-indigo-500"
+                                                            ></div>
+                                                            {/* Tooltip on hover */}
+                                                            <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+                                                                ${height}k
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                                <div className="flex justify-between mt-4 text-xs text-gray-400 font-medium uppercase">
+                                                    <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span>
+                                                    <span>Jul</span><span>Aug</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dec</span>
+                                                </div>
+                                            </div>
+
+                                            {/* Side List / Recent Activity */}
+                                            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col">
+                                                <div className="flex justify-between items-center mb-6">
+                                                    <h3 className="font-bold text-lg">Recent Sales</h3>
+                                                    <MoreHorizontal size={18} className="text-gray-400 cursor-pointer" />
+                                                </div>
+
+                                                <div className="flex-1 flex flex-col gap-4 overflow-hidden">
+                                                    {[1, 2, 3, 4].map((item) => (
+                                                        <div key={item} className="flex items-center justify-between group cursor-pointer p-2 hover:bg-gray-50 rounded-xl transition-colors">
+                                                            <div className="flex items-center gap-3">
+                                                                <div className="w-10 h-10 rounded-full bg-gray-200 overflow-hidden">
+                                                                    <img src={`/api/placeholder/100/100?text=${item}`} alt="User" className="w-full h-full object-cover" />
+                                                                </div>
+                                                                <div>
+                                                                    <p className="text-sm font-bold text-gray-900">User Name {item}</p>
+                                                                    <p className="text-xs text-gray-500">Pro Subscription</p>
+                                                                </div>
+                                                            </div>
+                                                            <div className="text-right">
+                                                                <p className="text-sm font-bold text-gray-900">+$240</p>
+                                                                <p className="text-[10px] text-gray-400">2m ago</p>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+
+                                                <button className="w-full mt-4 py-3 border border-gray-200 rounded-xl text-xs font-bold text-gray-600 hover:bg-gray-50 transition-colors flex items-center justify-center gap-2">
+                                                    View All Transactions <ArrowUpRight size={14} />
+                                                </button>
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
                     </div>
@@ -87,60 +312,817 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
 
                 {/* APP VIEW */}
                 {activeTab === 'app' && (
-                    <div className="relative w-[320px] h-160 bg-black rounded-[3rem] p-4 shadow-2xl animate-in fade-in zoom-in duration-300 border-8 border-black">
-                        {/* Island */}
-                        <div className="absolute top-0 left-1/2 -translate-x-1/2 h-6 w-24 bg-black rounded-b-xl z-20"></div>
+                    <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5'>
+                        <div className="relative w-[320px] h-160 bg-black rounded-[3rem] p-4 shadow-2xl animate-in fade-in zoom-in duration-300">
+                            {/* Island */}
+                            <div className="absolute top-0 left-1/2 -translate-x-1/2 h-10 w-30 bg-black rounded-b-xl z-20"></div>
 
-                        {/* Screen */}
-                        <div className="w-full h-full bg-white rounded-[2.2rem] overflow-hidden flex flex-col relative text-gray-900">
-                            {/* Status Bar */}
-                            <div className="h-12 px-6 flex justify-between items-center text-xs font-bold text-black z-10 pt-2">
-                                <span>9:41</span>
-                                <div className="flex gap-1">
-                                    <Signal size={12} />
-                                    <Wifi size={12} />
-                                    <Battery size={12} />
-                                </div>
-                            </div>
-
-                            {/* App Content */}
-                            <div className="p-6 flex-1 flex flex-col gap-6">
-                                <div className="flex justify-between items-center">
-                                    <Menu size={24} />
-                                    <div className="w-8 h-8 bg-gray-200 rounded-full"></div>
-                                </div>
-
-                                <div>
-                                    <h2 style={{ fontFamily }} className="text-3xl leading-none mb-2">Discover</h2>
-                                    <p className="text-gray-400 text-sm">New collections today</p>
-                                </div>
-
-                                {/* Cards */}
-                                <div className="flex gap-4 overflow-x-auto pb-4 -mx-6 px-6 no-scrollbar">
-                                    <div className="shrink-0 w-48 h-64 bg-black rounded-2xl p-4 flex flex-col justify-end text-white">
-                                        <span style={{ fontFamily }} className="text-xl">Minimalist</span>
-                                        <span className="text-xs opacity-70">24 Items</span>
-                                    </div>
-                                    <div className="shrink-0 w-48 h-64 bg-gray-100 rounded-2xl p-4 flex flex-col justify-end">
-                                        <span style={{ fontFamily }} className="text-xl">Abstract</span>
-                                        <span className="text-xs opacity-70 text-gray-500">18 Items</span>
+                            {/* Screen */}
+                            <div className="w-full h-full bg-white rounded-[2.2rem] overflow-hidden flex flex-col relative text-gray-900">
+                                {/* Status Bar */}
+                                <div className="h-12 px-6 flex justify-between items-center text-xs  text-black z-10 pt-2">
+                                    <span>9:41</span>
+                                    <div className="flex gap-1">
+                                        <Signal size={12} />
+                                        <Wifi size={12} />
+                                        <Battery size={12} />
                                     </div>
                                 </div>
 
-                                <div className="flex-1 bg-gray-50 rounded-2xl p-4 flex items-center gap-4">
-                                    <div className="w-12 h-12 bg-gray-200 rounded-xl"></div>
+                                {/* App Content */}
+                                <div className="p-6 flex-1 flex flex-col gap-6">
+                                    <div className="flex justify-between items-center">
+                                        <Menu size={24} />
+                                        <div className="w-8 h-8 bg-gray-200 rounded-full"></div>
+                                    </div>
+
                                     <div>
-                                        <h3 style={{ fontFamily }} >Grid System</h3>
-                                        <p className="text-xs text-gray-400">By Studio A</p>
+                                        <h2 style={{ fontFamily }} className="text-3xl leading-none mb-2">Discover</h2>
+                                        <p className="text-gray-400 text-sm">New collections today</p>
+                                    </div>
+
+                                    {/* Cards */}
+                                    <div className="flex gap-4 overflow-x-auto pb-4 -mx-6 px-6 no-scrollbar">
+                                        <div className="shrink-0 w-48 h-64 bg-black rounded-2xl p-4 flex flex-col justify-end text-white">
+                                            <span style={{ fontFamily }} className="text-xl">Minimalist</span>
+                                            <span className="text-xs opacity-70">24 Items</span>
+                                        </div>
+                                        <div className="shrink-0 w-48 h-64 bg-gray-100 rounded-2xl p-4 flex flex-col justify-end">
+                                            <span style={{ fontFamily }} className="text-xl">Abstract</span>
+                                            <span className="text-xs opacity-70 text-gray-500">18 Items</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex-1 bg-gray-50 rounded-2xl p-4 flex items-center gap-4">
+                                        <div className="w-12 h-12 bg-gray-200 rounded-xl"></div>
+                                        <div>
+                                            <h3 style={{ fontFamily }} >Grid System</h3>
+                                            <p className="text-xs text-gray-400">By Studio A</p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            {/* Nav Bar */}
-                            <div className="h-20 bg-white/90 backdrop-blur border-t px-8 flex justify-between items-center pb-4">
-                                <div className="w-6 h-6 rounded-md bg-black"></div>
-                                <div className="w-6 h-6 rounded-md bg-gray-200"></div>
-                                <div className="w-6 h-6 rounded-md bg-gray-200"></div>
+                                {/* Nav Bar */}
+                                <div className="h-20 bg-white/90 backdrop-blur border-t px-8 flex justify-between items-center pb-4">
+                                    <div className="w-6 h-6 rounded-md bg-black"></div>
+                                    <div className="w-6 h-6 rounded-md bg-gray-200"></div>
+                                    <div className="w-6 h-6 rounded-md bg-gray-200"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* APP VIEW - Music Player Variant */}
+                        <div className="relative w-[320px] h-160 bg-black rounded-[3rem] p-4 shadow-2xl animate-in fade-in zoom-in duration-300">
+                            {/* Island */}
+                            <div className="absolute top-0 left-1/2 -translate-x-1/2 h-10 w-30 bg-black rounded-b-xl z-20"></div>
+
+                            {/* Screen */}
+                            <div className="w-full h-full bg-slate-900 rounded-[2.2rem] overflow-hidden flex flex-col relative text-white">
+
+                                {/* Background linear Blob */}
+                                <div className="absolute top-[-20%] left-[-20%] w-[140%] h-[60%] bg-indigo-600/90 rounded-full blur-3xl pointer-events-none"></div>
+                                <div className="absolute bottom-[-10%] right-[-20%] w-full h-[50%] bg-purple-600/60 rounded-full blur-3xl pointer-events-none"></div>
+
+                                {/* Status Bar */}
+                                <div className="h-12 px-6 flex justify-between items-center text-xs  text-white z-10 pt-2">
+                                    <span>9:41</span>
+                                    <div className="flex gap-1">
+                                        <Signal size={12} />
+                                        <Wifi size={12} />
+                                        <Battery size={12} />
+                                    </div>
+                                </div>
+
+                                {/* App Content */}
+                                <div className="p-6 flex-1 flex flex-col z-10">
+                                    {/* Header */}
+                                    <div className="flex justify-between items-center mb-8">
+                                        <ChevronDown size={24} className="text-white/70" />
+                                        <span className="text-xs font-medium tracking-widest uppercase text-white/50">Now Playing</span>
+                                        <MoreHorizontal size={24} className="text-white/70" />
+                                    </div>
+
+                                    {/* Album Art */}
+                                    <div className="w-full aspect-square bg-linear-to-tr from-violet-500 to-fuchsia-500 rounded-2xl shadow-[0_0_40px_10px_rgba(0,0,0,0.3)] mb-8 flex items-center justify-center relative overflow-hidden group">
+                                        {/* Simulated Image Texture */}
+                                        <div className="absolute inset-0 bg-black/10"></div>
+                                        <Music size={64} className="text-white/20" />
+                                    </div>
+
+                                    {/* Track Info */}
+                                    <div className="mb-8">
+                                        <div className="flex justify-between items-end">
+                                            <div>
+                                                <h2 style={{ fontFamily }} className="text-2xl  mb-1">Nightcall</h2>
+                                                <p className="text-slate-400 text-sm">Kavinsky • Drive OST</p>
+                                            </div>
+                                            <Heart size={24} className="text-emerald-400 fill-emerald-400/20 mb-1" />
+                                        </div>
+                                    </div>
+
+                                    {/* Progress */}
+                                    <div className="mb-8">
+                                        <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden cursor-pointer">
+                                            <div className="h-full w-2/3 bg-white rounded-full"></div>
+                                        </div>
+                                        <div className="flex justify-between text-[10px] font-medium text-slate-400 mt-2">
+                                            <span>2:14</span>
+                                            <span>4:18</span>
+                                        </div>
+                                    </div>
+
+                                    {/* Controls */}
+                                    <div className="flex justify-between items-center px-2">
+                                        <Shuffle size={20} className="text-white/40" />
+                                        <SkipBack size={28} className="text-white fill-white" />
+                                        <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-lg shadow-white/10 text-black hover:scale-105 transition-transform cursor-pointer">
+                                            <Play size={28} className="ml-1 fill-black" />
+                                        </div>
+                                        <SkipForward size={28} className="text-white fill-white" />
+                                        <Repeat size={20} className="text-white/40" />
+                                    </div>
+                                </div>
+
+                                {/* Bottom Indicator */}
+                                <div className="h-1 w-1/3 bg-white/20 rounded-full mx-auto mb-2"></div>
+                            </div>
+                        </div>
+
+                        {/* APP VIEW - Finance/Crypto Wallet */}
+                        <div className="relative w-[320px] h-160 bg-black rounded-[3rem] p-4 shadow-2xl animate-in fade-in zoom-in duration-300">
+                            {/* Island */}
+                            <div className="absolute top-0 left-1/2 -translate-x-1/2 h-10 w-30 bg-black rounded-b-xl z-20"></div>
+
+                            {/* Screen */}
+                            <div className="w-full h-full bg-gray-900 rounded-[2.2rem] overflow-hidden flex flex-col relative text-white">
+
+                                {/* Status Bar */}
+                                <div className="h-12 px-6 flex justify-between items-center text-xs  text-white z-10 pt-2">
+                                    <span>9:41</span>
+                                    <div className="flex gap-1">
+                                        <Signal size={12} />
+                                        <Wifi size={12} />
+                                        <Battery size={12} />
+                                    </div>
+                                </div>
+
+                                {/* App Content */}
+                                <div className="p-4 flex-1 flex flex-col gap-6 overflow-y-auto no-scrollbar">
+
+                                    {/* Header */}
+                                    <div className="flex justify-between items-center">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 bg-linear-to-tr from-yellow-400 to-orange-500 rounded-full flex items-center justify-center text-black  text-sm shadow-lg shadow-orange-500/20">
+                                                JD
+                                            </div>
+                                            <div>
+                                                <p className="text-gray-400 text-[10px] uppercase tracking-wider">Welcome back</p>
+                                                <p className=" text-sm">John Doe</p>
+                                            </div>
+                                        </div>
+                                        <div className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center border border-gray-700">
+                                            <Bell size={18} className="text-gray-300" />
+                                        </div>
+                                    </div>
+
+                                    {/* Balance Card */}
+                                    <div className="relative overflow-hidden bg-linear-to-br from-indigo-600 to-blue-700 rounded-3xl p-6 shadow-lg shadow-blue-900/20 group">
+                                        {/* Decorative Blur */}
+                                        <div className="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-3xl group-hover:bg-white/20 transition-all duration-500"></div>
+
+                                        <p className="text-blue-200 text-xs font-medium mb-1">Total Balance</p>
+                                        <h2 style={{ fontFamily }} className="text-3xl  mb-4">$24,484.00</h2>
+
+                                        <div className="flex items-center gap-2 text-xs font-medium">
+                                            <div className="bg-emerald-500/20 text-emerald-300 px-2 py-1 rounded-lg flex items-center gap-1 backdrop-blur-sm border border-emerald-500/20">
+                                                <TrendingUp size={12} /> +2.4%
+                                            </div>
+                                            <span className="text-blue-200/60">vs last week</span>
+                                        </div>
+                                    </div>
+
+                                    {/* Quick Actions */}
+                                    <div className="flex justify-between gap-3">
+                                        <button className="flex-1 bg-gray-800 hover:bg-gray-700 active:scale-95 py-4 rounded-2xl flex flex-col items-center gap-2 transition-all border border-gray-700/50">
+                                            <ArrowUp size={20} className="text-emerald-400" />
+                                            <span className="text-xs font-medium text-gray-300">Send</span>
+                                        </button>
+                                        <button className="flex-1 bg-gray-800 hover:bg-gray-700 active:scale-95 py-4 rounded-2xl flex flex-col items-center gap-2 transition-all border border-gray-700/50">
+                                            <ArrowDown size={20} className="text-blue-400" />
+                                            <span className="text-xs font-medium text-gray-300">Receive</span>
+                                        </button>
+                                        <button className="flex-1 bg-gray-800 hover:bg-gray-700 active:scale-95 py-4 rounded-2xl flex flex-col items-center gap-2 transition-all border border-gray-700/50">
+                                            <CreditCard size={20} className="text-purple-400" />
+                                            <span className="text-xs font-medium text-gray-300">Top up</span>
+                                        </button>
+                                    </div>
+
+                                    {/* Market List */}
+                                    <div>
+                                        <div className="flex justify-between items-end mb-4">
+                                            <h3 className=" text-lg">Market</h3>
+                                            <span className="text-xs text-blue-400 font-medium">See All</span>
+                                        </div>
+
+                                        <div className="flex flex-col gap-3">
+                                            {/* Bitcoin */}
+                                            <div className="flex items-center justify-between p-3 bg-gray-800/50 hover:bg-gray-800 rounded-2xl transition-colors border border-gray-700/30">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center text-white shadow-lg shadow-orange-500/20">
+                                                        <span className=" text-xs">₿</span>
+                                                    </div>
+                                                    <div>
+                                                        <p className=" text-sm">Bitcoin</p>
+                                                        <p className="text-gray-500 text-xs">BTC</p>
+                                                    </div>
+                                                </div>
+                                                <div className="text-right">
+                                                    <p className=" text-sm text-gray-200">$42,124</p>
+                                                    <p className="text-xs text-emerald-400">+1.2%</p>
+                                                </div>
+                                            </div>
+
+                                            {/* Ethereum */}
+                                            <div className="flex items-center justify-between p-3 bg-gray-800/50 hover:bg-gray-800 rounded-2xl transition-colors border border-gray-700/30">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-10 h-10 bg-indigo-500 rounded-full flex items-center justify-center text-white shadow-lg shadow-indigo-500/20">
+                                                        <span className=" text-xs">Ξ</span>
+                                                    </div>
+                                                    <div>
+                                                        <p className=" text-sm">Ethereum</p>
+                                                        <p className="text-gray-500 text-xs">ETH</p>
+                                                    </div>
+                                                </div>
+                                                <div className="text-right">
+                                                    <p className=" text-sm text-gray-200">$2,845</p>
+                                                    <p className="text-xs text-rose-400">-0.5%</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Bottom Indicator */}
+                                <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1/3 h-1 bg-gray-600 rounded-full mb-1"></div>
+                            </div>
+                        </div>
+
+                        <div className="relative w-[320px] h-160 bg-black rounded-[3rem] p-4 shadow-2xl animate-in fade-in zoom-in duration-300">
+                            {/* Island */}
+                            <div className="absolute top-0 left-1/2 -translate-x-1/2 h-10 w-30 bg-black rounded-b-xl z-20"></div>
+
+                            {/* Screen */}
+                            <div className="w-full h-full bg-[#F5F5F7] rounded-[2.2rem] overflow-hidden flex flex-col relative text-gray-900 font-sans">
+
+                                {/* Status Bar */}
+                                <div className="absolute top-0 w-full h-12 px-6 flex justify-between items-center text-xs font-bold text-black z-30 pt-2">
+                                    <span>9:41</span>
+                                    <div className="flex gap-1">
+                                        <Signal size={12} />
+                                        <Wifi size={12} />
+                                        <Battery size={12} />
+                                    </div>
+                                </div>
+
+                                {/* Product Image Area (Top Half) */}
+                                <div className="h-[35%] w-full bg-white relative flex items-center justify-center">
+                                    {/* Navigation Icons */}
+                                    <div className="absolute top-12 left-4 z-20 p-2 bg-white/50 backdrop-blur-md rounded-full cursor-pointer hover:bg-white">
+                                        <ArrowLeft size={20} className="text-black" />
+                                    </div>
+                                    <div className="absolute top-12 right-4 z-20 p-2 bg-white/50 backdrop-blur-md rounded-full cursor-pointer hover:bg-white">
+                                        <Heart size={20} className="text-black hover:fill-red-500 hover:text-red-500 transition-colors" />
+                                    </div>
+
+                                    {/* Simulated Product Image */}
+                                    <img src="https://media.istockphoto.com/id/1912499984/photo/comfortable-olive-green-armchair-with-wooden-legs-isolated-on-white-background.jpg?s=612x612&w=0&k=20&c=gSTPHLk0GRDrHilO0e4gMP8w1NuV-wr7e3L2yIE_Y6Q=" alt="" className="w-48 h-48 z-10" />
+                                    <div className="w-48 h-48 bg-orange-200 rounded-full blur-3xl absolute opacity-10"></div>
+                                </div>
+
+                                {/* Product Details Sheet (Bottom Half) */}
+                                <div className="flex-1 bg-[#e6e6e6] bg-linear-to-b from-[#e6e6e6] to-[#ffffff] border-t border-black/10 rounded-t-[2.5rem] -mt-8 relative z-10 flex flex-col shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
+                                    {/* Drag Handle */}
+                                    <div className="w-12 h-1 bg-[#c0c0c0] rounded-full mx-auto mt-3"></div>
+
+                                    <div className="p-8 flex-1 flex flex-col">
+                                        {/* Header Info */}
+                                        <div className="flex justify-between items-start mb-2">
+                                            <div>
+                                                <span className="text-orange-500 text-xs font-bold uppercase tracking-wider">Herman Miller</span>
+                                                <h2 style={{ fontFamily }} className="text-2xl font-bold text-neutral-900 leading-tight">Lounge Chair</h2>
+                                            </div>
+                                            <div className="flex items-center gap-1 bg-green-50 px-2 py-1 rounded-lg">
+                                                <Star size={12} className="fill-green-600 text-green-600" />
+                                                <span className="text-xs font-bold text-green-700">4.8</span>
+                                            </div>
+                                        </div>
+
+                                        {/* Price */}
+                                        <div className="mb-6">
+                                            <span className="text-3xl font-bold tracking-tight">$640</span>
+                                            <span className="text-sm text-gray-400 line-through ml-2">$850</span>
+                                        </div>
+
+                                        {/* Color Selector */}
+                                        <div className="mb-6">
+                                            <p className="text-xs font-bold text-gray-400 mb-3 uppercase tracking-wider">Select Color</p>
+                                            <div className="flex gap-3">
+                                                <div className="w-5 h-5 rounded-full bg-neutral-900 ring-2 ring-offset-2 ring-gray-300 cursor-pointer"></div>
+                                                <div className="w-5 h-5 rounded-full bg-orange-700 cursor-pointer hover:ring-2 hover:ring-offset-2 hover:ring-orange-200"></div>
+                                                <div className="w-5 h-5 rounded-full bg-[#D4C3AA] cursor-pointer hover:ring-2 hover:ring-offset-2 hover:ring-yellow-100"></div>
+                                                <div className="w-5 h-5 rounded-full bg-gray-400 cursor-pointer hover:ring-2 hover:ring-offset-2 hover:ring-gray-200"></div>
+                                            </div>
+                                        </div>
+
+                                        {/* Description (Truncated) */}
+                                        <div className="flex-1 overflow-hidden relative">
+                                            <p className="text-sm text-gray-500 leading-relaxed">
+                                                A timeless classic designed for comfort and style. Premium leather upholstery with a molded wood shell...
+                                            </p>
+                                            <div className="absolute bottom-0 w-full h-8 bg-linear-to-t from-white to-transparent"></div>
+                                        </div>
+
+                                        {/* Action Button */}
+                                        <button className="absolute bottom-3 bg-black text-white py-4 px-15 rounded-2xl font-bold text-sm mt-4 active:scale-95 transition-transform flex items-center justify-center gap-2 shadow-lg shadow-black/20">
+                                            <ShoppingBag size={18} />
+                                            Add to Cart
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Bottom Indicator */}
+                                <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1/3 h-1 bg-gray-300 rounded-full mb-1"></div>
+                            </div>
+                        </div>
+
+                        <div className="relative w-[320px] h-160 bg-black rounded-[3rem] p-4 shadow-2xl animate-in fade-in zoom-in duration-300">
+                            {/* Island */}
+                            <div className="absolute top-0 left-1/2 -translate-x-1/2 h-10 w-30 bg-black rounded-b-xl z-20"></div>
+
+                            {/* Screen */}
+                            <div className="w-full h-full bg-white rounded-[2.2rem] overflow-hidden flex flex-col relative text-gray-900 font-sans">
+
+                                {/* Background Image (Immersive) */}
+                                <div className="absolute inset-0 bg-neutral-900">
+                                    {/* Placeholder for a scenic travel photo (mountains/ocean) */}
+                                    <div className="w-full h-full opacity-80 bg-[url('https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80')] bg-cover bg-center"></div>
+                                    <div className="absolute inset-0 bg-linear-to-b from-black/20 via-transparent to-black/60"></div>
+                                </div>
+
+                                {/* Status Bar */}
+                                <div className="h-12 px-6 flex justify-between items-center text-xs font-bold text-white z-30 pt-2">
+                                    <span>9:41</span>
+                                    <div className="flex gap-1">
+                                        <Signal size={12} />
+                                        <Wifi size={12} />
+                                        <Battery size={12} />
+                                    </div>
+                                </div>
+
+                                {/* App Header */}
+                                <div className="flex justify-between items-center px-6 pt-2 z-30 text-white">
+                                    <div className="w-10 h-10 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center border border-white/20">
+                                        <Menu size={20} />
+                                    </div>
+                                    <div className="w-10 h-10 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center border border-white/20">
+                                        <Search size={20} />
+                                    </div>
+                                </div>
+
+                                {/* Main Content Area */}
+                                <div className="flex-1 flex flex-col justify-end p-6 z-30 text-white">
+
+                                    {/* Location Tag */}
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <div className="bg-white/20 backdrop-blur-md px-3 py-1 rounded-full flex items-center gap-1 border border-white/20">
+                                            <MapPin size={12} />
+                                            <span className="text-[10px] font-bold uppercase tracking-wider">Switzerland</span>
+                                        </div>
+                                    </div>
+
+                                    {/* Main Heading */}
+                                    <h1 style={{ fontFamily }} className="text-5xl font-black leading-[0.9] mb-4">
+                                        The<br />Alps
+                                    </h1>
+
+                                    {/* Stats / Info */}
+                                    <div className="flex gap-6 mb-6">
+                                        <div>
+                                            <p className="text-xs text-gray-300 uppercase tracking-wider font-bold mb-1">Temp</p>
+                                            <p className="text-xl font-medium">-4°C</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-xs text-gray-300 uppercase tracking-wider font-bold mb-1">Distance</p>
+                                            <p className="text-xl font-medium">12 km</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-xs text-gray-300 uppercase tracking-wider font-bold mb-1">Rating</p>
+                                            <div className="flex items-center gap-1">
+                                                <Star size={14} className="fill-yellow-400 text-yellow-400" />
+                                                <span className="text-xl font-medium">4.9</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Description Text */}
+                                    <p className="text-sm text-gray-200 leading-relaxed line-clamp-2 mb-6 opacity-80">
+                                        Experience the breathtaking views of the Swiss Alps. A paradise for hikers, skiers, and nature lovers alike.
+                                    </p>
+
+                                    {/* Action Slider Button */}
+                                    <div className="h-16 bg-white/10 backdrop-blur-xl rounded-4xl p-2 flex items-center border border-white/20 relative overflow-hidden group cursor-pointer">
+                                        <div className="absolute inset-y-0 left-0 w-1/2 bg-white/10 blur-xl group-hover:translate-x-full transition-transform duration-700"></div>
+
+                                        <div className="h-12 w-12 bg-white rounded-full flex items-center justify-center text-black shadow-lg z-10">
+                                            <ArrowRight size={20} />
+                                        </div>
+                                        <span className="flex-1 text-center font-bold text-sm tracking-wide">Slide to Book</span>
+                                    </div>
+
+                                </div>
+
+                                {/* Bottom Indicator */}
+                                <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1/3 h-1 bg-white/50 rounded-full mb-1 z-30"></div>
+                            </div>
+                        </div>
+
+                        <div className="relative w-[320px] h-160 bg-black rounded-[3rem] p-4 shadow-2xl animate-in fade-in zoom-in duration-300">
+                            {/* Island */}
+                            <div className="absolute top-0 left-1/2 -translate-x-1/2 h-10 w-30 bg-black rounded-b-xl z-20"></div>
+
+                            {/* Screen */}
+                            <div className="w-full h-full bg-[#1A1A1A] rounded-[2.2rem] overflow-hidden flex flex-col relative text-white font-sans">
+
+                                {/* Ambient Background Glow */}
+                                <div className="absolute top-[-10%] right-[-30%] w-[80%] h-[40%] bg-orange-500/20 rounded-full blur-3xl pointer-events-none"></div>
+                                <div className="absolute bottom-[-10%] left-[-20%] w-[80%] h-[40%] bg-blue-500/20 rounded-full blur-3xl pointer-events-none"></div>
+
+                                {/* Status Bar */}
+                                <div className="h-12 px-6 flex justify-between items-center text-xs font-bold text-white z-30 pt-2">
+                                    <span>9:41</span>
+                                    <div className="flex gap-1">
+                                        <Signal size={12} />
+                                        <Wifi size={12} />
+                                        <Battery size={12} />
+                                    </div>
+                                </div>
+
+                                {/* Header */}
+                                <div className="px-4 pt-2 pb-6 flex justify-between items-center z-10">
+                                    <div>
+                                        <p className="text-xs text-gray-400 font-medium uppercase tracking-wider mb-1">Welcome Home</p>
+                                        <h2 style={{ fontFamily }} className="text-2xl font-bold">Alex's Place</h2>
+                                    </div>
+                                    <div className="w-10 h-10 rounded-full bg-gray-700 overflow-hidden border-2 border-white/10">
+                                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4YreOWfDX3kK-QLAbAL4ufCPc84ol2MA8Xg&s" alt="User" className="w-full h-full object-cover" />
+                                    </div>
+                                </div>
+
+                                {/* Room Selector */}
+                                <div className="px-4 mb-6 overflow-x-auto no-scrollbar flex gap-4 z-10">
+                                    <span className="text-sm font-bold border-b-2 border-orange-500 pb-1 text-white whitespace-nowrap">Living Room</span>
+                                    <span className="text-sm font-medium text-gray-500 pb-1 whitespace-nowrap">Bedroom</span>
+                                    <span className="text-sm font-medium text-gray-500 pb-1 whitespace-nowrap">Kitchen</span>
+                                    <span className="text-sm font-medium text-gray-500 pb-1 whitespace-nowrap">Office</span>
+                                </div>
+
+                                {/* Main Controls - Scrollable */}
+                                <div className="flex-1 px-4 pb-6 overflow-y-auto no-scrollbar z-10 flex flex-col gap-4">
+
+                                    {/* Thermostat Widget */}
+                                    <div className="w-full bg-white/5 border border-white/10 rounded-3xl p-4 flex items-center justify-between relative overflow-hidden">
+                                        {/* Decorative Ring */}
+                                        <div className="absolute -right-12 -bottom-12 w-40 h-40 border-10 border-orange-500/20 rounded-full"></div>
+
+                                        <div>
+                                            <p className="text-sm font-medium text-gray-400 mb-1">Thermostat</p>
+                                            <h3 className="text-4xl font-bold mb-1">24°c</h3>
+                                            <p className="text-xs text-orange-400 font-bold uppercase tracking-wide flex items-center gap-1">
+                                                <Flame size={10} /> Heating
+                                            </p>
+                                        </div>
+
+                                        {/* Circular Control UI Simulation */}
+                                        <div className="w-20 h-20 rounded-full border-[6px] border-gray-700 relative flex items-center justify-center shadow-inner bg-gray-800">
+                                            <div className="absolute inset-0 border-[6px] border-orange-500 rounded-full border-t-transparent border-l-transparent -rotate-45"></div>
+                                            <div className="text-xs font-bold text-gray-300">Auto</div>
+                                        </div>
+                                    </div>
+
+                                    {/* Device Grid */}
+                                    <div className="grid grid-cols-2 gap-4">
+
+                                        {/* Smart Light */}
+                                        <div className="bg-orange-500 text-white rounded-3xl p-4 flex flex-col justify-between aspect-square shadow-lg shadow-orange-500/20">
+                                            <div className="flex justify-between items-start">
+                                                <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                                                    <Lightbulb size={16} />
+                                                </div>
+                                                <div className="w-8 h-4 bg-white rounded-full p-1 flex justify-end">
+                                                    <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <p className="font-bold">Main Light</p>
+                                                <p className="text-xs text-white/70">80% Brightness</p>
+                                            </div>
+                                        </div>
+
+                                        {/* Smart TV */}
+                                        <div className="bg-white/5 border border-white/10 rounded-3xl p-4 flex flex-col justify-between aspect-square hover:bg-white/10 transition-colors">
+                                            <div className="flex justify-between items-start">
+                                                <div className="w-8 h-8 bg-gray-700/50 rounded-full flex items-center justify-center text-gray-300">
+                                                    <Tv size={16} />
+                                                </div>
+                                                <div className="w-8 h-4 bg-gray-700 rounded-full p-1 flex justify-start">
+                                                    <div className="w-2 h-2 bg-gray-500 rounded-full"></div>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <p className="font-bold text-gray-300">Smart TV</p>
+                                                <p className="text-xs text-gray-500">Off</p>
+                                            </div>
+                                        </div>
+
+                                        {/* AC Unit */}
+                                        <div className="bg-white/5 border border-white/10 rounded-3xl p-4 flex flex-col justify-between aspect-square hover:bg-white/10 transition-colors">
+                                            <div className="flex justify-between items-start">
+                                                <div className="w-8 h-8 bg-gray-700/50 rounded-full flex items-center justify-center text-gray-300">
+                                                    <Wind size={16} />
+                                                </div>
+                                                <div className="w-8 h-4 bg-gray-700 rounded-full p-1 flex justify-start">
+                                                    <div className="w-2 h-2 bg-gray-500 rounded-full"></div>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <p className="font-bold text-gray-300">Air Con</p>
+                                                <p className="text-xs text-gray-500">Off</p>
+                                            </div>
+                                        </div>
+
+                                        {/* Security Lock */}
+                                        <div className="bg-white/5 border border-white/10 rounded-3xl p-4 flex flex-col justify-between aspect-square hover:bg-white/10 transition-colors">
+                                            <div className="flex justify-between items-start">
+                                                <div className="w-8 h-8 bg-gray-700/50 rounded-full flex items-center justify-center text-gray-300">
+                                                    <Lock size={16} />
+                                                </div>
+                                                <div className="w-8 h-4 bg-green-500/20 rounded-full p-1 flex justify-end border border-green-500/50">
+                                                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <p className="font-bold text-gray-300">Entry Lock</p>
+                                                <p className="text-xs text-green-400">Locked</p>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                                {/* Bottom Nav Bar (Floating) */}
+                                <div className="absolute bottom-4 left-18 right-18 h-14 bg-[#f0c7ac]/20 backdrop-blur-xs rounded-4xl flex justify-around items-center border border-white/20 shadow-2xl z-40">
+                                    <HomeIcon size={20} className="text-white" />
+                                    <Grid size={20} className="text-gray-500" />
+                                    <Settings size={20} className="text-gray-500" />
+                                </div>
+
+                                {/* Home Indicator */}
+                                <div className="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-1/3 h-1 bg-white/20 rounded-full mb-1 z-30"></div>
+                            </div>
+                        </div>
+
+                        <div className="relative w-[320px] h-160 bg-black rounded-[3rem] p-4 shadow-2xl animate-in fade-in zoom-in duration-300">
+                            {/* Island */}
+                            <div className="absolute top-0 left-1/2 -translate-x-1/2 h-10 w-30 bg-black rounded-b-xl z-20"></div>
+
+                            {/* Screen */}
+                            <div className="w-full h-full bg-neutral-900 rounded-[2.2rem] overflow-hidden flex flex-col relative text-white font-sans">
+
+                                {/* Status Bar */}
+                                <div className="h-12 px-6 flex justify-between items-center text-xs font-bold text-white z-30 pt-2">
+                                    <span>9:41</span>
+                                    <div className="flex gap-1">
+                                        <Signal size={12} />
+                                        <Wifi size={12} />
+                                        <Battery size={12} />
+                                    </div>
+                                </div>
+
+                                {/* Header Date & Profile */}
+                                <div className="px-6 py-4 flex justify-between items-center">
+                                    <div>
+                                        <p className="text-xs text-gray-400 font-bold uppercase tracking-wider">Monday, 24 Oct</p>
+                                        <h2 style={{ fontFamily }} className="text-2xl font-black italic">Keep Moving</h2>
+                                    </div>
+                                    <div className="w-10 h-10 rounded-full bg-lime-400 border-2 border-black flex items-center justify-center text-black font-bold">
+                                        JD
+                                    </div>
+                                </div>
+
+                                {/* Main Stats Card (Progress Ring) */}
+                                <div className="mx-4 bg-neutral-800 rounded-3xl p-4 relative overflow-hidden mb-6">
+                                    <div className="absolute top-0 right-0 w-32 h-32 bg-lime-400/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+
+                                    <div className="flex justify-between items-start mb-4">
+                                        <h3 className="font-bold text-lg">Daily Goal</h3>
+                                        <div className="bg-lime-400/10 text-lime-400 px-2 py-1 rounded-lg text-xs font-bold">
+                                            On Track
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-center gap-6">
+                                        {/* Ring Simulation */}
+                                        <div className="relative w-24 h-24 flex items-center justify-center">
+                                            <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
+                                                <circle cx="50" cy="50" r="40" fill="transparent" stroke="#333" strokeWidth="8" />
+                                                <circle cx="50" cy="50" r="40" fill="transparent" stroke="#A3E635" strokeWidth="8" strokeDasharray="251.2" strokeDashoffset="60" strokeLinecap="round" />
+                                            </svg>
+                                            <div className="absolute flex flex-col items-center">
+                                                <span className="text-xl font-bold">75%</span>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex-1 space-y-3">
+                                            <div>
+                                                <p className="text-xs text-gray-400 uppercase font-bold">Calories</p>
+                                                <p className="text-lg font-bold">840 <span className="text-sm text-gray-500 font-medium">/ 1200</span></p>
+                                            </div>
+                                            <div>
+                                                <p className="text-xs text-gray-400 uppercase font-bold">Steps</p>
+                                                <p className="text-lg font-bold">6,240 <span className="text-sm text-gray-500 font-medium">/ 8k</span></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Recent Activity List */}
+                                <div className="flex-1 bg-white rounded-t-[2.5rem] px-4 pt-8 pb-4 text-black flex flex-col gap-4 overflow-y-auto no-scrollbar relative">
+                                    <div className="flex justify-between items-end mb-2">
+                                        <h3 className="font-bold text-lg">Activity</h3>
+                                        <span className="text-xs font-bold text-lime-600">See All</span>
+                                    </div>
+
+                                    {/* Activity Item 1 */}
+                                    <div className="flex items-center gap-4 bg-gray-50 p-4 rounded-2xl">
+                                        <div className="w-12 h-12 bg-orange-100 text-orange-600 rounded-xl flex items-center justify-center">
+                                            <Flame size={20} />
+                                        </div>
+                                        <div className="flex-1">
+                                            <h4 className="font-bold text-sm">Morning Run</h4>
+                                            <p className="text-xs text-gray-400">5.2 km • 32 mins</p>
+                                        </div>
+                                        <ChevronRight size={16} className="text-gray-300" />
+                                    </div>
+
+                                    {/* Activity Item 2 */}
+                                    <div className="flex items-center gap-4 bg-gray-50 p-4 rounded-2xl">
+                                        <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center">
+                                            <CloudRain size={20} />
+                                        </div>
+                                        <div className="flex-1">
+                                            <h4 className="font-bold text-sm">Swimming</h4>
+                                            <p className="text-xs text-gray-400">12 laps • 45 mins</p>
+                                        </div>
+                                        <ChevronRight size={16} className="text-gray-300" />
+                                    </div>
+
+                                    {/* Activity Item 3 */}
+                                    <div className="flex items-center gap-4 bg-gray-50 p-4 rounded-2xl">
+                                        <div className="w-12 h-12 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center">
+                                            <Zap size={20} />
+                                        </div>
+                                        <div className="flex-1">
+                                            <h4 className="font-bold text-sm">Yoga Flow</h4>
+                                            <p className="text-xs text-gray-400">Beginner • 20 mins</p>
+                                        </div>
+                                        <ChevronRight size={16} className="text-gray-300" />
+                                    </div>
+
+                                </div>
+
+                                {/* FAB (Floating Action Button) */}
+                                <div className="absolute bottom-2 right-2 w-14 h-14 bg-black text-lime-400 rounded-full flex items-center justify-center shadow-xl shadow-black/30 cursor-pointer hover:scale-105 transition-transform">
+                                    <Plus size={24} strokeWidth={3} />
+                                </div>
+
+                                {/* Bottom Indicator */}
+                                <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1/3 h-1 bg-gray-300 rounded-full mb-1 z-30"></div>
+                            </div>
+                        </div>
+
+                        <div className="relative w-[320px] h-160 bg-black rounded-[3rem] p-4 shadow-2xl animate-in fade-in zoom-in duration-300">
+                            {/* Island */}
+                            <div className="absolute top-0 left-1/2 -translate-x-1/2 h-10 w-30 bg-black rounded-b-xl z-20"></div>
+
+                            {/* Screen */}
+                            <div className="w-full h-full bg-linear-to-b from-blue-500 via-blue-400 to-cyan-300 rounded-[2.2rem] overflow-hidden flex flex-col relative text-white font-sans">
+
+                                {/* Background Decor (Cloud shapes) */}
+                                <div className="absolute top-20 -left-10 w-40 h-40 bg-white/20 rounded-full blur-3xl pointer-events-none"></div>
+                                <div className="absolute top-40 right-[-20%] w-60 h-60 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
+
+                                {/* Status Bar */}
+                                <div className="h-12 px-6 flex justify-between items-center text-xs font-bold text-white z-30 pt-2">
+                                    <span>9:41</span>
+                                    <div className="flex gap-1">
+                                        <Signal size={12} />
+                                        <Wifi size={12} />
+                                        <Battery size={12} />
+                                    </div>
+                                </div>
+
+                                {/* Header / Location */}
+                                <div className="px-6 pt-4 flex justify-between items-start z-10">
+                                    <div className="flex flex-col">
+                                        <div className="flex items-center gap-1">
+                                            <MapPin size={14} className="fill-white/20" />
+                                            <h2 className="text-sm font-bold tracking-wide uppercase">San Francisco</h2>
+                                        </div>
+                                        <p className="text-xs text-white/70 mt-1">Today, 24 Oct</p>
+                                    </div>
+                                    <div className="p-2 bg-white/20 backdrop-blur-md rounded-full hover:bg-white/30 cursor-pointer">
+                                        <Grid size={18} />
+                                    </div>
+                                </div>
+
+                                {/* Main Weather Display */}
+                                <div className="flex-1 flex flex-col items-center justify-center z-10 -mt-8">
+                                    {/* Weather Icon (Simulated with Lucide + Glow) */}
+                                    <div className="relative mb-2">
+                                        <div className="absolute inset-0 bg-yellow-300 blur-2xl opacity-40"></div>
+                                        <CloudRain size={40} className="text-white relative z-10 drop-shadow-lg" />
+                                        <Sun size={24} className="text-yellow-300 absolute -top-2 -right-2 z-0 animate-pulse" fill="#FDE047" />
+                                    </div>
+
+                                    <h1 style={{ fontFamily }} className="text-8xl font-black tracking-tighter drop-shadow-sm">
+                                        18°
+                                    </h1>
+                                    <p className="text-lg font-medium opacity-90">Rainy Cloudy</p>
+                                </div>
+
+                                {/* Glass Stats Grid */}
+                                <div className="px-4 mb-8 z-10">
+                                    <div className="bg-white/20 backdrop-blur-lg border border-white/30 rounded-3xl p-4 flex justify-between items-center shadow-lg">
+                                        <div className="flex flex-col items-center gap-1 w-1/3 border-r border-white/20">
+                                            <Wind size={18} className="text-white/80" />
+                                            <span className="text-xs font-bold">12 km/h</span>
+                                            <span className="text-[10px] text-white/60 uppercase">Wind</span>
+                                        </div>
+                                        <div className="flex flex-col items-center gap-1 w-1/3 border-r border-white/20">
+                                            <Droplets size={18} className="text-white/80" />
+                                            <span className="text-xs font-bold">48%</span>
+                                            <span className="text-[10px] text-white/60 uppercase">Humidity</span>
+                                        </div>
+                                        <div className="flex flex-col items-center gap-1 w-1/3">
+                                            <Eye size={18} className="text-white/80" />
+                                            <span className="text-xs font-bold">1.2 km</span>
+                                            <span className="text-[10px] text-white/60 uppercase">Visibility</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Bottom Forecast Sheet */}
+                                <div className="bg-white rounded-t-[2.5rem] p-4 pb-2 text-gray-800 z-10 shadow-[0_-10px_40px_rgba(0,0,0,0.1)]">
+                                    <div className="w-12 h-1 bg-gray-200 rounded-full mx-auto mb-6"></div>
+
+                                    <div className="flex justify-between items-center mb-4">
+                                        <h3 className="font-bold">Hourly Forecast</h3>
+                                        <span className="text-xs text-blue-500 font-bold cursor-pointer">Next 7 Days</span>
+                                    </div>
+
+                                    <div className="flex justify-between gap-2 overflow-x-auto no-scrollbar pb-2">
+                                        {/* Hourly Item (Active) */}
+                                        <div className="flex flex-col items-center gap-2 bg-blue-500 text-white p-3 rounded-2xl shadow-lg shadow-blue-500/30 min-w-15">
+                                            <span className="text-xs font-medium">Now</span>
+                                            <CloudRain size={20} />
+                                            <span className="font-bold">18°</span>
+                                        </div>
+
+                                        {/* Hourly Item */}
+                                        <div className="flex flex-col items-center gap-2 p-3 rounded-2xl min-w-15 border border-gray-100">
+                                            <span className="text-xs text-gray-400">1 PM</span>
+                                            <Cloud size={20} className="text-gray-400" />
+                                            <span className="font-bold text-gray-600">19°</span>
+                                        </div>
+
+                                        {/* Hourly Item */}
+                                        <div className="flex flex-col items-center gap-2 p-3 rounded-2xl min-w-15 border border-gray-100">
+                                            <span className="text-xs text-gray-400">2 PM</span>
+                                            <Sun size={20} className="text-yellow-500" />
+                                            <span className="font-bold text-gray-600">21°</span>
+                                        </div>
+
+                                        {/* Hourly Item */}
+                                        <div className="flex flex-col items-center gap-2 p-3 rounded-2xl min-w-15 border border-gray-100">
+                                            <span className="text-xs text-gray-400">3 PM</span>
+                                            <Sun size={20} className="text-yellow-500" />
+                                            <span className="font-bold text-gray-600">20°</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Bottom Indicator */}
+                                <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1/3 h-1 bg-gray-300 rounded-full mb-1 z-30"></div>
                             </div>
                         </div>
                     </div>
@@ -148,40 +1130,347 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
 
                 {/* POSTER VIEW */}
                 {activeTab === 'poster' && (
-                    <div className="relative w-full max-w-md aspect-3/4 bg-[#F4F1EA] shadow-xl p-8 flex flex-col justify-between animate-in fade-in duration-300">
-                        {/* Texture Overlay */}
-                        <div className="absolute inset-0 opacity-10 pointer-events-none mix-blend-multiply bg-[url('https://www.transparenttextures.com/patterns/noise-lines.png')]"></div>
+                    <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5'>
+                        {/* 1. Poster */}
+                        <div className="relative w-full max-w-md aspect-3/4 bg-[#F4F1EA] border border-black/10 shadow-xl p-3 md:p-8 flex flex-col justify-between animate-in fade-in duration-300">
+                            {/* Texture Overlay */}
+                            <div className="absolute inset-0 opacity-10 pointer-events-none mix-blend-multiply bg-[url('https://www.transparenttextures.com/patterns/noise-lines.png')]"></div>
 
-                        <div className="border border-black flex-1 p-2 flex flex-col">
-                            <div className="flex justify-between border-b border-black pb-2 mb-8">
-                                <span style={{ fontFamily }} className="text-xs uppercase tracking-widest">Vol. 01</span>
-                                <span style={{ fontFamily }} className="text-xs uppercase tracking-widest">Edition 2024</span>
+                            <div className="border border-black flex-1 p-2 flex flex-col">
+                                <div className="flex justify-between border-b border-black pb-2 mb-8">
+                                    <span style={{ fontFamily }} className="text-[10px] md:text-xs uppercase tracking-widest">Vol. 01</span>
+                                    <span style={{ fontFamily }} className="text-[10px] md:text-xs uppercase tracking-widest">Edition 2024</span>
+                                </div>
+
+                                <div className="flex-1 flex flex-col justify-center items-center text-center">
+                                    <h1 style={{ fontFamily }} className="text-6xl md:text-8xl leading-[0.8] wrap-break-word w-full mb-4">
+                                        TYPO<br />GRAPHY
+                                    </h1>
+                                    <div style={{ fontFamily }} className="w-16 h-16 md:w-24 md:h-24 rounded-full bg-black text-[#F4F1EA] flex items-center justify-center text-sm md:text-xl animate-spin-slow">
+                                        ART
+                                    </div>
+                                </div>
+
+                                <div className="border-t border-black pt-4 grid grid-cols-3 gap-4 text-[8px] md:text-[10px] leading-tight mt-8">
+                                    <p>
+                                        LOREM IPSUM DOLOR SIT AMET, CONSECTETUR ADIPISCING ELIT.
+                                        SED DO EIUSMOD TEMPOR INCIDIDUNT UT LABORE.
+                                    </p>
+                                    <p className="text-center ">
+                                        FIG. 1
+                                        <br />
+                                        DISPLAY TYPEFACE
+                                    </p>
+                                    <p className="text-right">
+                                        DESIGNED FOR IMPACT.<br />
+                                        CRAFTED FOR READABILITY.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* 2. Poster */}
+                        <div className="relative w-full max-w-md aspect-3/4 bg-[#0A2635] p-4 shadow-2xl flex flex-col items-center justify-center overflow-hidden animate-in fade-in zoom-in duration-300 border-4 border-[#0A2635]">
+
+                            {/* --- Background Stars/Dots --- */}
+                            {/* Small dots scattered */}
+                            <div className="absolute top-10 left-10 w-2 h-2 bg-[#4ED8E6] rounded-full opacity-60"></div>
+                            <div className="absolute top-20 right-8 w-1 h-1 bg-white rounded-full opacity-80"></div>
+                            <div className="absolute bottom-32 left-8 w-1.5 h-1.5 bg-[#4ED8E6] rounded-full opacity-50"></div>
+                            <div className="absolute bottom-10 right-20 w-2 h-2 bg-white rounded-full opacity-70"></div>
+                            <div className="absolute top-1/2 left-4 w-1 h-1 bg-white rounded-full"></div>
+
+                            {/* Sparkles (using Lucide Stars) */}
+                            <Star className="absolute top-24 left-4 text-white w-6 h-6 animate-pulse" fill="white" />
+                            <Star className="absolute top-32 right-6 text-white w-5 h-5 animate-pulse delay-75" fill="white" />
+                            <Star className="absolute bottom-40 left-6 text-white w-6 h-6 animate-pulse delay-150" fill="white" />
+                            <Star className="absolute bottom-12 right-12 text-[#4ED8E6] w-4 h-4" fill="#4ED8E6" />
+
+                            {/* --- Main Typography Stack --- */}
+                            <div
+                                style={{ fontFamily }}
+                                className="flex flex-col items-center justify-center w-full leading-[0.85] z-10">
+
+                                {/* LINE 1: I NEED (Cyan, Bubble Font) */}
+                                <div className="w-full text-center">
+                                    <h1 className="text-[6rem] md:text-[7.5rem] whitespace-nowrap  text-[#4ED8E6]  drop-shadow-md transform scale-y-110"
+                                        style={{ textShadow: '4px 4px 0px #000' }}>
+                                        <span className='font-game-paused text-white'>I</span> NEED
+                                    </h1>
+                                </div>
+
+                                {/* LINE 2: MORE (White, Serif, Moon O) */}
+                                <div className="flex items-center justify-center gap-1 w-full my-2 font-game-paused">
+                                    <span className="text-[6rem] md:text-[8rem] text-white" style={{ textShadow: '4px 4px 0px #000' }}>
+                                        M
+                                    </span>
+
+                                    {/* THE MOON (Replacing 'O') */}
+                                    <div className="relative w-20 h-20 md:w-28 md:h-28 bg-white rounded-full overflow-hidden border-2 border-black/20 shrink-0 -mx-2 z-10">
+                                        {/* Moon Texture simulation using CSS linears */}
+                                        <div className="absolute inset-0 bg-gray-200">
+                                            <div className="absolute top-4 left-4 w-6 h-6 bg-gray-400/50 rounded-full blur-[2px]"></div>
+                                            <div className="absolute bottom-6 right-8 w-10 h-10 bg-gray-400/40 rounded-full blur-xs"></div>
+                                            <div className="absolute top-10 right-4 w-3 h-3 bg-gray-500/30 rounded-full"></div>
+                                            {/* Shadow for crescent effect */}
+                                            <div className="absolute inset-0 rounded-full shadow-[inset_10px_0px_20px_rgba(0,0,0,0.5)]"></div>
+                                            {/* Sketch lines overlay */}
+                                            <div className="absolute inset-0 opacity-40 bg-[url('https://www.transparenttextures.com/patterns/noise-lines.png')] mix-blend-multiply"></div>
+                                        </div>
+                                    </div>
+
+                                    <span className="text-[6rem] md:text-[8rem] text-white" style={{ textShadow: '4px 4px 0px #000' }}>
+                                        RE
+                                    </span>
+                                </div>
+
+                                {/* LINE 3: SPACE (Cyan, Bubble Font) */}
+                                <div className="w-full text-center">
+                                    <h1 className="text-[6rem] md:text-[7.5rem]  text-[#4ED8E6]  drop-shadow-md transform scale-y-110"
+                                        style={{ textShadow: '4px 4px 0px #000' }}>
+                                        SPACE
+                                    </h1>
+                                </div>
+
                             </div>
 
-                            <div className="flex-1 flex flex-col justify-center items-center text-center">
-                                <h1 style={{ fontFamily }} className="text-8xl leading-[0.8] wrap-break-word w-full  mb-4">
-                                    TYPO<br />GRAPHY
+                        </div>
+
+                        {/* 3. Poster */}
+                        <div className="relative w-full max-w-md aspect-3/4 bg-white p-4 shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in duration-300 border border-gray-200">
+
+                            {/* 1. Abstract Yellow Shapes (Background) */}
+                            <div className="absolute top-[10%] -left-10 w-[120%] h-32 bg-[#FFEF00] -rotate-6 transform origin-center mix-blend-multiply pointer-events-none"></div>
+                            <div className="absolute top-[35%] -right-10 w-[120%] h-40 bg-[#FFEF00] rotate-3 transform origin-center mix-blend-multiply pointer-events-none"></div>
+                            <div className="absolute bottom-[15%] left-10 w-full h-48 bg-[#FFEF00] -rotate-12 transform origin-center mix-blend-multiply pointer-events-none"></div>
+
+                            {/* 2. Top Navigation / Header */}
+                            <div className="flex justify-between items-start z-10 mb-8">
+                                <div className="flex flex-col">
+                                    <span className="bg-black text-white px-2 py-1 text-xs  uppercase tracking-widest inline-block mb-1 w-fit">
+                                        Collection 2026
+                                    </span>
+                                    <span className="text-xs  text-black uppercase tracking-widest">
+                                        New York City
+                                    </span>
+                                </div>
+                                <ArrowUpRight size={32} className="text-black stroke-3" />
+                            </div>
+
+                            {/* 3. Main Massive Typography */}
+                            {/* Using negative margin and massive text to mimic the 'FITNESS' and 'LOREM' posters */}
+                            <div className="relative z-20 flex-1 flex flex-col justify-center pointer-events-none">
+                                <h1 style={{ fontFamily }} className="text-8xl md:text-9xl text-black leading-[0.8] mix-blend-hard-light">
+                                    URBAN
                                 </h1>
-                                <div style={{ fontFamily }} className="w-24 h-24 rounded-full bg-black text-[#F4F1EA] flex items-center justify-center text-xl animate-spin-slow">
-                                    ART
+                                <h1 style={{ fontFamily }} className="text-8xl md:text-9xl text-black leading-[0.8] ml-10 italic">
+                                    MODE
+                                </h1>
+                                <h1 style={{ fontFamily }} className="text-8xl md:text-9xl text-black leading-[0.8]">
+                                    STYLE
+                                </h1>
+                            </div>
+
+                            {/* 4. Text Content / Description Block */}
+                            <div className="grid grid-cols-2 gap-8 z-10 mt-auto items-end">
+                                <div className="text-sm  leading-tight">
+                                    <p className="mb-4">
+                                        A VISUAL EXPLORATION OF MODERN STREETWEAR AND BOLD TYPOGRAPHY.
+                                    </p>
+                                    <button className="bg-black text-white px-6 py-3 text-xs  uppercase tracking-wider hover:bg-[#FFEF00] hover:text-black transition-colors">
+                                        Get Tickets
+                                    </button>
+                                </div>
+
+                                {/* 5. Date / Number Detail */}
+                                <div className="flex flex-col items-end text-black">
+                                    <span className="text-6xl font-black leading-none">
+                                        24
+                                    </span>
+                                    <span className="text-xl uppercase tracking-wide border-t-4 border-black pt-2 mt-1 w-full text-right">
+                                        October
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* 4. Poster */}
+                        <div className="relative w-full max-w-md aspect-3/4 bg-[#E5E5E5] p-4 md:p-8 border border-black/5 shadow-2xl flex flex-col font-sans animate-in fade-in zoom-in duration-300">
+
+                            {/* 1. Main Speech Bubble Container */}
+                            <div className="relative w-full bg-black text-white p-6 md:p-10 flex flex-col mb-12">
+
+                                {/* Small Header inside bubble */}
+                                <div className="text-[10px]  uppercase tracking-widest mb-4 opacity-70">
+                                    Company
+                                </div>
+
+                                {/* Massive Typography */}
+                                <div className="flex-1 flex flex-col justify-center leading-[0.85]">
+                                    <h1 style={{ fontFamily }} className="text-[8rem] md:text-[10rem]   uppercase">
+                                        LAY
+                                    </h1>
+                                    <h1 style={{ fontFamily }} className="text-[8rem] md:text-[10rem]   uppercase">
+                                        OUT
+                                    </h1>
+                                </div>
+
+                                {/* The "Tail" of the speech bubble */}
+                                <div className="absolute -bottom-8 left-10 w-0 h-0 border-l-40 border-l-transparent border-t-40 border-t-black border-r-0 border-r-transparent">
                                 </div>
                             </div>
 
-                            <div className="border-t border-black pt-4 grid grid-cols-3 gap-4 text-[10px] leading-tight mt-8">
-                                <p>
-                                    LOREM IPSUM DOLOR SIT AMET, CONSECTETUR ADIPISCING ELIT.
-                                    SED DO EIUSMOD TEMPOR INCIDIDUNT UT LABORE.
-                                </p>
-                                <p className="text-center font-bold">
-                                    FIG. 1
-                                    <br />
-                                    DISPLAY TYPEFACE
-                                </p>
-                                <p className="text-right">
-                                    DESIGNED FOR IMPACT.<br />
-                                    CRAFTED FOR READABILITY.
-                                </p>
+                            {/* 2. Footer Content (Clean Grid) */}
+                            <div className="mt-auto grid grid-cols-2 gap-8 items-end text-black">
+
+                                {/* Left Column */}
+                                <div className="flex flex-col gap-4">
+                                    <p className="text-[9px] md:text-[10px] leading-relaxed text-gray-600">
+                                        Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
+                                    </p>
+                                    <div className="flex gap-4 pt-2 border-t border-gray-300">
+                                        <div className="flex flex-col">
+                                            <span className="text-[8px] uppercase  text-gray-400">Date</span>
+                                            <span className="text-xs ">24.10.2025</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Right Column */}
+                                <div className="flex flex-col gap-4">
+                                    <p className="text-[9px] md:text-[10px] leading-relaxed text-gray-600">
+                                        Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Voluptates, corporis.
+                                    </p>
+                                    <div className="flex gap-4 pt-2 border-t border-gray-300">
+                                        <div className="flex flex-col">
+                                            <span className="text-[8px] uppercase  text-gray-400">Issue</span>
+                                            <span className="text-xs ">Vol. 01</span>
+                                        </div>
+                                    </div>
+                                </div>
+
                             </div>
+                        </div>
+
+                        {/* 5. Poster */}
+                        <div className="relative w-full max-w-md aspect-3/4 bg-[#0F1016] text-white overflow-hidden shadow-2xl flex flex-col p-6 md:p-8 animate-in fade-in zoom-in duration-300 border-4 border-[#0F1016]">
+
+                            {/* Starry Background Texture */}
+                            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-70 pointer-events-none"></div>
+
+                            {/* Main Content Layer */}
+                            <div className="relative h-full w-full flex flex-col justify-center items-center z-10 font-sans">
+
+                                {/* Top Quote Section */}
+                                <div className="absolute top-0 left-0 w-full">
+                                    <p className="text-[10px] md:text-xs max-w-1/2 leading-relaxed opacity-80 font-medium tracking-wide text-gray-300 mb-4">
+                                        "Yours is the light by which my spirit's born: - you are my sun, my moon, and all my stars."
+                                    </p>
+                                    {/* Horizontal Line */}
+                                    <div className="w-1/2 h-0.5 bg-white mb-2 absolute right-0"></div>
+                                </div>
+
+                                {/* Central Typography Stack */}
+                                <div className="relative flex flex-col items-center justify-center leading-[0.8] tracking-widest z-0 ">
+
+                                    {/* 1. Top Solid Text */}
+                                    <h1 style={{ fontFamily }} className="text-[5rem] md:text-[6.5rem]  text-[#FFE55C] relative z-20">
+                                        MOON
+                                    </h1>
+
+                                    {/* 2. Outlined Background Text (Repeated) */}
+                                    {/* Using -webkit-text-stroke to create the hollow effect */}
+                                    <h1 style={{ fontFamily, WebkitTextStroke: '1px white', color: 'transparent' }}
+                                        className="text-[5rem] md:text-[6.5rem]  opacity-30">
+                                        MOON
+                                    </h1>
+                                    <h1 style={{ fontFamily, WebkitTextStroke: '1px white', color: 'transparent' }}
+                                        className="text-[5rem] md:text-[6.5rem]  opacity-30">
+                                        MOON
+                                    </h1>
+                                    <h1 style={{ fontFamily, WebkitTextStroke: '1px white', color: 'transparent' }}
+                                        className="text-[5rem] md:text-[6.5rem]  opacity-30">
+                                        MOON
+                                    </h1>
+                                </div>
+
+                                {/* The Central Moon Graphic */}
+                                {/* Positioned absolutely to sit on top of the text stack */}
+                                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 md:w-56 md:h-56 bg-[#FFE55C] rounded-full shadow-[0_0_60px_rgba(255,229,92,0.2)] z-10 flex items-center justify-center pointer-events-none mt-4">
+                                    {/* Craters (CSS Circles) */}
+                                    <div className="absolute top-8 left-10 w-8 h-8 bg-[#FACC15] rounded-full opacity-60"></div>
+                                    <div className="absolute top-16 left-8 w-3 h-3 bg-[#FACC15] rounded-full opacity-60"></div>
+                                    <div className="absolute bottom-12 right-12 w-10 h-10 bg-[#FACC15] rounded-full opacity-60"></div>
+                                    <div className="absolute bottom-24 right-8 w-5 h-5 bg-[#FACC15] rounded-full opacity-60"></div>
+                                    <div className="absolute top-10 right-16 w-6 h-6 bg-[#FACC15] rounded-full opacity-60"></div>
+                                </div>
+
+                                {/* Bottom Quote Section */}
+                                <div className="absolute bottom-0 right-0 w-full flex flex-col items-end text-right">
+                                    {/* Horizontal Line */}
+                                    <div className="w-1/2 h-0.5 bg-white mb-4 absolute left-0"></div>
+                                    <p className="text-[10px] md:text-xs max-w-1/2 leading-relaxed opacity-80 font-medium tracking-wide text-gray-300">
+                                        "Do not swear by the moon, for she changes constantly. then your love would also change."
+                                    </p>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        {/* 6. Poster */}
+                        <div className="relative w-full max-w-md aspect-3/4 bg-gray-100 overflow-hidden shadow-2xl flex flex-col justify-end animate-in fade-in zoom-in duration-300 font-sans border-8 border-white">
+
+                            {/* --- 1. Paper Texture & Creases Overlay --- */}
+                            {/* Main Wrinkled Paper Texture */}
+                            <div className="absolute inset-0 z-20 pointer-events-none mix-blend-multiply opacity-40 bg-[url('https://www.transparenttextures.com/patterns/crumbled-paper.png')]"></div>
+
+                            {/* Vertical Fold Highlight (Simulating the poster fold in the image) */}
+                            <div className="absolute inset-y-0 left-1/3 w-24 bg-linear-to-r from-transparent via-white/40 to-transparent z-30 pointer-events-none skew-x-6"></div>
+                            <div className="absolute inset-y-0 right-1/3 w-12 bg-linear-to-r from-transparent via-black/5 to-transparent z-30 pointer-events-none skew-x-3"></div>
+
+
+                            {/* --- 2. Main Typography Content --- */}
+                            {/* Using a flex container to stack the words tightly */}
+                            <div className="relative z-10 flex flex-col leading-[0.85] text-[7rem] md:text-[6rem] text-[#FFE600] p-2 mb-20">
+
+                                {/* WORD 1: GOOD (Yellow on Purple) */}
+                                <h1 className="transform origin-bottom-left"
+                                    style={{
+                                        fontFamily,
+                                        textShadow: getLongShadow('#6D28D9', 80) // Purple shadow
+                                    }}>
+                                    GOOD
+                                </h1>
+
+                                {/* WORD 2: VIBES (Yellow on Orange) */}
+                                {/* Slight overlap upwards (-mt) to lock the design together */}
+                                <h1 className="z-10 transform origin-bottom-left pl-10"
+                                    style={{
+                                        fontFamily,
+                                        textShadow: getLongShadow('#EA580C', 180) // Orange shadow
+                                    }}>
+                                    VIBES
+                                </h1>
+
+                                {/* WORD 3: ONLY (Yellow on Navy Blue) */}
+                                <h1 className="z-20 transform origin-bottom-left pl-30"
+                                    style={{
+                                        fontFamily,
+                                        textShadow: getLongShadow('#172554', 220) // Dark Navy shadow
+                                    }}>
+                                    ONLY
+                                </h1>
+
+                            </div>
+
+                            {/* --- 3. Optional "Sticker" or Badge detail (to balance the top empty space) --- */}
+                            {/* Since the original image has empty white space at the top, we keep it clean or add a subtle detail */}
+                            <div className="absolute top-8 right-8 z-10 opacity-60 mix-blend-multiply">
+                                <div className="w-16 h-16 rounded-full border-4 border-black/10 flex items-center justify-center -rotate-12">
+                                    <span className="text-[10px]  uppercase tracking-widest text-black/40">Est. 2024</span>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 )}
