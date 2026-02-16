@@ -89,7 +89,7 @@ export default function Members() {
     const MemberCard = ({ member, rank }: { member: Profile, rank?: number }) => (
         <Link to={`/members/${member.username || member.id}`} className="block group h-full">
             <div className={`
-                bg-white border-2 border-black rounded-4xl p-6 relative h-full flex flex-col items-center transition-all duration-200
+                bg-[#EEEFEB] border-2 border-black rounded-4xl p-6 relative h-full flex flex-col items-center transition-all duration-200
                 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1
                 ${rank === 1 ? 'bg-yellow-50 border-yellow-400' : ''}
             `}>
@@ -177,7 +177,7 @@ export default function Members() {
             {/* Other Members Section */}
             {otherMembers.length > 0 && (
                 <div>
-                    <div className="bg-white border-b-2 border-black rounded-4xl overflow-hidden">
+                    <div className="bg-[#EEEFEB] border-b-2 border-black rounded-4xl overflow-hidden">
                         <table className="w-full text-left border-collapse">
                             <tbody className="divide-y-2 divide-gray-100">
                                 {otherMembers.map((member, index) => (

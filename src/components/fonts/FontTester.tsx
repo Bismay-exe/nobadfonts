@@ -216,7 +216,7 @@ export default function FontTester({ font }: FontTesterProps) {
                 />
             </div>
 
-            <div className="bg-[#ffffff] rounded-4xl border-y border-black">
+            <div className="bg-[#EEEFEB] rounded-4xl border-y border-black">
                 <div className="p-4 border-b border-gray-200">
                     <h3 className="font-bold text-lg flex items-center gap-2">
                         <LayoutTemplate size={20} />

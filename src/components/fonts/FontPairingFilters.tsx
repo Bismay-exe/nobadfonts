@@ -139,7 +139,7 @@ export default function FontPairingFilters({ filters, onChange, viewMode, onView
                                     px-3 py-1.5 font-bold rounded-full border-2 text-sm transition-all duration-200 text-left
                                     ${isSelected
                                         ? "bg-black text-white border-black shadow-md"
-                                        : "bg-white text-gray-500 border-gray-200 hover:border-black hover:text-black hover:-translate-y-0.5"
+                                        : "bg-[#EEEFEB] text-gray-500 border-gray-200 hover:border-black hover:text-black hover:-translate-y-0.5"
                                     }
                                 `}
                             >

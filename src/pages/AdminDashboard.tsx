@@ -360,17 +360,17 @@ export default function AdminDashboard() {
     if (!user || profile?.role !== 'admin') return <Navigate to="/" replace />;
 
     return (
-        <div className="mx-auto bg-white/0 rounded-4xl">
+        <div className="mx-auto bg-[#EEEFEB]/0 rounded-4xl">
             <div className="bg-[#BDF522] rounded-4xl p-8 border-y border-black">
                 <h1 className="text-4xl text-center md:text-left font-black uppercase">Admin Dashboard</h1>
             </div>
 
             {/* Tabs */}
-            <div className='bg-white rounded-4xl p-2 border-y border-black'>
+            <div className='bg-[#EEEFEB] rounded-4xl p-2 border-y border-black'>
                 <div className="flex flex-wrap gap-4 px-1 py-4">
                     <button
                         onClick={() => setActiveTab('requests')}
-                        className={`px-6 py-2 rounded-full font-bold border-2 border-black transition-all ${activeTab === 'requests' ? 'bg-[#BDF522] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]' : 'bg-white hover:bg-gray-50'
+                        className={`px-6 py-2 rounded-full font-bold border-2 border-black transition-all ${activeTab === 'requests' ? 'bg-[#BDF522] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]' : 'bg-[#EEEFEB] hover:bg-gray-50'
                             }`}
                     >
                         Requests
@@ -380,28 +380,28 @@ export default function AdminDashboard() {
                     </button>
                     <button
                         onClick={() => setActiveTab('users')}
-                        className={`px-6 py-2 rounded-full font-bold border-2 border-black transition-all ${activeTab === 'users' ? 'bg-[#FF90E8] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]' : 'bg-white hover:bg-gray-50'
+                        className={`px-6 py-2 rounded-full font-bold border-2 border-black transition-all ${activeTab === 'users' ? 'bg-[#FF90E8] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]' : 'bg-[#EEEFEB] hover:bg-gray-50'
                             }`}
                     >
                         User Management
                     </button>
                     <button
                         onClick={() => setActiveTab('files')}
-                        className={`px-6 py-2 rounded-full font-bold border-2 border-black transition-all ${activeTab === 'files' ? 'bg-[#04ff96] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]' : 'bg-white hover:bg-gray-50'
+                        className={`px-6 py-2 rounded-full font-bold border-2 border-black transition-all ${activeTab === 'files' ? 'bg-[#04ff96] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]' : 'bg-[#EEEFEB] hover:bg-gray-50'
                             }`}
                     >
                         Storage & Files
                     </button>
                     <button
                         onClick={() => setActiveTab('curation')}
-                        className={`px-6 py-2 rounded-full font-bold border-2 border-black transition-all ${activeTab === 'curation' ? 'bg-[#FFDE59] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]' : 'bg-white hover:bg-gray-50'
+                        className={`px-6 py-2 rounded-full font-bold border-2 border-black transition-all ${activeTab === 'curation' ? 'bg-[#FFDE59] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]' : 'bg-[#EEEFEB] hover:bg-gray-50'
                             }`}
                     >
                         Site Curation
                     </button>
                     <button
                         onClick={() => setActiveTab('analytics')}
-                        className={`px-6 py-2 rounded-full font-bold border-2 border-black transition-all ${activeTab === 'analytics' ? 'bg-[#FF90D9] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]' : 'bg-white hover:bg-gray-50'
+                        className={`px-6 py-2 rounded-full font-bold border-2 border-black transition-all ${activeTab === 'analytics' ? 'bg-[#FF90D9] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]' : 'bg-[#EEEFEB] hover:bg-gray-50'
                             }`}
                     >
                         Analytics
@@ -409,7 +409,7 @@ export default function AdminDashboard() {
                 </div>
             </div>
 
-            <div className="bg-white border-2 border-black rounded-4xl px-4 md:px-8 pt-8 md:pt-8 pb-4 md:pb-8 min-h-[50vh]">
+            <div className="bg-[#EEEFEB] border-2 border-black rounded-4xl px-4 md:px-8 pt-8 md:pt-8 pb-4 md:pb-8 min-h-[50vh]">
                 {loading ? (
                     <div className="flex justify-center p-8">
                         <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-black"></div>
@@ -448,7 +448,7 @@ export default function AdminDashboard() {
                                                 <div className="flex gap-2 w-full md:w-auto">
                                                     <button
                                                         onClick={() => handleRequestAction(request.id, 'reject')}
-                                                        className="flex-1 md:flex-none px-6 py-2 bg-white text-red-500 font-bold uppercase rounded-xl border-2 border-gray-200 hover:border-red-500 hover:bg-red-50 transition-colors"
+                                                        className="flex-1 md:flex-none px-6 py-2 bg-[#EEEFEB] text-red-500 font-bold uppercase rounded-xl border-2 border-gray-200 hover:border-red-500 hover:bg-red-50 transition-colors"
                                                     >
                                                         Reject
                                                     </button>
@@ -519,7 +519,7 @@ export default function AdminDashboard() {
                                                             inline-block px-3 py-1 rounded-full text-xs font-bold uppercase border border-black
                                                             ${u.role === 'admin' ? 'bg-[#FF90E8] text-black' :
                                                                 u.role === 'member' ? 'bg-[#BDF522] text-black' :
-                                                                    'bg-white text-gray-500'}
+                                                                    'bg-[#EEEFEB] text-gray-500'}
                                                         `}>
                                                             {u.role}
                                                         </span>
@@ -584,10 +584,10 @@ export default function AdminDashboard() {
                                     <div className="bg-gray-50 rounded-2xl p-6 border-2 border-black">
                                         <h3 className="font-bold text-gray-500 uppercase text-sm mb-2">Files Count</h3>
                                         <div className="flex flex-wrap gap-2 text-sm font-bold">
-                                            <span className="px-2 py-1 bg-white border border-gray-300 rounded">WOFF2: {formatCounts.woff2}</span>
-                                            <span className="px-2 py-1 bg-white border border-gray-300 rounded">WOFF: {formatCounts.woff}</span>
-                                            <span className="px-2 py-1 bg-white border border-gray-300 rounded">TTF: {formatCounts.ttf}</span>
-                                            <span className="px-2 py-1 bg-white border border-gray-300 rounded">OTF: {formatCounts.otf}</span>
+                                            <span className="px-2 py-1 bg-[#EEEFEB] border border-gray-300 rounded">WOFF2: {formatCounts.woff2}</span>
+                                            <span className="px-2 py-1 bg-[#EEEFEB] border border-gray-300 rounded">WOFF: {formatCounts.woff}</span>
+                                            <span className="px-2 py-1 bg-[#EEEFEB] border border-gray-300 rounded">TTF: {formatCounts.ttf}</span>
+                                            <span className="px-2 py-1 bg-[#EEEFEB] border border-gray-300 rounded">OTF: {formatCounts.otf}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -684,7 +684,7 @@ export default function AdminDashboard() {
                                         <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
                                     </div>
                                 </div>
-                                <div className="bg-white rounded-2xl border-2 border-black overflow-hidden">
+                                <div className="bg-[#EEEFEB] rounded-2xl border-2 border-black overflow-hidden">
                                     <table className="w-full text-left border-collapse">
                                         <thead className="bg-gray-50 border-b-2 border-black">
                                             <tr>
@@ -750,7 +750,7 @@ export default function AdminDashboard() {
                                                     <td className="p-4 text-center">
                                                         <Link
                                                             to={`/fonts/${font.slug || font.id}`}
-                                                            className="inline-block px-4 py-2 bg-white border-2 border-black rounded-lg font-bold hover:bg-gray-100 text-sm"
+                                                            className="inline-block px-4 py-2 bg-[#EEEFEB] border-2 border-black rounded-lg font-bold hover:bg-gray-100 text-sm"
                                                         >
                                                             View
                                                         </Link>
@@ -777,7 +777,7 @@ export default function AdminDashboard() {
                                     </h3>
                                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                                         {/* Chart */}
-                                        <div className="flex flex-col justify-between bg-white p-6 rounded-4xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                                        <div className="flex flex-col justify-between bg-[#EEEFEB] p-6 rounded-4xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
                                             <h3 className="font-bold text-lg mb-6">Downloads Trend</h3>
                                             <div className="h-64 w-full -translate-x-5 md:-translate-x-8">
                                                 <ResponsiveContainer width="100%" height="100%">
@@ -810,7 +810,7 @@ export default function AdminDashboard() {
                                         </div>
 
                                         {/* Top Fonts */}
-                                        <div className="bg-white p-6 rounded-4xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                                        <div className="bg-[#EEEFEB] p-6 rounded-4xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
                                             <h3 className="font-bold text-lg mb-6">Top Downloaded Fonts</h3>
                                             <div className='overflow-y-auto h-65'>
                                                 {topDownloadedFonts.length > 0 ? (
@@ -843,7 +843,7 @@ export default function AdminDashboard() {
                                     </h3>
                                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                                         {/* Chart */}
-                                        <div className="flex flex-col justify-between bg-white p-6 rounded-4xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                                        <div className="flex flex-col justify-between bg-[#EEEFEB] p-6 rounded-4xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
                                             <h3 className="font-bold text-lg mb-6 text-pink-600">Favorites Trend</h3>
                                             <div className="h-64 w-full -translate-x-5 md:-translate-x-8">
                                                 <ResponsiveContainer width="100%" height="100%">
@@ -876,7 +876,7 @@ export default function AdminDashboard() {
                                         </div>
 
                                         {/* Top Fonts */}
-                                        <div className="bg-white p-6 rounded-4xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                                        <div className="bg-[#EEEFEB] p-6 rounded-4xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
                                             <h3 className="font-bold text-lg mb-6 text-pink-600">Top Favorited Fonts</h3>
                                             <div className='overflow-y-auto h-80'>
                                                 {topFavoritedFonts.length > 0 ? (

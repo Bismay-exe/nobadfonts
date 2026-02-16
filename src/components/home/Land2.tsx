@@ -60,7 +60,7 @@ const Land2: React.FC = () => {
 
 
             {/* === HERO SECTION === */}
-            <section className="relative bg-white text-black rounded-3xl border-t-2 border-black">
+            <section className="relative bg-[#EEEFEB] text-black rounded-3xl border-t-2 border-black">
                 <div className="p-4 sm:p-8 md:p-16 py-14 items-center text-center relative">
                     <h1 className="text-[13vw] md:text-[7vw] leading-[0.9] font-black mb-8">
                         Type is not decoration.<br />
@@ -80,7 +80,7 @@ const Land2: React.FC = () => {
 
 
             {/* === MARQUEE === */}
-            <section className="overflow-hidden bg-white/0 rounded-3xl border-t-2 border-black">
+            <section className="overflow-hidden bg-[#EEEFEB]/0 rounded-3xl border-t-2 border-black">
                 <div className="flex overflow-hidden">
                     <div ref={marqueeRef} className="flex pl-4 items-center whitespace-nowrap tracking-wider font-trunks text-black">
                         {[...Array(4)].map((_, i) => (
@@ -97,7 +97,7 @@ const Land2: React.FC = () => {
             </section>
 
             {/* === ABOUT / INTRO SECTION === */}
-            <section className="p-8 md:p-16 grid md:grid-cols-2 gap-12 items-center relative bg-white rounded-3xl border-t-2 border-black">
+            <section className="p-8 md:p-16 grid md:grid-cols-2 gap-12 items-center relative bg-[#EEEFEB] rounded-3xl border-t-2 border-black">
                 <div className="text-2xl md:text-4xl leading-tight">
                     <span className="text-6xl block mb-4">///</span>
                     At NoBadFonts, we believe typography is the voice of your brand. We reject the bland and champion the brave, supplying kinetic type for digital maximalists.
@@ -197,7 +197,7 @@ const Land2: React.FC = () => {
 
 
             {/* === CATEGORIES (Services) SECTION === */}
-            <section className="p-8 md:p-16 bg-white rounded-3xl border-t-2 border-black">
+            <section className="p-8 md:p-16 bg-[#EEEFEB] rounded-3xl border-t-2 border-black">
                 <h2 className="text-4xl font-black mb-12 uppercase">The Collection We Deliver</h2>
                 <div className="flex flex-col gap-4">
                     <motion.div whileHover={popHover} className="bg-[#FF90E8] p-6 rounded-[40px] border-2 border-black flex justify-between items-center cursor-pointer">
@@ -229,7 +229,7 @@ const Land2: React.FC = () => {
                         { num: "03", title: "Download", desc: "One-click download. Completely free" }
                     ].map((step, i) => (
                         <div key={i} className="flex flex-col items-center bg-[#F3F3F3] p-6 rounded-3xl border-x border-black">
-                            <div className="w-24 h-24 rounded-full border-2 border-black bg-white flex items-center justify-center text-3xl font-black mb-6 shadow-[8px_8px_0px_0px_#000]">
+                            <div className="w-24 h-24 rounded-full border-2 border-black bg-[#EEEFEB] flex items-center justify-center text-3xl font-black mb-6 shadow-[8px_8px_0px_0px_#000]">
                                 {step.num}
                             </div>
                             <h3 className="text-2xl font-black uppercase mb-2">{step.title}</h3>
@@ -249,7 +249,7 @@ const Land2: React.FC = () => {
 
                 <div className="grid md:grid-cols-2 gap-8 max-w-3xl mx-auto">
                     {/* Plan 1 */}
-                    <div className="bg-white p-8 border-2 border-black shadow-[8px_8px_0px_0px_#000] flex flex-col">
+                    <div className="bg-[#EEEFEB] p-8 border-2 border-black shadow-[8px_8px_0px_0px_#000] flex flex-col">
                         <h3 className="text-2xl font-black uppercase mb-2">Free</h3>
                         <div className="text-4xl font-black mb-6">$0<span className="text-sm font-normal text-gray-500">/project</span></div>
                         <ul className="space-y-4 mb-8 grow">
@@ -270,14 +270,14 @@ const Land2: React.FC = () => {
                             <li className="flex gap-2 text-sm font-bold"><Check size={18} /> Up to 3 Users</li>
                             <li className="flex gap-2 text-sm font-bold"><Check size={18} /> Web & Print</li>
                         </ul>
-                        <button className="w-full py-3 bg-black text-white border-2 border-black font-bold uppercase hover:bg-white hover:text-black transition-colors">Select Plan</button>
+                        <button className="w-full py-3 bg-black text-white border-2 border-black font-bold uppercase hover:bg-[#EEEFEB] hover:text-black transition-colors">Select Plan</button>
                     </div>
                 </div>
             </section>
 
 
             {/* === TESTIMONIALS (Sticky Notes) === */}
-            <section className="p-8 md:p-16 relative min-h-212.5 md:min-h-150 overflow-hidden bg-white rounded-3xl border-t-2 border-black">
+            <section className="p-8 md:p-16 relative min-h-212.5 md:min-h-150 overflow-hidden bg-[#EEEFEB] rounded-3xl border-t-2 border-black">
                 <h2 className="text-4xl font-black mb-12 uppercase">Word on the street</h2>
 
                 <div className="relative flex justify-center items-center h-full mt-20">
@@ -294,7 +294,7 @@ const Land2: React.FC = () => {
 
 
             {/* === CTA SECTION === */}
-            <section className="p-8 md:p-16 flex justify-center items-center py-32 border-t-2 border-black bg-white rounded-3xl relative overflow-hidden">
+            <section className="p-8 md:p-16 flex justify-center items-center py-32 border-t-2 border-black bg-[#EEEFEB] rounded-3xl relative overflow-hidden">
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20">
                     <svg viewBox="0 0 200 200" className="w-[150vw] h-[150vw] animate-spin-slow">
                         <path fill="#00C2FF" d="M100,0 L120,80 L200,100 L120,120 L100,200 L80,120 L0,100 L80,80 Z" />
@@ -307,7 +307,7 @@ const Land2: React.FC = () => {
                 >
                     <h2 className="text-5xl md:text-7xl font-black uppercase leading-none mb-8">Let's Craft <br /> Your Success.</h2>
                     <p className="font-bold text-xl mb-8">Find the typeface that defines you.</p>
-                    <button className="bg-black text-white px-8 py-4 rounded-full font-bold uppercase flex items-center gap-2 hover:bg-white hover:text-black border-2 border-black transition-colors">
+                    <button className="bg-black text-white px-8 py-4 rounded-full font-bold uppercase flex items-center gap-2 hover:bg-[#EEEFEB] hover:text-black border-2 border-black transition-colors">
                         Start Browsing <MoveRight />
                     </button>
                 </motion.div>
@@ -315,7 +315,7 @@ const Land2: React.FC = () => {
 
 
             {/* === FOOTER === */}
-            <footer className="p-8 md:p-16 bg-white rounded-3xl relative overflow-hidden border-y-2 border-black">
+            <footer className="p-8 md:p-16 bg-[#EEEFEB] rounded-3xl relative overflow-hidden border-y-2 border-black">
                 <div className="flex flex-wrap justify-center gap-4 mb-24 relative z-10">
                     <motion.a href="#" whileHover={popHover} className="w-40 h-40 bg-[#A05A2C] rounded-full border-2 border-black flex items-center justify-center text-white">
                         <Twitter size={48} />

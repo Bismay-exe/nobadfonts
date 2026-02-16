@@ -478,12 +478,12 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
                             {isScanning ? (
                                 <div className="grid grid-cols-6 md:grid-cols-10 gap-2 opacity-50">Loading...</div>
                             ) : (
-                                <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-px bg-white/10 border border-white/10">
+                                <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-px bg-[#EEEFEB]/10 border border-white/10">
                                     {availableGlyphs.length > 0 ? availableGlyphs.map(char => (
                                         <button
                                             key={char}
                                             onClick={() => setSelectedChar(char)}
-                                            className={`aspect-square flex items-center justify-center bg-[#0D0D0D] hover:bg-white/5 transition-colors ${selectedChar === char ? 'ring-1 ring-white z-10' : ''}`}
+                                            className={`aspect-square flex items-center justify-center bg-[#0D0D0D] hover:bg-[#EEEFEB]/5 transition-colors ${selectedChar === char ? 'ring-1 ring-white z-10' : ''}`}
                                         >
                                             <span style={{ fontFamily: `"${fontFamily}"` }} className="text-2xl">{char}</span>
                                         </button>
@@ -521,12 +521,12 @@ function CategoryView({ fontFamily, basicUppercase, basicLowercase, basicNumeral
             {/* Uppercase */}
             <div className={activeTab === 'Uppercase' ? 'block' : 'hidden md:block'}>
                 <h3 className="hidden md:block text-xs font-mono text-gray-500 uppercase mb-4 text-right">Uppercase</h3>
-                <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-px bg-white/10 border border-white/10">
+                <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-px bg-[#EEEFEB]/10 border border-white/10">
                     {basicUppercase.map((char: string) => (
                         <button
                             key={char}
                             onClick={() => setSelectedChar(char)}
-                            className={`aspect-square flex items-center justify-center bg-[#0D0D0D] hover:bg-white/5 transition-colors ${selectedChar === char ? 'ring-1 ring-white z-10' : ''}`}
+                            className={`aspect-square flex items-center justify-center bg-[#0D0D0D] hover:bg-[#EEEFEB]/5 transition-colors ${selectedChar === char ? 'ring-1 ring-white z-10' : ''}`}
                         >
                             <span style={{ fontFamily: `"${fontFamily}"` }} className="text-2xl">{char}</span>
                         </button>
@@ -537,12 +537,12 @@ function CategoryView({ fontFamily, basicUppercase, basicLowercase, basicNumeral
             {/* Lowercase */}
             <div className={activeTab === 'Lowercase' ? 'block' : 'hidden md:block'}>
                 <h3 className="hidden md:block text-xs font-mono text-gray-500 uppercase mb-4 text-right">Lowercase</h3>
-                <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-px bg-white/10 border border-white/10">
+                <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-px bg-[#EEEFEB]/10 border border-white/10">
                     {basicLowercase.map((char: string) => (
                         <button
                             key={char}
                             onClick={() => setSelectedChar(char)}
-                            className={`aspect-square flex items-center justify-center bg-[#0D0D0D] hover:bg-white/5 transition-colors ${selectedChar === char ? 'ring-1 ring-white z-10' : ''}`}
+                            className={`aspect-square flex items-center justify-center bg-[#0D0D0D] hover:bg-[#EEEFEB]/5 transition-colors ${selectedChar === char ? 'ring-1 ring-white z-10' : ''}`}
                         >
                             <span style={{ fontFamily: `"${fontFamily}"` }} className="text-2xl">{char}</span>
                         </button>
@@ -553,12 +553,12 @@ function CategoryView({ fontFamily, basicUppercase, basicLowercase, basicNumeral
             {/* Numerals */}
             <div className={activeTab === 'Numerals' ? 'block' : 'hidden md:block'}>
                 <h3 className="hidden md:block text-xs font-mono text-gray-500 uppercase mb-4 text-right">Numerals</h3>
-                <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-px bg-white/10 border border-white/10">
+                <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-px bg-[#EEEFEB]/10 border border-white/10">
                     {basicNumerals.map((char: string) => (
                         <button
                             key={char}
                             onClick={() => setSelectedChar(char)}
-                            className={`aspect-square flex items-center justify-center bg-[#0D0D0D] hover:bg-white/5 transition-colors ${selectedChar === char ? 'ring-1 ring-white z-10' : ''}`}
+                            className={`aspect-square flex items-center justify-center bg-[#0D0D0D] hover:bg-[#EEEFEB]/5 transition-colors ${selectedChar === char ? 'ring-1 ring-white z-10' : ''}`}
                         >
                             <span style={{ fontFamily: `"${fontFamily}"` }} className="text-2xl">{char}</span>
                         </button>

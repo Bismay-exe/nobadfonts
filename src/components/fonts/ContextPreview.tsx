@@ -1122,7 +1122,7 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                                 <div className="w-full text-center">
                                     <h1 className="text-[6rem] md:text-[7.5rem] whitespace-nowrap  text-[#4ED8E6]  drop-shadow-md transform scale-y-110"
                                         style={{ textShadow: '4px 4px 0px #000' }}>
-                                        <span className='font-game-paused text-white'>I</span> NEED
+                                        <span className='font-game-paused text-white'>I</span> <span className='italic'>NEED</span>
                                     </h1>
                                 </div>
 
@@ -1153,7 +1153,7 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
 
                                 {/* LINE 3: SPACE (Cyan, Bubble Font) */}
                                 <div className="w-full text-center">
-                                    <h1 className="text-[6rem] md:text-[7.5rem]  text-[#4ED8E6]  drop-shadow-md transform scale-y-110"
+                                    <h1 className="text-[6rem] md:text-[7.5rem] text-[#4ED8E6] italic drop-shadow-md transform scale-y-110"
                                         style={{ textShadow: '4px 4px 0px #000' }}>
                                         SPACE
                                     </h1>

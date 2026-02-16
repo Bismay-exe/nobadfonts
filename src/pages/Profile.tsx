@@ -92,7 +92,7 @@ export default function Profile() {
 
             {/* Membership Status Section */}
             {!isEditing && profile?.role === 'user' && (
-                <div className="bg-white border-y border-black rounded-4xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
+                <div className="bg-[#EEEFEB] border-y border-black rounded-4xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
                     <div>
                         <h3 className="text-xl font-black uppercase">Become a Contributor</h3>
                         <p className="text-gray-600 font-medium">
@@ -129,7 +129,7 @@ export default function Profile() {
                             onClick={() => setActiveTab('favorites')}
                             className={`flex-1 px-6 py-4 text-lg font-bold border-y md:border-r border-black rounded-4xl md:rounded-r-none transition-colors ${activeTab === 'favorites'
                                 ? 'bg-[#FFC900]'
-                                : 'bg-white'
+                                : 'bg-[#EEEFEB]'
                                 }`}
                         >
                             My Favorites
@@ -162,7 +162,7 @@ export default function Profile() {
                             onClick={() => setActiveTab('analytics')}
                             className={`flex-1 px-6 py-4 text-lg font-bold border-y md:border-x border-black rounded-4xl md:rounded-none transition-colors ${activeTab === 'analytics'
                                 ? 'bg-[#ff90e8]' // Pink to match admin/member vibe
-                                : 'bg-white'
+                                : 'bg-[#EEEFEB]'
                                 }`}
                         >
                             Analytics
@@ -172,7 +172,7 @@ export default function Profile() {
                             onClick={() => setActiveTab('downloads')}
                             className={`flex-1 px-6 py-4 text-lg font-bold border-y border-l rounded-4xl md:rounded-l-none border-black transition-colors ${activeTab === 'downloads'
                                 ? 'bg-[#04ff96]'
-                                : 'bg-white'
+                                : 'bg-[#EEEFEB]'
                                 }`}
                         >
                             My Download History

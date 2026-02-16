@@ -72,7 +72,7 @@ export default function Cli() {
                     </div>
                     <h3 className="text-2xl font-black uppercase mb-3">CSS Generation</h3>
                     <p className="font-medium text-gray-800">
-                        Writes the full <code className="bg-white/50 px-1 rounded">@font-face</code> definition for you. No more guessing weights, styles, or file paths. It just works.
+                        Writes the full <code className="bg-[#EEEFEB]/50 px-1 rounded">@font-face</code> definition for you. No more guessing weights, styles, or file paths. It just works.
                     </p>
                 </div>
 
@@ -125,7 +125,7 @@ export default function Cli() {
 
                     <div className="flex gap-6">
                         <div className="flex-col items-center hidden md:flex">
-                            <div className="w-12 h-12 rounded-full bg-white text-black font-black text-xl flex items-center justify-center">3</div>
+                            <div className="w-12 h-12 rounded-full bg-[#EEEFEB] text-black font-black text-xl flex items-center justify-center">3</div>
                         </div>
                         <div>
                             <h4 className="text-2xl font-bold mb-2 text-white">Import and Use</h4>

@@ -700,7 +700,7 @@ export default function FontDetails() {
                     '--mobile-ar': mobileAr,
                     '--desktop-ar': desktopAr,
                 } as React.CSSProperties}
-                className={`relative w-full bg-white rounded-4xl border-black flex justify-center items-center overflow-hidden group ${galleryImages.length > 0 ? 'aspect-(--mobile-ar) md:aspect-(--desktop-ar)' : 'h-[66vw] md:h-100'}`}
+                className={`relative w-full bg-[#EEEFEB] rounded-4xl border-black flex justify-center items-center overflow-hidden group ${galleryImages.length > 0 ? 'aspect-(--mobile-ar) md:aspect-(--desktop-ar)' : 'h-[66vw] md:h-100'}`}
             >
                 {galleryImages.length > 0 && (
                     <div className="absolute inset-0 z-20">
@@ -724,14 +724,16 @@ export default function FontDetails() {
 
             {/* Admin Gallery Editor */}
             {profile?.role === 'admin' && (
-                <div className="mt-4 mb-8">
+                <div className="bg-[#EEEFEB] rounded-4xl">
                     {!isEditingGallery ? (
-                        <button
-                            onClick={() => setIsEditingGallery(true)}
-                            className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-full font-bold text-sm hover:bg-gray-800 transition-colors"
-                        >
-                            <Edit2 size={16} /> Edit Gallery
-                        </button>
+                        <div className='p-4 w-full flex justify-end'>
+                            <button
+                                onClick={() => setIsEditingGallery(true)}
+                                className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-full font-bold text-sm hover:bg-gray-800 transition-colors"
+                            >
+                                <Edit2 size={16} /> Edit Gallery
+                            </button>
+                        </div>
                     ) : (
                         <div className="bg-gray-50 border-y border-black rounded-4xl p-6">
                             <div className="flex justify-between items-center mb-4">
@@ -754,7 +756,7 @@ export default function FontDetails() {
 
                             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-6">
                                 {galleryState.map((item, index) => (
-                                    <div key={item.id} className="relative group aspect-square bg-white rounded-xl border-y border-gray-200 overflow-hidden">
+                                    <div key={item.id} className="relative group aspect-square bg-[#EEEFEB] rounded-xl border-y border-gray-200 overflow-hidden">
                                         <img src={item.url} alt="" className="w-full h-full object-cover" />
 
                                         {/* Overlay Controls */}
@@ -763,7 +765,7 @@ export default function FontDetails() {
                                                 <button
                                                     onClick={() => handleMoveGalleryItem(index, 'left')}
                                                     disabled={index === 0}
-                                                    className="p-1.5 bg-white rounded-full hover:bg-gray-100 disabled:opacity-50"
+                                                    className="p-1.5 bg-[#EEEFEB] rounded-full hover:bg-gray-100 disabled:opacity-50"
                                                     title="Move Left"
                                                 >
                                                     <MoveLeft size={14} />
@@ -771,7 +773,7 @@ export default function FontDetails() {
                                                 <button
                                                     onClick={() => handleMoveGalleryItem(index, 'right')}
                                                     disabled={index === galleryState.length - 1}
-                                                    className="p-1.5 bg-white rounded-full hover:bg-gray-100 disabled:opacity-50"
+                                                    className="p-1.5 bg-[#EEEFEB] rounded-full hover:bg-gray-100 disabled:opacity-50"
                                                     title="Move Right"
                                                 >
                                                     <MoveRight size={14} />
@@ -795,7 +797,7 @@ export default function FontDetails() {
 
                                 {/* Add New Button */}
                                 <div className="aspect-square flex flex-col gap-2">
-                                    <label className="flex-1 flex flex-col items-center justify-center border-y border-dashed border-gray-300 rounded-xl hover:border-black hover:bg-white cursor-pointer transition-colors bg-white">
+                                    <label className="flex-1 flex flex-col items-center justify-center border-y border-dashed border-gray-300 rounded-xl hover:border-black hover:bg-[#EEEFEB] cursor-pointer transition-colors bg-[#EEEFEB]">
                                         <input
                                             type="file"
                                             accept="image/*"
@@ -828,7 +830,7 @@ export default function FontDetails() {
                                     ) : (
                                         <button
                                             onClick={() => setShowUrlInput(true)}
-                                            className="h-8 flex items-center justify-center gap-1 border-y border-dashed border-gray-300 rounded-xl hover:border-black hover:bg-white transition-colors bg-white text-xs font-bold text-gray-500"
+                                            className="h-8 flex items-center justify-center gap-1 border-y border-dashed border-gray-300 rounded-xl hover:border-black hover:bg-[#EEEFEB] transition-colors bg-[#EEEFEB] text-xs font-bold text-gray-500"
                                         >
                                             <LinkIcon size={12} /> Add URL
                                         </button>
@@ -874,8 +876,7 @@ export default function FontDetails() {
 
                     {/* Admin Actions */}
                     {profile?.role === 'admin' && (
-                        <div className="mb-4 space-y-2 w-full p-2 bg-red-50 border border-red-200 rounded-2xl">
-                            <p className="text-xs font-bold text-red-500 uppercase text-center mb-1">Admin Controls</p>
+                        <div>
                             <button
                                 onClick={async () => {
                                     if (!confirm('Are you sure you want to delete this font? This cannot be undone.')) return;
@@ -979,164 +980,56 @@ export default function FontDetails() {
                         ))}
                     </div>
                 </div>
-
-                <div className="flex flex-col items-start justify-end h-full w-auto bg-white rounded-4xl border-y border-black p-4">
-                    <div className="flex flex-wrap gap-1">
-                        {displayTags.map((tag, i) => (
-                            <div key={i} className="bg-gray-900 text-gray-300 text-xs px-3 py-2 rounded-full font-medium">
-                                {tag}
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                <div className="flex md:flex-col justify-between">
-                    {/* Admin Actions */}
-                    {profile?.role === 'admin' && (
-                        <div className="mb-4 space-y-2 w-full p-2 bg-red-50 border border-red-200 rounded-2xl">
-                            <p className="text-xs font-bold text-red-500 uppercase text-center mb-1">Admin Controls</p>
-                            <button
-                                onClick={async () => {
-                                    if (!confirm('Are you sure you want to delete this font? This cannot be undone.')) return;
-
-                                    try {
-                                        // 1. Collect all file paths
-                                        const filePaths: string[] = [];
-
-                                        // Helper to extract path from URL
-                                        // URL format: https://[project].supabase.co/storage/v1/object/public/fonts/[user_id]/[slug]/[filename]
-                                        // Storage path: [user_id]/[slug]/[filename]
-                                        const getPathFromUrl = (url: string) => {
-                                            try {
-                                                const urlObj = new URL(url);
-                                                const pathParts = urlObj.pathname.split('/public/fonts/');
-                                                if (pathParts.length > 1) {
-                                                    return decodeURIComponent(pathParts[1]);
-                                                }
-                                                return null;
-                                            } catch (e) {
-                                                console.error("Invalid URL:", url);
-                                                return null;
-                                            }
-                                        };
-
-                                        // Main font files
-                                        (['woff2_url', 'woff_url', 'ttf_url', 'otf_url', 'zip_url'] as const).forEach(key => {
-                                            const url = font[key as keyof typeof font] as string | null;
-                                            if (url) {
-                                                const path = getPathFromUrl(url);
-                                                if (path) filePaths.push(path);
-                                            }
-                                        });
-
-                                        // Images
-                                        if (font.preview_image_url) {
-                                            const path = getPathFromUrl(font.preview_image_url);
-                                            if (path) filePaths.push(path);
-                                        }
-                                        if (font.gallery_images && Array.isArray(font.gallery_images)) {
-                                            font.gallery_images.forEach(url => {
-                                                const path = getPathFromUrl(url);
-                                                if (path) filePaths.push(path);
-                                            });
-                                        }
-
-                                        // Variant files
-                                        if (font.font_variants && Array.isArray(font.font_variants)) {
-                                            font.font_variants.forEach(variant => {
-                                                (['woff2_url', 'woff_url', 'ttf_url', 'otf_url'] as const).forEach(key => {
-                                                    const url = variant[key as keyof typeof variant] as string | null;
-                                                    if (url) {
-                                                        const path = getPathFromUrl(url);
-                                                        if (path) filePaths.push(path);
-                                                    }
-                                                });
-                                            });
-                                        }
-
-                                        console.log("Deleting files:", filePaths);
-
-                                        // 2. Delete files from storage
-                                        if (filePaths.length > 0) {
-                                            const { error: storageError } = await supabase.storage
-                                                .from('fonts')
-                                                .remove(filePaths);
-
-                                            if (storageError) {
-                                                console.error("Storage delete error:", storageError);
-                                                // We continue to delete the DB record even if storage fails partial, 
-                                                // or should we stop? Usually stopping is safer, but orphaned files are better than broken app state.
-                                                // Let's warn but proceed, or maybe ask? For now, proceed.
-                                            }
-                                        }
-
-                                        // 3. Delete database record
-                                        const { error } = await supabase.from('fonts').delete().eq('id', font.id);
-                                        if (error) throw error;
-
-                                        alert('Font and all associated files deleted successfully.');
-                                        navigate('/');
-
-                                    } catch (err: any) {
-                                        console.error('Delete failed:', err);
-                                        alert('Error deleting font: ' + err.message);
-                                    }
-                                }}
-                                className="w-full flex items-center justify-center px-4 py-2 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors font-bold text-sm"
-                            >
-                                Delete Font
-                            </button>
-
-                        </div>
-                    )}
-
-                    <div className="flex w-full">
-                        <button
-                            onClick={() => document.getElementById('download-section')?.scrollIntoView({ behavior: 'smooth' })}
-                            className="flex-1 md:px-8 md:py-4 bg-[#BDF522] hover:bg-[#a9db1e] text-black font-black uppercase rounded-4xl border-y border-black transition-all hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex items-center justify-center gap-2 group"
-                        >
-                            <Download className="group-hover:animate-bounce" />
-                            Download Font
-                        </button>
-                        <button
-                            onClick={handleFavorite}
-                            className={`md:px-6 md:py-4 rounded-4xl border-y border-black transition-all hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] ${isFavorited ? 'bg-[#FF90E8] text-black' : 'bg-white text-black hover:bg-gray-50'}`}
-                        >
-                            <Heart className={isFavorited ? "fill-current" : ""} />
-                        </button>
-                        <button
-                            onClick={handleShare}
-                            disabled={shareLoading}
-                            className="md:px-6 md:py-4 bg-white hover:bg-gray-50 text-black rounded-4xl border-y border-black transition-all hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            {shareLoading ? <Loader2 className="animate-spin" /> : <Share2 />}
-                        </button>
-                        <button
-                            onClick={() => document.getElementById('embed-section')?.scrollIntoView({ behavior: 'smooth' })}
-                            className="md:px-6 md:py-4 bg-black text-white rounded-4xl border-y border-transparent hover:bg-gray-800 transition-all font-bold uppercase ml-2"
-                        >
-                            &lt;/&gt; Embed
-                        </button>
-                    </div>
-                </div>
-
-                {/* Hidden Share Card for Generation */}
-                <div className="absolute -left-2499.75 -top-2499.75">
-                    <SocialShareCard ref={shareRef} font={font} />
-                </div>
-
-                <ShareModal
-                    isOpen={showShareModal}
-                    onClose={() => setShowShareModal(false)}
-                    imageSrc={shareImageSrc}
-                    fontName={font.name}
-                />
             </div>
 
+            <div className="flex md:flex-col justify-between">
+                <div className="flex w-full">
+                    <button
+                        onClick={() => document.getElementById('preview-section')?.scrollIntoView({ behavior: 'smooth' })}
+                        className="w-full flex justify-center items-center py-4 bg-[#BDF522] hover:bg-[#a9db1e] text-black font-black uppercase rounded-4xl border-y border-black transition-all hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] gap-2 group"
+                    >
+                        <Download className="group-hover:animate-bounce" />
+                        <span className='hidden md:block'>Download Font</span>
+                    </button>
+                    <button
+                        onClick={handleFavorite}
+                        className={`w-full flex justify-center items-center py-4 rounded-4xl border-y border-black transition-all hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] ${isFavorited ? 'bg-[#FF90E8] text-black' : 'bg-[#EEEFEB] text-black hover:bg-gray-50'}`}
+                    >
+                        <Heart className={isFavorited ? "fill-current" : ""} />
+                    </button>
+                    <button
+                        onClick={handleShare}
+                        disabled={shareLoading}
+                        className="w-full flex justify-center items-center py-4 bg-[#EEEFEB] hover:bg-gray-50 text-black rounded-4xl border-y border-black transition-all hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        {shareLoading ? <Loader2 className="animate-spin" /> : <Share2 />}
+                    </button>
+                    <button
+                        onClick={() => document.getElementById('embed-section')?.scrollIntoView({ behavior: 'smooth' })}
+                        className="w-full flex justify-center items-center py-4 bg-[#383838] text-white rounded-4xl border-y border-transparent hover:bg-gray-800 transition-all font-bold uppercase"
+                    >
+                        &lt;/&gt; <span className='hidden md:block'>Embed</span>
+                    </button>
+                </div>
+            </div>
+
+            {/* Hidden Share Card for Generation */}
+            <div className="absolute -left-2499.75 -top-2499.75">
+                <SocialShareCard ref={shareRef} font={font} />
+            </div>
+
+            <ShareModal
+                isOpen={showShareModal}
+                onClose={() => setShowShareModal(false)}
+                imageSrc={shareImageSrc}
+                fontName={font.name}
+            />
+
+
             {/* Variant Previews Section */}
-            < div className='w-full text-black rounded-4xl overflow-hidden' >
+            < div id="preview-section" className='w-full text-black rounded-4xl overflow-hidden' >
                 {/* Controller Row */}
-                < div className="flex flex-col md:flex-row items-center justify-between gap-6 p-6 rounded-4xl border-y border-black bg-white hover:bg-gray-100" >
+                < div className="flex flex-col md:flex-row items-center justify-between gap-6 p-6 rounded-4xl border-y border-black bg-[#EEEFEB] hover:bg-gray-100" >
                     <input
                         type="text"
                         value={variantPreviewText}
@@ -1144,7 +1037,7 @@ export default function FontDetails() {
                         placeholder="Type something to preview..."
                         className="w-full md:w-1/2 text-xl bg-transparent border-y border-gray-300 focus:border-black outline-none px-2 py-2 transition-colors placeholder:text-gray-400"
                     />
-                    <div className="flex items-center gap-4 w-full md:w-auto bg-white px-4 py-2 rounded-full border border-gray-200">
+                    <div className="flex items-center gap-4 w-full md:w-auto bg-[#EEEFEB] px-4 py-2 rounded-full border border-gray-200">
                         <span className="text-xs font-bold uppercase text-gray-500">Size</span>
                         <input
                             type="range"
@@ -1195,9 +1088,9 @@ export default function FontDetails() {
                             });
 
                         return sortedVariants.map(variant => (
-                            <div key={variant.id} className="p-8 rounded-4xl border-y border-black bg-white hover:bg-gray-100 transition-colors">
+                            <div key={variant.id} className="p-8 rounded-4xl border-y border-black bg-[#EEEFEB] transition-colors">
                                 <div className="flex justify-between items-center mb-4">
-                                    <span className="text-[8px] font-bold uppercase tracking-wider text-gray-500 bg-gray-200 px-2 py-1 rounded-xl">{variant.variant_name}</span>
+                                    <span className="text-[12px] font-bold uppercase tracking-wider text-gray-500 px-2 py-1 rounded-xl">{variant.variant_name}</span>
                                     <div className="flex gap-2">
                                         {(['ttf', 'otf', 'woff', 'woff2'] as const).map(format => {
                                             const url = variant[`${format}_url` as keyof typeof variant] as string;
@@ -1206,7 +1099,7 @@ export default function FontDetails() {
                                                     <button
                                                         key={format}
                                                         onClick={() => downloadFont(url, `${font.name}-${variant.variant_name}.${format}`)}
-                                                        className="flex items-center gap-1 px-3 py-1 bg-white border border-black rounded-full text-[10px] font-bold uppercase hover:bg-black hover:text-white transition-colors"
+                                                        className="flex items-center gap-1 px-3 py-1 bg-[#EEEFEB] border border-black rounded-full text-[10px] font-bold uppercase hover:bg-black hover:text-white transition-colors cursor-pointer"
                                                         title={`Download ${format.toUpperCase()}`}
                                                     >
                                                         <Download size={12} /> {format}
@@ -1233,203 +1126,199 @@ export default function FontDetails() {
                 }
             </div >
 
-            {/* Main Content Grid */}
-            < div >
-                <div>
-                    {/* Auto-Generated Description Section */}
-                    <div className="grid lg:grid-cols-3">
-                        <div className="lg:col-span-2">
-                            <section className="bg-white rounded-4xl border-y lg:border-r border-black p-8 h-full">
-                                <h2 className="text-2xl font-black uppercase mb-6">Description</h2>
+            {/* Auto-Generated Description Section */}
+            <div className="grid lg:grid-cols-3">
+                <div className="lg:col-span-2">
+                    <section className="bg-[#EEEFEB] rounded-4xl border-y lg:border-r border-black p-8 h-full">
+                        <h2 className="text-2xl font-black uppercase mb-6">Description</h2>
 
-                                {/* Header Tagline */}
-                                <h3 className="text-xl font-bold mb-4 leading-tight">
-                                    {generateHeaderTagline(font)}
-                                </h3>
+                        {/* Header Tagline */}
+                        <h3 className="text-xl font-bold mb-4 leading-tight">
+                            {generateHeaderTagline(font)}
+                        </h3>
 
-                                <div className="prose prose-lg max-w-none text-gray-800">
-                                    <p className="whitespace-pre-line leading-relaxed">
-                                        {generateDescription(font)}
-                                    </p>
+                        <div className="prose prose-lg max-w-none text-gray-800">
+                            <p className="whitespace-pre-line leading-relaxed">
+                                {generateDescription(font)}
+                            </p>
 
-                                    {/* Footer Tagline */}
-                                    <p className="mt-8 font-serif italic text-xl text-gray-900 border-l-4 border-[#BDF522] pl-4">
-                                        "{generateFooterTagline(font)}"
-                                    </p>
+                            {/* Footer Tagline */}
+                            <p className="mt-8 font-serif italic text-xl text-gray-900 border-l-4 border-[#BDF522] pl-4">
+                                "{generateFooterTagline(font)}"
+                            </p>
 
-                                    <p className="mt-8 text-gray-500 italic text-sm">
-                                        Having a great day,<br />
-                                        <span className="font-bold not-italic text-black">{font.designer || 'The Designer'}</span>
-                                    </p>
-                                </div>
-                            </section>
+                            <p className="mt-8 text-gray-500 italic text-sm">
+                                Having a great day,<br />
+                                <span className="font-bold not-italic text-black">{font.designer || 'The Designer'}</span>
+                            </p>
                         </div>
+                    </section>
+                </div>
 
-                        <div className="">
-                            <section className="bg-white rounded-4xl border-y lg:border-l border-black p-8">
-                                <h2 className="text-xl font-black uppercase mb-4">Font Features</h2>
-                                <ul className="space-y-3">
-                                    {generateFontFeaturesList(font).map((feature, i) => (
-                                        <li key={i} className="flex items-start gap-3 text-sm font-medium text-gray-700">
-                                            <Check size={16} className="mt-0.5 text-[#BDF522] shrink-0 fill-black stroke-white" />
-                                            <span>{feature}</span>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </section>
+                <div className="">
+                    <section className="bg-[#EEEFEB] rounded-4xl border-y lg:border-l border-black p-8">
+                        <h2 className="text-xl font-black uppercase mb-4">Font Features</h2>
+                        <ul className="space-y-3">
+                            {generateFontFeaturesList(font).map((feature, i) => (
+                                <li key={i} className="flex items-start gap-3 text-sm font-medium text-gray-700">
+                                    <Check size={16} className="mt-0.5 text-[#BDF522] shrink-0 fill-black stroke-white" />
+                                    <span>{feature}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    </section>
 
-                            <section className="bg-white rounded-4xl border-y lg:border-l border-black p-8">
-                                <h2 className="text-xl font-black uppercase mb-4">Item Tags</h2>
-                                <div className="flex flex-wrap gap-2">
-                                    {displayTags.map((tag, i) => (
-                                        <span key={i} className="px-3 py-1.5 bg-gray-100 rounded-full text-xs font-bold text-gray-600 hover:bg-black hover:text-[#BDF522] transition-colors cursor-default">
-                                            {tag}
-                                        </span>
-                                    ))}
-                                </div>
-                            </section>
+                    <section className="bg-[#EEEFEB] rounded-4xl border-y lg:border-l border-black p-8">
+                        <h2 className="text-xl font-black uppercase mb-4">Item Tags</h2>
+                        <div className="flex flex-wrap gap-2">
+                            {displayTags.map((tag, i) => (
+                                <span key={i} className="bg-[#1C1D1E] text-white text-xs px-3 py-2 rounded-full font-medium hover:-translate-y-1 transition-all cursor-pointer">
+                                    {tag}
+                                </span>
+                            ))}
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            {/* Font Tester Section */}
+            <section>
+                <h2 className="text-2xl font-bold py-4 px-4 bg-[#EEEFEB] rounded-4xl border-y border-black">Interactive Tester</h2>
+                <FontTester font={font} />
+            </section>
+
+            {/* Embedding Section */}
+            <section id="embed-section" className="bg-[#EEEFEB] rounded-4xl border-y border-black overflow-hidden scroll-mt-24">
+                <div className="p-6 border-y border-black bg-gray-50">
+                    <h2 className="text-2xl font-black uppercase">Embed Font</h2>
+                    <p className="text-gray-600 mt-2">Use this font in your web projects.</p>
+                </div>
+                <div className="p-6 space-y-8">
+
+                    {/* Option 1: Head Link */}
+                    <div>
+                        <h3 className="font-bold text-lg mb-2">1. Add to the head section of web page.</h3>
+                        <div className="bg-gray-900 rounded-xl overflow-hidden text-gray-300 text-sm font-mono p-4 overflow-x-auto whitespace-pre">
+                            {`<link href="${window.location.origin}/css/${font.slug}" rel="stylesheet">`}
                         </div>
                     </div>
 
-                    <section>
-                        <h2 className="text-2xl font-bold py-4 px-4 bg-white rounded-4xl border-y border-black">Interactive Tester</h2>
-                        <FontTester font={font} />
-                    </section>
-
-                    {/* Embedding Section */}
-                    <section id="embed-section" className="bg-white rounded-4xl border-y border-black overflow-hidden scroll-mt-24">
-                        <div className="p-6 border-y border-black bg-gray-50">
-                            <h2 className="text-2xl font-black uppercase">Embed Font</h2>
-                            <p className="text-gray-600 mt-2">Use this font in your web projects.</p>
+                    {/* Option 2: Import */}
+                    <div>
+                        <h3 className="font-bold text-lg mb-2">OR Using @import CSS directive</h3>
+                        <div className="bg-gray-900 rounded-xl overflow-hidden text-gray-300 text-sm font-mono p-4 overflow-x-auto whitespace-pre">
+                            {`@import url(${window.location.origin}/css/${font.slug});`}
                         </div>
-                        <div className="p-6 space-y-8">
+                    </div>
 
-                            {/* Option 1: Head Link */}
-                            <div>
-                                <h3 className="font-bold text-lg mb-2">1. Add to the head section of web page.</h3>
-                                <div className="bg-gray-900 rounded-xl overflow-hidden text-gray-300 text-sm font-mono p-4 overflow-x-auto whitespace-pre">
-                                    {`<link href="${window.location.origin}/css/${font.slug}" rel="stylesheet">`}
-                                </div>
-                            </div>
+                    {/* Option 3: Font Face */}
+                    <div>
+                        <h3 className="font-bold text-lg mb-2">OR Use font-face declaration</h3>
+                        <div className="bg-gray-900 rounded-xl overflow-hidden text-gray-300 text-sm font-mono p-4 overflow-x-auto whitespace-pre">
+                            {(() => {
+                                const generateFontFace = (name: string, weight: number, style: string, urls: any) => {
+                                    const sources = [];
+                                    if (urls.eot) sources.push(`url("${urls.eot}") format("embedded-opentype")`);
+                                    if (urls.woff2) sources.push(`url("${urls.woff2}") format("woff2")`);
+                                    if (urls.woff) sources.push(`url("${urls.woff}") format("woff")`);
+                                    if (urls.ttf) sources.push(`url("${urls.ttf}") format("truetype")`);
+                                    if (urls.otf) sources.push(`url("${urls.otf}") format("opentype")`);
+                                    if (urls.svg) sources.push(`url("${urls.svg}") format("svg")`);
 
-                            {/* Option 2: Import */}
-                            <div>
-                                <h3 className="font-bold text-lg mb-2">OR Using @import CSS directive</h3>
-                                <div className="bg-gray-900 rounded-xl overflow-hidden text-gray-300 text-sm font-mono p-4 overflow-x-auto whitespace-pre">
-                                    {`@import url(${window.location.origin}/css/${font.slug});`}
-                                </div>
-                            </div>
+                                    if (sources.length === 0) return '';
 
-                            {/* Option 3: Font Face */}
-                            <div>
-                                <h3 className="font-bold text-lg mb-2">OR Use font-face declaration</h3>
-                                <div className="bg-gray-900 rounded-xl overflow-hidden text-gray-300 text-sm font-mono p-4 overflow-x-auto whitespace-pre">
-                                    {(() => {
-                                        const generateFontFace = (name: string, weight: number, style: string, urls: any) => {
-                                            const sources = [];
-                                            if (urls.eot) sources.push(`url("${urls.eot}") format("embedded-opentype")`);
-                                            if (urls.woff2) sources.push(`url("${urls.woff2}") format("woff2")`);
-                                            if (urls.woff) sources.push(`url("${urls.woff}") format("woff")`);
-                                            if (urls.ttf) sources.push(`url("${urls.ttf}") format("truetype")`);
-                                            if (urls.otf) sources.push(`url("${urls.otf}") format("opentype")`);
-                                            if (urls.svg) sources.push(`url("${urls.svg}") format("svg")`);
-
-                                            if (sources.length === 0) return '';
-
-                                            return `@font-face {
-    font-family: "${name}";
-    src: ${sources.join(',\n         ')};
-    font-weight: ${weight};
-    font-style: ${style};
+                                    return `@font-face {
+font-family: "${name}";
+src: ${sources.join(',\n         ')};
+font-weight: ${weight};
+font-style: ${style};
 }`;
-                                        };
+                                };
 
-                                        const variants = font.font_variants || [];
-                                        // Include main font if no variants or separately? 
-                                        // If variants exist, they usually cover the main font.
-                                        // Let's iterate all variants.
+                                const variants = font.font_variants || [];
+                                // Include main font if no variants or separately? 
+                                // If variants exist, they usually cover the main font.
+                                // Let's iterate all variants.
 
-                                        const blocks = variants.map(v => {
-                                            const name = font.name;
-                                            // Infer weight/style
-                                            const lower = v.variant_name.toLowerCase();
-                                            let weight = 400;
-                                            if (lower.includes('thin')) weight = 100;
-                                            else if (lower.includes('extra light')) weight = 200;
-                                            else if (lower.includes('light')) weight = 300;
-                                            else if (lower.includes('medium')) weight = 500;
-                                            else if (lower.includes('semi bold')) weight = 600;
-                                            else if (lower.includes('bold')) weight = 700;
-                                            else if (lower.includes('extra bold')) weight = 800;
-                                            else if (lower.includes('black') || lower.includes('heavy')) weight = 900;
+                                const blocks = variants.map(v => {
+                                    const name = font.name;
+                                    // Infer weight/style
+                                    const lower = v.variant_name.toLowerCase();
+                                    let weight = 400;
+                                    if (lower.includes('thin')) weight = 100;
+                                    else if (lower.includes('extra light')) weight = 200;
+                                    else if (lower.includes('light')) weight = 300;
+                                    else if (lower.includes('medium')) weight = 500;
+                                    else if (lower.includes('semi bold')) weight = 600;
+                                    else if (lower.includes('bold')) weight = 700;
+                                    else if (lower.includes('extra bold')) weight = 800;
+                                    else if (lower.includes('black') || lower.includes('heavy')) weight = 900;
 
-                                            const style = lower.includes('italic') ? 'italic' : 'normal';
+                                    const style = lower.includes('italic') ? 'italic' : 'normal';
 
-                                            const urls = {
-                                                woff2: v.woff2_url,
-                                                woff: v.woff_url,
-                                                ttf: v.ttf_url,
-                                                otf: v.otf_url
-                                            };
+                                    const urls = {
+                                        woff2: v.woff2_url,
+                                        woff: v.woff_url,
+                                        ttf: v.ttf_url,
+                                        otf: v.otf_url
+                                    };
 
-                                            return generateFontFace(name, weight, style, urls);
-                                        }).filter(Boolean);
+                                    return generateFontFace(name, weight, style, urls);
+                                }).filter(Boolean);
 
-                                        // Fallback if no variants but main files exist
-                                        if (blocks.length === 0 && (font.woff2_url || font.ttf_url)) {
-                                            blocks.push(generateFontFace(font.name, 400, 'normal', {
-                                                woff2: font.woff2_url,
-                                                woff: font.woff_url,
-                                                ttf: font.ttf_url,
-                                                otf: font.otf_url
-                                            }));
-                                        }
+                                // Fallback if no variants but main files exist
+                                if (blocks.length === 0 && (font.woff2_url || font.ttf_url)) {
+                                    blocks.push(generateFontFace(font.name, 400, 'normal', {
+                                        woff2: font.woff2_url,
+                                        woff: font.woff_url,
+                                        ttf: font.ttf_url,
+                                        otf: font.otf_url
+                                    }));
+                                }
 
-                                        return blocks.join('\n\n');
-                                    })()}
-                                </div>
-                            </div>
-
-                            {/* Section 2: CSS Rules */}
-                            <div>
-                                <h3 className="font-bold text-lg mb-2">2. CSS rules to specify fonts</h3>
-                                <div className="bg-gray-900 rounded-xl overflow-hidden text-green-400 text-sm font-mono p-4 overflow-x-auto whitespace-pre">
-                                    {`font-family: "${font.name}", sans-serif;`}
-                                </div>
-                            </div>
-
+                                return blocks.join('\n\n');
+                            })()}
                         </div>
-                    </section>
-                </div>
-                <div>
-                    {(() => {
-                        // Calculate best available URL for GlyphMap default view
-                        // 1. Try legacy main files
-                        let mainFontUrl = font.otf_url || font.ttf_url || font.woff_url || font.woff2_url || '';
+                    </div>
 
-                        // 2. Fallback to first available variant if main is empty
-                        if (!mainFontUrl && font.font_variants && font.font_variants.length > 0) {
-                            const v = font.font_variants[0];
-                            mainFontUrl = v.otf_url || v.ttf_url || v.woff_url || v.woff2_url || '';
-                        }
+                    {/* Section 2: CSS Rules */}
+                    <div>
+                        <h3 className="font-bold text-lg mb-2">2. CSS rules to specify fonts</h3>
+                        <div className="bg-gray-900 rounded-xl overflow-hidden text-green-400 text-sm font-mono p-4 overflow-x-auto whitespace-pre">
+                            {`font-family: "${font.name}", sans-serif;`}
+                        </div>
+                    </div>
 
-                        return (
-                            <GlyphMap
-                                fontFamily={isFontLoaded ? `font-${font.id}` : 'sans-serif'}
-                                fontUrl={mainFontUrl}
-                                variants={font.font_variants?.map(v => ({
-                                    name: v.variant_name,
-                                    url: v.otf_url || v.ttf_url || v.woff_url || v.woff2_url || ''
-                                })).filter(v => v.url !== '')}
-                            />
-                        );
-                    })()}
                 </div>
-            </div >
+            </section>
+            <div>
+                {(() => {
+                    // Calculate best available URL for GlyphMap default view
+                    // 1. Try legacy main files
+                    let mainFontUrl = font.otf_url || font.ttf_url || font.woff_url || font.woff2_url || '';
+
+                    // 2. Fallback to first available variant if main is empty
+                    if (!mainFontUrl && font.font_variants && font.font_variants.length > 0) {
+                        const v = font.font_variants[0];
+                        mainFontUrl = v.otf_url || v.ttf_url || v.woff_url || v.woff2_url || '';
+                    }
+
+                    return (
+                        <GlyphMap
+                            fontFamily={isFontLoaded ? `font-${font.id}` : 'sans-serif'}
+                            fontUrl={mainFontUrl}
+                            variants={font.font_variants?.map(v => ({
+                                name: v.variant_name,
+                                url: v.otf_url || v.ttf_url || v.woff_url || v.woff2_url || ''
+                            })).filter(v => v.url !== '')}
+                        />
+                    );
+                })()}
+            </div>
 
             <div className="space-y-6">
 
-                <div className="bg-white rounded-4xl border border-gray-200 p-6">
+                <div className="bg-[#EEEFEB] rounded-4xl border border-gray-200 p-6">
                     <h3 className="font-bold text-2xl mb-4">Font Stats</h3>
                     <div className="space-y-2">
                         <div className="flex justify-between">
@@ -1445,276 +1334,262 @@ export default function FontDetails() {
             </div>
 
             {/* Variants Section */}
-            <div id="download-section" className="bg-white border border-black rounded-4xl p-6">
-                <div className="flex justify-between items-center mb-6">
-                    <h3 className="font-bold text-lg">Font Variants</h3>
-                    {profile?.role === 'admin' && (
-                        <div className="flex gap-2">
-                            {isEditingFiles && (
+            {profile?.role === 'admin' && (
+                <div id="download-section" className="bg-[#EEEFEB] border border-black rounded-4xl p-6">
+                    <div className="flex justify-between items-center mb-6">
+                        <h3 className="font-bold text-lg">Font Variants</h3>
+                        {profile?.role === 'admin' && (
+                            <div className="flex gap-2">
+                                {isEditingFiles && (
+                                    <button
+                                        onClick={handleCancelAll}
+                                        className="px-3 py-1 bg-red-100 text-red-600 hover:bg-red-200 rounded-full text-xs font-bold transition-colors"
+                                    >
+                                        Cancel All
+                                    </button>
+                                )}
                                 <button
-                                    onClick={handleCancelAll}
-                                    className="px-3 py-1 bg-red-100 text-red-600 hover:bg-red-200 rounded-full text-xs font-bold transition-colors"
+                                    onClick={() => {
+                                        if (isEditingFiles) {
+                                            // If we are currently editing, clicking this should save/close
+                                            executeBatchChanges();
+                                        } else {
+                                            setIsEditingFiles(true);
+                                        }
+                                    }}
+                                    className={`flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold transition-colors ${isEditingFiles ? 'bg-[#BDF522] text-black' : 'bg-gray-100 text-gray-500 hover:text-black'
+                                        }`}
                                 >
-                                    Cancel All
+                                    <Edit2 size={12} />
+                                    {isEditingFiles
+                                        ? ((stagedChanges.length + addedVariants.length) > 0 ? `Save & Done (${stagedChanges.length + addedVariants.length})` : 'Done Editing')
+                                        : 'Manage Files'}
                                 </button>
-                            )}
-                            <button
-                                onClick={() => {
-                                    if (isEditingFiles) {
-                                        // If we are currently editing, clicking this should save/close
-                                        executeBatchChanges();
-                                    } else {
-                                        setIsEditingFiles(true);
-                                    }
-                                }}
-                                className={`flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold transition-colors ${isEditingFiles ? 'bg-[#BDF522] text-black' : 'bg-gray-100 text-gray-500 hover:text-black'
-                                    }`}
-                            >
-                                <Edit2 size={12} />
-                                {isEditingFiles
-                                    ? ((stagedChanges.length + addedVariants.length) > 0 ? `Save & Done (${stagedChanges.length + addedVariants.length})` : 'Done Editing')
-                                    : 'Manage Files'}
-                            </button>
-                        </div>
-                    )}
-                </div>
+                            </div>
+                        )}
+                    </div>
 
-                <div className="flex flex-col gap-4">
-                    {font.font_variants && font.font_variants.length > 0 ? (
-                        font.font_variants.map(variant => (
-                            <div key={variant.id} className="border border-gray-200 rounded-2xl p-4 hover:border-black transition-colors">
-                                <h4 className="font-bold mb-3">{variant.variant_name}</h4>
+                    <div className="flex flex-col gap-4">
+                        {font.font_variants && font.font_variants.length > 0 ? (
+                            font.font_variants.map(variant => (
+                                <div key={variant.id} className="border border-gray-200 rounded-2xl p-4 hover:border-black transition-colors">
+                                    <h4 className="font-bold mb-3">{variant.variant_name}</h4>
 
-                                {isEditingFiles && profile?.role === 'admin' ? (
-                                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                                        {(['woff2', 'woff', 'ttf', 'otf'] as const).map(format => {
-                                            const urlKey = `${format}_url` as keyof typeof variant;
-                                            const url = variant[urlKey];
+                                    {isEditingFiles && profile?.role === 'admin' ? (
+                                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                                            {(['woff2', 'woff', 'ttf', 'otf'] as const).map(format => {
+                                                const urlKey = `${format}_url` as keyof typeof variant;
+                                                const url = variant[urlKey];
 
-                                            // Check for staged changes
-                                            const staged = stagedChanges.find(c => c.variantId === variant.id && c.format === format);
-                                            const isPendingDelete = staged?.action === 'delete';
-                                            const isPendingUpload = staged?.action === 'replace'; // or upload
+                                                // Check for staged changes
+                                                const staged = stagedChanges.find(c => c.variantId === variant.id && c.format === format);
+                                                const isPendingDelete = staged?.action === 'delete';
+                                                const isPendingUpload = staged?.action === 'replace'; // or upload
 
-                                            // Effective state: if staged delete, act as if empty (but show indication). If staged upload, act as if filled (green).
+                                                // Effective state: if staged delete, act as if empty (but show indication). If staged upload, act as if filled (green).
 
-                                            // 1. Show as Filled if (url AND not pending delete) OR (pending upload)
-                                            const showAsFilled = (url && !isPendingDelete) || isPendingUpload;
+                                                // 1. Show as Filled if (url AND not pending delete) OR (pending upload)
+                                                const showAsFilled = (url && !isPendingDelete) || isPendingUpload;
 
-                                            return (
-                                                <div key={format} className="relative h-24">
-                                                    {showAsFilled ? (
-                                                        <div className={`absolute inset-0 z-0 border-y rounded-xl flex flex-col items-center justify-center group overflow-hidden ${isPendingUpload
-                                                            ? 'bg-yellow-50 border-yellow-300 transition-colors'
-                                                            : 'bg-green-100 border-green-300 transition-colors'
-                                                            }`}>
-                                                            <span className={`font-bold text-lg ${isPendingUpload ? 'text-yellow-800' : 'text-green-800'}`}>{format.toUpperCase()}</span>
-                                                            <span className={`text-[10px] uppercase font-bold mt-1 ${isPendingUpload ? 'text-yellow-600' : 'text-green-600'}`}>
-                                                                {isPendingUpload ? (staged?.file ? 'Pending Save' : 'Modified') : 'Installed'}
-                                                            </span>
-
-                                                            <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                                                <span className="text-white font-bold text-xs uppercase mb-2">Replace</span>
-                                                            </div>
-
-                                                            <input
-                                                                type="file"
-                                                                accept={`.${format}`}
-                                                                onChange={(e) => {
-                                                                    const file = e.target.files?.[0];
-                                                                    if (file) handleStageChange('replace', format, file, variant.id, variant.variant_name);
-                                                                }}
-                                                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                                                                title="Drag & Drop to Replace"
-                                                            />
-
-                                                            <button
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation();
-                                                                    handleStageChange('delete', format, undefined, variant.id, variant.variant_name);
-                                                                }}
-                                                                className="absolute top-1 right-1 z-20 p-1.5 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:scale-110"
-                                                                title="Remove File"
-                                                            >
-                                                                <Trash2 size={12} />
-                                                            </button>
-                                                        </div>
-                                                    ) : (
-                                                        <div className={`absolute inset-0 group ${isPendingDelete ? 'opacity-50' : ''}`}>
-                                                            {isPendingDelete && (
-                                                                <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
-                                                                    <span className="text-red-500 font-bold text-xs bg-white px-2 py-1 rounded shadow transform -rotate-12 border border-red-200">
-                                                                        PENDING DELETE
-                                                                    </span>
-                                                                </div>
-                                                            )}
-
-                                                            <input
-                                                                type="file"
-                                                                accept={`.${format}`}
-                                                                onChange={(e) => {
-                                                                    const file = e.target.files?.[0];
-                                                                    if (file) handleStageChange('replace', format, file, variant.id, variant.variant_name);
-                                                                }}
-                                                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                                                                title="Drag & Drop to Upload"
-                                                            />
-                                                            <div className={`w-full h-full border-y border-dashed rounded-xl flex flex-col items-center justify-center transition-colors ${isPendingDelete
-                                                                ? 'border-red-300 bg-red-50'
-                                                                : 'border-gray-300 bg-gray-50 group-hover:border-black group-hover:bg-white text-gray-400 group-hover:text-black'
+                                                return (
+                                                    <div key={format} className="relative h-24">
+                                                        {showAsFilled ? (
+                                                            <div className={`absolute inset-0 z-0 border-y border-x rounded-xl flex flex-col items-center justify-center group overflow-hidden ${isPendingUpload
+                                                                ? 'bg-yellow-50 border-yellow-300 transition-colors'
+                                                                : 'bg-green-100 border-green-300 transition-colors'
                                                                 }`}>
-                                                                <span className="font-bold text-xs uppercase">{format.toUpperCase()}</span>
-                                                                {!isPendingDelete && <Upload size={16} className="mt-1 opacity-50" />}
+                                                                <span className={`font-bold text-lg ${isPendingUpload ? 'text-yellow-800' : 'text-green-800'}`}>{format.toUpperCase()}</span>
+                                                                <span className={`text-[10px] uppercase font-bold mt-1 ${isPendingUpload ? 'text-yellow-600' : 'text-green-600'}`}>
+                                                                    {isPendingUpload ? (staged?.file ? 'Pending Save' : 'Modified') : 'Installed'}
+                                                                </span>
+
+                                                                <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                                                    <span className="text-white font-bold text-xs uppercase mb-2">Replace</span>
+                                                                </div>
+
+                                                                <input
+                                                                    type="file"
+                                                                    accept={`.${format}`}
+                                                                    onChange={(e) => {
+                                                                        const file = e.target.files?.[0];
+                                                                        if (file) handleStageChange('replace', format, file, variant.id, variant.variant_name);
+                                                                    }}
+                                                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                                                    title="Drag & Drop to Replace"
+                                                                />
+
+                                                                <button
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        handleStageChange('delete', format, undefined, variant.id, variant.variant_name);
+                                                                    }}
+                                                                    className="absolute top-1 right-1 z-20 p-1.5 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:scale-110"
+                                                                    title="Remove File"
+                                                                >
+                                                                    <Trash2 size={12} />
+                                                                </button>
+                                                            </div>
+                                                        ) : (
+                                                            <div className={`absolute inset-0 group ${isPendingDelete ? 'opacity-50' : ''}`}>
+                                                                {isPendingDelete && (
+                                                                    <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
+                                                                        <span className="text-red-500 font-bold text-xs bg-[#EEEFEB] px-2 py-1 rounded shadow transform -rotate-12 border border-red-200">
+                                                                            PENDING DELETE
+                                                                        </span>
+                                                                    </div>
+                                                                )}
+
+                                                                <input
+                                                                    type="file"
+                                                                    accept={`.${format}`}
+                                                                    onChange={(e) => {
+                                                                        const file = e.target.files?.[0];
+                                                                        if (file) handleStageChange('replace', format, file, variant.id, variant.variant_name);
+                                                                    }}
+                                                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                                                    title="Drag & Drop to Upload"
+                                                                />
+                                                                <div className={`w-full h-full border-y border-x border-dashed rounded-xl flex flex-col items-center justify-center transition-colors ${isPendingDelete
+                                                                    ? 'border-red-300 bg-red-50'
+                                                                    : 'border-gray-300 bg-gray-50 group-hover:border-black group-hover:bg-[#EEEFEB] text-gray-400 group-hover:text-black'
+                                                                    }`}>
+                                                                    <span className="font-bold text-xs uppercase">{format.toUpperCase()}</span>
+                                                                    {!isPendingDelete && <Upload size={16} className="mt-1 opacity-50" />}
+
+                                                                    {isPendingDelete && (
+                                                                        <button
+                                                                            onClick={(e) => {
+                                                                                e.preventDefault(); e.stopPropagation();
+                                                                                // Placeholder
+                                                                            }}
+                                                                            className="hidden"
+                                                                        ></button>
+                                                                    )}
+                                                                </div>
 
                                                                 {isPendingDelete && (
                                                                     <button
                                                                         onClick={(e) => {
                                                                             e.preventDefault(); e.stopPropagation();
-                                                                            // Placeholder
+                                                                            setStagedChanges(prev => prev.filter(c => !(c.variantId === variant.id && c.format === format)));
                                                                         }}
-                                                                        className="hidden"
-                                                                    ></button>
+                                                                        className="absolute top-1 right-1 z-30 p-1 bg-gray-500 text-white rounded-full hover:bg-black text-[10px] px-2 pointer-events-auto"
+                                                                    >
+                                                                        UNDO
+                                                                    </button>
                                                                 )}
                                                             </div>
+                                                        )}
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    ) : (
+                                        <div className="text-sm text-gray-400 italic">
+                                            Enable "Manage Files" to edit variants.
+                                        </div>
+                                    )}
+                                </div>
+                            ))
+                        ) : (
+                            <p className="text-gray-500 italic text-center py-4">No variants available.</p>
+                        )}
+                    </div>
 
-                                                            {isPendingDelete && (
-                                                                <button
-                                                                    onClick={(e) => {
-                                                                        e.preventDefault(); e.stopPropagation();
-                                                                        setStagedChanges(prev => prev.filter(c => !(c.variantId === variant.id && c.format === format)));
-                                                                    }}
-                                                                    className="absolute top-1 right-1 z-30 p-1 bg-gray-500 text-white rounded-full hover:bg-black text-[10px] px-2 pointer-events-auto"
-                                                                >
-                                                                    UNDO
-                                                                </button>
-                                                            )}
+                    {/* Add New Variant Button - Admin Only */}
+                    {isEditingFiles && profile?.role === 'admin' && (
+                        <div className="mt-8 pt-6 border-t border-black">
+                            <div className="flex justify-between items-center mb-4">
+                                <h4 className="font-bold text-lg">Add New Variants</h4>
+                                <button
+                                    onClick={addVariantToState}
+                                    disabled={((font?.font_variants?.length || 0) + addedVariants.length) >= VARIANT_NAMES.length}
+                                    className={`flex items-center gap-2 px-4 py-2 rounded-full font-bold text-sm transition-colors ${((font?.font_variants?.length || 0) + addedVariants.length) >= VARIANT_NAMES.length
+                                        ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                                        : 'bg-gray-100 hover:bg-gray-200 text-black'
+                                        }`}
+                                >
+                                    <Plus size={16} /> Add Variant
+                                </button>
+                            </div>
+
+                            <div className="space-y-6">
+                                {addedVariants.map((variant) => (
+                                    <div key={variant.id} className="bg-gray-50 border border-gray-200 rounded-2xl p-6 relative">
+                                        <button
+                                            onClick={() => removeAddedVariant(variant.id)}
+                                            className="absolute top-4 right-4 text-red-500 hover:text-red-700 p-1"
+                                        >
+                                            <X size={20} />
+                                        </button>
+
+                                        <div className="mb-4 pr-8">
+                                            <label className="block text-xs font-bold uppercase mb-2">Variant Name</label>
+                                            <select
+                                                value={variant.name}
+                                                onChange={(e) => updateAddedVariantName(variant.id, e.target.value)}
+                                                className="border-y border-dashed border-gray-300 rounded-xl px-4 py-2 w-full font-bold bg-[#EEEFEB]"
+                                            >
+                                                {VARIANT_NAMES.filter(name => {
+                                                    const existingNames = font?.font_variants?.map(v => v.variant_name) || [];
+                                                    const addedNames = addedVariants.map(v => v.name);
+                                                    // Allow if it's THIS variant's name OR if it's unused in both lists
+                                                    return name === variant.name || (!existingNames.includes(name) && !addedNames.includes(name));
+                                                }).map(name => (
+                                                    <option key={name} value={name}>{name}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+
+                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                            {(['ttf', 'otf', 'woff', 'woff2'] as const).map(format => (
+                                                <div key={format} className="relative">
+                                                    {variant.files[format] ? (
+                                                        <div className="flex items-center justify-between bg-green-100 border border-green-300 rounded-lg p-2 text-xs font-bold">
+                                                            <span className="truncate max-w-20">{variant.files[format]?.name}</span>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => updateAddedVariantFile(variant.id, format, null)}
+                                                            >
+                                                                <Trash2 size={14} className="text-green-700 hover:text-red-500" />
+                                                            </button>
+                                                        </div>
+                                                    ) : (
+                                                        <div className="relative group">
+                                                            <input
+                                                                type="file"
+                                                                accept={`.${format}`}
+                                                                onChange={(e) => {
+                                                                    if (e.target.files?.[0]) {
+                                                                        updateAddedVariantFile(variant.id, format, e.target.files[0]);
+                                                                    }
+                                                                }}
+                                                                className="absolute inset-0 opacity-0 cursor-pointer z-10 w-full h-full"
+                                                            />
+                                                            <div className="border-y border-dashed border-gray-300 bg-[#EEEFEB] rounded-xl p-3 text-center text-xs font-bold text-gray-500 group-hover:border-black group-hover:text-black transition-colors">
+                                                                {format.toUpperCase()} +
+                                                            </div>
                                                         </div>
                                                     )}
                                                 </div>
-                                            );
-                                        })}
+                                            ))}
+                                        </div>
                                     </div>
-                                ) : (
-                                    <div className="flex flex-wrap gap-2">
-                                        {(['ttf', 'otf', 'woff', 'woff2'] as const).map(format => {
-                                            const urlKey = `${format}_url` as keyof typeof variant;
-                                            const url = variant[urlKey];
-                                            if (!url) return null;
-                                            return (
-                                                <button
-                                                    key={format}
-                                                    onClick={() => downloadFont(url as string, `${font.slug}-${variant.variant_name}.${format}`)}
-                                                    className="flex items-center justify-between px-4 md:px-6 py-2.5 md:py-4 bg-black text-white rounded-4xl hover:bg-[#00C2FF] hover:text-black border-y border-transparent transition-all font-black uppercase text-xs"
-                                                >
-                                                    <span className="flex items-center gap-2">
-                                                        <Download size={18} />
-                                                        <span className='flex gap-2'><span className='hidden md:block'>Download</span> {format.toUpperCase()}</span>
-                                                    </span>
-                                                </button>
-                                            )
-                                        })}
-                                    </div>
-                                )}
+                                ))}
                             </div>
-                        ))
-                    ) : (
-                        <p className="text-gray-500 italic text-center py-4">No variants available.</p>
+
+
+                        </div>
                     )}
                 </div>
-
-                {/* Add New Variant Button - Admin Only */}
-                {isEditingFiles && profile?.role === 'admin' && (
-                    <div className="mt-8 pt-6 border-t border-black">
-                        <div className="flex justify-between items-center mb-4">
-                            <h4 className="font-bold text-lg">Add New Variants</h4>
-                            <button
-                                onClick={addVariantToState}
-                                disabled={((font?.font_variants?.length || 0) + addedVariants.length) >= VARIANT_NAMES.length}
-                                className={`flex items-center gap-2 px-4 py-2 rounded-full font-bold text-sm transition-colors ${((font?.font_variants?.length || 0) + addedVariants.length) >= VARIANT_NAMES.length
-                                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                                    : 'bg-gray-100 hover:bg-gray-200 text-black'
-                                    }`}
-                            >
-                                <Plus size={16} /> Add Variant
-                            </button>
-                        </div>
-
-                        <div className="space-y-6">
-                            {addedVariants.map((variant) => (
-                                <div key={variant.id} className="bg-gray-50 border border-gray-200 rounded-2xl p-6 relative">
-                                    <button
-                                        onClick={() => removeAddedVariant(variant.id)}
-                                        className="absolute top-4 right-4 text-red-500 hover:text-red-700 p-1"
-                                    >
-                                        <X size={20} />
-                                    </button>
-
-                                    <div className="mb-4 pr-8">
-                                        <label className="block text-xs font-bold uppercase mb-2">Variant Name</label>
-                                        <select
-                                            value={variant.name}
-                                            onChange={(e) => updateAddedVariantName(variant.id, e.target.value)}
-                                            className="border-y border-dashed border-gray-300 rounded-xl px-4 py-2 w-full font-bold bg-white"
-                                        >
-                                            {VARIANT_NAMES.filter(name => {
-                                                const existingNames = font?.font_variants?.map(v => v.variant_name) || [];
-                                                const addedNames = addedVariants.map(v => v.name);
-                                                // Allow if it's THIS variant's name OR if it's unused in both lists
-                                                return name === variant.name || (!existingNames.includes(name) && !addedNames.includes(name));
-                                            }).map(name => (
-                                                <option key={name} value={name}>{name}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                                        {(['ttf', 'otf', 'woff', 'woff2'] as const).map(format => (
-                                            <div key={format} className="relative">
-                                                {variant.files[format] ? (
-                                                    <div className="flex items-center justify-between bg-green-100 border border-green-300 rounded-lg p-2 text-xs font-bold">
-                                                        <span className="truncate max-w-20">{variant.files[format]?.name}</span>
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => updateAddedVariantFile(variant.id, format, null)}
-                                                        >
-                                                            <Trash2 size={14} className="text-green-700 hover:text-red-500" />
-                                                        </button>
-                                                    </div>
-                                                ) : (
-                                                    <div className="relative group">
-                                                        <input
-                                                            type="file"
-                                                            accept={`.${format}`}
-                                                            onChange={(e) => {
-                                                                if (e.target.files?.[0]) {
-                                                                    updateAddedVariantFile(variant.id, format, e.target.files[0]);
-                                                                }
-                                                            }}
-                                                            className="absolute inset-0 opacity-0 cursor-pointer z-10 w-full h-full"
-                                                        />
-                                                        <div className="border-y border-dashed border-gray-300 bg-white rounded-xl p-3 text-center text-xs font-bold text-gray-500 group-hover:border-black group-hover:text-black transition-colors">
-                                                            {format.toUpperCase()} +
-                                                        </div>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-
-
-                    </div>
-                )}
-            </div>
+            )}
 
             {/* Similar Fonts Section */}
             {
                 similarFonts.length > 0 && (
                     <div>
-                        <div className="flex justify-between items-center gap-2 bg-white rounded-4xl border-y border-black p-1">
-                            <h3 className="bg-white rounded-4xl p-5 font-black text-3xl uppercase tracking-tight">Similar Fonts</h3>
+                        <div className="flex justify-between items-center gap-2 bg-[#EEEFEB] rounded-4xl border-y border-black p-1">
+                            <h3 className="bg-[#EEEFEB] rounded-4xl p-5 font-black text-3xl uppercase tracking-tight">Similar Fonts</h3>
 
                             <div className="flex items-center mr-2">
                                 <div className="flex bg-gray-100 h-11 p-1 w-auto rounded-full border border-gray-200">

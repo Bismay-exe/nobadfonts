@@ -412,7 +412,7 @@ const Upload = () => {
     // Role Check
     if (!profile || (profile.role !== 'member' && profile.role !== 'admin')) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-8 space-y-6">
+            <div className="flex flex-col items-center justify-center min-h-[84.4vh] bg-[#EEEFEB] rounded-4xl text-center p-8 space-y-6">
                 <div className="bg-red-100 p-6 rounded-full">
                     <div className="text-6xl">🔒</div>
                 </div>
@@ -437,9 +437,9 @@ const Upload = () => {
         <div className="mx-auto">
             <form onSubmit={handleSubmit} className="rounded-4xl grid grid-cols-1 md:grid-cols-2">
 
-                <h1 className="md:hidden col-span-1 md:col-span-2 text-4xl bg-white p-4 rounded-4xl border-b border-black text-center md:text-left font-black uppercase">Upload Font</h1>
+                <h1 className="md:hidden col-span-1 md:col-span-2 text-4xl bg-[#EEEFEB] p-4 rounded-4xl border-b border-black text-center md:text-left font-black uppercase">Upload Font</h1>
                 {/* Meta Inputs */}
-                <div className="col-span-1 space-y-4 bg-white p-8 rounded-4xl border-r border-b border-black">
+                <div className="col-span-1 space-y-4 bg-[#EEEFEB] p-8 rounded-4xl border-r border-b border-black">
                     <div>
                         <label className="block font-bold mb-2 uppercase">Font Name</label>
                         <input
@@ -464,14 +464,14 @@ const Upload = () => {
                 </div>
 
                 {/* Variants Section */}
-                <div className="col-span-1 md:col-span-2 bg-white p-8 rounded-4xl border-l border-y border-black border-t-0 md:border-t">
+                <div className="col-span-1 md:col-span-2 bg-[#EEEFEB] p-8 rounded-4xl border-l border-y border-black border-t-0 md:border-t">
                     <div className="flex justify-between items-center mb-4">
                         <label className="font-bold uppercase text-lg">Font Variants <span className="text-sm text-red-500 normal-case ml-2">(At least one required)</span></label>
                         <div className="flex gap-2">
                             <button
                                 type="button"
                                 onClick={addCustomVariant}
-                                className="px-4 py-2 rounded-full font-bold text-sm bg-white border-2 border-black text-black hover:bg-gray-100 transition-colors"
+                                className="px-4 py-2 rounded-full font-bold text-sm bg-[#EEEFEB] border-2 border-black text-black hover:bg-gray-100 transition-colors"
                             >
                                 + Custom Variant
                             </button>
@@ -500,7 +500,7 @@ const Upload = () => {
                                                 type="text"
                                                 value={variant.name}
                                                 onChange={(e) => updateVariantName(variant.id, e.target.value)}
-                                                className="border-2 border-black rounded-lg px-3 py-1 font-bold bg-white w-full"
+                                                className="border-2 border-black rounded-lg px-3 py-1 font-bold bg-[#EEEFEB] w-full"
                                                 placeholder="e.g. Demi Bold"
                                                 autoFocus
                                             />
@@ -508,7 +508,7 @@ const Upload = () => {
                                             <select
                                                 value={variant.name}
                                                 onChange={(e) => updateVariantName(variant.id, e.target.value)}
-                                                className="border-2 border-black rounded-lg px-3 py-1 font-bold bg-white"
+                                                className="border-2 border-black rounded-lg px-3 py-1 font-bold bg-[#EEEFEB]"
                                             >
                                                 {VARIANT_NAMES.filter(name => name === variant.name || !variants.some(v => v.name === name)).map(name => (
                                                     <option key={name} value={name}>{name}</option>
@@ -550,7 +550,7 @@ const Upload = () => {
                                                         }}
                                                         className="absolute inset-0 opacity-0 cursor-pointer z-10 w-full h-full"
                                                     />
-                                                    <div className="border border-gray-300 bg-white rounded-lg p-2 text-center text-xs font-bold text-gray-500 hover:border-black hover:text-black transition-colors">
+                                                    <div className="border border-gray-300 bg-[#EEEFEB] rounded-lg p-2 text-center text-xs font-bold text-gray-500 hover:border-black hover:text-black transition-colors">
                                                         {format.toUpperCase()}
                                                     </div>
                                                 </div>
@@ -568,7 +568,7 @@ const Upload = () => {
                     </div>
                 </div>
                 {/* Banner Image Section */}
-                <div className="col-span-1 md:col-span-2 bg-white p-8 rounded-4xl border-x border-b border-black md:border-t-0 space-y-4">
+                <div className="col-span-1 md:col-span-2 bg-[#EEEFEB] p-8 rounded-4xl border-x border-b border-black md:border-t-0 space-y-4">
                     <label className="block font-bold uppercase text-lg">Banner Gallery <span className="text-sm text-gray-500 normal-case ml-2">(Optional - Multiple images allowed)</span></label>
 
                     {/* List of items */}
@@ -654,7 +654,7 @@ const Upload = () => {
                     </div>
                 </div >
 
-                <div className='col-span-1 md:col-span-2 space-y-4 bg-white p-8 rounded-4xl border-y border-black'>
+                <div className='col-span-1 md:col-span-2 space-y-4 bg-[#EEEFEB] p-8 rounded-4xl border-y border-black'>
                     <label className="block font-bold mb-2 uppercase">Categories</label>
                     <div className="flex flex-col gap-6 max-h-full overflow-y-auto p-1">
                         {CATEGORIES.map((group, groupIndex) => (
@@ -672,7 +672,7 @@ const Upload = () => {
                                                 px-3 py-1.5 font-bold rounded-full border-2 text-sm transition-all duration-200
                                                 ${formData.tags.includes(cat.id)
                                                     ? "bg-black text-white border-black shadow-md"
-                                                    : "bg-white text-gray-500 border-gray-200 hover:border-black hover:text-black hover:-translate-y-0.5"
+                                                    : "bg-[#EEEFEB] text-gray-500 border-gray-200 hover:border-black hover:text-black hover:-translate-y-0.5"
                                                 }
                                             `}
                                         >
@@ -688,7 +688,7 @@ const Upload = () => {
                 <button
                     type="submit"
                     disabled={loading}
-                    className="col-span-1 md:col-span-2 w-full bg-white text-black py-4 rounded-4xl font-black uppercase tracking-wider hover:bg-[#FF6B00] hover:border-black border-r border-t border-b-2 border-black transition-all flex justify-center items-center gap-2"
+                    className="col-span-1 md:col-span-2 w-full bg-[#EEEFEB] text-black py-4 rounded-4xl font-black uppercase tracking-wider hover:bg-[#FF6B00] hover:border-black border-r border-t border-b-2 border-black transition-all flex justify-center items-center gap-2"
                 >
                     {loading ? 'Uploading...' : 'Submit Font'}
                 </button>

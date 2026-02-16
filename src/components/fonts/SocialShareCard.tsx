@@ -28,10 +28,10 @@ const SocialShareCard = forwardRef<HTMLDivElement, SocialShareCardProps>(({ font
             {/* Header */}
             <div className="relative z-10 flex justify-between items-center border-b border-gray-800 pb-8">
                 <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center">
-                        <span className="text-black font-black text-xl">N</span>
+                    <div className="w-12 h-12 bg-[#EEEFEB] rounded-xl overflow-hidden flex items-center justify-center">
+                        <img src="/logo/logo-white.png" alt="" className='w-full h-full object-contain' />
                     </div>
-                    <span className="font-bold tracking-widest text-gray-400">NoBadFonts</span>
+                    <span className="font-bold text-xl text-gray-400">NoBadFonts</span>
                 </div>
                 <div className="px-6 py-2 border border-gray-700 rounded-full text-sm font-mono text-gray-400 uppercase">
                     Free Download
@@ -63,7 +63,7 @@ const SocialShareCard = forwardRef<HTMLDivElement, SocialShareCardProps>(({ font
 
                 <div className="flex">
                     <span className="px-6 py-3 bg-[#BDF522] text-black rounded-xl font-black">
-                        GET IT ON NoBadFonts.in
+                        GET IT ON nobadfonts.in
                     </span>
                 </div>
             </div>

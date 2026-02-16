@@ -264,7 +264,7 @@ export default function FontPairing() {
                 <button className="bg-black text-white p-3 rounded-full shadow-lg hover:scale-110 transition-transform">
                     <Palette size={24} />
                 </button>
-                <div className="absolute left-0 bottom-full mb-2 bg-white p-3 rounded-xl border-2 border-black shadow-xl hidden group-hover:block w-48">
+                <div className="absolute left-0 bottom-full mb-2 bg-[#EEEFEB] p-3 rounded-xl border-2 border-black shadow-xl hidden group-hover:block w-48">
                     <p className="text-xs font-bold mb-2 uppercase text-gray-400">Background Color</p>
                     <div className="flex items-center gap-2">
                         <input
@@ -318,7 +318,7 @@ export default function FontPairing() {
                                 </button>
                                 <button
                                     onClick={() => handleOpenCustomize('Header')}
-                                    className="-rotate-12 bg-white text-black px-3 py-2 rounded-full font-bold shadow-lg flex items-center gap-2 hover:bg-[#BDF522] border-2 border-black transition-all"
+                                    className="-rotate-12 bg-[#EEEFEB] text-black px-3 py-2 rounded-full font-bold shadow-lg flex items-center gap-2 hover:bg-[#BDF522] border-2 border-black transition-all"
                                 >
                                     <Settings size={16} />
                                 </button>
@@ -366,7 +366,7 @@ export default function FontPairing() {
                                 </button>
                                 <button
                                     onClick={() => handleOpenCustomize('Body')}
-                                    className="-rotate-12 bg-white text-black px-3 py-2 rounded-full font-bold shadow-lg flex items-center gap-2 hover:bg-[#BDF522] border-2 border-black transition-all"
+                                    className="-rotate-12 bg-[#EEEFEB] text-black px-3 py-2 rounded-full font-bold shadow-lg flex items-center gap-2 hover:bg-[#BDF522] border-2 border-black transition-all"
                                 >
                                     <Settings size={16} />
                                 </button>
@@ -414,7 +414,7 @@ export default function FontPairing() {
                                 </button>
                                 <button
                                     onClick={() => handleOpenCustomize('UI')}
-                                    className="-rotate-12 bg-white text-black px-3 py-2 rounded-full font-bold shadow-lg flex items-center gap-2 hover:bg-[#BDF522] border-2 border-black transition-all"
+                                    className="-rotate-12 bg-[#EEEFEB] text-black px-3 py-2 rounded-full font-bold shadow-lg flex items-center gap-2 hover:bg-[#BDF522] border-2 border-black transition-all"
                                 >
                                     <Settings size={16} />
                                 </button>

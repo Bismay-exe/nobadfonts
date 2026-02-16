@@ -121,27 +121,27 @@ export default function MemberDetails() {
                     {/* Social Links */}
                     <div className="flex flex-wrap gap-3 mt-4 justify-center md:justify-start">
                         {profile.website && (
-                            <a href={profile.website} target="_blank" rel="noopener noreferrer" className="p-2 bg-white rounded-full border hover:border-black transition-colors text-gray-600 hover:text-black hover:-translate-y-1 hover:shadow-md">
+                            <a href={profile.website} target="_blank" rel="noopener noreferrer" className="p-2 bg-[#EEEFEB] rounded-full border hover:border-black transition-colors text-gray-600 hover:text-black hover:-translate-y-1 hover:shadow-md">
                                 <Globe size={20} />
                             </a>
                         )}
                         {profile.behance && (
-                            <a href={profile.behance} target="_blank" rel="noopener noreferrer" className="p-2 bg-white rounded-full border hover:border-black transition-colors text-gray-600 hover:text-[#1769ff] hover:-translate-y-1 hover:shadow-md">
+                            <a href={profile.behance} target="_blank" rel="noopener noreferrer" className="p-2 bg-[#EEEFEB] rounded-full border hover:border-black transition-colors text-gray-600 hover:text-[#1769ff] hover:-translate-y-1 hover:shadow-md">
                                 <Palette size={20} />
                             </a>
                         )}
                         {profile.twitter && (
-                            <a href={profile.twitter} target="_blank" rel="noopener noreferrer" className="p-2 bg-white rounded-full border hover:border-black transition-colors text-gray-600 hover:text-[#1DA1F2] hover:-translate-y-1 hover:shadow-md">
+                            <a href={profile.twitter} target="_blank" rel="noopener noreferrer" className="p-2 bg-[#EEEFEB] rounded-full border hover:border-black transition-colors text-gray-600 hover:text-[#1DA1F2] hover:-translate-y-1 hover:shadow-md">
                                 <Twitter size={20} />
                             </a>
                         )}
                         {profile.instagram && (
-                            <a href={profile.instagram} target="_blank" rel="noopener noreferrer" className="p-2 bg-white rounded-full border hover:border-black transition-colors text-gray-600 hover:text-[#E1306C] hover:-translate-y-1 hover:shadow-md">
+                            <a href={profile.instagram} target="_blank" rel="noopener noreferrer" className="p-2 bg-[#EEEFEB] rounded-full border hover:border-black transition-colors text-gray-600 hover:text-[#E1306C] hover:-translate-y-1 hover:shadow-md">
                                 <Instagram size={20} />
                             </a>
                         )}
                         {profile.linkedin && (
-                            <a href={profile.linkedin} target="_blank" rel="noopener noreferrer" className="p-2 bg-white rounded-full border hover:border-black transition-colors text-gray-600 hover:text-[#0077b5] hover:-translate-y-1 hover:shadow-md">
+                            <a href={profile.linkedin} target="_blank" rel="noopener noreferrer" className="p-2 bg-[#EEEFEB] rounded-full border hover:border-black transition-colors text-gray-600 hover:text-[#0077b5] hover:-translate-y-1 hover:shadow-md">
                                 <Linkedin size={20} />
                             </a>
                         )}

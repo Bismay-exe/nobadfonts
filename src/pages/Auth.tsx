@@ -136,7 +136,7 @@ export default function Auth() {
                     </div>
                 )}
 
-                <div className="w-full bg-white/0 text-white p-2 md:p-16 rounded-4xl">
+                <div className="w-full bg-[#EEEFEB]/0 text-white p-2 md:p-16 rounded-4xl">
                     <h2 className="text-3xl font-bold mb-2">
                         {isVerifying ? 'Verify Email' : (isLogin ? 'Welcome Back' : 'Create Account')}
                     </h2>
@@ -170,7 +170,7 @@ export default function Auth() {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="mt-8 w-full py-3 rounded-xl font-black uppercase text-lg flex items-center justify-center gap-3 transition-all hover:scale-[1.02] active:scale-[0.98] bg-[#A609F0] text-white hover:bg-white hover:text-black">
+                                className="mt-8 w-full py-3 rounded-xl font-black uppercase text-lg flex items-center justify-center gap-3 transition-all hover:scale-[1.02] active:scale-[0.98] bg-[#A609F0] text-white hover:bg-[#EEEFEB] hover:text-black">
                                 {loading ? 'Verifying...' : 'Verify Email'}
                             </button>
 
@@ -230,7 +230,7 @@ export default function Auth() {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className={`mt-8 w-full py-3 rounded-xl font-black uppercase text-lg flex items-center justify-center gap-3 transition-all hover:scale-[1.02] active:scale-[0.98] ${isLogin ? 'bg-[#BDF522] text-black hover:bg-white' : 'bg-[#A609F0] text-white hover:bg-white hover:text-black'}`}>
+                                className={`mt-8 w-full py-3 rounded-xl font-black uppercase text-lg flex items-center justify-center gap-3 transition-all hover:scale-[1.02] active:scale-[0.98] ${isLogin ? 'bg-[#BDF522] text-black hover:bg-[#EEEFEB]' : 'bg-[#A609F0] text-white hover:bg-[#EEEFEB] hover:text-black'}`}>
                                 {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Create Account')}
                             </button>
                         </form>
@@ -255,7 +255,7 @@ export default function Auth() {
                             <div className="w-full border-t border-gray-300"></div>
                         </div>
                         <div className="relative flex justify-center text-sm">
-                            <span className="px-2 bg-white text-gray-500">Or continue with</span>
+                            <span className="px-2 bg-[#EEEFEB] text-gray-500">Or continue with</span>
                         </div>
                     </div>
 
