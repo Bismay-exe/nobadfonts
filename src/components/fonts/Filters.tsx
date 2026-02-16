@@ -27,6 +27,7 @@ const CATEGORIES = [
             { id: 'calligraphy', label: 'Calligraphy' },
             { id: 'brush', label: 'Brush' },
             { id: 'handwritten', label: 'Handwritten' },
+            { id: 'signature', label: 'Signature' }
         ],
     },
 
@@ -82,7 +83,8 @@ const CATEGORIES = [
             { id: "stencil", label: "Stencil" },
             { id: "outline", label: "Outline" },
             { id: "inline", label: "Inline" },
-            { id: "pixel", label: "Pixel / Bitmap" }
+            { id: "pixel", label: "Pixel / Bitmap" },
+            { id: "messy", label: "Messy" }
         ]
     },
 

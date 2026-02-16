@@ -993,20 +993,20 @@ export default function FontDetails() {
                     </button>
                     <button
                         onClick={handleFavorite}
-                        className={`w-full flex justify-center items-center py-4 rounded-4xl border-y border-black transition-all hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] ${isFavorited ? 'bg-[#FF90E8] text-black' : 'bg-[#EEEFEB] text-black hover:bg-gray-50'}`}
+                        className={`w-full flex justify-center items-center gap-2 py-4 rounded-4xl border-y border-black transition-all hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] ${isFavorited ? 'bg-[#FF90E8] text-black' : 'bg-[#EEEFEB] text-black hover:bg-gray-50'}`}
                     >
-                        <Heart className={isFavorited ? "fill-current" : ""} />
+                        <Heart className={isFavorited ? "fill-current" : ""} /> <span className='hidden md:block font-bold uppercase'>Favourite</span>
                     </button>
                     <button
                         onClick={handleShare}
                         disabled={shareLoading}
-                        className="w-full flex justify-center items-center py-4 bg-[#EEEFEB] hover:bg-gray-50 text-black rounded-4xl border-y border-black transition-all hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full flex justify-center items-center gap-2 py-4 bg-[#EEEFEB] hover:bg-gray-50 text-black rounded-4xl border-y border-black transition-all hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        {shareLoading ? <Loader2 className="animate-spin" /> : <Share2 />}
+                        {shareLoading ? <Loader2 className="animate-spin" /> : <Share2 />} <span className='hidden md:block font-bold uppercase'>Share</span>
                     </button>
                     <button
                         onClick={() => document.getElementById('embed-section')?.scrollIntoView({ behavior: 'smooth' })}
-                        className="w-full flex justify-center items-center py-4 bg-[#383838] text-white rounded-4xl border-y border-transparent hover:bg-gray-800 transition-all font-bold uppercase"
+                        className="w-full flex justify-center items-center gap-2 py-4 bg-[#383838] text-white rounded-4xl border-y border-transparent hover:bg-gray-800 transition-all font-bold uppercase"
                     >
                         &lt;/&gt; <span className='hidden md:block'>Embed</span>
                     </button>

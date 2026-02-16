@@ -58,6 +58,7 @@ const Upload = () => {
                 { id: 'calligraphy', label: 'Calligraphy' },
                 { id: 'brush', label: 'Brush' },
                 { id: 'handwritten', label: 'Handwritten' },
+            { id: 'signature', label: 'Signature' }
             ],
         },
 
@@ -114,7 +115,8 @@ const Upload = () => {
                 { id: "stencil", label: "Stencil" },
                 { id: "outline", label: "Outline" },
                 { id: "inline", label: "Inline" },
-                { id: "pixel", label: "Pixel / Bitmap" }
+                { id: "pixel", label: "Pixel / Bitmap" },
+                { id: "messy", label: "Messy" }
             ]
         },
 
@@ -435,11 +437,11 @@ const Upload = () => {
 
     return (
         <div className="mx-auto">
-            <form onSubmit={handleSubmit} className="rounded-4xl grid grid-cols-1 md:grid-cols-2">
+            <form onSubmit={handleSubmit} className="rounded-4xl">
 
-                <h1 className="md:hidden col-span-1 md:col-span-2 text-4xl bg-[#EEEFEB] p-4 rounded-4xl border-b border-black text-center md:text-left font-black uppercase">Upload Font</h1>
+                <h1 className="md:hidden col-span-1 md:col-span-2 text-4xl bg-[#EEEFEB] p-4 rounded-4xl border-y border-black text-center md:text-left font-black uppercase">Upload Font</h1>
                 {/* Meta Inputs */}
-                <div className="col-span-1 space-y-4 bg-[#EEEFEB] p-8 rounded-4xl border-r border-b border-black">
+                <div className="col-span-1 space-y-4 bg-[#EEEFEB] p-8 rounded-4xl border-r border-y border-black">
                     <div>
                         <label className="block font-bold mb-2 uppercase">Font Name</label>
                         <input
@@ -491,7 +493,7 @@ const Upload = () => {
 
                     <div className="space-y-6">
                         {variants.map((variant) => (
-                            <div key={variant.id} className="p-4 border-2 border-dashed border-gray-300 rounded-2xl bg-gray-50">
+                            <div key={variant.id} className="p-4 border-2 border-dashed border-gray-300 rounded-2xl">
                                 <div className="flex justify-between items-start mb-4">
                                     <div>
                                         <label className="block text-xs font-bold uppercase mb-1">Variant Name</label>
@@ -688,7 +690,7 @@ const Upload = () => {
                 <button
                     type="submit"
                     disabled={loading}
-                    className="col-span-1 md:col-span-2 w-full bg-[#EEEFEB] text-black py-4 rounded-4xl font-black uppercase tracking-wider hover:bg-[#FF6B00] hover:border-black border-r border-t border-b-2 border-black transition-all flex justify-center items-center gap-2"
+                    className="col-span-1 md:col-span-2 w-full bg-[#EEEFEB] text-black py-4 rounded-4xl font-black uppercase tracking-wider hover:bg-[#FF6B00] hover:border-black border-r border-t border-y border-black transition-all flex justify-center items-center gap-2"
                 >
                     {loading ? 'Uploading...' : 'Submit Font'}
                 </button>

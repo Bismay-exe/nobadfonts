@@ -165,7 +165,7 @@ export const FixWoff2Scanner = () => {
     };
 
     return (
-        <div className="bg-gray-50 border border-gray-200 rounded-2xl p-6 mt-8">
+        <div className="bg-[#EEEFEB] border-y border-black rounded-4xl p-6">
             <h3 className="text-lg font-bold uppercase mb-4 flex items-center gap-2">
                 <RefreshCw size={20} /> Admin: Fix Missing WOFF2
             </h3>
