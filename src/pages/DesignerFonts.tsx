@@ -7,6 +7,7 @@ import EmptyState from '../components/shared/EmptyState';
 import Filters from '../components/fonts/Filters';
 import type { Font, FontFilterParams } from '../types/font';
 import { ArrowLeft } from 'lucide-react';
+import SEO from '../components/shared/SEO';
 
 export default function DesignerFonts() {
     const { designerName } = useParams();
@@ -109,6 +110,11 @@ export default function DesignerFonts() {
 
     return (
         <div className="w-full grid grid-cols-1 lg:grid-cols-4">
+            <SEO
+                title={`${decodeURIComponent(designerName || '')} Fonts`}
+                description={`Browse all fonts designed by ${decodeURIComponent(designerName || '')}. High-quality typography for your next project.`}
+                url={`/designers/${designerName}`}
+            />
             <div className="col-span-1 lg:col-span-4 border-y border-black flex flex-col lg:flex-col">
 
                 {/* Header (Designer Info) */}

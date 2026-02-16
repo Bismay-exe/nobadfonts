@@ -180,9 +180,9 @@ const Landing = () => {
     };
 
     // Common styles
-    const sectionClass = "relative w-screen h-[100svh] overflow-hidden";
+    const sectionClass = "relative w-full h-[100svh]";
     const flexCenter = "flex justify-center items-center";
-    const h1Base = "uppercase font-black tracking-[-0.02em] leading-[0.85] text-center m-0";
+    const h1Base = "uppercase font-black tracking-[-0.02em] leading-[0.75] text-center m-0";
     const h1Responsive = "text-[5rem] max-[1000px]:text-[3rem]";
     const containerClass = "text-container absolute top-0 left-0 w-full h-full z-10 will-change-transform";
 
@@ -261,7 +261,7 @@ const Landing = () => {
 
                 {/* Overlay Header with Split Text */}
                 <div className="header absolute h-full w-full flex justify-center items-center z-0 pointer-events-none">
-                    <h1 className="w-screen text-[#ff0000] uppercase text-[18vw] md:text-[14vw] lg:text-[10vw] font-categories-elegant tracking-tight leading-[1.3] text-center">
+                    <h1 className="w-full text-[#ff0000] uppercase text-[18vw] md:text-[14vw] lg:text-[10vw] font-categories-elegant tracking-tight leading-[1.3] text-center">
 
                         <div className="hidden lg:block">
                             <AnimatedWord addToRefs={addToRefs}>Seriously</AnimatedWord>

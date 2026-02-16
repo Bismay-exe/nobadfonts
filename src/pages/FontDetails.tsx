@@ -13,6 +13,7 @@ import FontCard from '../components/fonts/FontCard';
 import type { Font } from '../types/font';
 import GlyphMap from '../components/fonts/GlyphMap';
 import { generateDescription, generateFontFeaturesList, generateHeaderTagline, generateFooterTagline } from '../utils/fontDescriptionGenerator';
+import SEO from '../components/shared/SEO';
 
 const VARIANT_NAMES = [
     'Regular', 'Italic', 'Bold', 'Bold Italic', 'Light', 'Light Italic',
@@ -695,6 +696,13 @@ export default function FontDetails() {
 
     return (
         <div className="mx-auto">
+            <SEO
+                title={`${font.name} by ${font.designer}`}
+                description={`Download ${font.name}, a ${font.tags ? font.tags.join(', ') : 'unique'} font${font.designer ? ` by ${font.designer}` : ''}. Available now on NoBadFonts.`}
+                image={font.preview_image_url || undefined}
+                url={`/fonts/${id}`}
+                keywords={font.tags || []}
+            />
             <div
                 style={{
                     '--mobile-ar': mobileAr,

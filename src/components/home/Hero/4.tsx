@@ -103,7 +103,7 @@ const TextImageReveal: React.FC = () => {
     return (
         <div
             ref={containerRef}
-            className="min-h-screen w-screen overflow-x-hidden text-[#1a1a1a] font-bricolage-grotesque"
+            className="min-h-screen w-full overflow-x-hidden text-[#1a1a1a] font-bricolage-grotesque"
         >
 
             {/* Intro */}
@@ -114,7 +114,7 @@ const TextImageReveal: React.FC = () => {
             </div>
 
             {/* Main Content */}
-            <div className={`main ${sectionClass} flex flex-col justify-center items-center w-screen h-screen`}>
+            <div className={`main ${sectionClass} flex flex-col justify-center items-center w-full h-screen`}>
                 {rows.map((row) => (
                     <div
                         key={row.id}

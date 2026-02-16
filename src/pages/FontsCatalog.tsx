@@ -7,6 +7,7 @@ import FontCard from '../components/fonts/FontCard';
 import EmptyState from '../components/shared/EmptyState';
 import { useFonts } from '../hooks/useFonts';
 import type { FontFilterParams } from '../types/font';
+import SEO from '../components/shared/SEO';
 
 export default function FontsCatalog() {
     const location = useLocation();
@@ -67,6 +68,11 @@ export default function FontsCatalog() {
 
     return (
         <div className="w-full grid grid-cols-1 lg:grid-cols-4">
+            <SEO
+                title="Browse Fonts"
+                description="Explore our curated collection of high-quality fonts for modern interfaces. Filter by style, category, and more."
+                url="/fonts"
+            />
 
             <div className="col-span-1 lg:col-span-4 border-b-2 border-black flex flex-col lg:flex-col">
                 {/* Sidebar */}
