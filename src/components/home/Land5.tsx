@@ -110,7 +110,7 @@ const Landing5 = () => {
         const ctx = gsap.context(() => {
             // 1. Split Text
             // Note: We target the specific Tailwind class structure now
-            new SplitType('.item h1', { types: 'chars' });
+            new SplitType('.item .marquee-text', { types: 'chars' });
 
             // 2. Marquee Animation
             const marqueeContainers = document.querySelectorAll('.marquee-container');
@@ -125,7 +125,7 @@ const Landing5 = () => {
                 }
 
                 const marquee = container.querySelector('.marquee');
-                const words = marquee?.querySelectorAll('.item h1');
+                const words = marquee?.querySelectorAll('.item .marquee-text');
 
                 gsap.fromTo(
                     marquee,
@@ -225,9 +225,9 @@ const Landing5 = () => {
                                     <React.Fragment key={colIndex}>
                                         {item.type === 'text' ? (
                                             <div className="item with-text flex-1 md:flex-[1.5] flex justify-center items-center bg-transparent">
-                                                <h1 className="uppercase text-[60px] md:text-[190px] font-thin m-0 text-[#1C1D1E]">
+                                                <div className="marquee-text uppercase text-[60px] md:text-[190px] font-thin m-0 text-[#1C1D1E]">
                                                     {item.content}
-                                                </h1>
+                                                </div>
                                             </div>
                                         ) : (
                                             <div className="item aspect-3/2 w-full flex-1 flex justify-center items-center overflow-hidden bg-[#f0f0f0] rounded-xl md:rounded-2xl lg:rounded-4xl">
@@ -255,7 +255,7 @@ const Landing5 = () => {
 
                 {/* Footer Section */}
                 <section className="footer w-full h-screen flex justify-center items-center rounded-4xl bg-[#EEEFEB] border-y border-[#1C1D1E] text-[#1C1D1E]">
-                    <h1 className="text-[10vw] uppercase">The End</h1>
+                    <h2 className="text-[10vw] uppercase">The End</h2>
                 </section>
             </div>
         </div>

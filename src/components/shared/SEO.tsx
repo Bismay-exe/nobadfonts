@@ -12,7 +12,7 @@ interface SEOProps {
 
 const SEO: React.FC<SEOProps> = ({
     title = 'NoBadFonts - Curated Typography for Modern Interfaces',
-    description = 'A next-generation font discovery platform built for designers who demand quality, context, and performance.',
+    description = 'Browse and download high-quality free fonts. Preview, test, and download TTF, OTF, and WOFF2 formats for web and design projects.',
     image = 'https://nobadfonts.in/banner/banner.png', // Fallback image
     url = 'https://nobadfonts.in',
     type = 'website',

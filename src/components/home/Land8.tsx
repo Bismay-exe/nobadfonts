@@ -207,24 +207,24 @@ const Landing = () => {
             {/* --- STICKY TEXT 1 --- */}
             <section className={`sticky-text-1 ${sectionClass} ${lightBg} ${darkText}`}>
                 <div className={containerClass}>
-                    <h1
+                    <div
                         ref={text1Ref}
                         className={`${h1Base} text-[20vw] font-light relative -left-[0.035em] tracking-[-0.05em] origin-top scale-y-0 will-change-transform`}
                     >
                         Handpicked
-                    </h1>
+                    </div>
                 </div>
             </section>
 
             {/* --- STICKY TEXT 2 --- */}
             <section className={`sticky-text-2 ${sectionClass} ${lightBg} ${darkText}`}>
                 <div className={containerClass}>
-                    <h1
+                    <div
                         ref={text2Ref}
                         className={`${h1Base} text-[38vw] relative -left-[0.035em] tracking-[-0.05em] origin-top scale-y-0 will-change-transform`}
                     >
                         Clean
-                    </h1>
+                    </div>
                 </div>
             </section>
 
@@ -234,16 +234,25 @@ const Landing = () => {
                 <div className="bg-img absolute inset-0 w-full h-full rounded-4xl overflow-hidden border-y border-[#1C1D1E] z-0">
                     <img
                         src="/images/bg.avif"
-                        alt="Abstract Background"
+                        alt=""
                         className="w-full h-full object-cover"
                     />
                 </div>
                 <div className="fg-img absolute bottom-0 w-full h-1/2 md:h-2/3 lg:h-full z-10">
                     <img
                         src="/images/fg.png"
-                        alt="Abstract Background"
+                        alt=""
                         className="w-full h-full object-cover"
                     />
+                </div>
+                <div className="fg-img absolute top-0 left-0 m-10 md:m-15 w-10 h-10 z-10 text-2xl md:text-3xl uppercase font-black leading-none">
+                    <img
+                        src="/logo/logo-black.png"
+                        alt=""
+                        className="w-full h-full object-cover rounded-xl"
+                    />
+                    <p>NoBad</p>
+                    <p>Fonts©</p>
                 </div>
 
                 {/* Expanding Container */}
@@ -251,17 +260,17 @@ const Landing = () => {
                     ref={textContainer3Ref}
                     className={`${containerClass} ${darkBg} ${lightText} flex justify-center items-start`}
                 >
-                    <h1
+                    <div
                         ref={text3Ref}
                         className={`${h1Base} text-[18vw] relative -left-[0.035em] tracking-[-0.05em] origin-top scale-y-0`}
                     >
                         Typography
-                    </h1>
+                    </div>
                 </div>
 
                 {/* Overlay Header with Split Text */}
                 <div className="header absolute h-full w-full flex justify-center items-center z-0 pointer-events-none">
-                    <h1 className="w-full text-[#ff0000] uppercase text-[18vw] md:text-[14vw] lg:text-[10vw] font-categories-elegant tracking-tight leading-[1.3] text-center">
+                    <div className="w-full text-[#ff0000] uppercase text-[18vw] md:text-[14vw] lg:text-[10vw] font-categories-elegant tracking-tight leading-[1.3] text-center">
 
                         <div className="hidden lg:block">
                             <AnimatedWord addToRefs={addToRefs}>Seriously</AnimatedWord>
@@ -281,15 +290,15 @@ const Landing = () => {
                             <AnimatedWord addToRefs={addToRefs}>Fonts!</AnimatedWord>
                         </div>
 
-                    </h1>
+                    </div>
                 </div>
             </section>
 
             {/* --- OUTRO --- */}
             <section className={`outro ${sectionClass} ${flexCenter} ${darkBg} ${lightText}`}>
-                <h1 className={`${h1Base} ${h1Responsive} w-1/2 max-[1000px]:w-[calc(100%-4rem)]`}>
+                <h2 className={`${h1Base} ${h1Responsive} w-1/2 max-[1000px]:w-[calc(100%-4rem)]`}>
                     Use Good Fonts from NoBadFonts.in
-                </h1>
+                </h2>
             </section>
         </div>
     );

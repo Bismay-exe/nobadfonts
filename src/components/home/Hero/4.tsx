@@ -108,9 +108,9 @@ const TextImageReveal: React.FC = () => {
 
             {/* Intro */}
             <div className={`intro ${sectionClass} flex justify-center items-center`}>
-                <h1 className="font-inter text-[1rem] font-light tracking-[2px] uppercase text-[#999]">
+                <p className="font-inter text-[1rem] font-light tracking-[2px] uppercase text-[#999]">
                     Scroll to explore
-                </h1>
+                </p>
             </div>
 
             {/* Main Content */}

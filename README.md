@@ -184,391 +184,88 @@ npx cap open android
 ## 📂 Project Structure
 
 ```
-nobadfonts
-├── .github
-│   └── workflows
-│       └── build-android.yml
-├── android
-│   ├── .gradle
-│   │   ├── 8.14.3
-│   │   │   ├── checksums
-│   │   │   │   ├── checksums.lock
-│   │   │   │   ├── md5-checksums.bin
-│   │   │   │   └── sha1-checksums.bin
-│   │   │   ├── executionHistory
-│   │   │   │   └── executionHistory.lock
-│   │   │   ├── expanded
-│   │   │   ├── fileChanges
-│   │   │   │   └── last-build.bin
-│   │   │   ├── fileHashes
-│   │   │   │   └── fileHashes.lock
-│   │   │   ├── vcsMetadata
-│   │   │   └── gc.properties
-│   │   ├── buildOutputCleanup
-│   │   │   ├── buildOutputCleanup.lock
-│   │   │   └── cache.properties
-│   │   └── vcs-1
-│   │       └── gc.properties
-│   ├── app
-│   │   ├── src
-│   │   │   ├── androidTest
-│   │   │   │   └── java
-│   │   │   │       └── com
-│   │   │   │           └── getcapacitor
-│   │   │   │               └── myapp
-│   │   │   │                   └── ExampleInstrumentedTest.java
-│   │   │   ├── main
-│   │   │   │   ├── assets
-│   │   │   │   │   ├── public
-│   │   │   │   │   │   ├── assets
-│   │   │   │   │   │   │   ├── AdminDashboard-DmPL1kEc.js
-│   │   │   │   │   │   │   ├── Auth-DqRv3Tkk.js
-│   │   │   │   │   │   │   ├── Cli-DXN-Fc_r.js
-│   │   │   │   │   │   │   ├── DesignerFonts-DjaI7E4v.js
-│   │   │   │   │   │   │   ├── EmptyState-CYnyzSJv.js
-│   │   │   │   │   │   │   ├── Filters-B_jU_mMI.js
-│   │   │   │   │   │   │   ├── FontCard-DwfMx0aH.js
-│   │   │   │   │   │   │   ├── FontDetails-0w40ZwAt.js
-│   │   │   │   │   │   │   ├── FontPairing-fjkZ5UQu.js
-│   │   │   │   │   │   │   ├── FontsCatalog-DOlYLVvq.js
-│   │   │   │   │   │   │   ├── MemberDetails-B9zmiLSt.js
-│   │   │   │   │   │   │   ├── Members-CC88bgiK.js
-│   │   │   │   │   │   │   ├── PreviewAccordion-CEtkpNog.js
-│   │   │   │   │   │   │   ├── Profile-CWlTsKS-.js
-│   │   │   │   │   │   │   ├── Upload-D4R51C_G.js
-│   │   │   │   │   │   │   ├── arrow-left-DNKjoIYR.js
-│   │   │   │   │   │   │   ├── download-CTh_iG8R.js
-│   │   │   │   │   │   │   ├── image-D_ySQGiA.js
-│   │   │   │   │   │   │   ├── index-DC891gYz.js
-│   │   │   │   │   │   │   ├── index-Dz56ZgjA.css
-│   │   │   │   │   │   │   ├── instagram-JJsbIgPX.js
-│   │   │   │   │   │   │   ├── palette-XyfrB5UD.js
-│   │   │   │   │   │   │   ├── search-DIsudHEu.js
-│   │   │   │   │   │   │   ├── settings-DvWJ8CMK.js
-│   │   │   │   │   │   │   ├── text-align-start-DWkUTthT.js
-│   │   │   │   │   │   │   ├── trending-up-DLAJ3mVJ.js
-│   │   │   │   │   │   │   ├── twitter-7uxH_d08.js
-│   │   │   │   │   │   │   ├── upload-0Sbsl4gb.js
-│   │   │   │   │   │   │   ├── useFonts-Bu2AUl_2.js
-│   │   │   │   │   │   │   └── zap-DEDM_F07.js
-│   │   │   │   │   │   ├── banner
-│   │   │   │   │   │   │   └── banner.png
-│   │   │   │   │   │   ├── fonts
-│   │   │   │   │   │   │   ├── cimo-nsgk
-│   │   │   │   │   │   │   │   ├── cimo-nsgk-Italic.otf
-│   │   │   │   │   │   │   │   ├── cimo-nsgk-Italic.ttf
-│   │   │   │   │   │   │   │   ├── cimo-nsgk-Italic.woff
-│   │   │   │   │   │   │   │   ├── cimo-nsgk-Italic.woff2
-│   │   │   │   │   │   │   │   ├── cimo-nsgk-Regular.otf
-│   │   │   │   │   │   │   │   ├── cimo-nsgk-Regular.ttf
-│   │   │   │   │   │   │   │   ├── cimo-nsgk-Regular.woff
-│   │   │   │   │   │   │   │   ├── cimo-nsgk-Regular.woff2
-│   │   │   │   │   │   │   │   ├── cimo-nsgk.otf
-│   │   │   │   │   │   │   │   ├── cimo-nsgk.ttf
-│   │   │   │   │   │   │   │   ├── cimo-nsgk.woff
-│   │   │   │   │   │   │   │   └── cimo-nsgk.woff2
-│   │   │   │   │   │   │   ├── Baleron.ttf
-│   │   │   │   │   │   │   ├── BigShoulders.ttf
-│   │   │   │   │   │   │   ├── Western Highland.otf
-│   │   │   │   │   │   │   ├── aestera-personal-use.regular.ttf
-│   │   │   │   │   │   │   ├── ahganirya.personal-use.otf
-│   │   │   │   │   │   │   ├── aspect-range-demo.regular.otf
-│   │   │   │   │   │   │   ├── authen-chastro-demo.regular.ttf
-│   │   │   │   │   │   │   ├── categories-elegant-demo.regular.otf
-│   │   │   │   │   │   │   ├── la-gagliane.personal-use.otf
-│   │   │   │   │   │   │   ├── marvella-typeface.regular.otf
-│   │   │   │   │   │   │   ├── moldin-demo.regular.otf
-│   │   │   │   │   │   │   ├── mosca-laroke.regular.otf
-│   │   │   │   │   │   │   ├── ruigslay.regular.otf
-│   │   │   │   │   │   │   └── the-last-trunks.regular.ttf
-│   │   │   │   │   │   ├── images
-│   │   │   │   │   │   │   ├── bg.avif
-│   │   │   │   │   │   │   └── fg.png
-│   │   │   │   │   │   ├── logo
-│   │   │   │   │   │   │   ├── logo-black.png
-│   │   │   │   │   │   │   └── logo-white.png
-│   │   │   │   │   │   ├── profile
-│   │   │   │   │   │   │   └── profile.png
-│   │   │   │   │   │   ├── avif_enc.wasm
-│   │   │   │   │   │   ├── cordova.js
-│   │   │   │   │   │   ├── cordova_plugins.js
-│   │   │   │   │   │   ├── index.html
-│   │   │   │   │   │   └── wawoff2.js
-│   │   │   │   │   ├── capacitor.config.json
-│   │   │   │   │   └── capacitor.plugins.json
-│   │   │   │   ├── java
-│   │   │   │   │   └── com
-│   │   │   │   │       └── nobadfonts
-│   │   │   │   │           └── app
-│   │   │   │   │               └── MainActivity.java
-│   │   │   │   ├── res
-│   │   │   │   │   ├── drawable
-│   │   │   │   │   │   ├── ic_launcher_background.xml
-│   │   │   │   │   │   └── splash.png
-│   │   │   │   │   ├── drawable-land-hdpi
-│   │   │   │   │   │   └── splash.png
-│   │   │   │   │   ├── drawable-land-mdpi
-│   │   │   │   │   │   └── splash.png
-│   │   │   │   │   ├── drawable-land-xhdpi
-│   │   │   │   │   │   └── splash.png
-│   │   │   │   │   ├── drawable-land-xxhdpi
-│   │   │   │   │   │   └── splash.png
-│   │   │   │   │   ├── drawable-land-xxxhdpi
-│   │   │   │   │   │   └── splash.png
-│   │   │   │   │   ├── drawable-port-hdpi
-│   │   │   │   │   │   └── splash.png
-│   │   │   │   │   ├── drawable-port-mdpi
-│   │   │   │   │   │   └── splash.png
-│   │   │   │   │   ├── drawable-port-xhdpi
-│   │   │   │   │   │   └── splash.png
-│   │   │   │   │   ├── drawable-port-xxhdpi
-│   │   │   │   │   │   └── splash.png
-│   │   │   │   │   ├── drawable-port-xxxhdpi
-│   │   │   │   │   │   └── splash.png
-│   │   │   │   │   ├── drawable-v24
-│   │   │   │   │   │   └── ic_launcher_foreground.xml
-│   │   │   │   │   ├── layout
-│   │   │   │   │   │   └── activity_main.xml
-│   │   │   │   │   ├── mipmap-anydpi-v26
-│   │   │   │   │   │   ├── ic_launcher.xml
-│   │   │   │   │   │   └── ic_launcher_round.xml
-│   │   │   │   │   ├── mipmap-hdpi
-│   │   │   │   │   │   ├── ic_launcher.png
-│   │   │   │   │   │   ├── ic_launcher_foreground.png
-│   │   │   │   │   │   └── ic_launcher_round.png
-│   │   │   │   │   ├── mipmap-mdpi
-│   │   │   │   │   │   ├── ic_launcher.png
-│   │   │   │   │   │   ├── ic_launcher_foreground.png
-│   │   │   │   │   │   └── ic_launcher_round.png
-│   │   │   │   │   ├── mipmap-xhdpi
-│   │   │   │   │   │   ├── ic_launcher.png
-│   │   │   │   │   │   ├── ic_launcher_foreground.png
-│   │   │   │   │   │   └── ic_launcher_round.png
-│   │   │   │   │   ├── mipmap-xxhdpi
-│   │   │   │   │   │   ├── ic_launcher.png
-│   │   │   │   │   │   ├── ic_launcher_foreground.png
-│   │   │   │   │   │   └── ic_launcher_round.png
-│   │   │   │   │   ├── mipmap-xxxhdpi
-│   │   │   │   │   │   ├── ic_launcher.png
-│   │   │   │   │   │   ├── ic_launcher_foreground.png
-│   │   │   │   │   │   └── ic_launcher_round.png
-│   │   │   │   │   ├── values
-│   │   │   │   │   │   ├── ic_launcher_background.xml
-│   │   │   │   │   │   ├── strings.xml
-│   │   │   │   │   │   └── styles.xml
-│   │   │   │   │   └── xml
-│   │   │   │   │       ├── config.xml
-│   │   │   │   │       └── file_paths.xml
-│   │   │   │   └── AndroidManifest.xml
-│   │   │   └── test
-│   │   │       └── java
-│   │   │           └── com
-│   │   │               └── getcapacitor
-│   │   │                   └── myapp
-│   │   │                       └── ExampleUnitTest.java
-│   │   ├── .gitignore
-│   │   ├── build.gradle
-│   │   ├── capacitor.build.gradle
-│   │   └── proguard-rules.pro
-│   ├── capacitor-cordova-android-plugins
-│   │   ├── src
-│   │   │   └── main
-│   │   │       ├── java
-│   │   │       │   └── .gitkeep
-│   │   │       ├── res
-│   │   │       │   └── .gitkeep
-│   │   │       └── AndroidManifest.xml
-│   │   ├── build.gradle
-│   │   └── cordova.variables.gradle
-│   ├── gradle
-│   │   └── wrapper
-│   │       ├── gradle-wrapper.jar
-│   │       └── gradle-wrapper.properties
-│   ├── .gitignore
-│   ├── build.gradle
-│   ├── capacitor.settings.gradle
-│   ├── gradle.properties
-│   ├── gradlew
-│   ├── gradlew.bat
-│   ├── settings.gradle
-│   └── variables.gradle
-├── nobadfonts-cli
-│   ├── .npmignore
-│   ├── PUBLISHING.md
-│   ├── README.md
-│   ├── debug_fonts.js
-│   ├── index.js
-│   ├── nobadfonts-cli-1.1.0.tgz
-│   ├── package-lock.json
-│   ├── package.json
-│   └── test_list.js
-├── public
-│   ├── banner
-│   │   └── banner.png
+src
+├── assets
+├── components
+│   ├── admin
+│   │   └── FixWoff2Scanner.tsx
+│   ├── font-pairing
+│   │   ├── CustomizeSidebar.tsx
+│   │   └── FontPickerSidebar.tsx
 │   ├── fonts
-│   │   ├── cimo-nsgk
-│   │   │   ├── cimo-nsgk-Italic.otf
-│   │   │   ├── cimo-nsgk-Italic.ttf
-│   │   │   ├── cimo-nsgk-Italic.woff
-│   │   │   ├── cimo-nsgk-Italic.woff2
-│   │   │   ├── cimo-nsgk-Regular.otf
-│   │   │   ├── cimo-nsgk-Regular.ttf
-│   │   │   ├── cimo-nsgk-Regular.woff
-│   │   │   ├── cimo-nsgk-Regular.woff2
-│   │   │   ├── cimo-nsgk.otf
-│   │   │   ├── cimo-nsgk.ttf
-│   │   │   ├── cimo-nsgk.woff
-│   │   │   └── cimo-nsgk.woff2
-│   │   ├── Baleron.ttf
-│   │   ├── BigShoulders.ttf
-│   │   ├── Western Highland.otf
-│   │   ├── aestera-personal-use.regular.ttf
-│   │   ├── ahganirya.personal-use.otf
-│   │   ├── aspect-range-demo.regular.otf
-│   │   ├── authen-chastro-demo.regular.ttf
-│   │   ├── categories-elegant-demo.regular.otf
-│   │   ├── la-gagliane.personal-use.otf
-│   │   ├── marvella-typeface.regular.otf
-│   │   ├── moldin-demo.regular.otf
-│   │   ├── mosca-laroke.regular.otf
-│   │   ├── ruigslay.regular.otf
-│   │   └── the-last-trunks.regular.ttf
-│   ├── images
-│   │   ├── bg.avif
-│   │   └── fg.png
-│   ├── logo
-│   │   ├── logo-black.png
-│   │   └── logo-white.png
+│   │   ├── ContextPreview.tsx
+│   │   ├── Filters.tsx
+│   │   ├── FontCard.tsx
+│   │   ├── FontPairingFilters.tsx
+│   │   ├── FontTester.tsx
+│   │   ├── GlyphMap.tsx
+│   │   ├── LicenseInfo.tsx
+│   │   ├── PreviewAccordion.tsx
+│   │   ├── ShareModal.tsx
+│   │   └── SocialShareCard.tsx
+│   ├── home
+│   │   ├── Hero
+│   │   │   ├── 1.tsx
+│   │   │   ├── 2.tsx
+│   │   │   └── 4.tsx
+│   │   ├── Land2.tsx
+│   │   ├── Land3.tsx
+│   │   ├── Land4.tsx
+│   │   ├── Land5.tsx
+│   │   ├── Land7.tsx
+│   │   ├── Land8.tsx
+│   │   └── Landing.tsx
+│   ├── layout
+│   │   ├── Footer.tsx
+│   │   ├── Layout.tsx
+│   │   ├── Navbar.tsx
+│   │   └── ScrollRestoration.tsx
 │   ├── profile
-│   │   └── profile.png
-│   ├── avif_enc.wasm
-│   └── wawoff2.js
-├── scripts
-│   ├── add_format_columns.sql
-│   ├── cleanup-fonts.js
-│   ├── cleanup.sql
-│   ├── clear-supabase.js
-│   ├── delete_broken_fonts.sql
-│   ├── remove_constraint.sql
-│   ├── test-rpc.js
-│   └── update_search_fonts.sql
-├── src
-│   ├── assets
-│   ├── components
-│   │   ├── admin
-│   │   │   └── FixWoff2Scanner.tsx
-│   │   ├── font-pairing
-│   │   │   ├── CustomizeSidebar.tsx
-│   │   │   └── FontPickerSidebar.tsx
-│   │   ├── fonts
-│   │   │   ├── ContextPreview.tsx
-│   │   │   ├── Filters.tsx
-│   │   │   ├── FontCard.tsx
-│   │   │   ├── FontPairingFilters.tsx
-│   │   │   ├── FontTester.tsx
-│   │   │   ├── GlyphMap.tsx
-│   │   │   ├── LicenseInfo.tsx
-│   │   │   ├── PreviewAccordion.tsx
-│   │   │   ├── ShareModal.tsx
-│   │   │   └── SocialShareCard.tsx
-│   │   ├── home
-│   │   │   ├── Hero
-│   │   │   │   ├── 1.tsx
-│   │   │   │   ├── 2.tsx
-│   │   │   │   └── 4.tsx
-│   │   │   ├── Land2.tsx
-│   │   │   ├── Land3.tsx
-│   │   │   ├── Land4.tsx
-│   │   │   ├── Land5.tsx
-│   │   │   ├── Land7.tsx
-│   │   │   ├── Land8.tsx
-│   │   │   └── Landing.tsx
-│   │   ├── layout
-│   │   │   ├── Footer.tsx
-│   │   │   ├── Layout.tsx
-│   │   │   ├── Navbar.tsx
-│   │   │   └── ScrollRestoration.tsx
-│   │   ├── profile
-│   │   │   ├── AnalyticsDashboard.tsx
-│   │   │   ├── FontGrid.tsx
-│   │   │   ├── ProfileHeader.tsx
-│   │   │   └── SettingsForm.tsx
-│   │   ├── shared
-│   │   │   ├── EmptyState.tsx
-│   │   │   └── ErrorBoundary.tsx
-│   │   └── UploadProgressPopup.tsx
-│   ├── contexts
-│   │   ├── AuthContext.tsx
-│   │   └── UploadContext.tsx
-│   ├── hooks
-│   │   ├── useFont.ts
-│   │   ├── useFonts.ts
-│   │   ├── useLenis.ts
-│   │   ├── useMediaQuery.ts
-│   │   └── useViewMode.ts
-│   ├── lib
-│   │   └── supabase.ts
-│   ├── pages
-│   │   ├── AdminDashboard.tsx
-│   │   ├── Auth.tsx
-│   │   ├── Cli.tsx
-│   │   ├── DesignerFonts.tsx
-│   │   ├── FontDetails.tsx
-│   │   ├── FontPairing.tsx
-│   │   ├── FontsCatalog.tsx
-│   │   ├── Home.tsx
-│   │   ├── MemberDetails.tsx
-│   │   ├── Members.tsx
-│   │   ├── Profile.tsx
-│   │   └── Upload.tsx
-│   ├── types
-│   │   ├── database.types.ts
-│   │   └── font.ts
-│   ├── utils
-│   │   ├── fontDescriptionGenerator.ts
-│   │   └── woff2.ts
-│   ├── workers
-│   ├── App.tsx
-│   ├── fonts.css
-│   ├── index.css
-│   ├── main.tsx
-│   └── vite-env.d.ts
-├── supabase
-│   ├── .temp
-│   │   └── cli-latest
-│   └── functions
-│       ├── import-font
-│       └── serve-css
-│           └── index.ts
-├── .gitignore
-├── LandingPagePRD.md
-├── README.md
-├── capacitor.config.ts
-├── eslint.config.js
-├── index.html
-├── migration_add_curation_columns.sql
-├── migration_add_file_sizes.sql
-├── migration_add_membership_status.sql
-├── migration_add_username.sql
-├── migration_add_variant_file_sizes.sql
-├── migration_fix_admin_rls.sql
-├── migration_fix_profile_trigger.sql
-├── migration_fix_variants_rls.sql
-├── migration_force_profile_trigger.sql
-├── migration_update_search_fonts_curation.sql
-├── package-lock.json
-├── package.json
-├── replace_script.py
-├── response.json
-├── restore_point_2024_01_29.sql
-├── simple_test.cjs
-├── supabase_setup.sql
-├── test_payload.json
-├── tsconfig.app.json
-├── tsconfig.json
-├── tsconfig.node.json
-├── vercel.json
-└── vite.config.ts
+│   │   ├── AnalyticsDashboard.tsx
+│   │   ├── FontGrid.tsx
+│   │   ├── ProfileHeader.tsx
+│   │   └── SettingsForm.tsx
+│   ├── shared
+│   │   ├── EmptyState.tsx
+│   │   ├── ErrorBoundary.tsx
+│   │   └── SEO.tsx
+│   └── UploadProgressPopup.tsx
+├── contexts
+│   ├── AuthContext.tsx
+│   └── UploadContext.tsx
+├── hooks
+│   ├── useFont.ts
+│   ├── useFonts.ts
+│   ├── useLenis.ts
+│   ├── useMediaQuery.ts
+│   └── useViewMode.ts
+├── lib
+│   └── supabase.ts
+├── pages
+│   ├── AdminDashboard.tsx
+│   ├── Auth.tsx
+│   ├── Cli.tsx
+│   ├── DesignerFonts.tsx
+│   ├── FontDetails.tsx
+│   ├── FontPairing.tsx
+│   ├── FontsCatalog.tsx
+│   ├── Home.tsx
+│   ├── MemberDetails.tsx
+│   ├── Members.tsx
+│   ├── Profile.tsx
+│   └── Upload.tsx
+├── types
+│   ├── database.types.ts
+│   └── font.ts
+├── utils
+│   ├── fontDescriptionGenerator.ts
+│   └── woff2.ts
+├── workers
+├── App.tsx
+├── fonts.css
+├── index.css
+├── main.tsx
+└── vite-env.d.ts
 ```
 
 ---
