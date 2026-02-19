@@ -7,7 +7,10 @@ import FontGrid from '../components/profile/FontGrid';
 import SettingsForm from '../components/profile/SettingsForm';
 import AnalyticsDashboard from '../components/profile/AnalyticsDashboard';
 import type { Font } from '../types/font';
-import { Type, Image as ImageIcon } from 'lucide-react';
+import { Type, Image as ImageIcon, Heart, Download as DownloadIcon, BarChart2 } from 'lucide-react';
+import SEO from '../components/shared/SEO';
+import { cn } from '../lib/utils';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function Profile() {
     const { user, profile, loading, refreshProfile } = useAuth();
@@ -53,8 +56,8 @@ export default function Profile() {
 
                     if (error) throw error;
                     // Format data: Extract the font object from the joined response
-                    const formattedFonts = data.map((item: any) => item.fonts) as Font[];
-                    setFavorites(formattedFonts);
+                    const formattedFonts = data?.map((item: any) => item.fonts) as Font[];
+                    setFavorites(formattedFonts || []);
                 } else if (activeTab === 'downloads') {
                     const { data, error } = await supabase
                         .from('downloads')
@@ -63,9 +66,9 @@ export default function Profile() {
                         .order('downloaded_at', { ascending: false });
 
                     if (error) throw error;
-                    const fontsList = data.map((item: any) => item.fonts) as Font[];
-                    const uniqueFonts = Array.from(new Map(fontsList.map(item => [item['id'], item])).values());
-                    setDownloads(uniqueFonts);
+                    const fontsList = data?.map((item: any) => item.fonts) as Font[];
+                    const uniqueFonts = Array.from(new Map(fontsList?.map(item => [item['id'], item])).values());
+                    setDownloads(uniqueFonts || []);
                 }
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -86,131 +89,149 @@ export default function Profile() {
         else setActiveTab('favorites');
     };
 
+    const tabs = [
+        { id: 'favorites', label: 'Favorites', icon: Heart, color: 'text-red-500' },
+        { id: 'downloads', label: 'Downloads', icon: DownloadIcon, color: 'text-[#BDF522]' },
+        { id: 'analytics', label: 'Analytics', icon: BarChart2, color: 'text-[#FF90E8]' }
+    ];
+
     return (
-        <div className="mx-auto">
+        <div className="container mx-auto px-4 py-8 max-w-7xl min-h-screen">
+            <SEO title="My Profile" />
+
             <ProfileHeader isEditing={isEditing} onEditClick={handleEditClick} />
 
             {/* Membership Status Section */}
             {!isEditing && profile?.role === 'user' && (
-                <div className="bg-[#EEEFEB] border-y border-black rounded-4xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
-                    <div>
-                        <h3 className="text-xl font-black uppercase">Become a Contributor</h3>
-                        <p className="text-gray-600 font-medium">
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-zinc-900 border border-white/10 rounded-3xl p-8 mb-12 flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden"
+                >
+                    <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none"></div>
+                    <div className="relative z-10">
+                        <h3 className="text-2xl font-black uppercase text-white mb-2">Become a Creator</h3>
+                        <p className="text-zinc-400 font-medium max-w-xl">
                             {profile.membership_status === 'pending'
-                                ? "Your request is under review by our admins."
+                                ? "Your request is under review by our admins. Hang tight!"
                                 : profile.membership_status === 'rejected'
-                                    ? "Your previous request was not approved."
-                                    : "Upload some fonts and share them with the community."
+                                    ? "Your request was unfortunately not approved at this time."
+                                    : "Join our community of designers. Upload your fonts and share them with the world."
                             }
                         </p>
                     </div>
 
-                    {profile.membership_status === 'pending' ? (
-                        <div className="px-6 py-3 bg-yellow-100 text-yellow-800 font-bold rounded-xl border-2 border-yellow-400 uppercase tracking-wide">
-                            Request Pending
-                        </div>
-                    ) : (
-                        <button
-                            onClick={handleRequestAccess}
-                            disabled={requestLoading}
-                            className="px-6 py-3 bg-[#BDF522] hover:bg-[#a9db1e] text-black font-black uppercase rounded-xl border-2 border-black transition-all hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            {requestLoading ? 'Requesting...' : (profile.membership_status === 'rejected' ? 'Request Again' : 'Request Access')}
-                        </button>
-                    )}
-                </div>
-            )}
-
-            {!isEditing && (
-                <>
-                    {/* Tabs */}
-                    <div className="flex flex-col md:flex-row gap-2 md:gap-0">
-                        <button
-                            onClick={() => setActiveTab('favorites')}
-                            className={`flex-1 px-6 py-4 text-lg font-bold border-y md:border-r border-black rounded-4xl md:rounded-r-none transition-colors ${activeTab === 'favorites'
-                                ? 'bg-[#FFC900]'
-                                : 'bg-[#EEEFEB]'
-                                }`}
-                        >
-                            My Favorites
-                        </button>
-
-                        <div className="flex md:flex-col bg-gray-100 p-1 rounded-4xl md:rounded-none border-y border-black items-center justify-center">
+                    <div className="relative z-10">
+                        {profile.membership_status === 'pending' ? (
+                            <div className="px-6 py-3 bg-yellow-500/10 text-yellow-500 font-bold rounded-xl border border-yellow-500/30 uppercase tracking-wilder flex items-center gap-2">
+                                <span className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse"></span>
+                                Request Pending
+                            </div>
+                        ) : (
                             <button
-                                onClick={() => setViewMode('font')}
-                                className={`p-3 aspect-square rounded-full transition-all ${viewMode === 'font'
-                                    ? 'bg-black text-white shadow-sm'
-                                    : 'text-gray-500 hover:text-black'
-                                    }`}
-                                title="Font View"
+                                onClick={handleRequestAccess}
+                                disabled={requestLoading}
+                                className="px-8 py-4 bg-[#BDF522] text-black font-black uppercase rounded-xl hover:scale-105 transition-transform shadow-[0_0_20px_rgba(189,245,34,0.3)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                             >
-                                <Type size={16} />
+                                {requestLoading ? 'Requesting...' : (profile.membership_status === 'rejected' ? 'Request Again' : 'Request Access')}
                             </button>
-                            <button
-                                onClick={() => setViewMode('image')}
-                                className={`p-3 aspect-square rounded-full transition-all ${viewMode === 'image'
-                                    ? 'bg-black text-white shadow-sm'
-                                    : 'text-gray-500 hover:text-black'
-                                    }`}
-                                title="Image View"
-                            >
-                                <ImageIcon size={16} />
-                            </button>
-                        </div>
-
-                        <button
-                            onClick={() => setActiveTab('analytics')}
-                            className={`flex-1 px-6 py-4 text-lg font-bold border-y md:border-x border-black rounded-4xl md:rounded-none transition-colors ${activeTab === 'analytics'
-                                ? 'bg-[#ff90e8]' // Pink to match admin/member vibe
-                                : 'bg-[#EEEFEB]'
-                                }`}
-                        >
-                            Analytics
-                        </button>
-
-                        <button
-                            onClick={() => setActiveTab('downloads')}
-                            className={`flex-1 px-6 py-4 text-lg font-bold border-y border-l rounded-4xl md:rounded-l-none border-black transition-colors ${activeTab === 'downloads'
-                                ? 'bg-[#04ff96]'
-                                : 'bg-[#EEEFEB]'
-                                }`}
-                        >
-                            My Download History
-                        </button>
+                        )}
                     </div>
+                </motion.div>
+            )}
 
-                    {activeTab === 'favorites' && (
-                        <FontGrid
-                            fonts={favorites}
-                            loading={dataLoading}
-                            emptyMessage="You haven't favorited any fonts yet."
-                            viewMode={viewMode}
-                        />
-                    )}
+            <AnimatePresence mode="wait">
+                {!isEditing ? (
+                    <motion.div
+                        key="content"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                    >
+                        {/* Tab Navigation */}
+                        <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-12">
+                            <div className="flex p-1 bg-zinc-900 border border-white/10 rounded-full">
+                                {tabs.map((tab) => (
+                                    <button
+                                        key={tab.id}
+                                        onClick={() => setActiveTab(tab.id as any)}
+                                        className={cn(
+                                            "flex items-center gap-2 px-6 py-3 rounded-full text-sm font-bold transition-all uppercase tracking-wider",
+                                            activeTab === tab.id
+                                                ? "bg-white text-black shadow-lg"
+                                                : "text-zinc-500 hover:text-white"
+                                        )}
+                                    >
+                                        <tab.icon size={16} className={activeTab === tab.id ? tab.color : ""} />
+                                        {tab.label}
+                                    </button>
+                                ))}
+                            </div>
 
-                    {activeTab === 'downloads' && (
-                        <FontGrid
-                            fonts={downloads}
-                            loading={dataLoading}
-                            emptyMessage="You haven't downloaded any fonts yet."
-                            viewMode={viewMode}
-                        />
-                    )}
-
-                    {activeTab === 'analytics' && (
-                        <div className="pt-8 px-4">
-                            <AnalyticsDashboard />
+                            {activeTab !== 'analytics' && (
+                                <div className="flex bg-zinc-900 p-1 rounded-full border border-white/10">
+                                    <button
+                                        onClick={() => setViewMode('font')}
+                                        className={cn(
+                                            "p-3 rounded-full transition-all",
+                                            viewMode === 'font' ? "bg-white text-black" : "text-zinc-500 hover:text-white"
+                                        )}
+                                        title="Font View"
+                                    >
+                                        <Type size={18} />
+                                    </button>
+                                    <button
+                                        onClick={() => setViewMode('image')}
+                                        className={cn(
+                                            "p-3 rounded-full transition-all",
+                                            viewMode === 'image' ? "bg-white text-black" : "text-zinc-500 hover:text-white"
+                                        )}
+                                        title="Image View"
+                                    >
+                                        <ImageIcon size={18} />
+                                    </button>
+                                </div>
+                            )}
                         </div>
-                    )}
-                </>
-            )}
 
-            {(isEditing || activeTab === 'settings') && (
-                <SettingsForm onCancel={() => {
-                    setIsEditing(false);
-                    setActiveTab('favorites');
-                }} />
-            )}
+                        {/* Content Area */}
+
+                        {activeTab === 'favorites' && (
+                            <FontGrid
+                                fonts={favorites}
+                                loading={dataLoading}
+                                emptyMessage="You haven't favorited any fonts yet."
+                                viewMode={viewMode}
+                            />
+                        )}
+
+                        {activeTab === 'downloads' && (
+                            <FontGrid
+                                fonts={downloads}
+                                loading={dataLoading}
+                                emptyMessage="You haven't downloaded any fonts yet."
+                                viewMode={viewMode}
+                            />
+                        )}
+
+                        {activeTab === 'analytics' && (
+                            <AnalyticsDashboard />
+                        )}
+                    </motion.div>
+                ) : (
+                    <motion.div
+                        key="settings"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 20 }}
+                    >
+                        <SettingsForm onCancel={() => {
+                            setIsEditing(false);
+                            setActiveTab('favorites');
+                        }} />
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }

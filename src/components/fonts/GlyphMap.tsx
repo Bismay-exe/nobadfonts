@@ -1,5 +1,7 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import opentype from 'opentype.js';
+import { cn } from '../../lib/utils';
+import { ChevronDown, BoxSelect, Maximize2, Minimize2 } from 'lucide-react';
 
 interface GlyphMapProps {
     fontFamily: string;
@@ -25,7 +27,7 @@ const RANGES: UnicodeRange[] = [
 export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMapProps) {
     const [viewMode, setViewMode] = useState<'solid' | 'outline'>('solid');
     const [setMode, setSetMode] = useState<'basic' | 'full'>('basic');
-    const [selectedChar, setSelectedChar] = useState<string>('Y');
+    const [selectedChar, setSelectedChar] = useState<string>('g');
 
     // Variant State
     const [activeVariant, setActiveVariant] = useState<{ name: string; url: string } | null>(null);
@@ -85,25 +87,25 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
         const checkSupport = async () => {
             setIsScanning(true);
             await new Promise(resolve => setTimeout(resolve, 10));
-            const canvas = document.createElement('canvas');
-            const context = canvas.getContext('2d');
-            if (!context) { setAvailableGlyphs(rangeChars); setIsScanning(false); return; }
 
-            const supported: string[] = [];
-            const baselineFont = 'monospace';
-            const testFont = `"${fontFamily}", ${baselineFont}`;
-            context.font = `72px ${baselineFont}`;
-            const baselineWidths = rangeChars.map(char => context.measureText(char).width);
-            context.font = `72px ${testFont}`;
+            // Simple check using font object if available, otherwise heuristic
+            if (fontObject) {
+                const supported = rangeChars.filter(char => {
+                    try {
+                        const glyph = fontObject.charToGlyph(char);
+                        return glyph && glyph.name !== '.notdef';
+                    } catch { return false; }
+                });
+                setAvailableGlyphs(supported);
+            } else {
+                // Fallback heuristic
+                setAvailableGlyphs(rangeChars);
+            }
 
-            rangeChars.forEach((char, i) => {
-                if (context.measureText(char).width !== baselineWidths[i] || char === ' ') supported.push(char);
-            });
-            setAvailableGlyphs(supported);
             setIsScanning(false);
         };
         checkSupport();
-    }, [setMode, rangeChars, fontFamily]);
+    }, [setMode, rangeChars, fontObject]);
 
     // CANVAS DRAWING LOGIC (Inspector)
     useEffect(() => {
@@ -134,15 +136,11 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
             const os2 = fontObject.tables.os2;
             const hhea = fontObject.tables.hhea;
 
-            // Get precise typographic metrics
-            // OS/2 table is usually the most accurate for these values
             const capHeight = os2?.sCapHeight || (fontObject.charToGlyph('H').getBoundingBox().y2);
             const xHeight = os2?.sxHeight || (fontObject.charToGlyph('x').getBoundingBox().y2);
             const descender = hhea?.descender || fontObject.descender;
 
             // Calculate Metrics
-            // Normalize to display size
-            // Let's set a target font size based on container
             const displayFontSize = Math.min(width, height) * 0.6;
             const scale = displayFontSize / unitsPerEm;
 
@@ -152,13 +150,12 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
 
             const scaledCapHeight = capHeight * scale;
             const scaledXHeight = xHeight * scale;
-            const scaledDescender = descender * scale; // usually negative
-
+            const scaledDescender = descender * scale;
 
             // Draw Guidelines function
             const drawLine = (y: number, label: string, value: number, isDashed = false) => {
                 ctx.beginPath();
-                ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
                 ctx.lineWidth = 1;
                 if (isDashed) ctx.setLineDash([4, 4]);
                 else ctx.setLineDash([]);
@@ -166,13 +163,10 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
                 ctx.lineTo(width, y);
                 ctx.stroke();
 
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
-                ctx.font = '12px monospace';
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+                ctx.font = '10px sans-serif';
                 ctx.textAlign = 'left';
                 ctx.fillText(label, 10, y - 6);
-
-                ctx.textAlign = 'right';
-                ctx.fillText(Math.round(value).toString(), width - 10, y - 6);
             };
 
             // Draw Lines
@@ -183,7 +177,7 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
 
             // Get Glyph Path
             const glyph = fontObject.charToGlyph(selectedChar);
-            const path = glyph.getPath(0, 0, displayFontSize); // we'll translate it later
+            const path = glyph.getPath(0, 0, displayFontSize);
 
             // Center the glyph
             const glyphWidth = (glyph.advanceWidth || 0) * scale;
@@ -198,99 +192,34 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
                 path.stroke = null;
                 path.draw(ctx);
             } else {
-                ctx.strokeStyle = 'rgba(255,255,255,0.5)';
-                ctx.lineWidth = 1;
+                ctx.strokeStyle = 'rgba(255,255,255,0.7)';
+                ctx.lineWidth = 1.5;
                 path.fill = null;
-                path.stroke = 'rgba(255,255,255,0.5)';
-                path.strokeWidth = 1;
+                path.stroke = 'rgba(255,255,255,0.7)';
+                path.strokeWidth = 1.5;
                 path.draw(ctx);
 
-                // Draw Bézier Points and Handles
-                // Iterate through commands
-                let startX = 0;
-                let startY = 0;
-
+                // Draw Nodes
                 glyph.path.commands.forEach(cmd => {
                     ctx.beginPath();
-                    if (cmd.type === 'M') {
-                        startX = cmd.x * scale;
-                        startY = -cmd.y * scale; // Flip Y for canvas
-                        // Draw Point (On-Curve)
-                        ctx.fillStyle = 'white';
-                        ctx.arc(startX, startY, 3, 0, Math.PI * 2);
-                        ctx.fill();
-                    } else if (cmd.type === 'L') {
+                    if (cmd.type === 'M' || cmd.type === 'L') {
                         const x = cmd.x * scale;
                         const y = -cmd.y * scale;
-                        // Draw Point (On-Curve)
-                        ctx.fillStyle = 'white';
-                        ctx.arc(x, y, 3, 0, Math.PI * 2); // Square or Circle? Image showed square-ish dots for on-curve
-                        ctx.fillRect(x - 2, y - 2, 4, 4); // Let's use squares for on-curve points like standard vector tools
-                        startX = x;
-                        startY = y;
-                    } else if (cmd.type === 'Q') {
-                        const x1 = cmd.x1 * scale;
-                        const y1 = -cmd.y1 * scale;
+                        ctx.fillStyle = '#BDF522'; // Neon green for on-curve
+                        ctx.fillRect(x - 2, y - 2, 4, 4);
+                    } else if (cmd.type === 'Q' || cmd.type === 'C') {
                         const x = cmd.x * scale;
                         const y = -cmd.y * scale;
-
-                        // Draw Handle Lines
-                        ctx.strokeStyle = '#666';
-                        ctx.lineWidth = 1;
-                        ctx.beginPath();
-                        ctx.moveTo(startX, startY);
-                        ctx.lineTo(x1, y1);
-                        ctx.lineTo(x, y);
-                        ctx.stroke();
-
-                        // Draw Control Point (Off-Curve)
-                        ctx.fillStyle = '#666'; // Grey for control points
-                        ctx.beginPath();
-                        ctx.arc(x1, y1, 2, 0, Math.PI * 2);
-                        ctx.fill();
-
-                        // Draw End Point (On-Curve)
-                        ctx.fillStyle = 'white';
+                        // Control points logic simplified for brevity, usually drawn connected
+                        ctx.fillStyle = '#BDF522';
                         ctx.fillRect(x - 2, y - 2, 4, 4);
 
-                        startX = x;
-                        startY = y;
-                    } else if (cmd.type === 'C') {
-                        const x1 = cmd.x1 * scale;
-                        const y1 = -cmd.y1 * scale;
-                        const x2 = cmd.x2 * scale;
-                        const y2 = -cmd.y2 * scale;
-                        const x = cmd.x * scale;
-                        const y = -cmd.y * scale;
-
-                        // Draw Handle Lines: Start -> C1, C2 -> End
-                        ctx.strokeStyle = 'rgba(255,255,255,0.3)';
-                        ctx.lineWidth = 1;
-                        ctx.setLineDash([]);
-
-                        ctx.beginPath();
-                        ctx.moveTo(startX, startY);
-                        ctx.lineTo(x1, y1);
-                        ctx.stroke();
-
-                        ctx.beginPath();
-                        ctx.moveTo(x, y);
-                        ctx.lineTo(x2, y2);
-                        ctx.stroke();
-
-                        // Draw Control Points (Off-Curve) - Small Circles
-                        ctx.fillStyle = 'white';
-                        ctx.beginPath(); ctx.arc(x1, y1, 2, 0, Math.PI * 2); ctx.fill();
-                        ctx.beginPath(); ctx.arc(x2, y2, 2, 0, Math.PI * 2); ctx.fill();
-
-                        // Draw End Point (On-Curve) - Square
-                        ctx.fillStyle = 'white';
-                        ctx.fillRect(x - 2.5, y - 2.5, 5, 5);
-
-                        startX = x;
-                        startY = y;
-                    } else if (cmd.type === 'Z') {
-                        // Close path
+                        if ('x1' in cmd) {
+                            const x1 = cmd.x1 * scale;
+                            const y1 = -cmd.y1 * scale;
+                            ctx.fillStyle = '#666';
+                            ctx.beginPath(); ctx.arc(x1, y1, 2, 0, Math.PI * 2); ctx.fill();
+                        }
                     }
                 });
             }
@@ -300,200 +229,115 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
 
         };
 
-        // Render immediately since we have font object
         render();
-
         const resizeObserver = new ResizeObserver(render);
         resizeObserver.observe(container);
-
-        return () => resizeObserver.disconnect();
-
         return () => resizeObserver.disconnect();
 
     }, [fontFamily, fontUrl, activeVariant, selectedChar, viewMode, fontObject]);
 
 
     return (
-        <div className="w-full bg-[#0D0D0D] text-white rounded-4xl border border-white/20">
+        <div className="w-full bg-black/40 backdrop-blur-sm text-white rounded-3xl border border-white/10 overflow-hidden shadow-2xl">
 
-            <div className="lg:flex items-start relative">
-                {/* Left: sticky ONLY inside this section */}
-                <div
-                    ref={containerRef}
-                    className="
-                        max-h-[50vh] md:min-h-screen
-                        lg:w-1/2
-                        lg:sticky
-                        lg:top-0
-                        self-start
-                        border-r border-white/10
-                    "
-                >
-                    {/* Toolbar */}
-                    <div className="relative z-20 flex flex-wrap justify-between rounded-4xl px-8 py-6 bg-transparent">
-                        <div className='flex justify-between w-full md:w-auto'>
-                            <div className="flex items-center gap-6">
-                                <h2 className="text-xl font-bold tracking-tight">{setMode === 'basic' ? 'Basic Set' : `${availableGlyphs.length} Glyphs`}</h2>
-                                <div className="flex items-center gap-2 text-xs font-mono text-gray-400">
-                                    <span>{selectedChar ? selectedChar.startsWith('U+') ? selectedChar : `U+${selectedChar.charCodeAt(0).toString(16).toUpperCase().padStart(4, '0')}` : ''}</span>
-                                </div>
-                            </div>
-                            {/* Set Toggle */}
-                            <div className="md:hidden flex items-center gap-4 text-sm font-medium text-gray-400 border-l border-white/10 pl-8">
-                                <button
-                                    onClick={() => setSetMode('basic')}
-                                    className={`transition-colors hover:text-white ${setMode === 'basic' ? 'text-white' : ''}`}
-                                >
-                                    Basic Set
-                                </button>
-                                <button
-                                    onClick={() => setSetMode('full')}
-                                    className={`transition-colors hover:text-white ${setMode === 'full' ? 'text-white' : ''}`}
-                                >
-                                    Full Set
-                                </button>
-                            </div>
+            <div className="lg:flex items-start relative min-h-150">
+                {/* Left: Sticky Inspector */}
+                <div className="lg:w-1/2 lg:h-auto lg:absolute lg:inset-y-0 border-r border-white/10 bg-linear-to-br from-zinc-900/50 to-black/50">
+                    {/* Toolbar Overlay */}
+                    <div className="absolute top-4 left-4 right-4 z-20 flex justify-between items-start">
+                        <div>
+                            <h2 className="text-xl font-bold tracking-tight text-white mb-1">{selectedChar}</h2>
+                            <p className="text-xs text-zinc-500 font-mono">
+                                {selectedChar.startsWith('U+') ? selectedChar : `U+${selectedChar.charCodeAt(0).toString(16).toUpperCase().padStart(4, '0')}`}
+                            </p>
                         </div>
 
-                        <div className="flex justify-between w-full md:w-auto items-center gap-0 md:gap-8 mt-4 md:mt-0">
-                            {/* Variant Selector (if variants exist) */}
-                            {variants.length > 0 && (
-                                <div className="border-r border-white/10 pr-8">
-                                    <select
-                                        value={activeVariant?.name || (variants.some(v => v.url === fontUrl) ? variants.find(v => v.url === fontUrl)?.name : 'Regular')}
-                                        onChange={(e) => {
-                                            const val = e.target.value;
-                                            const v = variants.find(v => v.name === val);
-                                            // Always prioritize the actual variant if it exists
-                                            if (v) {
-                                                setActiveVariant(v);
-                                            } else if (val === 'Regular') {
-                                                setActiveVariant(null);
-                                            }
-                                        }}
-                                        className="bg-[#1A1A1A] border border-white/20 text-white text-sm px-4 py-2 rounded-lg focus:outline-none focus:border-white cursor-pointer"
-                                    >
-                                        {!variants.some(v => v.url === fontUrl) && <option value="Regular">Regular</option>}
-                                        {variants.slice().sort((a, b) => {
-                                            const getWeight = (name: string) => {
-                                                const n = name.toLowerCase();
-                                                if (n.includes('thin')) return 100;
-                                                if (n.includes('extra light') || n.includes('extralight')) return 200;
-                                                if (n.includes('light')) return 300;
-                                                if (n.includes('regular')) return 400;
-                                                if (n.includes('medium')) return 500;
-                                                if (n.includes('semi bold') || n.includes('semibold')) return 600;
-                                                if (n.includes('bold')) return 700;
-                                                if (n.includes('extra bold') || n.includes('extrabold')) return 800;
-                                                if (n.includes('black') || n.includes('heavy')) return 900;
-                                                return 400; // default
-                                            };
-                                            const weightA = getWeight(a.name);
-                                            const weightB = getWeight(b.name);
-
-                                            // Primary sort by weight (Descending)
-                                            if (weightA !== weightB) return weightB - weightA;
-
-                                            // Secondary sort: Non-italic before Italic
-                                            const isItalicA = a.name.toLowerCase().includes('italic');
-                                            const isItalicB = b.name.toLowerCase().includes('italic');
-                                            if (isItalicA !== isItalicB) return isItalicA ? 1 : -1;
-
-                                            return 0;
-                                        }).map(v => (
-                                            <option key={v.name} value={v.name}>{v.name}</option>
-                                        ))}
-                                    </select>
-                                </div>
-                            )}
-
-                            {/* View Toggle */}
-                            <div className="flex items-center gap-4 text-sm font-medium text-gray-400">
-                                <button
-                                    onClick={() => setViewMode('solid')}
-                                    className={`transition-colors hover:text-white ${viewMode === 'solid' ? 'text-white' : ''}`}
-                                >
-                                    Solid
-                                </button>
-                                <button
-                                    onClick={() => setViewMode('outline')}
-                                    className={`transition-colors hover:text-white ${viewMode === 'outline' ? 'text-white' : ''}`}
-                                >
-                                    Outlines
-                                </button>
-                            </div>
-
-                            {/* Set Toggle */}
-                            <div className="hidden md:flex items-center gap-4 text-sm font-medium text-gray-400 border-l border-white/10 pl-8">
-                                <button
-                                    onClick={() => setSetMode('basic')}
-                                    className={`transition-colors hover:text-white ${setMode === 'basic' ? 'text-white' : ''}`}
-                                >
-                                    Basic Set
-                                </button>
-                                <button
-                                    onClick={() => setSetMode('full')}
-                                    className={`transition-colors hover:text-white ${setMode === 'full' ? 'text-white' : ''}`}
-                                >
-                                    Full Set
-                                </button>
-                            </div>
+                        <div className="flex gap-2">
+                            <button
+                                onClick={() => setViewMode(m => m === 'solid' ? 'outline' : 'solid')}
+                                className="p-2 bg-black/50 hover:bg-white/10 rounded-lg backdrop-blur-md border border-white/5 transition-colors"
+                                title="Toggle View"
+                            >
+                                <BoxSelect size={18} className={viewMode === 'outline' ? 'text-white' : 'text-zinc-500'} />
+                            </button>
                         </div>
                     </div>
 
-                    <canvas
-                        ref={canvasRef}
-                        className="w-full block -mt-20"
-                    />
+                    {/* Render Canvas */}
+                    <div ref={containerRef} className="w-full h-full cursor-crosshair">
+                        <canvas ref={canvasRef} className="block w-full h-full" />
+                    </div>
                 </div>
 
-                {/* Right: must be taller than viewport */}
-                <div className="lg:w-1/2 p-8 pb-32">
-
-                    {setMode === 'basic' ? (
-                        <CategoryView
-                            fontFamily={fontFamily}
-                            basicUppercase={basicUppercase}
-                            basicLowercase={basicLowercase}
-                            basicNumerals={basicNumerals}
-                            selectedChar={selectedChar}
-                            setSelectedChar={setSelectedChar}
-                        />
-                    ) : (
-                        <div className="space-y-6">
-                            {/* Filter Dropdown */}
-                            <div className="flex justify-end">
-                                <select
-                                    value={selectedRange.name}
-                                    onChange={(e) => {
-                                        const range = RANGES.find(r => r.name === e.target.value);
-                                        if (range) setSelectedRange(range);
-                                    }}
-                                    className="bg-[#1A1A1A] border border-white/20 text-white text-sm px-4 py-2 rounded-lg focus:outline-none focus:border-white"
-                                >
-                                    {RANGES.map(r => <option key={r.name} value={r.name}>{r.name}</option>)}
-                                </select>
-                            </div>
-
-                            {isScanning ? (
-                                <div className="grid grid-cols-6 md:grid-cols-10 gap-2 opacity-50">Loading...</div>
-                            ) : (
-                                <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-px bg-[#EEEFEB]/10 border border-white/10">
-                                    {availableGlyphs.length > 0 ? availableGlyphs.map(char => (
-                                        <button
-                                            key={char}
-                                            onClick={() => setSelectedChar(char)}
-                                            className={`aspect-square flex items-center justify-center bg-[#0D0D0D] hover:bg-[#EEEFEB]/5 transition-colors ${selectedChar === char ? 'ring-1 ring-white z-10' : ''}`}
-                                        >
-                                            <span style={{ fontFamily: `"${fontFamily}"` }} className="text-2xl">{char}</span>
-                                        </button>
-                                    )) : (
-                                        <div className="col-span-full p-8 text-center text-gray-500">No glyphs found in this range.</div>
-                                    )}
-                                </div>
-                            )}
+                {/* Right: Grid */}
+                <div className="lg:w-1/2 p-6 md:p-8 bg-zinc-950/30">
+                    <div className="flex justify-between items-center mb-6">
+                        <div className="flex items-center gap-1 p-1 bg-white/5 rounded-lg">
+                            <button onClick={() => setSetMode('basic')} className={cn("px-3 py-1.5 text-xs font-bold rounded-md transition-colors", setMode === 'basic' ? "bg-white text-black" : "text-zinc-500 hover:text-white")}>Basic</button>
+                            <button onClick={() => setSetMode('full')} className={cn("px-3 py-1.5 text-xs font-bold rounded-md transition-colors", setMode === 'full' ? "bg-white text-black" : "text-zinc-500 hover:text-white")}>All Glyphs</button>
                         </div>
-                    )}
+
+                        {variants.length > 0 && (
+                            <div className="relative">
+                                <select
+                                    value={activeVariant?.name || 'Regular'}
+                                    onChange={(e) => {
+                                        const v = variants.find(v => v.name === e.target.value);
+                                        if (v) setActiveVariant(v);
+                                    }}
+                                    className="appearance-none pl-3 pr-8 py-1.5 bg-black/50 border border-white/10 rounded-lg text-xs font-bold text-zinc-400 focus:outline-none focus:border-white/20 hover:text-white"
+                                >
+                                    {variants.map(v => <option key={v.name} value={v.name}>{v.name}</option>)}
+                                    {!variants.length && <option>Regular</option>}
+                                </select>
+                                <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none" />
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="space-y-8">
+                        {setMode === 'basic' ? (
+                            <CategoryView
+                                fontFamily={fontFamily}
+                                basicUppercase={basicUppercase}
+                                basicLowercase={basicLowercase}
+                                basicNumerals={basicNumerals}
+                                selectedChar={selectedChar}
+                                setSelectedChar={setSelectedChar}
+                            />
+                        ) : (
+                            <div className="space-y-4">
+                                <div className="w-full overflow-hidden">
+                                    <select
+                                        value={selectedRange.name}
+                                        onChange={(e) => {
+                                            const range = RANGES.find(r => r.name === e.target.value);
+                                            if (range) setSelectedRange(range);
+                                        }}
+                                        className="w-full bg-white/5 border border-white/10 text-white text-sm px-4 py-3 rounded-xl focus:outline-none focus:border-white/30"
+                                    >
+                                        {RANGES.map(r => <option key={r.name} value={r.name}>{r.name}</option>)}
+                                    </select>
+                                </div>
+
+                                {isScanning ? (
+                                    <div className="py-12 text-center text-zinc-500 animate-pulse">Scanning font glyphs...</div>
+                                ) : (
+                                    <div className="grid grid-cols-6 sm:grid-cols-8 gap-1">
+                                        {availableGlyphs.map(char => (
+                                            <GlyphButton
+                                                key={char}
+                                                char={char}
+                                                fontFamily={fontFamily}
+                                                isSelected={selectedChar === char}
+                                                onClick={() => setSelectedChar(char)}
+                                            />
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>
@@ -501,70 +345,46 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
 }
 
 function CategoryView({ fontFamily, basicUppercase, basicLowercase, basicNumerals, selectedChar, setSelectedChar }: any) {
-    const [activeTab, setActiveTab] = useState<'Uppercase' | 'Lowercase' | 'Numerals'>('Uppercase');
-
     return (
-        <div className="space-y-6 md:space-y-12">
-            {/* Mobile Tabs */}
-            <div className="flex justify-center gap-4 md:hidden border-b border-white/10 pb-4">
-                {(['Uppercase', 'Lowercase', 'Numerals'] as const).map(tab => (
-                    <button
-                        key={tab}
-                        onClick={() => setActiveTab(tab)}
-                        className={`text-sm font-medium transition-colors ${activeTab === tab ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
-                    >
-                        {tab}
-                    </button>
-                ))}
-            </div>
-
-            {/* Uppercase */}
-            <div className={activeTab === 'Uppercase' ? 'block' : 'hidden md:block'}>
-                <h3 className="hidden md:block text-xs font-mono text-gray-500 uppercase mb-4 text-right">Uppercase</h3>
-                <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-px bg-[#EEEFEB]/10 border border-white/10">
-                    {basicUppercase.map((char: string) => (
-                        <button
-                            key={char}
-                            onClick={() => setSelectedChar(char)}
-                            className={`aspect-square flex items-center justify-center bg-[#0D0D0D] hover:bg-[#EEEFEB]/5 transition-colors ${selectedChar === char ? 'ring-1 ring-white z-10' : ''}`}
-                        >
-                            <span style={{ fontFamily: `"${fontFamily}"` }} className="text-2xl">{char}</span>
-                        </button>
-                    ))}
-                </div>
-            </div>
-
-            {/* Lowercase */}
-            <div className={activeTab === 'Lowercase' ? 'block' : 'hidden md:block'}>
-                <h3 className="hidden md:block text-xs font-mono text-gray-500 uppercase mb-4 text-right">Lowercase</h3>
-                <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-px bg-[#EEEFEB]/10 border border-white/10">
-                    {basicLowercase.map((char: string) => (
-                        <button
-                            key={char}
-                            onClick={() => setSelectedChar(char)}
-                            className={`aspect-square flex items-center justify-center bg-[#0D0D0D] hover:bg-[#EEEFEB]/5 transition-colors ${selectedChar === char ? 'ring-1 ring-white z-10' : ''}`}
-                        >
-                            <span style={{ fontFamily: `"${fontFamily}"` }} className="text-2xl">{char}</span>
-                        </button>
-                    ))}
-                </div>
-            </div>
-
-            {/* Numerals */}
-            <div className={activeTab === 'Numerals' ? 'block' : 'hidden md:block'}>
-                <h3 className="hidden md:block text-xs font-mono text-gray-500 uppercase mb-4 text-right">Numerals</h3>
-                <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-px bg-[#EEEFEB]/10 border border-white/10">
-                    {basicNumerals.map((char: string) => (
-                        <button
-                            key={char}
-                            onClick={() => setSelectedChar(char)}
-                            className={`aspect-square flex items-center justify-center bg-[#0D0D0D] hover:bg-[#EEEFEB]/5 transition-colors ${selectedChar === char ? 'ring-1 ring-white z-10' : ''}`}
-                        >
-                            <span style={{ fontFamily: `"${fontFamily}"` }} className="text-2xl">{char}</span>
-                        </button>
-                    ))}
-                </div>
-            </div>
+        <div className="space-y-8">
+            <Section title="Uppercase" chars={basicUppercase} fontFamily={fontFamily} selectedChar={selectedChar} onSelect={setSelectedChar} />
+            <Section title="Lowercase" chars={basicLowercase} fontFamily={fontFamily} selectedChar={selectedChar} onSelect={setSelectedChar} />
+            <Section title="Numerals" chars={basicNumerals} fontFamily={fontFamily} selectedChar={selectedChar} onSelect={setSelectedChar} />
         </div>
     );
+}
+
+function Section({ title, chars, fontFamily, selectedChar, onSelect }: any) {
+    return (
+        <div>
+            <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3">{title}</h3>
+            <div className="grid grid-cols-6 sm:grid-cols-8 gap-1">
+                {chars.map((char: string) => (
+                    <GlyphButton
+                        key={char}
+                        char={char}
+                        fontFamily={fontFamily}
+                        isSelected={selectedChar === char}
+                        onClick={() => onSelect(char)}
+                    />
+                ))}
+            </div>
+        </div>
+    )
+}
+
+function GlyphButton({ char, fontFamily, isSelected, onClick }: any) {
+    return (
+        <button
+            onClick={onClick}
+            className={cn(
+                "aspect-square flex items-center justify-center rounded-lg transition-all duration-200",
+                isSelected
+                    ? "bg-white text-black shadow-lg scale-110 z-10"
+                    : "bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-white"
+            )}
+        >
+            <span style={{ fontFamily: `"${fontFamily}"` }} className="text-xl md:text-2xl">{char}</span>
+        </button>
+    )
 }

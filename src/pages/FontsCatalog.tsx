@@ -25,7 +25,6 @@ export default function FontsCatalog() {
 
     const { fonts, loading, error } = useFonts(filters);
 
-    // Update URL when filters change
     useEffect(() => {
         const params: any = {};
         if (filters.query) params.query = filters.query;
@@ -36,12 +35,10 @@ export default function FontsCatalog() {
         setSearchParams(params, { replace: true });
     }, [filters, setSearchParams]);
 
-    // Restore scroll position when fonts are loaded
     useLayoutEffect(() => {
         if (!loading && fonts.length > 0) {
             const savedPosition = scrollPositions.get((location as any).key);
             if (savedPosition !== undefined) {
-                // Small timeout to ensure DOM is fully painted
                 setTimeout(() => {
                     window.scrollTo(0, savedPosition);
                 }, 0);
@@ -49,16 +46,13 @@ export default function FontsCatalog() {
         }
     }, [loading, fonts.length, (location as any).key]);
 
-    // Derived State for FontCard
     const getCardProps = (fontId: string) => {
         if (globalExpanded) {
-            // Global Expand ON: All expanded, no toggle
             return {
                 isExpanded: true,
                 onToggle: undefined
             };
         } else {
-            // Global Expand OFF: Accordion behavior (Mobile-like)
             return {
                 isExpanded: expandedFontId === fontId,
                 onToggle: () => setExpandedFontId(expandedFontId === fontId ? null : fontId)
@@ -67,62 +61,61 @@ export default function FontsCatalog() {
     };
 
     return (
-        <div className="w-full grid grid-cols-1 lg:grid-cols-4">
+        <div className="min-h-screen bg-black w-full">
             <SEO
                 title="Browse Fonts"
-                description="Explore our curated collection of high-quality fonts for modern interfaces. Filter by style, category, and more."
+                description="Explore our curated collection of high-quality fonts for modern interfaces."
                 url="/fonts"
             />
 
-            <div className="col-span-1 lg:col-span-4 border-b-2 border-black flex flex-col lg:flex-col">
-                {/* Sidebar */}
-                <aside className="w-full shrink-0 transition-all duration-300 ease-in-out">
-                    <Filters
-                        filters={filters}
-                        onChange={setFilters}
-                        viewMode={viewMode}
-                        onViewModeChange={setViewMode}
-                        showExpandToggle={true} // Enable on all screens
-                        allExpanded={globalExpanded}
-                        onToggleAll={() => {
-                            setGlobalExpanded(!globalExpanded);
-                            setExpandedFontId(null); // Clear individual selections when toggling all
-                        }}
-                        customText={customText}
-                        onCustomTextChange={setCustomText}
-                    />
-                </aside>
+            <div className="relative pt-6 pb-32 w-full">
+                {/* Header */}
+                <div className="mb-8 text-center">
+                    <h1 className="text-4xl md:text-6xl font-bold tracking-tighter text-white mb-4">Catalog</h1>
+                    <p className="text-zinc-500 max-w-xl mx-auto">
+                        Discover the perfect typeface for your next project from our extensive collection of premium fonts.
+                    </p>
+                </div>
 
-                {/* Content */}
-                <div className="grow border-t border-black">
+                {/* Filters Dock */}
+                <Filters
+                    filters={filters}
+                    onChange={setFilters}
+                    viewMode={viewMode}
+                    onViewModeChange={setViewMode}
+                    showExpandToggle={true}
+                    allExpanded={globalExpanded}
+                    onToggleAll={() => {
+                        setGlobalExpanded(!globalExpanded);
+                        setExpandedFontId(null);
+                    }}
+                    customText={customText}
+                    onCustomTextChange={setCustomText}
+                />
+
+                {/* Content Grid */}
+                <div className="w-full">
                     {error && (
-                        <div className="bg-red-50 text-red-600 p-4 rounded-4xl">
+                        <div className="bg-red-500/10 border border-red-500/20 text-red-500 p-6 rounded-2xl text-center max-w-2xl mx-auto">
                             Error loading fonts: {error}
                         </div>
                     )}
 
                     {loading ? (
-                        <div className="gap-0"
-                            style={{
-                                columnWidth: 'clamp(220px, 20vw, 320px)',
-                            }}
-                        >
-                            {[...Array(25)].map((_, i) => (
-                                <div key={i} className="bg-gray-100 rounded-4xl border border-[#1C1D1E] h-64 animate-pulse" />
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                            {[...Array(12)].map((_, i) => (
+                                <div key={i} className="bg-zinc-900/20 rounded-3xl border border-white/5 h-75 animate-pulse" />
                             ))}
                         </div>
                     ) : fonts.length > 0 ? (
-                        <div className="gap-0"
-                            style={{
-                                columnWidth: 'clamp(220px, 20vw, 320px)',
-                            }}
-                        >
-                            {fonts.filter(f => f && f.id).map((font) => (
+                        <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6">
+                            {fonts.filter(f => f && f.id).map((font, i) => (
                                 <FontCard
                                     key={font.id}
                                     font={font}
                                     viewMode={viewMode}
                                     customText={customText}
+                                    index={i}
                                     {...getCardProps(font.id)}
                                 />
                             ))}

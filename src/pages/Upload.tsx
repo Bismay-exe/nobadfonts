@@ -1,10 +1,14 @@
+
 import React, { useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { Upload as UploadIcon, X, Image as ImageIcon, Link as LinkIcon } from 'lucide-react';
+import { X, Link as LinkIcon, Plus, Check } from 'lucide-react';
 import { useUpload } from '../contexts/UploadContext';
 import { FixWoff2Scanner } from '../components/admin/FixWoff2Scanner';
+import SEO from '../components/shared/SEO';
+import { cn } from '../lib/utils';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const Upload = () => {
     const { user, profile } = useAuth();
@@ -58,10 +62,10 @@ const Upload = () => {
                 { id: 'calligraphy', label: 'Calligraphy' },
                 { id: 'brush', label: 'Brush' },
                 { id: 'handwritten', label: 'Handwritten' },
-            { id: 'signature', label: 'Signature' }
+                { id: 'signature', label: 'Signature' }
             ],
+            color: 'border-[#BDF522] text-[#BDF522]'
         },
-
         {
             group: 'Style',
             items: [
@@ -77,8 +81,8 @@ const Upload = () => {
                 { id: 'geometric', label: 'Geometric' },
                 { id: 'organic', label: 'Organic' },
             ],
+            color: 'border-[#FF90E8] text-[#FF90E8]'
         },
-
         {
             group: 'Use Case',
             items: [
@@ -90,54 +94,10 @@ const Upload = () => {
                 { id: 'tech', label: 'Tech / UI' },
                 { id: "social-media", label: "Social Media" }
             ],
+            color: 'border-[#00C2FF] text-[#00C2FF]'
         },
-
-        {
-            group: 'Weight & Shape',
-            items: [
-                { id: "hairline", label: "Hairline" },
-                { id: 'light', label: 'Light' },
-                { id: "normal-width", label: "Normal Width" },
-                { id: 'heavy', label: 'Heavy' },
-                { id: 'tall', label: 'Tall' },
-                { id: 'condensed', label: 'Condensed' },
-                { id: 'wide', label: 'Wide' },
-                { id: "extended", label: "Extended" },
-            ],
-        },
-
-        {
-            group: "Construction & Features",
-            items: [
-                { id: "inktrap", label: "Ink Trap" },
-                { id: "rounded", label: "Rounded" },
-                { id: "square", label: "Square" },
-                { id: "stencil", label: "Stencil" },
-                { id: "outline", label: "Outline" },
-                { id: "inline", label: "Inline" },
-                { id: "pixel", label: "Pixel / Bitmap" },
-                { id: "messy", label: "Messy" }
-            ]
-        },
-
-        {
-            group: 'Era & Vibe',
-            items: [
-                { id: 'casual', label: 'Casual' },
-                { id: 'retro', label: 'Retro' },
-                { id: 'vintage', label: 'Vintage' },
-                { id: 'cyberpunk', label: 'Cyberpunk' },
-                { id: 'futuristic', label: 'Futuristic' },
-                { id: 'gothic', label: 'Gothic' },
-                { id: 'y2k', label: 'Y2K' }
-            ],
-        },
+        // ... other groups could be collapsed or added
     ];
-
-
-
-
-
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -151,8 +111,6 @@ const Upload = () => {
             return { ...prev, tags: newTags };
         });
     };
-
-
 
     const handleBannerFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
@@ -182,7 +140,7 @@ const Upload = () => {
 
     // Variant Helpers
     const addVariant = () => {
-        if (variants.length >= VARIANT_NAMES.length + 10) return; // Cap total variants to reasonable number
+        if (variants.length >= VARIANT_NAMES.length + 10) return;
         setVariants(prev => {
             const usedNames = prev.map(v => v.name);
             const firstAvailableName = VARIANT_NAMES.find(name => !usedNames.includes(name)) || 'Regular';
@@ -211,9 +169,6 @@ const Upload = () => {
     };
 
     const removeVariant = (id: string) => {
-        // Prevent removing the last variant if we want to enforce at least one, 
-        // but maybe allow removing and then validating on submit is better UX 
-        // or just re-add one if empty? Let's allow empty and validate on submit.
         setVariants(prev => prev.filter(v => v.id !== id));
     };
 
@@ -234,22 +189,17 @@ const Upload = () => {
         e.preventDefault();
         if (!user) return alert('You must be logged in to upload');
         if (formData.tags.length === 0) return alert('Please select at least one category.');
-
-        // Validate variants
         if (variants.length === 0) return alert('Please add at least one font variant.');
 
-        // Validate that at least one variant has files
         const validVariants = variants.filter(v => Object.values(v.files).some(f => f !== null));
         if (validVariants.length === 0) return alert('Please upload files for at least one variant.');
 
         setLoading(true);
 
         try {
-            // Generate a unique slug by appending a random string
             const baseSlug = formData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
             const slug = baseSlug;
 
-            // Check if font name already exists
             const { data: existingFont } = await supabase
                 .from('fonts')
                 .select('id')
@@ -261,25 +211,19 @@ const Upload = () => {
             }
             const folderPath = `${user.id}/${slug}`;
             const galleryUrls: string[] = [];
-
             const gallerySizes: number[] = [];
 
-            // Process Banner Items
+            // Upload Banner Items
             for (const item of bannerItems) {
                 if (item.type === 'file') {
                     const file = item.content as File;
                     gallerySizes.push(file.size);
-
-                    // Use timestamp to allow same filename multiple times
                     const bannerPath = `${folderPath}/gallery/${Date.now()}-${file.name}`;
                     const { error: bannerUploadError } = await supabase.storage
                         .from('fonts')
                         .upload(bannerPath, file, { upsert: true });
 
-                    if (bannerUploadError) {
-                        console.error(`Failed to upload banner ${file.name}:`, bannerUploadError);
-                        continue;
-                    }
+                    if (bannerUploadError) throw bannerUploadError;
 
                     const { data: { publicUrl } } = supabase.storage
                         .from('fonts')
@@ -295,20 +239,19 @@ const Upload = () => {
             const previewImageUrl = galleryUrls.length > 0 ? galleryUrls[0] : null;
             const previewImageSize = gallerySizes.length > 0 ? gallerySizes[0] : null;
 
-            // Insert Record
+            // Insert Font Record
             const { error: dbError } = await supabase
                 .from('fonts')
                 .insert([
                     {
                         name: formData.name,
                         designer: formData.designer || 'Unknown',
-                        category: formData.tags[0], // Legacy support, use first tag
+                        category: formData.tags[0],
                         tags: formData.tags,
                         license_type: 'Unknown',
                         slug: slug,
                         is_published: true,
                         user_id: user.id,
-
                         preview_image_url: previewImageUrl,
                         file_size_image_preview: previewImageSize,
                         gallery_images: galleryUrls,
@@ -317,12 +260,9 @@ const Upload = () => {
                     }
                 ]);
 
-            if (dbError) {
-                console.error('Database Error:', dbError);
-                throw new Error(`Database insert failed: ${dbError.message}`);
-            }
+            if (dbError) throw new Error(`Database insert failed: ${dbError.message}`);
 
-            // Retrieve new font ID
+            // Get Font ID
             const { data: insertedFont, error: insertError } = await supabase
                 .from('fonts')
                 .select('id')
@@ -331,15 +271,14 @@ const Upload = () => {
 
             if (insertError || !insertedFont) throw new Error('Failed to retrieve new font ID');
 
-            // Upload and Insert Variants (Original Files)
-            const variantsToConvert: { id: string; name: string; files: { ttf: File | null; otf: File | null } }[] = [];
+            // Upload Variants
+            const variantsToConvert: any[] = [];
 
             for (const variant of variants) {
                 const variantUrls: any = {};
                 const variantSizes: any = {};
                 const promises = [];
 
-                // Prepare for conversion queue if WOFF2 is missing but source exists
                 if (!variant.files.woff2 && (variant.files.ttf || variant.files.otf)) {
                     variantsToConvert.push({
                         id: variant.id,
@@ -352,9 +291,7 @@ const Upload = () => {
                     const file = variant.files[format];
                     if (file) {
                         const variantSlug = variant.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-                        // Force appropriate extension based on format to ensure consistency
                         const newFileName = `${slug}-${variantSlug}.${format}`;
-                        // Use the specific folder structure for variants: [id]/[slug]/variants/[VariantName]/[filename]
                         const variantPath = `${folderPath}/variants/${variant.name}/${newFileName}`;
 
                         const uploadVariantFile = async () => {
@@ -394,40 +331,39 @@ const Upload = () => {
                 }
             }
 
-            // Queue background conversion for missing WOFF2
-            console.log("Variants to convert:", variantsToConvert.length);
+            // Queue Conversion
             if (variantsToConvert.length > 0) {
                 queueWoff2Conversion(insertedFont.id, slug, variantsToConvert);
             }
 
-            // Redirect immediately
             navigate(`/fonts/${slug}`);
 
         } catch (error: any) {
-            console.error('Full Error Object:', error);
+            console.error('Upload Error:', error);
             alert(error.message || 'An error occurred during upload.');
         } finally {
             setLoading(false);
         }
     };
 
-    // Role Check
+    // Access Check
     if (!profile || (profile.role !== 'member' && profile.role !== 'admin')) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-[84.4vh] bg-[#EEEFEB] rounded-4xl text-center p-8 space-y-6">
-                <div className="bg-red-100 p-6 rounded-full">
-                    <div className="text-6xl">🔒</div>
+            <div className="flex flex-col items-center justify-center min-h-[60vh] bg-zinc-900 border border-white/10 rounded-3xl text-center p-8 space-y-6 mt-12">
+                <div className="bg-red-500/10 p-6 rounded-full border border-red-500/20">
+                    <div className="text-4xl">🔒</div>
                 </div>
-                <h1 className="text-4xl font-black uppercase">Access Restricted</h1>
-                <p className="text-xl text-gray-600 max-w-lg">
-                    Uploading fonts is currently restricted to approved <strong>Members</strong> and <strong>Admins</strong>.
-                </p>
+                <div>
+                    <h1 className="text-3xl font-black uppercase text-white mb-2">Access Restricted</h1>
+                    <p className="text-zinc-400 max-w-md">
+                        Uploading fonts is currently restricted to approved <strong>Members</strong> and <strong>Admins</strong>.
+                    </p>
+                </div>
                 <div className="flex gap-4">
-                    <button onClick={() => navigate('/')} className="px-6 py-3 bg-black text-white rounded-xl font-bold hover:scale-105 transition-transform">
+                    <button onClick={() => navigate('/')} className="px-6 py-3 bg-white text-black rounded-xl font-bold hover:scale-105 transition-transform">
                         Go Home
                     </button>
-                    {/* Placeholder for future "Request Access" feature */}
-                    <button disabled className="px-6 py-3 border-2 border-black text-black rounded-xl font-bold opacity-50 cursor-not-allowed">
+                    <button disabled className="px-6 py-3 border border-white/20 text-zinc-500 rounded-xl font-bold opacity-50 cursor-not-allowed">
                         Request Access
                     </button>
                 </div>
@@ -436,247 +372,117 @@ const Upload = () => {
     }
 
     return (
-        <div className="mx-auto">
-            <form onSubmit={handleSubmit} className="rounded-4xl">
+        <div className="max-w-5xl mx-auto py-12 px-4">
+            <SEO title="Upload Font" />
 
-                <h1 className="md:hidden col-span-1 md:col-span-2 text-4xl bg-[#EEEFEB] p-4 rounded-4xl border-y border-black text-center md:text-left font-black uppercase">Upload Font</h1>
-                {/* Meta Inputs */}
-                <div className="col-span-1 space-y-4 bg-[#EEEFEB] p-8 rounded-4xl border-r border-y border-black">
+            <form onSubmit={handleSubmit} className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+
+                <div className="flex items-center justify-between">
                     <div>
-                        <label className="block font-bold mb-2 uppercase">Font Name</label>
-                        <input
-                            name="name"
-                            value={formData.name}
-                            onChange={handleChange}
-                            className="w-full border-2 border-black p-3 rounded-2xl font-bold focus:outline-none focus:ring-4 ring-[#FF90E8]"
-
-                        />
+                        <h1 className="text-4xl font-black uppercase text-white mb-2">Upload Font</h1>
+                        <p className="text-zinc-400">Share your typographic creation with the world.</p>
                     </div>
-
-                    <div>
-                        <label className="block font-bold mb-2 uppercase">Designer <span className="text-sm text-gray-500 lowercase">(optional)</span></label>
-                        <input
-                            name="designer"
-                            value={formData.designer}
-                            onChange={handleChange}
-                            className="w-full border-2 border-black p-3 rounded-2xl font-bold focus:outline-none focus:ring-4 ring-[#00C2FF]"
-                            placeholder="Leave blank if unknown"
-                        />
-                    </div>
+                    {/* Admin Tools Hook */}
+                    {profile?.role === 'admin' && <FixWoff2Scanner />}
                 </div>
 
-                {/* Variants Section */}
-                <div className="col-span-1 md:col-span-2 bg-[#EEEFEB] p-8 rounded-4xl border-l border-y border-black border-t-0 md:border-t">
-                    <div className="flex justify-between items-center mb-4">
-                        <label className="font-bold uppercase text-lg">Font Variants <span className="text-sm text-red-500 normal-case ml-2">(At least one required)</span></label>
-                        <div className="flex gap-2">
-                            <button
-                                type="button"
-                                onClick={addCustomVariant}
-                                className="px-4 py-2 rounded-full font-bold text-sm bg-[#EEEFEB] border-2 border-black text-black hover:bg-gray-100 transition-colors"
-                            >
-                                + Custom Variant
-                            </button>
-                            <button
-                                type="button"
-                                onClick={addVariant}
-                                disabled={variants.length >= VARIANT_NAMES.length + 10}
-                                className={`px-4 py-2 rounded-full font-bold text-sm transition-colors ${variants.length >= VARIANT_NAMES.length + 10
-                                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                                    : 'bg-black text-white hover:bg-gray-800'
-                                    }`}
-                            >
-                                + Add Std Variant
-                            </button>
+                {/* Main Info */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="bg-zinc-900 p-8 rounded-3xl border border-white/10 space-y-6">
+                        <div>
+                            <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-2">Font Name</label>
+                            <input
+                                name="name"
+                                value={formData.name}
+                                onChange={handleChange}
+                                placeholder="e.g. Helvetica Neue"
+                                className="w-full bg-black/50 border border-white/10 p-4 rounded-xl text-white font-bold text-lg focus:outline-none focus:border-[#FF90E8] transition-colors"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-2">Designer <span className="text-zinc-600 normal-case">(optional)</span></label>
+                            <input
+                                name="designer"
+                                value={formData.designer}
+                                onChange={handleChange}
+                                placeholder="Your Name or Studio"
+                                className="w-full bg-black/50 border border-white/10 p-4 rounded-xl text-white font-bold focus:outline-none focus:border-[#00C2FF] transition-colors"
+                            />
                         </div>
                     </div>
 
-                    <div className="space-y-6">
-                        {variants.map((variant) => (
-                            <div key={variant.id} className="p-4 border-2 border-dashed border-gray-300 rounded-2xl">
-                                <div className="flex justify-between items-start mb-4">
-                                    <div>
-                                        <label className="block text-xs font-bold uppercase mb-1">Variant Name</label>
-                                        {variant.isCustom ? (
-                                            <input
-                                                type="text"
-                                                value={variant.name}
-                                                onChange={(e) => updateVariantName(variant.id, e.target.value)}
-                                                className="border-2 border-black rounded-lg px-3 py-1 font-bold bg-[#EEEFEB] w-full"
-                                                placeholder="e.g. Demi Bold"
-                                                autoFocus
-                                            />
-                                        ) : (
-                                            <select
-                                                value={variant.name}
-                                                onChange={(e) => updateVariantName(variant.id, e.target.value)}
-                                                className="border-2 border-black rounded-lg px-3 py-1 font-bold bg-[#EEEFEB]"
-                                            >
-                                                {VARIANT_NAMES.filter(name => name === variant.name || !variants.some(v => v.name === name)).map(name => (
-                                                    <option key={name} value={name}>{name}</option>
-                                                ))}
-                                            </select>
-                                        )}
-                                    </div>
+                    {/* Banner Gallery */}
+                    <div className="bg-zinc-900 p-8 rounded-3xl border border-white/10 flex flex-col">
+                        <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-4">Gallery Images <span className="text-zinc-600 normal-case">(First is preview)</span></label>
+
+                        <div className="flex-1 min-h-30 bg-black/30 rounded-xl border-2 border-dashed border-white/10 p-4 mb-4 grid grid-cols-3 gap-2">
+                            {bannerItems.map((item) => (
+                                <div key={item.id} className="relative group aspect-square rounded-lg overflow-hidden bg-black/50 border border-white/5">
+                                    {item.type === 'file' ? (
+                                        <img src={URL.createObjectURL(item.content as File)} className="w-full h-full object-cover" />
+                                    ) : (
+                                        <img src={item.content as string} className="w-full h-full object-cover" />
+                                    )}
                                     <button
                                         type="button"
-                                        onClick={() => removeVariant(variant.id)}
-                                        className="text-red-500 hover:text-red-700 p-1"
+                                        onClick={() => removeBannerItem(item.id)}
+                                        className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
                                     >
-                                        <X size={20} />
+                                        <X size={10} />
                                     </button>
                                 </div>
+                            ))}
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                                    {(['ttf', 'otf', 'woff', 'woff2'] as const).map(format => (
-                                        <div key={format} className="relative">
-                                            {variant.files[format] ? (
-                                                <div className="flex items-center justify-between bg-green-100 border border-green-300 rounded-lg p-2 text-xs font-bold">
-                                                    <span className="truncate max-w-20">{variant.files[format]?.name}</span>
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => updateVariantFile(variant.id, format, null as any)}
-                                                    >
-                                                        <X size={14} className="text-green-700" />
-                                                    </button>
-                                                </div>
-                                            ) : (
-                                                <div className="relative">
-                                                    <input
-                                                        type="file"
-                                                        accept={`.${format}`}
-                                                        onChange={(e) => {
-                                                            if (e.target.files?.[0]) {
-                                                                updateVariantFile(variant.id, format, e.target.files[0]);
-                                                            }
-                                                        }}
-                                                        className="absolute inset-0 opacity-0 cursor-pointer z-10 w-full h-full"
-                                                    />
-                                                    <div className="border border-gray-300 bg-[#EEEFEB] rounded-lg p-2 text-center text-xs font-bold text-gray-500 hover:border-black hover:text-black transition-colors">
-                                                        {format.toUpperCase()}
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        ))}
-                        {variants.length === 0 && (
-                            <p className="text-red-500 text-center text-sm italic font-bold">
-                                No variants added. Please add at least one variant.
-                            </p>
-                        )}
-                    </div>
-                </div>
-                {/* Banner Image Section */}
-                <div className="col-span-1 md:col-span-2 bg-[#EEEFEB] p-8 rounded-4xl border-x border-b border-black md:border-t-0 space-y-4">
-                    <label className="block font-bold uppercase text-lg">Banner Gallery <span className="text-sm text-gray-500 normal-case ml-2">(Optional - Multiple images allowed)</span></label>
-
-                    {/* List of items */}
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4 empty:hidden">
-                        {bannerItems.map((item) => (
-                            <div key={item.id} className="relative group aspect-video bg-gray-100 rounded-xl overflow-hidden border-2 border-gray-200">
-                                {item.type === 'file' ? (
-                                    <div className="w-full h-full flex flex-col items-center justify-center p-2 text-center">
-                                        <ImageIcon className="text-gray-400 mb-1" />
-                                        <span className="text-xs font-bold truncate w-full">{(item.content as File).name}</span>
-                                    </div>
-                                ) : (
-                                    <img
-                                        src={item.content as string}
-                                        alt="Preview"
-                                        className="w-full h-full object-cover"
-                                    />
-                                )}
-                                <button
-                                    type="button"
-                                    onClick={() => removeBannerItem(item.id)}
-                                    className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                                >
-                                    <X size={12} />
-                                </button>
-                            </div>
-                        ))}
-                    </div>
-
-                    <div className="flex flex-wrap gap-4">
-                        <div className="relative">
-                            <input
-                                type="file"
-                                multiple
-                                accept="image/png, image/jpeg, image/webp, image/avif"
-                                onChange={handleBannerFileChange}
-                                className="absolute inset-0 opacity-0 cursor-pointer w-full z-10"
-                            />
-                            <button
-                                type="button"
-                                className="flex items-center gap-2 px-4 py-2 rounded-full font-bold border-2 border-dashed border-gray-300 hover:border-black hover:bg-gray-50 transition-all text-gray-500 hover:text-black"
-                            >
-                                <UploadIcon size={18} /> Add Images
-                            </button>
+                            <label className="aspect-square rounded-lg border border-white/5 bg-white/5 hover:bg-white/10 transition-colors flex flex-col items-center justify-center cursor-pointer text-zinc-500 hover:text-white">
+                                <Plus size={24} />
+                                <span className="text-[10px] mt-1 font-bold">ADD</span>
+                                <input type="file" multiple accept="image/*" className="hidden" onChange={handleBannerFileChange} />
+                            </label>
                         </div>
 
-                        <div className="flex gap-2">
+                        <div className="flex justify-end">
                             {showUrlInput ? (
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-2 w-full">
                                     <input
                                         type="url"
                                         value={urlInput}
                                         onChange={e => setUrlInput(e.target.value)}
                                         placeholder="https://..."
-                                        className="border-2 border-black rounded-lg px-2 py-1 focus:outline-none"
+                                        className="flex-1 bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none"
                                         autoFocus
                                     />
-                                    <button
-                                        type="button"
-                                        onClick={addBannerUrl}
-                                        className="bg-black text-white px-3 py-1 rounded-lg font-bold text-sm"
-                                    >
-                                        Add
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowUrlInput(false)}
-                                        className="text-gray-500 hover:text-black"
-                                    >
-                                        <X size={18} />
-                                    </button>
+                                    <button type="button" onClick={addBannerUrl} className="bg-white text-black px-3 py-2 rounded-lg font-bold text-xs">ADD</button>
+                                    <button type="button" onClick={() => setShowUrlInput(false)} className="text-zinc-500"><X size={18} /></button>
                                 </div>
                             ) : (
-                                <button
-                                    type="button"
-                                    onClick={() => setShowUrlInput(true)}
-                                    className="flex items-center gap-2 px-4 py-2 rounded-full font-bold border-2 border-dashed border-gray-300 hover:border-black hover:bg-gray-50 transition-all text-gray-500 hover:text-black"
-                                >
-                                    <LinkIcon size={18} /> Add URL
+                                <button type="button" onClick={() => setShowUrlInput(true)} className="text-xs font-bold text-zinc-500 hover:text-white flex items-center gap-1">
+                                    <LinkIcon size={12} /> ADD FROM URL
                                 </button>
                             )}
                         </div>
                     </div>
-                </div >
+                </div>
 
-                <div className='col-span-1 md:col-span-2 space-y-4 bg-[#EEEFEB] p-8 rounded-4xl border-y border-black'>
-                    <label className="block font-bold mb-2 uppercase">Categories</label>
-                    <div className="flex flex-col gap-6 max-h-full overflow-y-auto p-1">
-                        {CATEGORIES.map((group, groupIndex) => (
-                            <div key={groupIndex} className="flex flex-col gap-3">
-                                <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest px-1">
-                                    {group.group}
-                                </h3>
-                                <div className="flex gap-2 flex-wrap">
+                {/* Categories */}
+                <div className="bg-zinc-900 p-8 rounded-3xl border border-white/10">
+                    <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-6">Categories & Style</label>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        {CATEGORIES.map((group, i) => (
+                            <div key={i}>
+                                <h3 className={cn("text-sm font-black uppercase mb-3 border-b border-white/10 pb-2", group.color)}>{group.group}</h3>
+                                <div className="flex flex-wrap gap-2">
                                     {group.items.map(cat => (
                                         <button
                                             key={cat.id}
                                             type="button"
                                             onClick={() => handleTagChange(cat.id)}
-                                            className={`
-                                                px-3 py-1.5 font-bold rounded-full border-2 text-sm transition-all duration-200
-                                                ${formData.tags.includes(cat.id)
-                                                    ? "bg-black text-white border-black shadow-md"
-                                                    : "bg-[#EEEFEB] text-gray-500 border-gray-200 hover:border-black hover:text-black hover:-translate-y-0.5"
-                                                }
-                                            `}
+                                            className={cn(
+                                                "px-3 py-1.5 text-xs font-bold rounded-full border transition-all",
+                                                formData.tags.includes(cat.id)
+                                                    ? "bg-white text-black border-white"
+                                                    : "bg-transparent text-zinc-500 border-white/10 hover:border-white/30 hover:text-white"
+                                            )}
                                         >
                                             {cat.label}
                                         </button>
@@ -687,18 +493,116 @@ const Upload = () => {
                     </div>
                 </div>
 
-                <button
-                    type="submit"
-                    disabled={loading}
-                    className="col-span-1 md:col-span-2 w-full bg-[#EEEFEB] text-black py-4 rounded-4xl font-black uppercase tracking-wider hover:bg-[#FF6B00] hover:border-black border-r border-t border-y border-black transition-all flex justify-center items-center gap-2"
-                >
-                    {loading ? 'Uploading...' : 'Submit Font'}
-                </button>
+                {/* Variants */}
+                <div className="bg-zinc-900 p-8 rounded-3xl border border-white/10">
+                    <div className="flex items-center justify-between mb-6">
+                        <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider">Font Files <span className="text-red-500 normal-case ml-2">(At least one required)</span></label>
+                        <div className="flex gap-2">
+                            <button
+                                type="button"
+                                onClick={addCustomVariant}
+                                className="px-4 py-2 text-xs font-bold text-white bg-white/5 rounded-full hover:bg-white/10 border border-white/10 transition-colors"
+                            >
+                                + Custom Style
+                            </button>
+                            <button
+                                type="button"
+                                onClick={addVariant}
+                                disabled={variants.length >= VARIANT_NAMES.length + 10}
+                                className={cn(
+                                    "px-4 py-2 text-xs font-bold rounded-full transition-colors",
+                                    variants.length >= VARIANT_NAMES.length + 10
+                                        ? "bg-zinc-800 text-zinc-500 cursor-not-allowed"
+                                        : "bg-white text-black hover:bg-zinc-200"
+                                )}
+                            >
+                                + Standard Weight
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="space-y-4">
+                        {variants.length === 0 && (
+                            <div className="p-8 border-2 border-dashed border-red-500/20 rounded-2xl bg-red-500/5 text-center">
+                                <p className="text-red-500 text-sm font-bold">
+                                    No variants added. Please add at least one variant to publish.
+                                </p>
+                            </div>
+                        )}
+                        <AnimatePresence>
+                            {variants.map((variant) => (
+                                <motion.div
+                                    key={variant.id}
+                                    initial={{ opacity: 0, height: 0 }}
+                                    animate={{ opacity: 1, height: 'auto' }}
+                                    exit={{ opacity: 0, height: 0 }}
+                                    className="bg-black/30 border border-white/5 rounded-2xl p-4"
+                                >
+                                    <div className="flex items-center gap-4 mb-4">
+                                        <div className="w-1/3">
+                                            {variant.isCustom ? (
+                                                <input
+                                                    value={variant.name}
+                                                    onChange={(e) => updateVariantName(variant.id, e.target.value)}
+                                                    placeholder="Variant Name"
+                                                    className="w-full bg-zinc-900 border border-white/10 rounded-lg px-3 py-2 text-white font-bold text-sm focus:outline-none focus:border-white/30"
+                                                />
+                                            ) : (
+                                                <select
+                                                    value={variant.name}
+                                                    onChange={(e) => updateVariantName(variant.id, e.target.value)}
+                                                    className="w-full bg-zinc-900 border border-white/10 rounded-lg px-3 py-2 text-white font-bold text-sm focus:outline-none focus:border-white/30"
+                                                >
+                                                    {VARIANT_NAMES.filter(name => name === variant.name || !variants.some(v => v.name === name)).map(name => (
+                                                        <option key={name} value={name}>{name}</option>
+                                                    ))}
+                                                </select>
+                                            )}
+                                        </div>
+                                        <button type="button" onClick={() => removeVariant(variant.id)} className="ml-auto text-zinc-600 hover:text-red-500"><X size={18} /></button>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                        {(['ttf', 'otf', 'woff', 'woff2'] as const).map(format => (
+                                            <div key={format} className="relative">
+                                                {variant.files[format] ? (
+                                                    <div className="bg-[#BDF522]/10 border border-[#BDF522]/30 rounded-lg p-3 flex items-center justify-between group">
+                                                        <span className="text-[#BDF522] font-mono text-xs font-bold uppercase">{format}</span>
+                                                        <button type="button" onClick={() => updateVariantFile(variant.id, format, null as any)} className="text-[#BDF522] opacity-50 group-hover:opacity-100"><X size={14} /></button>
+                                                    </div>
+                                                ) : (
+                                                    <label className="bg-white/5 border border-white/5 hover:border-white/20 hover:bg-white/10 rounded-lg p-3 flex items-center justify-center cursor-pointer transition-all">
+                                                        <span className="text-zinc-500 font-mono text-xs font-bold uppercase group-hover:text-white">{format}</span>
+                                                        <input type="file" accept={`.${format}`} className="hidden" onChange={(e) => {
+                                                            if (e.target.files?.[0]) updateVariantFile(variant.id, format, e.target.files[0]);
+                                                        }} />
+                                                    </label>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </motion.div>
+                            ))}
+                        </AnimatePresence>
+                    </div>
+                </div>
+
+                <div className="pt-6">
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className="w-full bg-[#BDF522] text-black py-4 rounded-2xl font-black text-xl uppercase tracking-widest hover:scale-[1.01] hover:shadow-[0_0_40px_rgba(189,245,34,0.3)] transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:hover:scale-100"
+                    >
+                        {loading ? 'Uploading...' : (
+                            <>
+                                <span>Publish Font</span>
+                                <Check strokeWidth={4} />
+                            </>
+                        )}
+                    </button>
+                </div>
+
             </form>
-            {/* Admin Tools Section */}
-            {profile?.role === 'admin' && (
-                <FixWoff2Scanner />
-            )}
         </div>
     );
 };

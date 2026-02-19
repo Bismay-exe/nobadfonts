@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
+import { Loader2, Save } from 'lucide-react';
 
 export default function SettingsForm({ onCancel }: { onCancel: () => void }) {
     const { user, profile, refreshProfile } = useAuth();
@@ -78,47 +79,47 @@ export default function SettingsForm({ onCancel }: { onCancel: () => void }) {
     };
 
     return (
-        <div className="bg-white rounded-4xl shadow-sm border-b-2 border-black p-8 mx-auto">
-            <h2 className="text-xl font-bold mb-6">Edit Profile</h2>
+        <div className="bg-zinc-900 border border-white/10 rounded-3xl p-8 max-w-2xl mx-auto shadow-2xl">
+            <h2 className="text-2xl font-bold text-white mb-6">Edit Profile</h2>
 
             {message && (
-                <div className={`p-4 rounded-lg mb-6 ${message.type === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
+                <div className={`p-4 rounded-xl mb-6 flex items-center gap-2 ${message.type === 'success' ? 'bg-green-500/10 text-green-500 border border-green-500/20' : 'bg-red-500/10 text-red-500 border border-red-500/20'}`}>
                     {message.text}
                 </div>
             )}
 
             <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                    <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-2">Full Name</label>
                     <input
                         type="text"
                         value={fullName}
                         onChange={(e) => setFullName(e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-4xl focus:ring-2 focus:ring-blue-500 outline-none"
+                        className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-white/30 focus:outline-none transition-colors"
                         required
                     />
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
+                    <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-2">Username</label>
                     <div className="relative">
-                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-bold">@</span>
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 font-bold">@</span>
                         <input
                             type="text"
                             value={username}
                             onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
-                            className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-4xl focus:ring-2 focus:ring-blue-500 outline-none font-mono"
+                            className="w-full bg-black/50 border border-white/10 rounded-xl pl-8 pr-4 py-3 text-white focus:border-white/30 focus:outline-none transition-colors font-mono"
                             placeholder="username"
                             required
                         />
                     </div>
-                    <p className="text-xs text-gray-500 mt-1 ml-2">Only lowercase letters, numbers, and hyphens.</p>
+                    <p className="text-xs text-zinc-600 mt-2">Only lowercase letters, numbers, and hyphens.</p>
                 </div>
 
                 <div>
-                    <div className="flex justify-between items-center mb-1">
-                        <label className="block text-sm font-medium text-gray-700">Bio</label>
-                        <span className={`text-xs ${bio.length === 150 ? 'text-red-500 font-bold' : 'text-gray-400'}`}>
+                    <div className="flex justify-between items-center mb-2">
+                        <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider">Bio</label>
+                        <span className={`text-xs ${bio.length === 150 ? 'text-red-500 font-bold' : 'text-zinc-600'}`}>
                             {bio.length}/150
                         </span>
                     </div>
@@ -127,81 +128,82 @@ export default function SettingsForm({ onCancel }: { onCancel: () => void }) {
                         onChange={(e) => setBio(e.target.value)}
                         rows={4}
                         maxLength={150}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-4xl focus:ring-2 focus:ring-blue-500 outline-none resize-none"
+                        className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-white/30 focus:outline-none resize-none transition-colors"
                         placeholder="Tell us a bit about yourself..."
                     />
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Portfolio & Socials</label>
+                    <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-2">Portfolio & Socials</label>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <input
                             type="url"
                             value={website}
                             onChange={(e) => setWebsite(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-4xl focus:ring-2 focus:ring-blue-500 outline-none"
+                            className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-white/30 focus:outline-none transition-colors"
                             placeholder="Personal Website URL"
                         />
                         <input
                             type="url"
                             value={behance}
                             onChange={(e) => setBehance(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-4xl focus:ring-2 focus:ring-blue-500 outline-none"
+                            className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-white/30 focus:outline-none transition-colors"
                             placeholder="Behance URL"
                         />
                         <input
                             type="url"
                             value={twitter}
                             onChange={(e) => setTwitter(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-4xl focus:ring-2 focus:ring-blue-500 outline-none"
+                            className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-white/30 focus:outline-none transition-colors"
                             placeholder="Twitter/X URL"
                         />
                         <input
                             type="url"
                             value={instagram}
                             onChange={(e) => setInstagram(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-4xl focus:ring-2 focus:ring-blue-500 outline-none"
+                            className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-white/30 focus:outline-none transition-colors"
                             placeholder="Instagram URL"
                         />
                         <input
                             type="url"
                             value={linkedin}
                             onChange={(e) => setLinkedin(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-4xl focus:ring-2 focus:ring-blue-500 outline-none"
+                            className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-white/30 focus:outline-none transition-colors"
                             placeholder="LinkedIn URL"
                         />
                     </div>
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Donations</label>
+                    <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-2">Donations</label>
                     <div className="relative">
-                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-bold">paypal.me/</span>
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 font-bold">paypal.me/</span>
                         <input
                             type="text"
                             value={paypalMe}
                             onChange={(e) => setPaypalMe(e.target.value)}
-                            className="w-full pl-28 pr-4 py-2 border rounded-4xl focus:ring-2 focus:ring-blue-500 outline-none bg-blue-50 border-blue-200"
+                            className="w-full bg-blue-500/10 border border-blue-500/30 rounded-xl pl-28 pr-4 py-3 text-white focus:border-blue-500/50 focus:outline-none transition-colors"
                             placeholder="username"
                         />
                     </div>
                 </div>
 
-                <div className="flex justify-end gap-4">
+                <div className="flex justify-end gap-3 pt-4 border-t border-white/10">
                     <button
                         type="button"
                         onClick={onCancel}
                         disabled={loading}
-                        className="px-6 py-2 text-gray-600 hover:bg-gray-50 rounded-2xl transition-colors"
+                        className="px-6 py-3 rounded-xl font-bold text-zinc-400 hover:text-white hover:bg-white/5 transition-colors"
                     >
                         Cancel
                     </button>
                     <button
                         type="submit"
                         disabled={loading}
-                        className="px-6 py-2 bg-black text-white rounded-2xl hover:bg-gray-800 transition-colors shadow-lg disabled:opacity-50"
+                        className="px-8 py-3 bg-white text-black rounded-xl font-bold hover:bg-zinc-200 transition-colors flex items-center gap-2 disabled:opacity-50"
                     >
-                        {loading ? 'Saving...' : 'Save Changes'}
+                        {loading ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
+                        Save Changes
                     </button>
                 </div>
             </form>

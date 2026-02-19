@@ -30,7 +30,6 @@ const CATEGORIES = [
             { id: 'signature', label: 'Signature' }
         ],
     },
-
     {
         group: 'Style',
         items: [
@@ -46,7 +45,6 @@ const CATEGORIES = [
             { id: 'organic', label: 'Organic' },
         ],
     },
-
     {
         group: 'Use Case',
         items: [
@@ -59,7 +57,6 @@ const CATEGORIES = [
             { id: "social-media", label: "Social Media" }
         ],
     },
-
     {
         group: 'Weight & Shape',
         items: [
@@ -73,7 +70,6 @@ const CATEGORIES = [
             { id: "extended", label: "Extended" },
         ],
     },
-
     {
         group: "Construction & Features",
         items: [
@@ -87,7 +83,6 @@ const CATEGORIES = [
             { id: "messy", label: "Messy" }
         ]
     },
-
     {
         group: 'Era & Vibe',
         items: [
@@ -153,10 +148,10 @@ export default function Filters({ filters, onChange, viewMode, onViewModeChange,
     const currentSortLabel = SORT_OPTIONS.find(opt => opt.id === (filters.sortBy || 'trending'))?.label || 'Trending';
 
     return (
-        <div className="fixed bottom-8 inset-x-4 lg:bottom-18 lg:inset-auto lg:left-1/2 lg:-translate-x-1/2 flex flex-col-reverse items-center z-50">
+        <div className="fixed bottom-8 inset-x-4 lg:bottom-10 lg:inset-auto lg:left-1/2 lg:-translate-x-1/2 flex flex-col-reverse items-center z-40">
 
             {/* Main Filter Dock */}
-            <div className="pointer-events-auto flex items-center gap-1 lg:gap-2 p-1 lg:p-2 bg-[#EEEFEB]/80 backdrop-blur-xl border border-[#1C1D1E]/10 rounded-full shadow-2xl w-auto max-w-full transition-all duration-300 hover:shadow-[0_20px_40px_-5px_rgba(0,0,0,0.1)] hover:border-[#1C1D1E]/20">
+            <div className="pointer-events-auto flex items-center gap-1 lg:gap-2 p-1.5 bg-black/80 backdrop-blur-xl border border-white/10 rounded-full shadow-2xl w-auto max-w-full transition-all duration-300 hover:shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:border-white/20">
 
                 {/* 1. Search Icon (Toggle on Mobile, Static on Desktop) */}
                 <button
@@ -164,11 +159,12 @@ export default function Filters({ filters, onChange, viewMode, onViewModeChange,
                         if (window.innerWidth < 768) togglePanel(setIsSearchOpen, !isSearchOpen);
                     }}
                     className={`
-                        w-12 h-12 flex items-center justify-center rounded-full shrink-0 shadow-lg transition-all duration-300
-                        ${isSearchOpen && window.innerWidth < 768 ? 'bg-[#1C1D1E] text-[#EEEFEB]' : 'bg-[#1C1D1E] text-[#EEEFEB]'}
+                        w-10 h-10 lg:w-12 lg:h-12 flex items-center justify-center rounded-full shrink-0 transition-all duration-300
+                        ${isSearchOpen && window.innerWidth < 768 ? 'bg-white text-black' : 'text-zinc-400 hover:text-white hover:bg-white/10'}
                     `}
                 >
-                    <Search size={20} strokeWidth={2.5} />
+                    <Search size={20} className="lg:hidden" />
+                    <Search size={20} className="hidden lg:block" />
                 </button>
 
                 {/* 2. Search Input (Desktop Only) */}
@@ -177,27 +173,27 @@ export default function Filters({ filters, onChange, viewMode, onViewModeChange,
                     placeholder="Search fonts..."
                     value={filters.query || ''}
                     onChange={(e) => handleChange('query', e.target.value)}
-                    className="hidden lg:block flex-1 w-0 min-w-40 lg:min-w-64 bg-transparent border-none outline-none text-[#1C1D1E] font-bold placeholder:text-[#1C1D1E]/40 px-2 lg:px-4 text-sm lg:text-base"
+                    className="hidden lg:block flex-1 w-0 min-w-40 lg:min-w-64 bg-transparent border-none outline-none text-white font-medium placeholder:text-zinc-600 px-2 lg:px-4 text-sm"
                 />
 
                 {/* Divider (Desktop Only) */}
-                <div className="w-px h-6 bg-[#1C1D1E]/10 mx-1 hidden lg:block"></div>
+                <div className="w-px h-6 bg-white/10 mx-1 hidden lg:block"></div>
 
-                {/* 3. Custom Text Toggle (Moved Here) */}
+                {/* 3. Custom Text Toggle */}
                 {onCustomTextChange && (
                     <button
                         onClick={() => togglePanel(setIsCustomTextOpen, !isCustomTextOpen)}
                         className={`
-                            group relative flex items-center gap-2 p-2 px-3 lg:px-4 h-10 lg:h-12 rounded-full transition-all duration-300 font-bold text-sm lg:text-base cursor-pointer
+                            group relative flex items-center gap-2 p-2 px-3 lg:px-4 h-10 lg:h-12 rounded-full transition-all duration-300 font-medium text-sm lg:text-base cursor-pointer
                             ${isCustomTextOpen || customText
-                                ? "bg-[#1C1D1E] text-[#EEEFEB] shadow-md"
-                                : "bg-[#1C1D1E]/5 text-[#1C1D1E] hover:bg-[#1C1D1E]/10"
+                                ? "bg-white text-black shadow-md"
+                                : "text-zinc-400 hover:bg-white/10 hover:text-white"
                             }
                         `}
                         title="Custom Text"
                     >
-                        <Pencil size={18} strokeWidth={2.5} />
-                        <span className="hidden lg:inline whitespace-nowrap">Custom Text</span>
+                        <Pencil size={18} />
+                        <span className="hidden lg:inline whitespace-nowrap">Preview Text</span>
                     </button>
                 )}
 
@@ -206,14 +202,14 @@ export default function Filters({ filters, onChange, viewMode, onViewModeChange,
                 <button
                     onClick={() => togglePanel(setIsCategoriesOpen, !isCategoriesOpen)}
                     className={`
-                        group relative flex items-center gap-2 p-2 px-3 lg:px-4 h-10 lg:h-12 rounded-full transition-all duration-300 font-bold text-sm lg:text-base cursor-pointer
+                        group relative flex items-center gap-2 p-2 px-3 lg:px-4 h-10 lg:h-12 rounded-full transition-all duration-300 font-medium text-sm lg:text-base cursor-pointer
                         ${isCategoriesOpen
-                            ? "bg-[#1C1D1E] text-[#EEEFEB] shadow-md"
-                            : "bg-[#1C1D1E]/5 text-[#1C1D1E] hover:bg-[#1C1D1E]/10"
+                            ? "bg-white text-black shadow-md"
+                            : "text-zinc-400 hover:bg-white/10 hover:text-white"
                         }
                     `}
                 >
-                    <SlidersHorizontal size={18} strokeWidth={2.5} />
+                    <SlidersHorizontal size={18} />
                     <span className="hidden lg:inline">Filters</span>
                 </button>
 
@@ -221,14 +217,14 @@ export default function Filters({ filters, onChange, viewMode, onViewModeChange,
                 <button
                     onClick={() => togglePanel(setIsSortOpen, !isSortOpen)}
                     className={`
-                        group relative flex items-center gap-1 lg:gap-2 p-2 px-3 lg:px-4 h-10 lg:h-12 rounded-full transition-all duration-300 font-bold text-sm lg:text-base cursor-pointer
+                        group relative flex items-center gap-1 lg:gap-2 p-2 px-3 lg:px-4 h-10 lg:h-12 rounded-full transition-all duration-300 font-medium text-sm lg:text-base cursor-pointer
                         ${isSortOpen
-                            ? "bg-[#1C1D1E] text-[#EEEFEB] shadow-md"
-                            : "bg-[#1C1D1E]/5 text-[#1C1D1E] hover:bg-[#1C1D1E]/10"
+                            ? "bg-white text-black shadow-md"
+                            : "text-zinc-400 hover:bg-white/10 hover:text-white"
                         }
                     `}
                 >
-                    <ArrowUpDown size={18} strokeWidth={2.5} className="lg:hidden" />
+                    <ArrowUpDown size={18} className="lg:hidden" />
                     <span className="hidden lg:inline">{currentSortLabel}</span>
                     <span className={`transform transition-transform duration-300 hidden lg:block ${isSortOpen ? 'rotate-180' : ''}`}>▼</span>
                 </button>
@@ -236,20 +232,20 @@ export default function Filters({ filters, onChange, viewMode, onViewModeChange,
                 {/* 6. View Toggle Group */}
                 {onViewModeChange && (
                     <>
-                        <div className="w-px h-6 bg-[#1C1D1E]/10 mx-1 hidden lg:block"></div>
-                        <div className="flex bg-[#1C1D1E]/5 p-2 rounded-full">
+                        <div className="w-px h-6 bg-white/10 mx-1 hidden lg:block"></div>
+                        <div className="flex bg-white/5 p-1 rounded-full">
                             <button
                                 onClick={() => {
                                     closeAllPanels();
                                     onViewModeChange('font');
                                 }}
                                 className={`p-2 rounded-full transition-all duration-300 ${viewMode === 'font'
-                                    ? 'bg-[#1C1D1E] text-[#EEEFEB] shadow-sm'
-                                    : 'text-[#1C1D1E]/60 hover:text-[#1C1D1E] hover:bg-[#1C1D1E]/10'
+                                    ? 'bg-zinc-800 text-white shadow-sm'
+                                    : 'text-zinc-500 hover:text-white hover:bg-white/10'
                                     }`}
                                 title="Font View"
                             >
-                                <Type size={16} strokeWidth={2.5} />
+                                <Type size={16} />
                             </button>
                             <button
                                 onClick={() => {
@@ -257,30 +253,30 @@ export default function Filters({ filters, onChange, viewMode, onViewModeChange,
                                     onViewModeChange('image');
                                 }}
                                 className={`p-2 rounded-full transition-all duration-300 ${viewMode === 'image'
-                                    ? 'bg-[#1C1D1E] text-[#EEEFEB] shadow-sm'
-                                    : 'text-[#1C1D1E]/60 hover:text-[#1C1D1E] hover:bg-[#1C1D1E]/10'
+                                    ? 'bg-zinc-800 text-white shadow-sm'
+                                    : 'text-zinc-500 hover:text-white hover:bg-white/10'
                                     }`}
                                 title="Image View"
                             >
-                                <Image size={16} strokeWidth={2.5} />
+                                <Image size={16} />
                             </button>
 
                             {/* Separator & Expand Toggle */}
                             {showExpandToggle && onToggleAll && (
                                 <>
-                                    <div className="w-px h-6 bg-[#1C1D1E]/10 mx-1"></div>
+                                    <div className="w-px h-6 bg-white/10 mx-1"></div>
                                     <button
                                         onClick={() => {
                                             closeAllPanels();
                                             onToggleAll();
                                         }}
-                                        className="p-2 rounded-full text-[#1C1D1E]/60 hover:text-[#1C1D1E] hover:bg-[#1C1D1E]/10 transition-all duration-300"
+                                        className="p-2 rounded-full text-zinc-500 hover:text-white hover:bg-white/10 transition-all duration-300"
                                         title={allExpanded ? "Collapse All" : "Expand All"}
                                     >
                                         {allExpanded ? (
-                                            <Minimize2 size={16} strokeWidth={2.5} />
+                                            <Minimize2 size={16} />
                                         ) : (
-                                            <Maximize2 size={16} strokeWidth={2.5} />
+                                            <Maximize2 size={16} />
                                         )}
                                     </button>
                                 </>
@@ -290,25 +286,25 @@ export default function Filters({ filters, onChange, viewMode, onViewModeChange,
                 )}
             </div>
 
-            {/* PANELS AREA (Visually Above Dock because of flex-col-reverse) */}
+            {/* PANELS AREA */}
 
             {/* 1. Search Panel (Mobile Only) */}
             {isSearchOpen && (
-                <div className="pointer-events-auto flex flex-col gap-3 rounded-4xl bg-[#EEEFEB]/50 backdrop-blur-2xl p-4 mb-5 border border-[#1C1D1E]/10 w-full max-w-sm animate-in fade-in slide-in-from-bottom-2 duration-300">
-                    <h3 className="text-md font-black text-[#1C1D1E] uppercase px-1 cursor-default">
+                <div className="pointer-events-auto flex flex-col gap-3 rounded-3xl bg-black/90 backdrop-blur-xl p-4 mb-4 border border-white/10 w-full max-w-sm animate-in fade-in slide-in-from-bottom-2 duration-300">
+                    <h3 className="text-sm font-bold text-zinc-400 uppercase tracking-widest px-1">
                         Search
                     </h3>
-                    <div className="flex items-center gap-2 bg-[#1C1D1E]/10 rounded-full px-4 py-2">
+                    <div className="flex items-center gap-2 bg-white/10 rounded-xl px-4 py-2 border border-white/5 focus-within:border-white/20 transition-colors">
                         <input
                             ref={searchInputRef}
                             type="text"
                             placeholder="Search fonts..."
                             value={filters.query || ''}
                             onChange={(e) => handleChange('query', e.target.value)}
-                            className="bg-transparent border-none outline-none text-[#1C1D1E] font-bold placeholder:text-[#1C1D1E]/40 w-full"
+                            className="bg-transparent border-none outline-none text-white font-medium placeholder:text-zinc-600 w-full"
                         />
                         {filters.query && (
-                            <button onClick={() => handleChange('query', '')} className="text-[#1C1D1E]/60">
+                            <button onClick={() => handleChange('query', '')} className="text-zinc-500 hover:text-white">
                                 <X size={16} />
                             </button>
                         )}
@@ -318,23 +314,23 @@ export default function Filters({ filters, onChange, viewMode, onViewModeChange,
 
             {/* 2. Custom Text Panel */}
             {isCustomTextOpen && onCustomTextChange && (
-                <div className="pointer-events-auto flex flex-col gap-3 rounded-4xl bg-[#EEEFEB]/50 backdrop-blur-2xl p-4 mb-5 border border-[#1C1D1E]/30 w-full max-w-sm animate-in fade-in slide-in-from-bottom-2 duration-300">
-                    <h3 className="text-md font-black text-[#1C1D1E] uppercase px-1 cursor-default">
+                <div className="pointer-events-auto flex flex-col gap-3 rounded-3xl bg-black/90 backdrop-blur-xl p-4 mb-4 border border-white/10 w-full max-w-sm animate-in fade-in slide-in-from-bottom-2 duration-300">
+                    <h3 className="text-sm font-bold text-zinc-400 uppercase tracking-widest px-1">
                         Custom Text
                     </h3>
-                    <div className="flex items-center gap-2 bg-[#1C1D1E]/10 rounded-full px-4 py-2">
+                    <div className="flex items-center gap-2 bg-white/10 rounded-xl px-4 py-2 border border-white/5 focus-within:border-white/20 transition-colors">
                         <input
                             ref={customTextInputRef}
                             type="text"
                             placeholder="Type something..."
                             value={customText || ''}
                             onChange={(e) => onCustomTextChange(e.target.value)}
-                            className="bg-transparent border-none outline-none text-[#1C1D1E] font-bold placeholder:text-[#1C1D1E]/40 w-full"
+                            className="bg-transparent border-none outline-none text-white font-medium placeholder:text-zinc-600 w-full"
                         />
                         {customText && (
                             <button
                                 onClick={() => onCustomTextChange('')}
-                                className="text-[#1C1D1E]/60 hover:text-[#1C1D1E]"
+                                className="text-zinc-500 hover:text-white"
                             >
                                 <X size={16} />
                             </button>
@@ -345,59 +341,62 @@ export default function Filters({ filters, onChange, viewMode, onViewModeChange,
 
             {/* 3. Categories Panel */}
             {isCategoriesOpen && (
-                <div className="grid grid-cols-2 md:flex md:flex-row gap-6 max-h-full overflow-y-auto rounded-4xl bg-[#EEEFEB]/50 backdrop-blur-2xl p-4 lg:p-6 mb-5 border border-[#1C1D1E]/30">
-                    {CATEGORIES.map((group, groupIndex) => (
-                        <div key={groupIndex} className="flex flex-col gap-2 md:gap-3">
-                            <h3 className="text-xs md:text-md font-black text-[#1C1D1E] uppercase px-1 cursor-default">
-                                {group.group}
-                            </h3>
-                            <div className="flex gap-1 md:gap-2 flex-wrap">
-                                {group.items.map(cat => {
-                                    const isSelected = filters.categories?.includes(cat.id);
-                                    return (
-                                        <button
-                                            key={cat.id}
-                                            type="button"
-                                            onClick={() => {
-                                                const current = filters.categories || [];
-                                                const newCategories = current.includes(cat.id)
-                                                    ? current.filter(c => c !== cat.id)
-                                                    : [...current, cat.id];
-                                                handleChange('categories', newCategories);
-                                            }}
-                                            className={`
-                                                px-2 py-1 md:px-3 md:py-1.5 font-bold rounded-full border text-[11px] md:text-sm transition-all duration-200 text-left cursor-pointer ${isSelected
-                                                    ? "bg-[#1C1D1E] text-[#EEEFEB] border-[#1C1D1E]"
-                                                    : "bg-transparent text-[#1C1D1E] border-[#1C1D1E]/30 hover:bg-[#1C1D1E] hover:text-[#EEEFEB]"
-                                                }
-                                            `}
-                                        >
-                                            {cat.label}
-                                        </button>
-                                    );
-                                })}
+                <div className="pointer-events-auto w-full max-w-4xl max-h-[60vh] overflow-y-auto rounded-3xl bg-black/90 backdrop-blur-xl p-6 mb-4 border border-white/10 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-8 gap-y-8">
+                        {CATEGORIES.map((group, groupIndex) => (
+                            <div key={groupIndex} className="flex flex-col gap-3">
+                                <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest">
+                                    {group.group}
+                                </h3>
+                                <div className="flex flex-col gap-2">
+                                    {group.items.map(cat => {
+                                        const isSelected = filters.categories?.includes(cat.id);
+                                        return (
+                                            <button
+                                                key={cat.id}
+                                                type="button"
+                                                onClick={() => {
+                                                    const current = filters.categories || [];
+                                                    const newCategories = current.includes(cat.id)
+                                                        ? current.filter(c => c !== cat.id)
+                                                        : [...current, cat.id];
+                                                    handleChange('categories', newCategories);
+                                                }}
+                                                className={`
+                                                    text-left text-sm transition-colors duration-200 hover:translate-x-1
+                                                    ${isSelected
+                                                        ? "text-lime-400 font-bold"
+                                                        : "text-zinc-400 hover:text-white"
+                                                    }
+                                                `}
+                                            >
+                                                {cat.label}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
             )}
 
             {/* 4. Sort Panel */}
             {isSortOpen && (
-                <div className="flex flex-col gap-3 rounded-4xl bg-[#EEEFEB]/50 backdrop-blur-2xl p-4 lg:p-6 mb-5 border border-[#1C1D1E]/30">
-                    <h3 className="text-md font-black text-[#1C1D1E] uppercase px-1 cursor-default">
+                <div className="pointer-events-auto flex flex-col gap-3 rounded-3xl bg-black/90 backdrop-blur-xl p-4 mb-4 border border-white/10 w-full max-w-xs animate-in fade-in slide-in-from-bottom-2 duration-300">
+                    <h3 className="text-sm font-bold text-zinc-400 uppercase tracking-widest px-1">
                         Sort By
                     </h3>
-                    <div className="flex gap-2 flex-wrap">
+                    <div className="flex flex-col gap-1">
                         {SORT_OPTIONS.map(opt => (
                             <button
                                 key={opt.id}
                                 onClick={() => handleChange('sortBy', opt.id)}
                                 className={`
-                                    px-3 py-1.5 font-bold rounded-full border text-xs lg:text-sm transition-all duration-200 text-left cursor-pointer
+                                    w-full px-4 py-3 rounded-xl text-left text-sm transition-all duration-200
                                     ${(filters.sortBy || 'trending') === opt.id
-                                        ? "bg-[#1C1D1E] text-[#EEEFEB] border-[#1C1D1E]"
-                                        : "bg-transparent text-[#1C1D1E] border-[#1C1D1E] hover:bg-[#1C1D1E] hover:text-[#EEEFEB] hover:-translate-y-0.5"
+                                        ? "bg-white/10 text-white font-bold border border-white/10"
+                                        : "bg-transparent text-zinc-400 hover:bg-white/5 hover:text-white"
                                     }
                                 `}
                             >

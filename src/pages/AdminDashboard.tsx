@@ -2,9 +2,11 @@ import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { Navigate, Link } from 'react-router-dom';
-import { Search } from 'lucide-react';
+import { Search, Users, FileText, Star, Eye, TrendingUp, Shield, MoreVertical, Check, X, LayoutGrid } from 'lucide-react';
 import type { Database } from '../types/database.types';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { cn } from '../lib/utils';
+import SEO from '../components/shared/SEO';
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
 type FontRow = Database['public']['Tables']['fonts']['Row'];
@@ -143,86 +145,6 @@ export default function AdminDashboard() {
                 .sort((a, b) => a.date.localeCompare(b.date));
 
             setDownloadStats(chartData);
-
-            // Top Downloaded Fonts
-            const fontCounts = new Map<string, number>();
-            downloads.forEach(d => {
-                fontCounts.set(d.font_id, (fontCounts.get(d.font_id) || 0) + 1);
-            });
-
-            const topIds = Array.from(fontCounts.entries())
-                .sort((a, b) => b[1] - a[1])
-                .slice(0, 10);
-
-            if (topIds.length > 0) {
-                // We will fetch names later in a batch if needed, or individually here
-                // Note: To optimize, we could combine IDs from downloads and favorites
-                const { data: fontNames } = await supabase
-                    .from('fonts')
-                    .select('id, name')
-                    .in('id', topIds.map(t => t[0]));
-
-                if (fontNames) {
-                    const topFontsData = topIds.map(([id, count]) => {
-                        const font = fontNames.find(f => f.id === id);
-                        return { name: font?.name || 'Unknown Font', count };
-                    });
-                    setTopDownloadedFonts(topFontsData);
-                }
-            } else {
-                setTopDownloadedFonts([]);
-            }
-        }
-
-        // --- Process Favorites ---
-        if (favorites) {
-            const dateMap = new Map<string, number>();
-            // Initialize last 30 days with 0
-            for (let i = 0; i < 30; i++) {
-                const d = new Date();
-                d.setDate(d.getDate() - i);
-                const dateStr = d.toISOString().split('T')[0];
-                dateMap.set(dateStr, 0);
-            }
-
-            favorites.forEach(f => {
-                if (!f.created_at) return;
-                const dateStr = f.created_at.split('T')[0];
-                dateMap.set(dateStr, (dateMap.get(dateStr) || 0) + 1);
-            });
-
-            const chartData = Array.from(dateMap.entries())
-                .map(([date, count]) => ({ date, count }))
-                .sort((a, b) => a.date.localeCompare(b.date));
-
-            setFavoritesStats(chartData);
-
-            // Top Favorited Fonts
-            const fontCounts = new Map<string, number>();
-            favorites.forEach(f => {
-                fontCounts.set(f.font_id, (fontCounts.get(f.font_id) || 0) + 1);
-            });
-
-            const topIds = Array.from(fontCounts.entries())
-                .sort((a, b) => b[1] - a[1])
-                .slice(0, 10);
-
-            if (topIds.length > 0) {
-                const { data: fontNames } = await supabase
-                    .from('fonts')
-                    .select('id, name')
-                    .in('id', topIds.map(t => t[0]));
-
-                if (fontNames) {
-                    const topFontsData = topIds.map(([id, count]) => {
-                        const font = fontNames.find(f => f.id === id);
-                        return { name: font?.name || 'Unknown Font', count };
-                    });
-                    setTopFavoritedFonts(topFontsData);
-                }
-            } else {
-                setTopFavoritedFonts([]);
-            }
         }
 
         setLoading(false);
@@ -356,554 +278,378 @@ export default function AdminDashboard() {
     };
 
 
-    if (authLoading) return <div>Loading...</div>;
-    if (!user || profile?.role !== 'admin') return <Navigate to="/" replace />;
+    if (authLoading) return <div className="min-h-screen bg-black flex items-center justify-center text-white">Loading...</div>;
+    if (!user || profile?.role !== 'admin') return <Navigate to="/" replace />; // TODO: Create a proper 403 page
+
+    const tabItems = [
+        { id: 'requests', label: 'Requests', icon: Users, color: 'text-white' },
+        { id: 'users', label: 'Users', icon: Shield, color: 'text-[#BDF522]' },
+        { id: 'files', label: 'Files', icon: FileText, color: 'text-[#00C2FF]' },
+        { id: 'curation', label: 'Curation', icon: Star, color: 'text-[#FF90E8]' },
+        { id: 'analytics', label: 'Analytics', icon: TrendingUp, color: 'text-[#FFDE59]' }
+    ];
 
     return (
-        <div className="mx-auto bg-[#EEEFEB]/0 rounded-4xl">
-            <div className="bg-[#BDF522] rounded-4xl p-8 border-y border-black">
-                <h1 className="text-4xl text-center md:text-left font-black uppercase">Admin Dashboard</h1>
-            </div>
+        <div className="min-h-screen bg-black text-white p-4 md:p-8">
+            <SEO title="Admin Dashboard" />
 
-            {/* Tabs */}
-            <div className='bg-[#EEEFEB] rounded-4xl p-2 border-y border-black'>
-                <div className="flex flex-wrap gap-4 px-1 py-4">
-                    <button
-                        onClick={() => setActiveTab('requests')}
-                        className={`px-6 py-2 rounded-full font-bold border-2 border-black transition-all ${activeTab === 'requests' ? 'bg-[#BDF522] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]' : 'bg-[#EEEFEB] hover:bg-gray-50'
-                            }`}
-                    >
-                        Requests
-                        {pendingRequests.length > 0 && (
-                            <span className="ml-2 bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">{pendingRequests.length}</span>
-                        )}
-                    </button>
-                    <button
-                        onClick={() => setActiveTab('users')}
-                        className={`px-6 py-2 rounded-full font-bold border-2 border-black transition-all ${activeTab === 'users' ? 'bg-[#FF90E8] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]' : 'bg-[#EEEFEB] hover:bg-gray-50'
-                            }`}
-                    >
-                        User Management
-                    </button>
-                    <button
-                        onClick={() => setActiveTab('files')}
-                        className={`px-6 py-2 rounded-full font-bold border-2 border-black transition-all ${activeTab === 'files' ? 'bg-[#04ff96] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]' : 'bg-[#EEEFEB] hover:bg-gray-50'
-                            }`}
-                    >
-                        Storage & Files
-                    </button>
-                    <button
-                        onClick={() => setActiveTab('curation')}
-                        className={`px-6 py-2 rounded-full font-bold border-2 border-black transition-all ${activeTab === 'curation' ? 'bg-[#FFDE59] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]' : 'bg-[#EEEFEB] hover:bg-gray-50'
-                            }`}
-                    >
-                        Site Curation
-                    </button>
-                    <button
-                        onClick={() => setActiveTab('analytics')}
-                        className={`px-6 py-2 rounded-full font-bold border-2 border-black transition-all ${activeTab === 'analytics' ? 'bg-[#FF90D9] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]' : 'bg-[#EEEFEB] hover:bg-gray-50'
-                            }`}
-                    >
-                        Analytics
-                    </button>
+            <div className="max-w-7xl mx-auto">
+                <header className="mb-8">
+                    <h1 className="text-3xl font-black uppercase mb-2">Admin Dashboard</h1>
+                    <p className="text-zinc-500">Manage users, contents, and system health.</p>
+                </header>
+
+                {/* Tabs */}
+                <div className="flex flex-wrap gap-2 mb-8 bg-zinc-900/50 p-2 rounded-2xl border border-white/10 w-fit">
+                    {tabItems.map((tab) => (
+                        <button
+                            key={tab.id}
+                            onClick={() => setActiveTab(tab.id as any)}
+                            className={cn(
+                                "flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm transition-all",
+                                activeTab === tab.id
+                                    ? "bg-white text-black shadow-lg scale-100"
+                                    : "text-zinc-500 hover:text-white hover:bg-white/5"
+                            )}
+                        >
+                            <tab.icon size={16} className={activeTab === tab.id ? "text-black" : tab.color} />
+                            {tab.label}
+                            {tab.id === 'requests' && pendingRequests.length > 0 && (
+                                <span className="ml-1 bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-full">{pendingRequests.length}</span>
+                            )}
+                        </button>
+                    ))}
                 </div>
-            </div>
 
-            <div className="bg-[#EEEFEB] border-2 border-black rounded-4xl px-4 md:px-8 pt-8 md:pt-8 pb-4 md:pb-8 min-h-[50vh]">
-                {loading ? (
-                    <div className="flex justify-center p-8">
-                        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-black"></div>
-                    </div>
-                ) : (
-                    <>
-                        {activeTab === 'requests' && (
-                            <div>
-                                <h2 className="text-2xl font-bold mb-6 flex items-center gap-3">
-                                    Pending Member Requests
-                                </h2>
-                                {pendingRequests.length === 0 ? (
-                                    <div className="text-center py-12 text-gray-400 font-bold border-2 border-dashed border-gray-200 rounded-2xl">
-                                        No pending requests
-                                    </div>
-                                ) : (
-                                    <div className="space-y-4">
-                                        {pendingRequests.map(request => (
-                                            <div key={request.id} className="flex flex-col md:flex-row items-center justify-between p-4 bg-gray-50 border-2 border-black rounded-2xl gap-4">
-                                                <div className="flex items-center gap-4 w-full md:w-auto">
-                                                    <div className="w-12 h-12 bg-gray-200 rounded-full border-2 border-black overflow-hidden shrink-0">
-                                                        {request.avatar_url ? (
-                                                            <img src={request.avatar_url} alt={request.full_name} className="w-full h-full object-cover" />
-                                                        ) : (
-                                                            <div className="w-full h-full flex items-center justify-center font-black text-lg text-gray-400">
-                                                                {request.full_name.charAt(0)}
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                    <div>
-                                                        <h3 className="font-bold text-lg leading-tight">{request.full_name}</h3>
-                                                        <p className="text-sm text-gray-500">{request.email}</p>
-                                                    </div>
-                                                </div>
-
-                                                <div className="flex gap-2 w-full md:w-auto">
-                                                    <button
-                                                        onClick={() => handleRequestAction(request.id, 'reject')}
-                                                        className="flex-1 md:flex-none px-6 py-2 bg-[#EEEFEB] text-red-500 font-bold uppercase rounded-xl border-2 border-gray-200 hover:border-red-500 hover:bg-red-50 transition-colors"
-                                                    >
-                                                        Reject
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleRequestAction(request.id, 'approve')}
-                                                        className="flex-1 md:flex-none px-6 py-2 bg-[#BDF522] text-black font-bold uppercase rounded-xl border-2 border-black hover:bg-[#a9db1e] transition-colors"
-                                                    >
-                                                        Approve
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                        )}
-
-                        {activeTab === 'users' && (
-                            <div>
-                                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-                                    <h2 className="text-2xl font-bold">All Users</h2>
-                                    <div className="relative w-full md:w-64">
-                                        <input
-                                            type="text"
-                                            placeholder="Search users..."
-                                            value={searchUsers}
-                                            onChange={(e) => setSearchUsers(e.target.value)}
-                                            className="w-full pl-10 pr-4 py-2 border-2 border-black rounded-full focus:outline-none focus:bg-gray-50 transition-all font-bold text-sm"
-                                        />
-                                        <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
-                                    </div>
-                                </div>
-                                <div className="overflow-x-auto">
-                                    <table className="w-full text-left border-collapse">
-                                        <thead>
-                                            <tr className="border-b-2 border-black text-sm uppercase text-gray-500">
-                                                <th className="py-4 px-4">User</th>
-                                                <th className="py-4 px-4">Role</th>
-                                                <th className="py-4 px-4">Joined</th>
-                                                <th className="py-4 px-4 text-right">Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="divide-y divide-gray-200">
-                                            {allUsers.filter(u =>
-                                                u.full_name.toLowerCase().includes(searchUsers.toLowerCase()) ||
-                                                u.email.toLowerCase().includes(searchUsers.toLowerCase())
-                                            ).map(u => (
-                                                <tr key={u.id} className="hover:bg-gray-50 transition-colors">
-                                                    <td className="py-4 px-4">
-                                                        <div className="flex items-center gap-3">
-                                                            <div className="w-10 h-10 bg-gray-200 rounded-full border border-black overflow-hidden shrink-0">
-                                                                {u.avatar_url ? (
-                                                                    <img src={u.avatar_url} alt={u.full_name} className="w-full h-full object-cover" />
-                                                                ) : (
-                                                                    <div className="w-full h-full flex items-center justify-center font-black text-sm text-gray-400">
-                                                                        {u.full_name.charAt(0)}
-                                                                    </div>
-                                                                )}
-                                                            </div>
-                                                            <div>
-                                                                <div className="font-bold">{u.full_name}</div>
-                                                                <div className="text-sm text-gray-500">{u.email}</div>
-                                                            </div>
+                <div className="bg-zinc-900 border border-white/10 rounded-3xl p-6 min-h-[60vh]">
+                    {loading ? (
+                        <div className="flex items-center justify-center h-full min-h-100">
+                            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-white"></div>
+                        </div>
+                    ) : (
+                        <>
+                            {activeTab === 'requests' && (
+                                <div className="space-y-6">
+                                    <h2 className="text-xl font-bold flex items-center gap-2">
+                                        <Users className="text-zinc-500" />
+                                        Pending Member Requests
+                                    </h2>
+                                    {pendingRequests.length === 0 ? (
+                                        <div className="text-center py-20 border border-dashed border-white/10 rounded-2xl bg-black/20">
+                                            <p className="text-zinc-500 font-bold">No pending requests</p>
+                                        </div>
+                                    ) : (
+                                        <div className="grid gap-4">
+                                            {pendingRequests.map(request => (
+                                                <div key={request.id} className="flex flex-col md:flex-row items-center justify-between p-6 bg-black/30 border border-white/10 rounded-2xl gap-6 hover:border-white/20 transition-colors">
+                                                    <div className="flex items-center gap-4 w-full md:w-auto">
+                                                        <div className="w-12 h-12 bg-zinc-800 rounded-full overflow-hidden shrink-0 border border-white/10">
+                                                            {request.avatar_url ? (
+                                                                <img src={request.avatar_url} alt={request.full_name} className="w-full h-full object-cover" />
+                                                            ) : (
+                                                                <div className="w-full h-full flex items-center justify-center font-bold text-zinc-500">
+                                                                    {request.full_name.charAt(0)}
+                                                                </div>
+                                                            )}
                                                         </div>
-                                                    </td>
-                                                    <td className="py-4 px-4">
-                                                        <span className={`
-                                                            inline-block px-3 py-1 rounded-full text-xs font-bold uppercase border border-black
-                                                            ${u.role === 'admin' ? 'bg-[#FF90E8] text-black' :
-                                                                u.role === 'member' ? 'bg-[#BDF522] text-black' :
-                                                                    'bg-[#EEEFEB] text-gray-500'}
-                                                        `}>
-                                                            {u.role}
-                                                        </span>
-                                                    </td>
-                                                    <td className="py-4 px-4 text-sm text-gray-600 font-mono">
-                                                        {new Date(u.created_at || '').toLocaleDateString()}
-                                                    </td>
-                                                    <td className="py-4 px-4 text-right">
-                                                        <select
-                                                            value={u.role}
-                                                            onChange={(e) => handleRoleChange(u.id, e.target.value as any)}
-                                                            className="border-2 border-gray-300 rounded-lg px-2 py-1 text-sm font-bold focus:border-black focus:ring-0 cursor-pointer"
-                                                            disabled={u.id === user?.id}
-                                                        >
-                                                            <option value="user">User</option>
-                                                            <option value="member">Member</option>
-                                                            <option value="admin">Admin</option>
-                                                        </select>
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        )}
+                                                        <div>
+                                                            <h3 className="font-bold text-lg text-white">{request.full_name}</h3>
+                                                            <p className="text-sm text-zinc-500">{request.email}</p>
+                                                        </div>
+                                                    </div>
 
-                        {activeTab === 'files' && (
-                            <div>
-                                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-                                    <h2 className="text-2xl font-bold">Storage & Files</h2>
-                                    <div className="relative w-full md:w-64">
+                                                    <div className="flex gap-2 w-full md:w-auto">
+                                                        <button
+                                                            onClick={() => handleRequestAction(request.id, 'reject')}
+                                                            className="flex-1 md:flex-none px-6 py-2 bg-red-500/10 text-red-500 font-bold rounded-xl border border-red-500/30 hover:bg-red-500/20 transition-colors"
+                                                        >
+                                                            Reject
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleRequestAction(request.id, 'approve')}
+                                                            className="flex-1 md:flex-none px-6 py-2 bg-[#BDF522] text-black font-bold rounded-xl hover:bg-[#a9db1e] transition-colors"
+                                                        >
+                                                            Approve
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
+                            {activeTab === 'users' && (
+                                <div className="space-y-6">
+                                    <div className="flex flex-col md:flex-row justify-between gap-4">
+                                        <h2 className="text-xl font-bold flex items-center gap-2">
+                                            <Shield className="text-zinc-500" />
+                                            User Management
+                                        </h2>
+                                        <div className="relative w-full md:w-72">
+                                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" size={16} />
+                                            <input
+                                                type="text"
+                                                placeholder="Search users..."
+                                                value={searchUsers}
+                                                onChange={(e) => setSearchUsers(e.target.value)}
+                                                className="w-full bg-black/50 border border-white/10 rounded-xl pl-10 pr-4 py-2 text-white focus:outline-none focus:border-white/30 transition-colors"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="overflow-x-auto rounded-2xl border border-white/10">
+                                        <table className="w-full text-left">
+                                            <thead className="bg-white/5 text-xs uppercase text-zinc-500">
+                                                <tr>
+                                                    <th className="px-6 py-4 font-bold">User</th>
+                                                    <th className="px-6 py-4 font-bold">Role</th>
+                                                    <th className="px-6 py-4 font-bold">Joined</th>
+                                                    <th className="px-6 py-4 font-bold text-right">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-white/5 text-sm">
+                                                {allUsers.filter(u =>
+                                                    u.full_name.toLowerCase().includes(searchUsers.toLowerCase()) ||
+                                                    u.email.toLowerCase().includes(searchUsers.toLowerCase())
+                                                ).map(u => (
+                                                    <tr key={u.id} className="hover:bg-white/5 transition-colors">
+                                                        <td className="px-6 py-4">
+                                                            <div className="flex items-center gap-3">
+                                                                <div className="w-8 h-8 rounded-full bg-zinc-800 overflow-hidden shrink-0">
+                                                                    {u.avatar_url && <img src={u.avatar_url} alt={u.full_name} className="w-full h-full object-cover" />}
+                                                                </div>
+                                                                <div>
+                                                                    <div className="font-bold text-white">{u.full_name}</div>
+                                                                    <div className="text-xs text-zinc-500">{u.email}</div>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td className="px-6 py-4">
+                                                            <span className={cn(
+                                                                "px-2 py-1 rounded text-[10px] font-black uppercase tracking-wider",
+                                                                u.role === 'admin' ? "bg-purple-500/20 text-purple-400 border border-purple-500/30" :
+                                                                    u.role === 'member' ? "bg-green-500/20 text-green-400 border border-green-500/30" :
+                                                                        "bg-zinc-800 text-zinc-400 border border-zinc-700"
+                                                            )}>
+                                                                {u.role}
+                                                            </span>
+                                                        </td>
+                                                        <td className="px-6 py-4 text-zinc-500 font-mono text-xs">
+                                                            {new Date(u.created_at || '').toLocaleDateString()}
+                                                        </td>
+                                                        <td className="px-6 py-4 text-right">
+                                                            <select
+                                                                value={u.role}
+                                                                onChange={(e) => handleRoleChange(u.id, e.target.value as any)}
+                                                                className="bg-black/50 border border-white/10 rounded-lg px-2 py-1 text-xs text-white focus:outline-none focus:border-white/30"
+                                                                disabled={u.id === user?.id}
+                                                            >
+                                                                <option value="user">User</option>
+                                                                <option value="member">Member</option>
+                                                                <option value="admin">Admin</option>
+                                                            </select>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            )}
+
+                            {activeTab === 'files' && (
+                                <div className="space-y-8">
+                                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                                        <div className="bg-black/30 p-6 rounded-2xl border border-white/10">
+                                            <p className="text-xs text-zinc-500 font-bold uppercase mb-1">Total Fonts</p>
+                                            <p className="text-3xl font-black text-white">{totalFonts}</p>
+                                        </div>
+                                        <div className="bg-black/30 p-6 rounded-2xl border border-white/10">
+                                            <p className="text-xs text-zinc-500 font-bold uppercase mb-1">Font Storage</p>
+                                            <p className="text-3xl font-black text-[#00C2FF]">{formatBytes(totalStorageSize)}</p>
+                                        </div>
+                                        <div className="bg-black/30 p-6 rounded-2xl border border-white/10">
+                                            <p className="text-xs text-zinc-500 font-bold uppercase mb-1">Images Storage</p>
+                                            <p className="text-3xl font-black text-[#FF90E8]">{formatBytes(allFonts.reduce((acc, font) => {
+                                                const previewSize = font.file_size_image_preview || 0;
+                                                const gallerySize = (font.gallery_image_sizes || []).reduce((a, b) => a + b, 0);
+                                                return acc + previewSize + gallerySize;
+                                            }, 0))}</p>
+                                        </div>
+                                        <div className="bg-black/30 p-6 rounded-2xl border border-white/10">
+                                            <p className="text-xs text-zinc-500 font-bold uppercase mb-1">Format Distribution</p>
+                                            <div className="flex flex-wrap gap-2 mt-2">
+                                                <span className="text-xs bg-white/5 px-2 py-1 rounded text-zinc-300">W2: {formatCounts.woff2}</span>
+                                                <span className="text-xs bg-white/5 px-2 py-1 rounded text-zinc-300">W: {formatCounts.woff}</span>
+                                                <span className="text-xs bg-white/5 px-2 py-1 rounded text-zinc-300">T: {formatCounts.ttf}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="relative">
+                                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" size={16} />
                                         <input
                                             type="text"
                                             placeholder="Search files..."
                                             value={searchFiles}
                                             onChange={(e) => setSearchFiles(e.target.value)}
-                                            className="w-full pl-10 pr-4 py-2 border-2 border-black rounded-full focus:outline-none focus:bg-gray-50 transition-all font-bold text-sm"
+                                            className="w-full bg-black/50 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-white focus:outline-none focus:border-white/30 transition-colors mb-4"
                                         />
-                                        <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
                                     </div>
-                                </div>
 
-                                {/* Summary Cards */}
-                                <div className="grid grid-cols-4 md:grid-cols-4 gap-6 mb-8 overflow-x-auto">
-                                    <div className="bg-gray-50 rounded-2xl p-6 border-2 border-black">
-                                        <h3 className="font-bold text-gray-500 uppercase text-sm mb-2">Total Fonts</h3>
-                                        <p className="text-4xl font-black">{totalFonts}</p>
-                                    </div>
-                                    <div className="bg-gray-50 rounded-2xl p-6 border-2 border-black">
-                                        <h3 className="font-bold text-gray-500 uppercase text-sm mb-2">Fonts Storage</h3>
-                                        <p className="text-4xl font-black">{formatBytes(totalStorageSize)}</p>
-                                    </div>
-                                    <div className="bg-gray-50 rounded-2xl p-6 border-2 border-black">
-                                        <h3 className="font-bold text-gray-500 uppercase text-sm mb-2">Images Storage</h3>
-                                        <p className="text-4xl font-black">{formatBytes(allFonts.reduce((acc, font) => {
-                                            const previewSize = font.file_size_image_preview || 0;
-                                            const gallerySize = (font.gallery_image_sizes || []).reduce((a, b) => a + b, 0);
-                                            return acc + previewSize + gallerySize;
-                                        }, 0))}</p>
-                                    </div>
-                                    <div className="bg-gray-50 rounded-2xl p-6 border-2 border-black">
-                                        <h3 className="font-bold text-gray-500 uppercase text-sm mb-2">Files Count</h3>
-                                        <div className="flex flex-wrap gap-2 text-sm font-bold">
-                                            <span className="px-2 py-1 bg-[#EEEFEB] border border-gray-300 rounded">WOFF2: {formatCounts.woff2}</span>
-                                            <span className="px-2 py-1 bg-[#EEEFEB] border border-gray-300 rounded">WOFF: {formatCounts.woff}</span>
-                                            <span className="px-2 py-1 bg-[#EEEFEB] border border-gray-300 rounded">TTF: {formatCounts.ttf}</span>
-                                            <span className="px-2 py-1 bg-[#EEEFEB] border border-gray-300 rounded">OTF: {formatCounts.otf}</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="overflow-x-auto">
-                                    <table className="w-full text-left border-collapse">
-                                        <thead>
-                                            <tr className="border-b-2 border-black text-sm uppercase text-gray-500">
-                                                <th className="py-4 px-4 rounded-tl-xl hover:bg-gray-100">Font</th>
-                                                <th className="py-4 px-4 hover:bg-gray-100">Formats</th>
-                                                <th className="py-4 px-4 hover:bg-gray-100">File Sizes</th>
-                                                <th className="py-4 px-4 hover:bg-gray-100">Uploaded</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="divide-y divide-gray-200">
-                                            {allFonts.filter(f =>
-                                                f.name.toLowerCase().includes(searchFiles.toLowerCase())
-                                            ).map(font => (
-                                                <tr key={font.id} className="hover:bg-gray-50 transition-colors">
-                                                    <td className="py-4 px-4">
-                                                        <div className="flex items-center gap-3">
-                                                            <div className="w-10 h-10 bg-gray-100 rounded-lg border border-black overflow-hidden shrink-0">
-                                                                {font.preview_image_url ? (
-                                                                    <img src={font.preview_image_url} alt={font.name} className="w-full h-full object-cover" />
-                                                                ) : (
-                                                                    <div className="w-full h-full flex items-center justify-center font-bold text-xs text-gray-400">Aa</div>
-                                                                )}
-                                                            </div>
-                                                            <Link to={`/fonts/${font.slug || font.id}`} className="font-bold hover:underline">
-                                                                {font.name}
-                                                            </Link>
+                                    <div className="space-y-2">
+                                        {allFonts.filter(f => f.name.toLowerCase().includes(searchFiles.toLowerCase())).map(font => (
+                                            <div key={font.id} className="group bg-black/30 border border-white/5 hover:border-white/10 rounded-xl p-4 transition-all">
+                                                <div className="flex items-start justify-between">
+                                                    <div className="flex items-center gap-4">
+                                                        <div className="w-10 h-10 bg-zinc-800 rounded-lg overflow-hidden shrink-0">
+                                                            {font.preview_image_url ? (
+                                                                <img src={font.preview_image_url} alt="" className="w-full h-full object-cover opacity-50 group-hover:opacity-100 transition-opacity" />
+                                                            ) : (
+                                                                <div className="w-full h-full flex items-center justify-center text-xs text-zinc-500">Aa</div>
+                                                            )}
                                                         </div>
-                                                    </td>
-                                                    <td className="py-4 px-4">
-                                                        <div className="flex flex-wrap gap-1">
-                                                            {font.woff2_url && <span className="px-1.5 py-0.5 bg-green-100 text-green-800 text-[10px] font-bold uppercase rounded border border-green-200">WOFF2</span>}
-                                                            {font.woff_url && <span className="px-1.5 py-0.5 bg-blue-100 text-blue-800 text-[10px] font-bold uppercase rounded border border-blue-200">WOFF</span>}
-                                                            {font.ttf_url && <span className="px-1.5 py-0.5 bg-purple-100 text-purple-800 text-[10px] font-bold uppercase rounded border border-purple-200">TTF</span>}
-                                                            {font.otf_url && <span className="px-1.5 py-0.5 bg-orange-100 text-orange-800 text-[10px] font-bold uppercase rounded border border-orange-200">OTF</span>}
-                                                        </div>
-                                                    </td>
-                                                    <td className="py-4 px-4 text-xs font-mono space-y-1">
-                                                        {font.file_size_woff2 && <div className="text-green-700">WOFF2: {formatBytes(font.file_size_woff2)}</div>}
-                                                        {font.file_size_woff && <div className="text-blue-700">WOFF: {formatBytes(font.file_size_woff)}</div>}
-                                                        {font.file_size_ttf && <div className="text-purple-700">TTF: {formatBytes(font.file_size_ttf)}</div>}
-                                                        {font.file_size_otf && <div className="text-orange-700">OTF: {formatBytes(font.file_size_otf)}</div>}
-
-                                                        {(font as any).font_variants?.length > 0 && (
-                                                            <div className="mt-2 pt-1 border-t border-gray-200">
-                                                                <div className="text-[10px] text-gray-500 italic mb-1">
-                                                                    + {(font as any).font_variants.length} Variants
-                                                                </div>
-                                                                <div className="space-y-1 pl-1 border-l-2 border-gray-100">
-                                                                    {(font as any).font_variants.map((v: any, idx: number) => (
-                                                                        <div key={idx} className="bg-gray-50 p-1 rounded">
-                                                                            <div className="font-bold text-[10px] text-black uppercase mb-0.5">{v.variant_name}</div>
-                                                                            {v.file_size_woff2 && <div className="text-green-700 text-[9px] pl-1">WOFF2: {formatBytes(v.file_size_woff2)}</div>}
-                                                                            {v.file_size_woff && <div className="text-blue-700 text-[9px] pl-1">WOFF: {formatBytes(v.file_size_woff)}</div>}
-                                                                            {v.file_size_ttf && <div className="text-purple-700 text-[9px] pl-1">TTF: {formatBytes(v.file_size_ttf)}</div>}
-                                                                            {v.file_size_otf && <div className="text-orange-700 text-[9px] pl-1">OTF: {formatBytes(v.file_size_otf)}</div>}
-                                                                        </div>
-                                                                    ))}
-                                                                </div>
-                                                            </div>
-                                                        )}
-
-                                                        {!font.file_size_woff2 && !font.file_size_woff && !font.file_size_ttf && !font.file_size_otf && !(font as any).font_variants?.length && <span className="text-gray-400">-</span>}
-                                                    </td>
-                                                    <td className="py-4 px-4 text-sm text-gray-500 font-mono">
-                                                        {new Date(font.created_at || '').toLocaleDateString()}
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        )}
-
-                        {activeTab === 'curation' && (
-                            <div>
-                                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-                                    <h2 className="text-2xl font-bold flex items-center gap-3">
-                                        Site Curation
-                                    </h2>
-                                    <div className="relative w-full md:w-64">
-                                        <input
-                                            type="text"
-                                            placeholder="Search fonts..."
-                                            value={searchCuration}
-                                            onChange={(e) => setSearchCuration(e.target.value)}
-                                            className="w-full pl-10 pr-4 py-2 border-2 border-black rounded-full focus:outline-none focus:bg-gray-50 transition-all font-bold text-sm"
-                                        />
-                                        <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
-                                    </div>
-                                </div>
-                                <div className="bg-[#EEEFEB] rounded-2xl border-2 border-black overflow-hidden">
-                                    <table className="w-full text-left border-collapse">
-                                        <thead className="bg-gray-50 border-b-2 border-black">
-                                            <tr>
-                                                <th className="p-4 border-r-2 border-black w-2/3">Font</th>
-                                                <th className="p-4 border-r-2 border-black text-center w-1/6">Statuses</th>
-                                                <th className="p-4 text-center w-1/6">Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="divide-y-2 divide-gray-100">
-                                            {allFonts.filter(f =>
-                                                f.name.toLowerCase().includes(searchCuration.toLowerCase()) ||
-                                                f.designer.toLowerCase().includes(searchCuration.toLowerCase())
-                                            ).map(font => (
-                                                <tr key={font.id} className="hover:bg-gray-50">
-                                                    <td className="p-4 border-r-2 border-gray-100">
-                                                        <div className="flex items-center gap-4">
-                                                            <div className="w-12 h-12 bg-gray-200 border-2 border-black rounded-lg overflow-hidden shrink-0">
-                                                                {font.preview_image_url ? (
-                                                                    <img src={font.preview_image_url} alt={font.name} className="w-full h-full object-cover" />
-                                                                ) : (
-                                                                    <div className="w-full h-full flex items-center justify-center font-bold text-gray-400">Aa</div>
-                                                                )}
-                                                            </div>
-                                                            <div>
-                                                                <div className="font-bold text-lg">{font.name}</div>
-                                                                <div className="text-xs text-gray-500">by {font.designer}</div>
+                                                        <div>
+                                                            <h4 className="font-bold text-white leading-tight">{font.name}</h4>
+                                                            <div className="flex gap-2 mt-1">
+                                                                {font.woff2_url && <span className="text-[10px] bg-green-500/10 text-green-500 px-1 rounded border border-green-500/20">WOFF2</span>}
+                                                                {font.ttf_url && <span className="text-[10px] bg-blue-500/10 text-blue-500 px-1 rounded border border-blue-500/20">TTF</span>}
                                                             </div>
                                                         </div>
-                                                    </td>
-                                                    <td className="p-4 border-r-2 border-gray-100">
-                                                        <div className="flex flex-col gap-2">
-                                                            <label className="flex items-center gap-2 cursor-pointer p-2 rounded hover:bg-gray-100 transition-colors">
-                                                                <input
-                                                                    type="checkbox"
-                                                                    checked={font.is_featured || false}
-                                                                    onChange={() => handleToggleCuration(font.id, 'is_featured')}
-                                                                    className="w-4 h-4 accent-black rounded border-2 border-black cursor-pointer"
-                                                                />
-                                                                <span className={`text-sm font-bold ${font.is_featured ? 'text-black' : 'text-gray-400'}`}>Featured</span>
-                                                            </label>
-
-                                                            <label className="flex items-center gap-2 cursor-pointer p-2 rounded hover:bg-gray-100 transition-colors">
-                                                                <input
-                                                                    type="checkbox"
-                                                                    checked={font.is_trending || false}
-                                                                    onChange={() => handleToggleCuration(font.id, 'is_trending')}
-                                                                    className="w-4 h-4 accent-black rounded border-2 border-black cursor-pointer"
-                                                                />
-                                                                <span className={`text-sm font-bold ${font.is_trending ? 'text-black' : 'text-gray-400'}`}>Trending</span>
-                                                            </label>
-
-                                                            <label className="flex items-center gap-2 cursor-pointer p-2 rounded hover:bg-gray-100 transition-colors">
-                                                                <input
-                                                                    type="checkbox"
-                                                                    checked={font.is_editors_pick || false}
-                                                                    onChange={() => handleToggleCuration(font.id, 'is_editors_pick')}
-                                                                    className="w-4 h-4 accent-black rounded border-2 border-black cursor-pointer"
-                                                                />
-                                                                <span className={`text-sm font-bold ${font.is_editors_pick ? 'text-black' : 'text-gray-400'}`}>Editor's Pick</span>
-                                                            </label>
-                                                        </div>
-                                                    </td>
-                                                    <td className="p-4 text-center">
-                                                        <Link
-                                                            to={`/fonts/${font.slug || font.id}`}
-                                                            className="inline-block px-4 py-2 bg-[#EEEFEB] border-2 border-black rounded-lg font-bold hover:bg-gray-100 text-sm"
-                                                        >
-                                                            View
-                                                        </Link>
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        )}
-
-                        {activeTab === 'analytics' && (
-                            <div>
-                                <h2 className="text-2xl font-bold flex items-center gap-3 mb-8">
-                                    Analytics (Last 30 Days)
-                                </h2>
-
-                                {/* Downloads Section */}
-                                <div className="mb-12">
-                                    <h3 className="text-xl font-bold flex items-center gap-2 mb-6 text-gray-800">
-                                        <div className="w-3 h-8 bg-black rounded-full"></div>
-                                        Downloads Overview
-                                    </h3>
-                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                                        {/* Chart */}
-                                        <div className="flex flex-col justify-between bg-[#EEEFEB] p-6 rounded-4xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-                                            <h3 className="font-bold text-lg mb-6">Downloads Trend</h3>
-                                            <div className="h-64 w-full -translate-x-5 md:-translate-x-8">
-                                                <ResponsiveContainer width="100%" height="100%">
-                                                    <LineChart data={downloadStats}>
-                                                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                                                        <XAxis
-                                                            dataKey="date"
-                                                            tickFormatter={(str) => {
-                                                                const date = new Date(str);
-                                                                return `${date.getMonth() + 1}/${date.getDate()}`;
-                                                            }}
-                                                            tick={{ fontSize: 12 }}
-                                                            interval={4}
-                                                        />
-                                                        <YAxis allowDecimals={false} />
-                                                        <Tooltip
-                                                            contentStyle={{ borderRadius: '12px', border: '2px solid black', fontWeight: 'bold' }}
-                                                        />
-                                                        <Line
-                                                            type="monotone"
-                                                            dataKey="count"
-                                                            stroke="#000"
-                                                            strokeWidth={3}
-                                                            dot={{ r: 4, fill: '#000' }}
-                                                            activeDot={{ r: 6, fill: '#FF90E8' }}
-                                                        />
-                                                    </LineChart>
-                                                </ResponsiveContainer>
-                                            </div>
-                                        </div>
-
-                                        {/* Top Fonts */}
-                                        <div className="bg-[#EEEFEB] p-6 rounded-4xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-                                            <h3 className="font-bold text-lg mb-6">Top Downloaded Fonts</h3>
-                                            <div className='overflow-y-auto h-65'>
-                                                {topDownloadedFonts.length > 0 ? (
-                                                    <div className="space-y-3">
-                                                        {topDownloadedFonts.map((font, idx) => (
-                                                            <div key={idx} className="flex justify-between items-center p-3 bg-gray-50 rounded-xl border border-gray-200">
-                                                                <div className="flex items-center gap-3">
-                                                                    <span className="w-6 h-6 flex items-center justify-center bg-black text-white rounded-full text-xs font-bold">
-                                                                        {idx + 1}
-                                                                    </span>
-                                                                    <span className="font-bold">{font.name}</span>
-                                                                </div>
-                                                                <span className="font-mono font-bold text-blue-600">{font.count}</span>
-                                                            </div>
-                                                        ))}
                                                     </div>
-                                                ) : (
-                                                    <div className="text-center text-gray-400 py-8">No data available</div>
+                                                    <div className="text-right">
+                                                        <p className="text-xs font-mono text-zinc-500">{formatBytes(font.file_size_woff2 || font.file_size_ttf || 0)}</p>
+                                                        <p className="text-[10px] text-zinc-700 mt-1">{new Date(font.created_at || '').toLocaleDateString()}</p>
+                                                    </div>
+                                                </div>
+
+                                                {/* Variants */}
+                                                {(font as any).font_variants?.length > 0 && (
+                                                    <div className="mt-3 pt-3 border-t border-white/5 pl-14">
+                                                        <p className="text-[10px] text-zinc-600 font-bold uppercase mb-2">Variants</p>
+                                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                                            {(font as any).font_variants.map((v: any) => (
+                                                                <div key={v.id} className="flex justify-between items-center text-xs bg-white/5 p-2 rounded">
+                                                                    <span className="text-zinc-400">{v.variant_name}</span>
+                                                                    <span className="font-mono text-zinc-600">{formatBytes(v.file_size_woff2 || 0)}</span>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
                                                 )}
                                             </div>
-                                        </div>
+                                        ))}
                                     </div>
                                 </div>
+                            )}
 
-                                {/* Favorites Section */}
-                                <div>
-                                    <h3 className="text-xl font-bold flex items-center gap-2 mb-6 text-gray-800">
-                                        <div className="w-3 h-8 bg-pink-500 rounded-full"></div>
-                                        Favorites Overview
-                                    </h3>
-                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                                        {/* Chart */}
-                                        <div className="flex flex-col justify-between bg-[#EEEFEB] p-6 rounded-4xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-                                            <h3 className="font-bold text-lg mb-6 text-pink-600">Favorites Trend</h3>
-                                            <div className="h-64 w-full -translate-x-5 md:-translate-x-8">
-                                                <ResponsiveContainer width="100%" height="100%">
-                                                    <LineChart data={favoritesStats}>
-                                                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                                                        <XAxis
-                                                            dataKey="date"
-                                                            tickFormatter={(str) => {
-                                                                const date = new Date(str);
-                                                                return `${date.getMonth() + 1}/${date.getDate()}`;
-                                                            }}
-                                                            tick={{ fontSize: 12 }}
-                                                            interval={4}
-                                                        />
-                                                        <YAxis allowDecimals={false} />
-                                                        <Tooltip
-                                                            contentStyle={{ borderRadius: '12px', border: '2px solid black', fontWeight: 'bold', borderColor: '#EC4899' }}
-                                                        />
-                                                        <Line
-                                                            type="monotone"
-                                                            dataKey="count"
-                                                            stroke="#EC4899"
-                                                            strokeWidth={3}
-                                                            dot={{ r: 4, fill: '#EC4899' }}
-                                                            activeDot={{ r: 6, fill: '#000' }}
-                                                        />
-                                                    </LineChart>
-                                                </ResponsiveContainer>
-                                            </div>
+                            {activeTab === 'curation' && (
+                                <div className="space-y-6">
+                                    <div className="flex flex-col md:flex-row justify-between gap-4">
+                                        <h2 className="text-xl font-bold flex items-center gap-2">
+                                            <Star className="text-zinc-500" />
+                                            Curation & Featuring
+                                        </h2>
+                                        <div className="relative w-full md:w-72">
+                                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" size={16} />
+                                            <input
+                                                type="text"
+                                                placeholder="Search fonts..."
+                                                value={searchCuration}
+                                                onChange={(e) => setSearchCuration(e.target.value)}
+                                                className="w-full bg-black/50 border border-white/10 rounded-xl pl-10 pr-4 py-2 text-white focus:outline-none focus:border-white/30 transition-colors"
+                                            />
                                         </div>
+                                    </div>
 
-                                        {/* Top Fonts */}
-                                        <div className="bg-[#EEEFEB] p-6 rounded-4xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-                                            <h3 className="font-bold text-lg mb-6 text-pink-600">Top Favorited Fonts</h3>
-                                            <div className='overflow-y-auto h-80'>
-                                                {topFavoritedFonts.length > 0 ? (
-                                                    <div className="space-y-3">
-                                                        {topFavoritedFonts.map((font, idx) => (
-                                                            <div key={idx} className="flex justify-between items-center p-3 bg-pink-50 rounded-xl border border-pink-100">
-                                                                <div className="flex items-center gap-3">
-                                                                    <span className="w-6 h-6 flex items-center justify-center bg-pink-500 text-white rounded-full text-xs font-bold">
-                                                                        {idx + 1}
-                                                                    </span>
-                                                                    <span className="font-bold text-gray-800">{font.name}</span>
+                                    <div className="overflow-x-auto rounded-2xl border border-white/10">
+                                        <table className="w-full text-left">
+                                            <thead className="bg-white/5 text-xs uppercase text-zinc-500">
+                                                <tr>
+                                                    <th className="px-6 py-4 font-bold">Font</th>
+                                                    <th className="px-6 py-4 font-bold text-center">Featured</th>
+                                                    <th className="px-6 py-4 font-bold text-center">Trending</th>
+                                                    <th className="px-6 py-4 font-bold text-center">Editor's Pick</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-white/5 text-sm">
+                                                {allFonts.filter(f =>
+                                                    f.name.toLowerCase().includes(searchCuration.toLowerCase())
+                                                ).map(font => (
+                                                    <tr key={font.id} className="hover:bg-white/5 transition-colors">
+                                                        <td className="px-6 py-4">
+                                                            <div className="flex items-center gap-3">
+                                                                <div className="w-10 h-10 bg-zinc-800 rounded-lg overflow-hidden shrink-0">
+                                                                    {font.preview_image_url && <img src={font.preview_image_url} className="w-full h-full object-cover" />}
                                                                 </div>
-                                                                <span className="font-mono font-bold text-pink-600">{font.count}</span>
+                                                                <div className="font-bold text-white">{font.name}</div>
                                                             </div>
-                                                        ))}
-                                                    </div>
-                                                ) : (
-                                                    <div className="text-center text-gray-400 py-8">No data available</div>
-                                                )}
-                                            </div>
-                                        </div>
+                                                        </td>
+                                                        <td className="px-6 py-4 text-center">
+                                                            <button
+                                                                onClick={() => handleToggleCuration(font.id, 'is_featured')}
+                                                                className={cn("w-5 h-5 rounded border flex items-center justify-center mx-auto transition-all",
+                                                                    font.is_featured ? "bg-[#BDF522] border-[#BDF522] text-black" : "border-zinc-700 bg-transparent text-transparent hover:border-zinc-500"
+                                                                )}>
+                                                                <Check size={12} strokeWidth={4} />
+                                                            </button>
+                                                        </td>
+                                                        <td className="px-6 py-4 text-center">
+                                                            <button
+                                                                onClick={() => handleToggleCuration(font.id, 'is_trending')}
+                                                                className={cn("w-5 h-5 rounded border flex items-center justify-center mx-auto transition-all",
+                                                                    font.is_trending ? "bg-[#FF90E8] border-[#FF90E8] text-black" : "border-zinc-700 bg-transparent text-transparent hover:border-zinc-500"
+                                                                )}>
+                                                                <TrendingUp size={12} strokeWidth={4} />
+                                                            </button>
+                                                        </td>
+                                                        <td className="px-6 py-4 text-center">
+                                                            <button
+                                                                onClick={() => handleToggleCuration(font.id, 'is_editors_pick')}
+                                                                className={cn("w-5 h-5 rounded border flex items-center justify-center mx-auto transition-all",
+                                                                    font.is_editors_pick ? "bg-[#00C2FF] border-[#00C2FF] text-black" : "border-zinc-700 bg-transparent text-transparent hover:border-zinc-500"
+                                                                )}>
+                                                                <Star size={12} strokeWidth={4} />
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
-                            </div>
-                        )}
-                    </>
-                )}
+                            )}
+
+                            {activeTab === 'analytics' && (
+                                <div className="space-y-8">
+                                    <div className="h-75 w-full bg-black/30 border border-white/10 rounded-3xl p-6">
+                                        <h3 className="text-sm font-bold text-zinc-500 uppercase mb-4">Downloads (30 Days)</h3>
+                                        <ResponsiveContainer width="100%" height="100%">
+                                            <LineChart data={downloadStats}>
+                                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#333" />
+                                                <XAxis
+                                                    dataKey="date"
+                                                    tickFormatter={(str) => new Date(str).toLocaleDateString(undefined, { month: 'numeric', day: 'numeric' })}
+                                                    stroke="#666"
+                                                    fontSize={10}
+                                                    tickLine={false}
+                                                    axisLine={false}
+                                                />
+                                                <YAxis stroke="#666" fontSize={10} tickLine={false} axisLine={false} />
+                                                <Tooltip
+                                                    contentStyle={{ backgroundColor: '#111', border: '1px solid #333', borderRadius: '8px' }}
+                                                    itemStyle={{ color: '#fff' }}
+                                                />
+                                                <Line type="monotone" dataKey="count" stroke="#BDF522" strokeWidth={3} dot={false} activeDot={{ r: 6, fill: '#BDF522' }} />
+                                            </LineChart>
+                                        </ResponsiveContainer>
+                                    </div>
+                                </div>
+                            )}
+                        </>
+                    )}
+                </div>
             </div>
         </div>
     );

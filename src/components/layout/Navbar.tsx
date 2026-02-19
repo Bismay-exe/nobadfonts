@@ -1,106 +1,176 @@
-import { Link } from 'react-router-dom';
+"use client";
+
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { useState } from 'react';
-import Logo from '/logo/logo-black.png';
+import { useState, useEffect } from 'react';
+import { cn } from '../../lib/utils';
+import { Menu, X, Type, Combine, Terminal, Users, Upload, User, Shield } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import Logo from '/logo/logo-black.png'; // Assuming white version exists or we filter it
 
 export default function Navbar() {
     const { user, profile } = useAuth();
-    const [open, setOpen] = useState(false);
+    const [isScrolled, setIsScrolled] = useState(false);
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const location = useLocation();
+
+    useEffect(() => {
+        const handleScroll = () => {
+            setIsScrolled(window.scrollY > 20);
+        };
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
+    const navLinks = [
+        { name: 'Fonts', path: '/fonts', icon: Type },
+        { name: 'Pairing', path: '/pairing', icon: Combine },
+        { name: 'CLI', path: '/cli', icon: Terminal, badge: 'NEW' },
+        { name: 'Members', path: '/members', icon: Users },
+    ];
 
     return (
-        <nav className="w-full bg-[#EEEFEB] border-y border-[#1C1D1E] rounded-b-4xl p-3">
-            <div className="flex justify-between items-center">
-                <Link
-                    to="/"
-                    className="h-15 w-15 flex items-center gap-2 bg-[#1C1D1E] p-1.5 rounded-2xl"
-                >
-
-                    <img src={Logo} alt="Logo" className='mr-2' />
-                    <span className='h-full font-advine font-black text-[#1C1D1E] text-3xl lg:text-5xl mt-3'>NoBadFonts</span>
-                </Link>
-
-                {/* Mobile menu button */}
-                <button
-                    onClick={() => setOpen(!open)}
-                    className="lg:hidden border-2 border-[#1C1D1E] bg-[#1C1D1E] text-[#EEEFEB] rounded-full px-6 py-4 font-bold"
-                    aria-label="Toggle menu"
-                >
-                    ☰
-                </button>
-
-                {/* Desktop menu */}
-                <div className="hidden lg:flex lg:space-x-4 items-center">
-                    <NavLinks user={user} profile={profile} />
-                </div>
-            </div>
-
-            {/* Mobile menu with animation */}
-            <div
-                className={`
-                lg:hidden
-                overflow-hidden
-                transition-all
-                duration-400
-                ease-linear
-                ${open ? 'max-h-100 opacity-100 translate-x-0 mt-4' : 'max-h-0 opacity-90 scale-0 -translate-x-60'}
-                `}
+        <>
+            <motion.nav
+                initial={{ y: -100, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.5 }}
+                className={cn(
+                    "fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-7xl rounded-2xl transition-all duration-300",
+                    isScrolled
+                        ? "bg-black/60 backdrop-blur-xl  shadow-lg py-2 px-4"
+                        : "bg-transparent py-4 px-0"
+                )}
             >
-                <NavLinks user={user} profile={profile} onClick={() => setOpen(false)} />
-            </div>
-        </nav>
-    );
-}
+                <div className="flex items-center justify-between">
+                    {/* Logo */}
+                    <Link to="/" className="flex items-center gap-2 group">
+                        <div className="w-10 h-10 bg-white/10 rounded-xl group-hover:bg-white/20 transition-colors backdrop-blur-sm border border-white/5">
+                            <img src={Logo} alt="" className='rounded-xl object-cover' />
+                        </div>
+                        <span className={cn(
+                            "font-bold text-xl tracking-tight transition-opacity duration-300 hidden sm:block",
+                            isScrolled ? "text-white" : "text-white/90"
+                        )}>
+                            NoBadFonts
+                        </span>
+                    </Link>
 
-function NavLinks({
-    user,
-    profile,
-    onClick,
-}: {
-    user: any;
-    profile: any;
-    onClick?: () => void;
-}) {
-    const base =
-        'relative border border-[#1C1D1E] px-6 lg:px-8 py-3 lg:py-4 font-mono uppercase font-bold rounded-full bg-[#1C1D1E] hover:bg-[#1C1D1E] text-[#EEEFEB] hover:text-[#EEEFEB] transition-colors';
+                    {/* Desktop Navigation */}
+                    <div className="hidden md:flex items-center gap-1 bg-white/5 backdrop-blur-md border border-white/5 rounded-full p-1.5 px-3 shadow-inner">
+                        {navLinks.map((link) => {
+                            const Icon = link.icon;
+                            const isActive = location.pathname === link.path;
+                            return (
+                                <Link
+                                    key={link.path}
+                                    to={link.path}
+                                    className={cn(
+                                        "relative px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 flex items-center gap-2",
+                                        isActive
+                                            ? "bg-white text-black shadow-sm"
+                                            : "text-zinc-400 hover:text-white hover:bg-white/10"
+                                    )}
+                                >
+                                    <Icon size={16} />
+                                    {link.name}
+                                    {link.badge && (
+                                        <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
+                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-lime-400 opacity-75"></span>
+                                            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-lime-500"></span>
+                                        </span>
+                                    )}
+                                </Link>
+                            );
+                        })}
+                    </div>
 
-    return (
-        <div className="flex flex-col lg:flex-row justify-between items-end gap-2">
-            <Link to="/fonts" onClick={onClick} className={base}>
-                Fonts
-            </Link>
-            <Link to="/pairing" onClick={onClick} className={base}>
-                Pairing
-            </Link>
-            <Link to="/cli" onClick={onClick} className={`${base} relative group overflow-visible`}>
-                <div className="absolute -top-2 -left-2 lg:left-auto right-auto lg:-right-2 bg-[#BDF522] text-[#1C1D1E] text-[14px] px-2.5 py-0.5 rounded-full border border-[#1C1D1E] font-[#1C1D1E] animate-bounce">
-                    NEW
+                    {/* Right Side Actions */}
+                    <div className="flex items-center gap-3">
+                        {user ? (
+                            <>
+                                {profile?.role === 'admin' && (
+                                    <Link to="/admin" className="hidden lg:flex items-center justify-center h-10 w-10 rounded-full bg-pink-500/20 text-pink-500 border border-pink-500/30 hover:bg-pink-500 hover:text-white transition-all">
+                                        <Shield size={18} />
+                                    </Link>
+                                )}
+                                <Link to="/upload" className="hidden sm:flex items-center gap-2 bg-zinc-900 border border-zinc-800 hover:border-zinc-700 text-white px-4 py-2 rounded-full text-sm font-medium transition-all">
+                                    <Upload size={16} />
+                                    <span>Upload</span>
+                                </Link>
+                                <Link to="/profile" className="h-10 w-10 rounded-full bg-linear-to-tr from-zinc-800 to-zinc-700 border border-white/10 flex items-center justify-center text-white overflow-hidden hover:scale-105 transition-transform">
+                                    {profile?.avatar_url ? (
+                                        <img src={profile.avatar_url} alt="Profile" className="h-full w-full object-cover" />
+                                    ) : (
+                                        <User size={18} />
+                                    )}
+                                </Link>
+                            </>
+                        ) : (
+                            <Link
+                                to="/auth"
+                                className="bg-white text-black px-5 py-2 rounded-full font-bold text-sm hover:bg-zinc-200 transition-colors"
+                            >
+                                Login
+                            </Link>
+                        )}
+
+                        {/* Mobile Menu Toggle */}
+                        <button
+                            className="md:hidden p-2 text-white bg-white/10 rounded-full backdrop-blur-sm border border-white/5"
+                            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                        >
+                            {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+                        </button>
+                    </div>
                 </div>
-                CLI
-            </Link>
-            <Link to="/members" onClick={onClick} className={base}>
-                Members
-            </Link>
+            </motion.nav>
 
-            {profile?.role === 'admin' && (
-                <Link to="/admin" onClick={onClick} className="border border-[#1C1D1E]/40 px-6 lg:px-8 py-3 lg:py-4 uppercase font-mono font-bold rounded-full bg-[#FF90E8] text-[#1C1D1E] hover:bg-[#1C1D1E] hover:text-[#FF90E8] transition-colors">
-                    Admin Panel
-                </Link>
-            )}
-
-            {user ? (
-                <>
-                    <Link to="/upload" onClick={onClick} className={base}>
-                        Upload Font
-                    </Link>
-                    <Link to="/profile" onClick={onClick} className={base}>
-                        Profile
-                    </Link>
-                </>
-            ) : (
-                <Link to="/auth" onClick={onClick} className={base}>
-                    Login
-                </Link>
-            )}
-        </div>
+            {/* Mobile Menu Overlay */}
+            <AnimatePresence>
+                {mobileMenuOpen && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        className="fixed inset-0 z-40 bg-black/95 backdrop-blur-xl pt-24 px-6 md:hidden flex flex-col gap-6"
+                    >
+                        <div className="flex flex-col gap-2">
+                            {navLinks.map((link) => (
+                                <Link
+                                    key={link.path}
+                                    to={link.path}
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    className="flex items-center gap-4 text-2xl font-medium text-white/80 hover:text-white p-4 rounded-xl hover:bg-white/5 transition-all border border-transparent hover:border-white/10"
+                                >
+                                    <link.icon size={24} />
+                                    {link.name}
+                                </Link>
+                            ))}
+                            {user && (
+                                <Link
+                                    to="/upload"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    className="flex items-center gap-4 text-2xl font-medium text-white/80 hover:text-white p-4 rounded-xl hover:bg-white/5 transition-all border border-transparent hover:border-white/10"
+                                >
+                                    <Upload size={24} />
+                                    Upload Font
+                                </Link>
+                            )}
+                            {profile?.role === 'admin' && (
+                                <Link
+                                    to="/admin"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    className="flex items-center gap-4 text-2xl font-medium text-pink-500 p-4 rounded-xl hover:bg-pink-500/10 transition-all border border-transparent hover:border-pink-500/20"
+                                >
+                                    <Shield size={24} />
+                                    Admin Panel
+                                </Link>
+                            )}
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </>
     );
 }

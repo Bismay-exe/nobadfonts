@@ -1,22 +1,23 @@
 "use client";
 
-import Landing5 from '../components/home/Land5';
-import Landing from '../components/home/Land8';
-import Hero from '../components/home/Hero/1';
-
+import HeroNew from '../components/home/HeroNew';
+import FeaturedFonts from '../components/home/FeaturedFonts';
 import { useLenis } from '../hooks/useLenis';
-import TextImageReveal from '../components/home/Hero/4';
 import SEO from '../components/shared/SEO';
 
 export default function Home() {
     useLenis();
     return (
-        <div className="flex flex-col">
+        <div className="flex flex-col min-h-screen">
             <SEO />
-            <Hero />
-            <TextImageReveal />
-            <Landing />
-            <Landing5 />
+            <HeroNew />
+            <FeaturedFonts />
+
+            {/* Additional Sections can be added here later */}
+            <section className="py-24 px-4 text-center">
+                <h3 className="text-2xl font-bold text-zinc-700 mb-4">More Coming Soon</h3>
+                <p className="text-zinc-500">We are busy curating the best fonts for you.</p>
+            </section>
         </div>
     );
 }

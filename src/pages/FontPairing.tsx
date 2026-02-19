@@ -2,10 +2,12 @@ import { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { useFonts } from '../hooks/useFonts';
 import { supabase } from '../lib/supabase';
 import type { Font } from '../types/font';
-import { Type, AlignLeft, MousePointerClick, Edit3 } from 'lucide-react';
+import { Type, AlignLeft, MousePointerClick, Edit3, Settings, Palette, Download, Share2 } from 'lucide-react';
 import FontPickerSidebar from '../components/font-pairing/FontPickerSidebar';
 import CustomizeSidebar from '../components/font-pairing/CustomizeSidebar';
-import { Settings, Palette } from 'lucide-react';
+import SEO from '../components/shared/SEO';
+import { cn } from '../lib/utils';
+import { motion } from 'framer-motion';
 
 export default function FontPairing() {
     const { fonts, loading } = useFonts({ sortBy: 'popular' });
@@ -33,11 +35,11 @@ export default function FontPairing() {
     const [bodyVariant, setBodyVariant] = useState<string | null>(null);
     const [uiVariant, setUiVariant] = useState<string | null>(null);
 
-    const [headerStyle, setHeaderStyle] = useState({ size: 72, leading: 1.1, tracking: 0, color: '#000000' });
-    const [bodyStyle, setBodyStyle] = useState({ size: 18, leading: 1.6, tracking: 0, color: '#374151' });
-    const [uiStyle, setUiStyle] = useState({ size: 16, leading: 1.4, tracking: 0, color: '#4B5563' });
+    const [headerStyle, setHeaderStyle] = useState({ size: 72, leading: 1.1, tracking: 0, color: '#FFFFFF' });
+    const [bodyStyle, setBodyStyle] = useState({ size: 18, leading: 1.6, tracking: 0, color: '#A1A1AA' });
+    const [uiStyle, setUiStyle] = useState({ size: 16, leading: 1.4, tracking: 0, color: '#D4D4D8' });
 
-    const [bgColor, setBgColor] = useState('#ffffff');
+    const [bgColor, setBgColor] = useState('#09090b'); // zinc-950
 
     // Editable text state
     const [headerText, setHeaderText] = useState("The fool doth think he is wise, but the wise man knows himself to be a fool. Love is blind, and lovers cannot see, The pretty follies that themselves commit.");
@@ -85,26 +87,15 @@ export default function FontPairing() {
 
     const loadFontToDoc = async (font: Font | null, variant: string | null, prefix: string) => {
         if (!font) return;
-        console.log(`[FontPairing] Loading ${prefix} font: ${font.name}, variant: ${variant || 'default'} (ID: ${font.id})`);
         const src = getSource(font, variant);
-        if (!src) {
-            console.warn(`No source found for ${font.name} (${variant})`);
-            return;
-        }
+        if (!src) return;
 
         const family = `${prefix}-font-${font.id}-${variant || 'reg'}`;
-        console.log(`[FontPairing] Family: ${family}, URL: ${src.url}`);
-        // Check if already exists to avoid spamming
-        // Note: document.fonts.check() needs the full font string e.g. "12px family"
-        // simpler is just to create and add, duplicate adds are ignored usually, 
-        // but we can try-catch.
 
         try {
             const fontFace = new FontFace(family, `url(${src.url}) format('${src.format}')`);
             const loadedFace = await fontFace.load();
             document.fonts.add(loadedFace);
-            console.log(`[FontPairing] Successfully loaded: ${family}`);
-            // Force layout/repaint? Usually React state update does it.
         } catch (err) {
             console.error(`Failed to load ${family}`, err);
         }
@@ -206,12 +197,6 @@ export default function FontPairing() {
             if (error) throw error;
             if (data) {
                 setFont(data);
-
-                // If user wants default variant to auto-apply, logic is:
-                // If there's a "Regular" variant, maybe select it? 
-                // Currently null means "Default Files (likely Regular)". 
-                // If the user wants to see the name "Regular" in the dropdown, we need to handle that in Sidebar.
-                // But functionally, null works if loadFont uses default files.
             }
         } catch (err) {
             console.error("Failed to fetch font details", err);
@@ -229,7 +214,8 @@ export default function FontPairing() {
 
 
     return (
-        <div className="min-h-screen text-black relative">
+        <div className="min-h-screen bg-black text-white relative">
+            <SEO title="Font Pairing Playground" />
 
             {/* Sidebar: Picker */}
             <FontPickerSidebar
@@ -261,80 +247,92 @@ export default function FontPairing() {
 
             {/* Global Background Color Control */}
             <div className="fixed bottom-6 left-6 z-30 group">
-                <button className="bg-black text-white p-3 rounded-full shadow-lg hover:scale-110 transition-transform">
+                <button className="bg-zinc-800 text-white p-4 rounded-full shadow-[0_0_20px_rgba(0,0,0,0.5)] border border-white/10 hover:scale-110 transition-transform">
                     <Palette size={24} />
                 </button>
-                <div className="absolute left-0 bottom-full mb-2 bg-[#EEEFEB] p-3 rounded-xl border-2 border-black shadow-xl hidden group-hover:block w-48">
-                    <p className="text-xs font-bold mb-2 uppercase text-gray-400">Background Color</p>
-                    <div className="flex items-center gap-2">
-                        <input
-                            type="color"
-                            value={bgColor}
-                            onChange={(e) => setBgColor(e.target.value)}
-                            className="w-8 h-8 rounded-full border border-gray-200 cursor-pointer"
-                        />
-                        <span className="text-xs font-mono">{bgColor}</span>
+                <div className="absolute left-0 bottom-full mb-4 bg-zinc-900 p-4 rounded-2xl border border-white/10 shadow-xl hidden group-hover:block w-56 animate-in fade-in slide-in-from-bottom-2">
+                    <p className="text-xs font-bold mb-3 uppercase text-zinc-500">Background Color</p>
+                    <div className="flex flex-wrap gap-2">
+                        {[
+                            '#000000', '#09090b', '#18181b', '#27272a', // Zincs
+                            '#ffffff', '#f4f4f5', '#e4e4e7', // Whites
+                            '#1a0b0b', '#0b1a0b', '#0b0b1a' // Tints
+                        ].map(color => (
+                            <button
+                                key={color}
+                                onClick={() => setBgColor(color)}
+                                className={cn(
+                                    "w-8 h-8 rounded-full border border-white/10 transition-transform hover:scale-110",
+                                    bgColor === color && "ring-2 ring-white ring-offset-2 ring-offset-black"
+                                )}
+                                style={{ backgroundColor: color }}
+                            />
+                        ))}
                     </div>
                 </div>
             </div>
 
-            {/* Hero / Instruction */}
-            <div className="bg-[#BDF522] rounded-4xl border-b-2 border-black px-6 py-12">
-                <div className="max-w-7xl mx-auto">
-                    <h1 className="text-5xl md:text-7xl font-black mb-6 tracking-tighter">
-                        FONT PAIRING PLAYGROUND
-                    </h1>
-                    <p className="text-xl font-bold max-w-2xl">
-                        Mix, match, and experiment. Hover over text to change its font.
-                        Click to edit content.
-                    </p>
+            {/* Header */}
+            <div className="pt-8 pb-12 px-6">
+                <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-end justify-between gap-6">
+                    <div>
+                        <h1 className="text-5xl md:text-7xl font-black tracking-tighter text-transparent bg-clip-text bg-linear-to-r from-white to-zinc-500 mb-2">
+                            Type Pairing.
+                        </h1>
+                        <p className="text-xl text-zinc-400 font-medium">
+                            Mix, match, and experiment with real-time editing.
+                        </p>
+                    </div>
+
+                    <div className="flex gap-3">
+                        <button className="p-3 bg-zinc-900 rounded-full hover:bg-white hover:text-black transition-colors" title="Download Image">
+                            <Download size={20} />
+                        </button>
+                        <button className="p-3 bg-zinc-900 rounded-full hover:bg-[#BDF522] hover:text-black transition-colors" title="Share Pair">
+                            <Share2 size={20} />
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            <div className="mx-auto">
-
-                {/* Unified Playground Container */}
-                <div
-                    className="rounded-4xl border-y-2 border-black p-6 md:p-12 min-h-150 h-full relative transition-all duration-300"
+            {/* Main Playground */}
+            <div className="px-4 pb-20">
+                <motion.div
+                    layout
+                    className="max-w-7xl mx-auto rounded-[3rem] p-6 md:p-16 min-h-[80vh] relative transition-colors duration-500 shadow-2xl border border-white/5"
                     style={{ backgroundColor: bgColor }}
                 >
-
-                    <div className="mx-auto space-y-16">
+                    <div className="space-y-16 lg:space-y-24">
 
                         {/* 1. Header Section */}
                         <div className="group relative">
-                            <div className="absolute -left-9 top-1/2 -translate-y-1/2 hidden lg:flex flex-col items-center gap-1 text-gray-400 opacity-0 group-hover:opacity-100">
-                                <Type size={20} />
-                                <span className="text-xs font-bold uppercase rotate-180" style={{ writingMode: 'vertical-rl' }}>Header</span>
+                            <div className="absolute -left-12 top-0 hidden xl:flex flex-col items-center gap-2 opacity-20">
+                                <Type size={24} />
                             </div>
 
-                            {/* Floating Action Button */}
-                            <div className="absolute -top-12 -left-4 md:-right-12 scale-75 md:scale-100 opacity-100 md:opacity-0 group-hover:opacity-100 transition-all duration-200 z-10 flex gap-2">
-                                <button
-                                    onClick={() => handleOpenPicker('Header')}
-                                    className="-rotate-12 bg-black text-white px-4 py-2 rounded-full font-bold shadow-lg flex items-center gap-2 hover:bg-[#BDF522] hover:text-black border-2 border-transparent hover:border-black transition-all"
-                                >
-                                    <Edit3 size={16} /> Font
-                                </button>
-                                <button
-                                    onClick={() => handleOpenCustomize('Header')}
-                                    className="-rotate-12 bg-[#EEEFEB] text-black px-3 py-2 rounded-full font-bold shadow-lg flex items-center gap-2 hover:bg-[#BDF522] border-2 border-black transition-all"
-                                >
-                                    <Settings size={16} />
-                                </button>
-                                <div className="mt-1 absolute left-12 top-10 -rotate-12">
-                                    <span className="bg-gray-100 text-xs px-2 py-1 rounded border border-gray-300 font-mono shadow-sm inline-block">
-                                        {headerFont?.name}
-                                    </span>
+                            {/* Floating Controls */}
+                            <div className="absolute -top-12 left-0 opacity-100 lg:opacity-0 group-hover:opacity-100 transition-all duration-300 z-10 flex items-center gap-2">
+                                <div className="bg-black/80 backdrop-blur-md rounded-full border border-white/10 p-1 flex items-center gap-1">
+                                    <button
+                                        onClick={() => handleOpenPicker('Header')}
+                                        className="px-4 py-2 rounded-full font-bold text-xs bg-white text-black hover:bg-zinc-200 transition-colors flex items-center gap-2"
+                                    >
+                                        <Edit3 size={12} />
+                                        <span>{headerFont?.name || 'Select Font'}</span>
+                                    </button>
+                                    <button
+                                        onClick={() => handleOpenCustomize('Header')}
+                                        className="p-2 rounded-full text-zinc-400 hover:text-white hover:bg-white/10 transition-colors"
+                                    >
+                                        <Settings size={16} />
+                                    </button>
                                 </div>
                             </div>
 
                             <textarea
                                 ref={headerRef}
                                 value={headerText}
-                                onChange={(e) => {
-                                    setHeaderText(e.target.value);
-                                }}
+                                onChange={(e) => setHeaderText(e.target.value)}
                                 style={{
                                     fontFamily: headerFont?.name ? `header-font-${headerFont.id}-${headerVariant || 'reg'}, ${headerFont.name}` : undefined,
                                     fontSize: `${headerStyle.size}px`,
@@ -342,8 +340,7 @@ export default function FontPairing() {
                                     letterSpacing: `${headerStyle.tracking}px`,
                                     color: headerStyle.color
                                 }}
-                                className="w-full h-full bg-transparent border-none outline-none resize-none text-wrap hover:bg-black/5 rounded-xl transition-colors -ml-2"
-                                rows={3}
+                                className="w-full bg-transparent border-none outline-none resize-none overflow-hidden placeholder:text-zinc-700 hover:bg-white/5 rounded-2xl transition-colors p-2 -ml-2 select-text"
                                 spellCheck={false}
                             />
                         </div>
@@ -351,38 +348,33 @@ export default function FontPairing() {
 
                         {/* 2. Body Section */}
                         <div className="group relative">
-                            <div className="absolute -left-12 top-0 hidden lg:flex flex-col items-center gap-1 text-gray-400">
-                                <AlignLeft size={20} />
-                                <span className="text-xs font-bold uppercase rotate-180" style={{ writingMode: 'vertical-rl' }}>Body</span>
+                            <div className="absolute -left-12 top-0 hidden xl:flex flex-col items-center gap-2 opacity-20">
+                                <AlignLeft size={24} />
                             </div>
 
-                            {/* Floating Action Button */}
-                            <div className="absolute -top-12 -left-4 md:-right-12 scale-75 md:scale-100 opacity-100 md:opacity-0 group-hover:opacity-100 transition-all duration-200 z-10 flex gap-2">
-                                <button
-                                    onClick={() => handleOpenPicker('Body')}
-                                    className="-rotate-12 bg-black text-white px-4 py-2 rounded-full font-bold shadow-lg flex items-center gap-2 hover:bg-[#BDF522] hover:text-black border-2 border-transparent hover:border-black transition-all"
-                                >
-                                    <Edit3 size={16} /> Font
-                                </button>
-                                <button
-                                    onClick={() => handleOpenCustomize('Body')}
-                                    className="-rotate-12 bg-[#EEEFEB] text-black px-3 py-2 rounded-full font-bold shadow-lg flex items-center gap-2 hover:bg-[#BDF522] border-2 border-black transition-all"
-                                >
-                                    <Settings size={16} />
-                                </button>
-                                <div className="mt-1 absolute left-12 top-10 -rotate-12">
-                                    <span className="bg-gray-100 text-xs px-2 py-1 rounded border border-gray-300 font-mono shadow-sm inline-block">
-                                        {bodyFont?.name}
-                                    </span>
+                            {/* Floating Controls */}
+                            <div className="absolute -top-12 left-0 opacity-100 lg:opacity-0 group-hover:opacity-100 transition-all duration-300 z-10 flex items-center gap-2">
+                                <div className="bg-black/80 backdrop-blur-md rounded-full border border-white/10 p-1 flex items-center gap-1">
+                                    <button
+                                        onClick={() => handleOpenPicker('Body')}
+                                        className="px-4 py-2 rounded-full font-bold text-xs bg-white text-black hover:bg-zinc-200 transition-colors flex items-center gap-2"
+                                    >
+                                        <Edit3 size={12} />
+                                        <span>{bodyFont?.name || 'Select Font'}</span>
+                                    </button>
+                                    <button
+                                        onClick={() => handleOpenCustomize('Body')}
+                                        className="p-2 rounded-full text-zinc-400 hover:text-white hover:bg-white/10 transition-colors"
+                                    >
+                                        <Settings size={16} />
+                                    </button>
                                 </div>
                             </div>
 
                             <textarea
                                 ref={bodyRef}
                                 value={bodyText}
-                                onChange={(e) => {
-                                    setBodyText(e.target.value);
-                                }}
+                                onChange={(e) => setBodyText(e.target.value)}
                                 style={{
                                     fontFamily: bodyFont?.name ? `body-font-${bodyFont.id}-${bodyVariant || 'reg'}, ${bodyFont.name}` : undefined,
                                     fontSize: `${bodyStyle.size}px`,
@@ -390,7 +382,7 @@ export default function FontPairing() {
                                     letterSpacing: `${bodyStyle.tracking}px`,
                                     color: bodyStyle.color
                                 }}
-                                className="w-full h-full bg-transparent overflow-hidden border-none resize-y hover:bg-black/5 rounded-xl transition-colors p-2 -ml-2"
+                                className="w-full bg-transparent border-none outline-none resize-none overflow-hidden hover:bg-white/5 rounded-2xl transition-colors p-2 -ml-2"
                                 rows={1}
                                 spellCheck={false}
                             />
@@ -398,35 +390,32 @@ export default function FontPairing() {
 
 
                         {/* 3. UI Section */}
-                        <div className="group relative border-t-2 border-gray-100">
-                            <div className="absolute -left-12 top-12 hidden lg:flex flex-col items-center gap-1 text-gray-400">
-                                <MousePointerClick size={20} />
-                                <span className="text-xs font-bold uppercase rotate-180" style={{ writingMode: 'vertical-rl' }}>UI Elements</span>
+                        <div className="group relative pt-12 border-t border-white/5">
+                            <div className="absolute -left-12 top-16 hidden xl:flex flex-col items-center gap-2 opacity-20">
+                                <MousePointerClick size={24} />
                             </div>
 
-                            {/* Floating Action Button */}
-                            <div className="absolute -top-12 -left-4 md:-right-12 scale-75 md:scale-100 opacity-100 md:opacity-0 group-hover:opacity-100 transition-all duration-200 z-10 flex gap-2">
-                                <button
-                                    onClick={() => handleOpenPicker('UI')}
-                                    className="-rotate-12 bg-black text-white px-4 py-2 rounded-full font-bold shadow-lg flex items-center gap-2 hover:bg-[#BDF522] hover:text-black border-2 border-transparent hover:border-black transition-all"
-                                >
-                                    <Edit3 size={16} /> Font
-                                </button>
-                                <button
-                                    onClick={() => handleOpenCustomize('UI')}
-                                    className="-rotate-12 bg-[#EEEFEB] text-black px-3 py-2 rounded-full font-bold shadow-lg flex items-center gap-2 hover:bg-[#BDF522] border-2 border-black transition-all"
-                                >
-                                    <Settings size={16} />
-                                </button>
-                                <div className="mt-1 absolute left-12 top-10 -rotate-12">
-                                    <span className="bg-gray-100 text-xs px-2 py-1 rounded border border-gray-300 font-mono shadow-sm inline-block">
-                                        {uiFont?.name}
-                                    </span>
+                            {/* Floating Controls */}
+                            <div className="absolute top-0 left-0 opacity-100 lg:opacity-0 group-hover:opacity-100 transition-all duration-300 z-10 flex items-center gap-2">
+                                <div className="bg-black/80 backdrop-blur-md rounded-full border border-white/10 p-1 flex items-center gap-1">
+                                    <button
+                                        onClick={() => handleOpenPicker('UI')}
+                                        className="px-4 py-2 rounded-full font-bold text-xs bg-white text-black hover:bg-zinc-200 transition-colors flex items-center gap-2"
+                                    >
+                                        <Edit3 size={12} />
+                                        <span>{uiFont?.name || 'Select Font'}</span>
+                                    </button>
+                                    <button
+                                        onClick={() => handleOpenCustomize('UI')}
+                                        className="p-2 rounded-full text-zinc-400 hover:text-white hover:bg-white/10 transition-colors"
+                                    >
+                                        <Settings size={16} />
+                                    </button>
                                 </div>
                             </div>
 
                             <div
-                                className="flex flex-col-reverse items-start gap-8 p-4 hover:bg-black/5 rounded-xl transition-colors -ml-4"
+                                className="flex flex-col md:flex-row items-center gap-8 md:gap-16 hover:bg-white/5 rounded-2xl transition-colors p-6 -ml-6"
                                 style={{
                                     fontFamily: uiFont?.name ? `ui-font-${uiFont.id}-${uiVariant || 'reg'}, ${uiFont.name}` : undefined,
                                     fontSize: `${uiStyle.size}px`,
@@ -436,37 +425,37 @@ export default function FontPairing() {
                                 }}
                             >
                                 {/* Nav Links */}
-                                <div className="flex gap-6 text-sm font-medium text-gray-600">
+                                <div className="flex gap-8 font-medium">
                                     <input
                                         value={uiLink1}
                                         onChange={(e) => setUiLink1(e.target.value)}
-                                        className="bg-transparent border-none outline-none w-12 hover:text-black cursor-pointer"
+                                        className="bg-transparent border-none outline-none w-20 text-center hover:text-[#BDF522] cursor-pointer transition-colors"
                                     />
                                     <input
                                         value={uiLink2}
                                         onChange={(e) => setUiLink2(e.target.value)}
-                                        className="bg-transparent border-none outline-none w-12 hover:text-black cursor-pointer"
+                                        className="bg-transparent border-none outline-none w-20 text-center hover:text-[#BDF522] cursor-pointer transition-colors"
                                     />
                                     <input
                                         value={uiLink3}
                                         onChange={(e) => setUiLink3(e.target.value)}
-                                        className="bg-transparent border-none outline-none w-16 hover:text-black cursor-pointer"
+                                        className="bg-transparent border-none outline-none w-24 text-center hover:text-[#BDF522] cursor-pointer transition-colors"
                                     />
                                 </div>
 
                                 {/* Button */}
-                                <button className="bg-black text-white px-6 py-3 rounded-xl font-bold hover:bg-gray-800 transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-y-0.5 active:shadow-none">
+                                <button className="px-8 py-4 rounded-full bg-white text-black font-bold hover:bg-[#BDF522] transition-colors shadow-lg hover:shadow-[0_0_20px_rgba(189,245,34,0.4)]">
                                     <input
                                         value={uiButtonText}
                                         onChange={(e) => setUiButtonText(e.target.value)}
-                                        className="bg-transparent border-none outline-none text-center min-w-25 cursor-pointer"
+                                        className="bg-transparent border-none outline-none text-center min-w-30 cursor-pointer font-inherit text-inherit uppercase tracking-wider"
                                     />
                                 </button>
                             </div>
                         </div>
 
                     </div>
-                </div>
+                </motion.div>
             </div>
         </div>
     );

@@ -1,111 +1,34 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { supabase } from '../lib/supabase';
-import { PreviewAccordion } from '../components/fonts/PreviewAccordion';
+import { useState } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { Eye, EyeOff, Loader2, ArrowRight, Github } from 'lucide-react';
+import { motion } from 'framer-motion';
+import SEO from '../components/shared/SEO';
 
 export default function Auth() {
-    const { user, loading: authLoading } = useAuth();
     const [isLogin, setIsLogin] = useState(true);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [fullName, setFullName] = useState('');
-    const [otp, setOtp] = useState('');
-    const [isVerifying, setIsVerifying] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [showPassword, setShowPassword] = useState(false);
+
+    const { signIn, signUp } = useAuth();
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
 
-    useEffect(() => {
-        if (!authLoading && user) {
-            navigate('/profile', { replace: true });
-        }
-    }, [user, authLoading, navigate]);
-
-    const handleAuth = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setLoading(true);
         setError(null);
+        setLoading(true);
 
         try {
             if (isLogin) {
-                const { error } = await supabase.auth.signInWithPassword({
-                    email,
-                    password,
-                });
-                if (error) throw error;
-                navigate('/profile');
+                await signIn(email, password);
             } else {
-                const { data, error } = await supabase.auth.signUp({
-                    email,
-                    password,
-                    options: {
-                        data: {
-                            full_name: fullName,
-                        },
-                    },
-                });
-                if (error) throw error;
-
-                // If session is null (email confirmation required)
-                if (data.user && !data.session) {
-                    setIsVerifying(true);
-                } else {
-                    navigate('/profile');
-                }
+                await signUp(email, password);
             }
-        } catch (err: any) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleVerifyOtp = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setLoading(true);
-        setError(null);
-
-        try {
-            const { error } = await supabase.auth.verifyOtp({
-                email,
-                token: otp,
-                type: 'signup'
-            });
-
-            if (error) throw error;
-            navigate('/profile');
-        } catch (err: any) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleSocialLogin = async (provider: 'google' | 'github') => {
-        try {
-            const { error } = await supabase.auth.signInWithOAuth({
-                provider,
-                options: {
-                    redirectTo: `${window.location.origin}/profile`,
-                },
-            });
-            if (error) throw error;
-        } catch (err: any) {
-            setError(err.message);
-        }
-    };
-
-    const handleResendOtp = async () => {
-        setLoading(true);
-        setError(null);
-        try {
-            const { error } = await supabase.auth.resend({
-                type: 'signup',
-                email: email
-            });
-            if (error) throw error;
-            alert('Code resent! Check your email (and spam support).');
+            navigate(searchParams.get('redirect') || '/');
         } catch (err: any) {
             setError(err.message);
         } finally {
@@ -114,195 +37,117 @@ export default function Auth() {
     };
 
     return (
-        <div className="fixed h-screen w-screen top-0 left-0 flex flex-col-reverse md:flex-row bg-black">
-            {/* Form Side */}
-            <div className="w-full md:h-full p-8 md:p-16 flex flex-col justify-center relativee">
+        <div className="min-h-screen grid items-center justify-center relative bg-black overflow-hidden font-sans">
+            <SEO title={isLogin ? "Sign In" : "Sign Up"} description="Access your account to manage fonts and downloads." />
 
-                {/* Toggle Switch */}
-                {!isVerifying && (
-                    <div className="flex bg-black p-1 rounded-full border border-[#333] w-fit mx-auto relative z-10">
-                        <button
-                            onClick={() => setIsLogin(true)}
-                            className={`px-8 py-3 rounded-full font-bold uppercase text-sm transition-all duration-300 ${isLogin ? 'bg-[#BDF522] text-black' : 'text-gray-500 hover:text-white'}`}
-                        >
-                            Log In
-                        </button>
-                        <button
-                            onClick={() => setIsLogin(false)}
-                            className={`px-8 py-3 rounded-full font-bold uppercase text-sm transition-all duration-300 ${!isLogin ? 'bg-[#A609F0] text-white' : 'text-gray-500 hover:text-white'}`}
-                        >
-                            Sign Up
-                        </button>
-                    </div>
-                )}
+            {/* Ambient Background */}
+            <div className="absolute inset-0 pointer-events-none">
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-150 h-150 bg-indigo-500/10 rounded-full blur-[100px]"></div>
+                <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
+            </div>
 
-                <div className="w-full bg-[#EEEFEB]/0 text-white p-2 md:p-16 rounded-4xl">
-                    <h2 className="text-3xl font-bold mb-2">
-                        {isVerifying ? 'Verify Email' : (isLogin ? 'Welcome Back' : 'Create Account')}
-                    </h2>
-                    <p className="text-gray-500 mb-2">
-                        {isVerifying
-                            ? `Enter the code sent to ${email}`
-                            : (isLogin ? 'Enter your details to access your account' : 'Start your journey with us today')
-                        }
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="relative w-full max-w-md p-8 md:p-12 z-10"
+            >
+                {/* Header */}
+                <div className="text-center mb-10">
+                    <Link to="/" className="inline-block text-2xl font-bold tracking-tighter text-white mb-6 hover:opacity-80 transition-opacity">
+                        Fontique
+                    </Link>
+                    <h1 className="text-3xl font-bold text-white mb-2">
+                        {isLogin ? "Welcome back" : "Create account"}
+                    </h1>
+                    <p className="text-zinc-400">
+                        {isLogin ? "Enter your credentials to access your account" : "Start your journey with us today"}
                     </p>
+                </div>
+
+                {/* Form */}
+                <form onSubmit={handleSubmit} className="space-y-4">
 
                     {error && (
-                        <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm">
+                        <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-500 text-sm rounded-lg text-center">
                             {error}
                         </div>
                     )}
 
-                    {isVerifying ? (
-                        <form onSubmit={handleVerifyOtp} className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Verification Code</label>
-                                <input
-                                    type="text"
-                                    required
-                                    placeholder="123456"
-                                    className="w-full bg-black border border-[#333] rounded-xl p-2 text-white font-bold placeholder-gray-700 focus:outline-none focus:bg-[#1a1a1a] focus:border-[#A609F0] transition-all text-center tracking-widest text-2xl"
-                                    value={otp}
-                                    onChange={(e) => setOtp(e.target.value)}
-                                    maxLength={6}
-                                />
-                            </div>
-                            <button
-                                type="submit"
-                                disabled={loading}
-                                className="mt-8 w-full py-3 rounded-xl font-black uppercase text-lg flex items-center justify-center gap-3 transition-all hover:scale-[1.02] active:scale-[0.98] bg-[#A609F0] text-white hover:bg-[#EEEFEB] hover:text-black">
-                                {loading ? 'Verifying...' : 'Verify Email'}
-                            </button>
-
-                            <div className="flex flex-col gap-2 mt-4">
-                                <button
-                                    type="button"
-                                    onClick={handleResendOtp}
-                                    disabled={loading}
-                                    className="text-sm font-medium text-[#BDF522] hover:underline"
-                                >
-                                    Resend Code
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => setIsVerifying(false)}
-                                    className="text-sm font-medium text-gray-500 hover:text-white"
-                                >
-                                    Back to Sign Up
-                                </button>
-                            </div>
-                        </form>
-                    ) : (
-                        <form onSubmit={handleAuth} className="space-y-4">
-                            {!isLogin && (
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-                                    <input
-                                        type="text"
-                                        required
-                                        className="w-full bg-black border border-[#333] rounded-xl p-2 text-white font-bold placeholder-gray-700 focus:outline-none focus:bg-[#1a1a1a] focus:border-[#A609F0] transition-all"
-                                        value={fullName}
-                                        onChange={(e) => setFullName(e.target.value)}
-                                    />
-                                </div>
-                            )}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                                <input
-                                    type="email"
-                                    required
-                                    className={`w-full bg-black border border-[#333] rounded-xl p-2 text-white font-bold placeholder-gray-700 focus:outline-none focus:bg-[#1a1a1a]  transition-all ${isLogin ? 'focus:border-[#BDF522]' : 'focus:border-[#A609F0]'}`}
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                                <input
-                                    type="password"
-                                    required
-                                    className={`w-full bg-black border border-[#333] rounded-xl p-2 text-white font-bold placeholder-gray-700 focus:outline-none focus:bg-[#1a1a1a]  transition-all ${isLogin ? 'focus:border-[#BDF522]' : 'focus:border-[#A609F0]'}`}
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                />
-                            </div>
-
-                            <button
-                                type="submit"
-                                disabled={loading}
-                                className={`mt-8 w-full py-3 rounded-xl font-black uppercase text-lg flex items-center justify-center gap-3 transition-all hover:scale-[1.02] active:scale-[0.98] ${isLogin ? 'bg-[#BDF522] text-black hover:bg-[#EEEFEB]' : 'bg-[#A609F0] text-white hover:bg-[#EEEFEB] hover:text-black'}`}>
-                                {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Create Account')}
-                            </button>
-                        </form>
-                    )}
-
-                    <div className="hidden mt-6 text-center text-sm">
-                        <span className="text-gray-500">
-                            {isLogin ? "Don't have an account? " : "Already have an account? "}
-                        </span>
-                        <button
-                            onClick={() => setIsLogin(!isLogin)}
-                            className="text-blue-600 hover:text-blue-800 font-medium"
-                        >
-                            {isLogin ? 'Sign Up' : 'Login'}
-                        </button>
+                    <div className="space-y-1">
+                        <label className="text-xs font-bold text-zinc-500 uppercase tracking-wider ml-1">Email</label>
+                        <input
+                            type="email"
+                            required
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            className="w-full bg-zinc-900/50 border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-zinc-600 focus:outline-none focus:border-white/30 focus:ring-1 focus:ring-white/30 transition-all shadow-inner"
+                            placeholder="name@example.com"
+                        />
                     </div>
 
-
-
-                    <div className="relative my-6">
-                        <div className="absolute inset-0 flex items-center">
-                            <div className="w-full border-t border-gray-300"></div>
+                    <div className="space-y-1">
+                        <div className="flex justify-between items-center ml-1">
+                            <label className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Password</label>
+                            {isLogin && <a href="#" className="text-xs text-white/50 hover:text-white transition-colors">Forgot?</a>}
                         </div>
-                        <div className="relative flex justify-center text-sm">
-                            <span className="px-2 bg-[#EEEFEB] text-gray-500">Or continue with</span>
+                        <div className="relative">
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                required
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                className="w-full bg-zinc-900/50 border border-white/10 rounded-xl pl-4 pr-12 py-3.5 text-white placeholder-zinc-600 focus:outline-none focus:border-white/30 focus:ring-1 focus:ring-white/30 transition-all shadow-inner"
+                                placeholder={isLogin ? "••••••••" : "Min. 8 characters"}
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white transition-colors"
+                            >
+                                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                            </button>
                         </div>
                     </div>
 
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className="w-full bg-white text-black font-bold text-lg rounded-xl py-4 hover:bg-zinc-200 transition-colors flex items-center justify-center gap-2 mt-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(255,255,255,0.1)]"
+                    >
+                        {loading && <Loader2 size={20} className="animate-spin" />}
+                        {isLogin ? "Sign In" : "Sign Up"}
+                        {!loading && <ArrowRight size={20} />}
+                    </button>
+                </form>
 
-                    <div className="grid grid-cols-2 gap-4 mb-6">
-                        <button
-                            onClick={() => handleSocialLogin('google')}
-                            className="bg-black border border-[#333] py-3 rounded-xl font-bold uppercase text-sm hover:bg-[#333] transition-colors flex items-center justify-center gap-2">
-                            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12.213 12.173 12.213c3.493 0 6.16-1.187 8.253-3.36 2.16-2.16 2.853-5.32 2.853-7.88 0-.787-.067-1.453-.16-2.04H12.48z"></path></svg>
-                            Google
-                        </button>
-                        <button
-                            onClick={() => handleSocialLogin('github')}
-                            className="bg-black border border-[#333] py-3 rounded-xl font-bold uppercase text-sm hover:bg-[#333] transition-colors flex items-center justify-center gap-2">
-                            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clipRule="evenodd"></path></svg>
-                            GitHub
-                        </button>
-                    </div>
+                <div className="relative my-8">
+                    <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-white/10"></div></div>
+                    <div className="relative flex justify-center text-xs uppercase"><span className="bg-black px-2 text-zinc-500">Or continue with</span></div>
                 </div>
-            </div>
 
-            {/* Branding Side */}
-            <div className="flex w-full h-[40%] md:h-full bg-black border-10 border-[#FFF] rounded-4xl overflow-hidden p-0">
-                <PreviewAccordion
-                    vertical={true}
-                    images={[
-                        "https://st.1001fonts.net/img/illustrations/m/o/moldin-demo-font-10-large.avif",
-                        "https://st.1001fonts.net/img/illustrations/q/u/qurova-demo-font-13-large.avif",
-                        "https://st.1001fonts.net/img/illustrations/g/r/groovy-alphabet-font-4-large.avif",
-                        "https://st.1001fonts.net/img/illustrations/t/r/transcity-font-4-large.avif",
-                        "https://st.1001fonts.net/img/illustrations/b/i/bizantheum-font-3-large.avif",
-                        "https://st.1001fonts.net/img/illustrations/g/o/golden-girdle-font-9-large.avif",
-                        "https://st.1001fonts.net/img/illustrations/d/u/duhit-font-5-large.avif",
-                        "https://st.1001fonts.net/img/illustrations/b/l/blush-asliring-font-6-large.avif",
-                        "https://st.1001fonts.net/img/illustrations/b/l/blush-asliring-font-4-large.avif",
-                        "https://st.1001fonts.net/img/illustrations/m/o/moliga-demo-font-2-large.avif",
-                        "https://st.1001fonts.net/img/illustrations/z/a/zaslia-font-7-large.avif",
-                        "https://st.1001fonts.net/img/illustrations/t/h/the-jacatra-font-4-large.avif",
-                        "https://st.1001fonts.net/img/illustrations/m/o/mosseta-font-11-large.avif",
-                        "https://st.1001fonts.net/img/illustrations/m/o/moot-jungle-free-version-font-3-large.avif",
-                        "https://st.1001fonts.net/img/illustrations/t/h/the-munday-free-version-font-6-large.avif",
-                        "https://st.1001fonts.net/img/illustrations/m/o/moldin-demo-font-3-large.avif",
-                        "https://st.1001fonts.net/img/illustrations/v/a/varelle-demo-font-8-large.avif",
-                        "https://st.1001fonts.net/img/illustrations/b/l/blush-asliring-font-10-large.avif",
-                    ]}
-                />
-            </div>
+                <div className="grid grid-cols-2 gap-4">
+                    <button className="flex items-center justify-center gap-2 py-3 bg-zinc-900 border border-white/10 rounded-xl text-white hover:bg-zinc-800 transition-colors font-medium text-sm">
+                        <Github size={18} /> GitHub
+                    </button>
+                    <button className="flex items-center justify-center gap-2 py-3 bg-zinc-900 border border-white/10 rounded-xl text-white hover:bg-zinc-800 transition-colors font-medium text-sm">
+                        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .533 5.333.533 12S5.867 24 12.48 24c3.44 0 6.147-1.133 7.973-3.04 1.853-1.853 2.533-4.64 2.533-7.04 0-.587-.04-1.173-.093-1.72h-10.453z" /></svg> Google
+                    </button>
+                </div>
+
+                {/* Footer Toggle */}
+                <p className="mt-8 text-center text-zinc-400 text-sm">
+                    {isLogin ? "Don't have an account? " : "Already have an account? "}
+                    <button
+                        onClick={() => setIsLogin(!isLogin)}
+                        className="text-white font-bold hover:underline decoration-1 underline-offset-4"
+                    >
+                        {isLogin ? "Sign up" : "Sign in"}
+                    </button>
+                </p>
+
+            </motion.div>
         </div>
     );
 }
+
