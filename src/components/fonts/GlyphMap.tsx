@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import opentype from 'opentype.js';
 import { cn } from '../../lib/utils';
-import { ChevronDown, BoxSelect, Maximize2, Minimize2 } from 'lucide-react';
+import { ChevronDown, BoxSelect } from 'lucide-react';
 
 interface GlyphMapProps {
     fontFamily: string;
@@ -153,7 +153,7 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
             const scaledDescender = descender * scale;
 
             // Draw Guidelines function
-            const drawLine = (y: number, label: string, value: number, isDashed = false) => {
+            const drawLine = (y: number, label: string, isDashed = false) => {
                 ctx.beginPath();
                 ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
                 ctx.lineWidth = 1;
@@ -170,10 +170,10 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
             };
 
             // Draw Lines
-            drawLine(baselineY, 'Baseline', 0);
-            drawLine(baselineY - scaledCapHeight, 'Cap Height', capHeight);
-            drawLine(baselineY - scaledXHeight, 'X-Height', xHeight, true);
-            drawLine(baselineY - scaledDescender, 'Descender', descender);
+            drawLine(baselineY, 'Baseline');
+            drawLine(baselineY - scaledCapHeight, 'Cap Height');
+            drawLine(baselineY - scaledXHeight, 'X-Height', true);
+            drawLine(baselineY - scaledDescender, 'Descender');
 
             // Get Glyph Path
             const glyph = fontObject.charToGlyph(selectedChar);

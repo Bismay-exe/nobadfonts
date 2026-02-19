@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { AlignLeft, AlignCenter, AlignRight, LayoutTemplate, Settings2, BoxSelect, Type, Check } from 'lucide-react';
+import { AlignLeft, AlignCenter, AlignRight, LayoutTemplate, Settings2, BoxSelect, Check } from 'lucide-react';
 import ContextPreview from './ContextPreview';
 import type { Font } from '../../types/font';
 import { cn } from '../../lib/utils';

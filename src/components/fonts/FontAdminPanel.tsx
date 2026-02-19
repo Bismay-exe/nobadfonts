@@ -1,7 +1,6 @@
 import { useState } from 'react';
-import { Upload, X, Save, Trash2, FileType, Image as ImageIcon, Plus, Loader2 } from 'lucide-react';
+import { X, Save, Trash2, FileType, Image as Plus, Loader2 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
-import { cn } from '../../lib/utils';
 
 interface FontAdminProps {
     fontId: string;

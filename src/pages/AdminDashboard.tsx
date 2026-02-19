@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
-import { Navigate, Link } from 'react-router-dom';
-import { Search, Users, FileText, Star, Eye, TrendingUp, Shield, MoreVertical, Check, X, LayoutGrid } from 'lucide-react';
+import { Navigate } from 'react-router-dom';
+import { Search, Users, FileText, Star, TrendingUp, Shield, Check } from 'lucide-react';
 import type { Database } from '../types/database.types';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { cn } from '../lib/utils';
@@ -26,11 +26,6 @@ export default function AdminDashboard() {
 
     // State for Analytics
     const [downloadStats, setDownloadStats] = useState<{ date: string, count: number }[]>([]);
-    const [topDownloadedFonts, setTopDownloadedFonts] = useState<{ name: string, count: number }[]>([]);
-
-    // State for Favorites Analytics
-    const [favoritesStats, setFavoritesStats] = useState<{ date: string, count: number }[]>([]);
-    const [topFavoritedFonts, setTopFavoritedFonts] = useState<{ name: string, count: number }[]>([]);
 
     // Search States
     const [searchUsers, setSearchUsers] = useState('');
@@ -114,14 +109,7 @@ export default function AdminDashboard() {
             .select('font_id, downloaded_at')
             .gte('downloaded_at', thirtyDaysAgoIso);
 
-        // Fetch favorites
-        const { data: favorites, error: favoritesError } = await supabase
-            .from('favorites')
-            .select('font_id, created_at')
-            .gte('created_at', thirtyDaysAgoIso);
-
         if (downloadsError) console.error('Error fetching downloads analytics:', downloadsError);
-        if (favoritesError) console.error('Error fetching favorites analytics:', favoritesError);
 
         // --- Process Downloads ---
         if (downloads) {

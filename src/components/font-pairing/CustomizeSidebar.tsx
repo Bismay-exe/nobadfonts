@@ -1,6 +1,5 @@
 import { X, Type, Palette, Layers } from 'lucide-react';
 import type { Font } from '../../types/font';
-import { cn } from '../../lib/utils';
 
 interface StyleState {
     size: number;

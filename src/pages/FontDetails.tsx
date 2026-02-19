@@ -56,8 +56,14 @@ export default function FontDetails() {
     type NewVariant = {
         id: string; // temporary ID
         name: string;
+        isCustom?: boolean;
         files: { ttf: File | null; otf: File | null; woff: File | null; woff2: File | null };
     };
+    const VARIANT_NAMES = [
+        "Thin", "Extra Light", "Light", "Regular", "Medium", "Semi Bold", "Bold", "Extra Bold", "Black",
+        "Thin Italic", "Extra Light Italic", "Light Italic", "Regular Italic",
+        "Medium Italic", "Semi Bold Italic", "Bold Italic", "Extra Bold Italic", "Black Italic"
+    ];
     const [addedVariants, setAddedVariants] = useState<NewVariant[]>([]);
 
     // Similar Fonts State
@@ -258,7 +264,7 @@ export default function FontDetails() {
 
         try {
             let publicUrl: string | null = null;
-            let fileSize: number | null = null;
+
 
             if (type === 'replace' && file) {
                 const fileName = `${Date.now()}-${file.name}`;
@@ -274,7 +280,7 @@ export default function FontDetails() {
 
                 const { data } = supabase.storage.from('fonts').getPublicUrl(path);
                 publicUrl = data.publicUrl;
-                fileSize = file.size;
+
             }
 
             if (type === 'delete') {
@@ -358,13 +364,26 @@ export default function FontDetails() {
         }
     };
 
-    const addVariantToState = () => {
-        // Simplified
+    const addCustomVariantToState = () => {
         setAddedVariants(prev => [...prev, {
             id: Math.random().toString(),
-            name: 'New Variant',
+            name: '',
+            isCustom: true,
             files: { ttf: null, otf: null, woff: null, woff2: null }
         }]);
+    };
+
+    const addStdVariantToState = () => {
+        setAddedVariants(prev => {
+            const usedNames = [...(font?.font_variants?.map(v => v.variant_name) || []), ...prev.map(v => v.name)];
+            const name = VARIANT_NAMES.find(n => !usedNames.includes(n)) || 'Regular';
+            return [...prev, {
+                id: Math.random().toString(),
+                name,
+                isCustom: false,
+                files: { ttf: null, otf: null, woff: null, woff2: null }
+            }];
+        });
     };
 
     const removeAddedVariant = (id: string) => setAddedVariants(prev => prev.filter(v => v.id !== id));
@@ -965,7 +984,7 @@ export default function FontDetails() {
 
 
             {/* Hidden Share Card for Generation */}
-            <div className="absolute -left-[9999px] -top-[9999px]">
+            <div className="absolute" style={{ left: -9999, top: -9999 }}>
                 <SocialShareCard ref={shareRef} font={font} />
             </div>
 
