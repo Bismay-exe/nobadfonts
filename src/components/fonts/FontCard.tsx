@@ -1,9 +1,10 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Heart } from 'lucide-react';
+import { ArrowUpRight, Heart } from 'lucide-react';
 import type { Font } from '../../types/font';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
+import { motion } from 'framer-motion';
 
 interface FontCardProps {
     font: Font;
@@ -161,8 +162,11 @@ export default function FontCard({ font, viewMode = 'font', onClick, disableLink
     };
 
     return (
-        <div
-            className={`group relative rounded-4xl border border-black hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col bg-[#EEEFEB] ${isExpanded ? 'row-span-2' : ''}`}
+        <motion.div
+            initial={{ opacity: 1, scale: 1, y: 0 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="group relative -mb-2 sm:mb-0 rounded-4xl border border-white/15 transition-colors overflow-hidden flex flex-col bg-card"
             onClick={handleCardClick}
         >
             <div className="flex flex-col h-full relative cursor-pointer">
@@ -175,7 +179,7 @@ export default function FontCard({ font, viewMode = 'font', onClick, disableLink
                 <div className={`w-full relative flex items-center justify-center overflow-hidden transition-all duration-300`}>
                     {viewMode === 'image' && (font.preview_image_url || (font.gallery_images && font.gallery_images.length > 0)) ? (
                         <div className={`w-full h-full flex items-center justify-center transition-all duration-300 ease-in-out
-                        ${isExpanded ? 'p-2' : 'p-0'}`}>
+                        ${isExpanded ? 'p-3' : 'p-0'}`}>
                             <img
                                 src={font.preview_image_url || font.gallery_images?.[0]}
                                 alt={font.name}
@@ -184,7 +188,7 @@ export default function FontCard({ font, viewMode = 'font', onClick, disableLink
                         </div>
                     ) : (
                         <p
-                            className="p-6 text-8xl md:text-8xl text-[#1C1D1E] text-center wrap-break-word w-full"
+                            className="px-6 py-10 text-8xl md:text-8xl text-card-foreground/90 text-center wrap-break-word w-full"
                             style={{
                                 fontFamily: isFontLoaded ? `'font-${font.id}'` : 'sans-serif',
                                 opacity: isFontLoaded ? 1 : 0
@@ -196,59 +200,108 @@ export default function FontCard({ font, viewMode = 'font', onClick, disableLink
                 </div>
 
                 {/* Expanded Content Section */}
-                <div className={`
-                    w-full px-4 bg-[#EEEFEB] flex flex-col gap-3 transition-all duration-500 ease-in-out overflow-hidden
-                    ${isExpanded ? 'max-h-96 opacity-100 py-4' : 'max-h-0 opacity-0 py-0'}
-                `}>
-                    {/* Top Row: Likes & View Button */}
-                    <div className="flex items-center justify-between w-full -my-2">
-                        {/* Likes */}
-                        <button
-                            onClick={toggleFavorite}
-                            className="flex items-center gap-1 text-[#1C1D1E] transition-colors group/like"
-                        >
-                            <Heart
-                                size={22}
-                                className={`transition-transform duration-300 ${isFavorited ? 'fill-[#ff0000] text-[#ff0000]' : 'group-hover/like:scale-105'}`}
-                            />
-                            <span className="font-bold text-[16px]">{favoritesCount}</span>
-
-                        </button>
-
-                        {/* View Font Button */}
-                        <Link
-                            to={`/fonts/${font.slug || font.id}`}
-                            onClick={(e) => e.stopPropagation()} // Prevent card toggle when clicking link
-                            className="bg-[#1C1D1E] text-[#EEEFEB] text-xs px-4 py-2 rounded-full font-medium hover:bg-[#3b3b3b] transition-colors"
-                        >
-                            View Font
-                        </Link>
-                    </div>
-
-                    <div className="w-full h-full">
-                        <p className="text-2xl font-bold tracking-tight mb-1">{font.name}</p>
-                        <p className="text-sm text-neutral-500 tracking-wide">
-                            by <Link
-                                to={`/designers/${encodeURIComponent(font.designer || '')}`}
-                                state={{ from: location }}
-                                onClick={(e) => e.stopPropagation()}
-                                className="hover:text-[#1C1D1E] hover:underline transition-colors"
+                <motion.div
+                    initial={false}
+                    animate={{
+                        height: isExpanded ? 'auto' : 0,
+                        opacity: isExpanded ? 1 : 0
+                    }}
+                    transition={{ duration: 0.3, ease: 'easeOut' }}
+                    className="bg-linear-to-t from-black to-black/0 w-full overflow-hidden"
+                >
+                    <div className="px-4 pb-4 pt-2 flex flex-col gap-3">
+                        {/* Top Row: Likes & View Button */}
+                        <div className="flex items-center justify-between w-full">
+                            {/* Likes */}
+                            <button
+                                onClick={toggleFavorite}
+                                className="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors group/like"
                             >
-                                {font.designer}
-                            </Link>
-                        </p>
-                    </div>
+                                <Heart
+                                    size={22}
+                                    className={`transition-transform duration-300 ${isFavorited ? 'fill-pink-500 text-pink-500' : 'group-hover/like:scale-105'}`}
+                                />
+                                <span className="font-bold text-[16px]">{favoritesCount}</span>
 
-                    {/* Bottom Row: Tags */}
-                    <div className="flex flex-wrap gap-1 mt-1">
-                        {displayTags.slice().map((tag, i) => (
-                            <div key={i} className="bg-neutral-300 border border-black/0 text-neutral-600 hover:bg-[#1C1D1E] hover:text-[#EEEFEB] font-bold text-[11px] px-2 py-1 rounded-full capitalize">
-                                {tag}
-                            </div>
-                        ))}
+                            </button>
+
+                            {/* View Font Button */}
+                            <Link
+                                to={`/fonts/${font.slug || font.id}`}
+                                onClick={(e) => e.stopPropagation()}
+                                className="bg-white text-black text-xs px-4 py-2 rounded-full font-bold hover:bg-zinc-200 transition-colors"
+                            >
+                                View Details
+                            </Link>
+                        </div>
+
+                        <div className="w-full h-full">
+                            <p className="text-2xl font-bold tracking-tight mb-0.5">{font.name}</p>
+                            <p className="text-sm text-zinc-500 tracking-wide">
+                                by <Link
+                                    to={`/designers/${encodeURIComponent(font.designer || '')}`}
+                                    state={{ from: location }}
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="hover:text-white hover:underline transition-colors"
+                                >
+                                    {font.designer}
+                                </Link>
+                            </p>
+                        </div>
+
+                        {/* Bottom Row: Tags */}
+                        <div className="flex flex-wrap gap-1.5 mt-1">
+                            {displayTags.map((tag, i) => (
+                                <Link
+                                    key={i}
+                                    to={`/fonts?categories=${tag}`}
+                                    className="bg-white/5 border border-white/5 text-zinc-400 hover:bg-[#ffffff] hover:text-[#000000] text-[10px] px-2.5 py-1 rounded-full tracking-wide uppercase">
+                                    {tag}
+                                </Link>
+                            ))}
+                        </div>
                     </div>
+                </motion.div>
+            </div>
+
+            {/* Hover overlay gradient for collapsed state */}
+            <div
+                className={`absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent flex justify-between items-end p-6 z-10 transition-opacity duration-300 pointer-events-none ${isExpanded ? 'opacity-0' : 'opacity-0 group-hover:opacity-100'
+                    }`}
+            >
+                <div className="flex flex-col">
+                    <p className={`text-white font-bold text-lg transition-transform duration-300 ${isExpanded ? 'translate-y-2' : 'translate-y-2 group-hover:translate-y-0'}`}>{font.name}</p>
+                    <p className={`text-zinc-400 text-xs transition-transform duration-300 delay-75 ${isExpanded ? 'translate-y-2' : 'translate-y-2 group-hover:translate-y-0'}`}>{font.designer}</p>
+                </div>
+                <div className="flex items-center justify-end gap-2">
+                    {/* Likes */}
+                    <button
+                        onClick={toggleFavorite}
+                        className={`flex items-center gap-1 text-zinc-400 hover:text-white transition-colors group/like ${isExpanded ? 'pointer-events-none' : 'pointer-events-auto'}`}
+                    >
+                        <Heart
+                            size={22}
+                            className={`transition-transform duration-300 ${isFavorited ? 'fill-pink-500 text-pink-500' : 'group-hover/like:scale-105'}`}
+                        />
+                        <span className="font-bold text-[16px]">{favoritesCount}</span>
+                    </button>
+
+                    {/* View Font Button */}
+                    <Link
+                        to={`/fonts/${font.slug || font.id}`}
+                        onClick={(e) => {
+                            if (!isExpanded) {
+                                e.stopPropagation();
+                            } else {
+                                e.preventDefault();
+                            }
+                        }}
+                        className={`text-xs px-4 py-2 font-bold hover:text-white transition-colors ${isExpanded ? 'pointer-events-none' : 'pointer-events-auto'}`}
+                    >
+                        <ArrowUpRight size={22} />
+                    </Link>
                 </div>
             </div>
-        </div>
+        </motion.div>
     );
 }

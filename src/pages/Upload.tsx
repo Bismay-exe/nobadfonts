@@ -58,7 +58,7 @@ const Upload = () => {
                 { id: 'calligraphy', label: 'Calligraphy' },
                 { id: 'brush', label: 'Brush' },
                 { id: 'handwritten', label: 'Handwritten' },
-            { id: 'signature', label: 'Signature' }
+                { id: 'signature', label: 'Signature' }
             ],
         },
 
@@ -204,6 +204,18 @@ const Upload = () => {
             {
                 id: Math.random().toString(36).substring(7),
                 name: '',
+                isCustom: true,
+                files: { ttf: null, otf: null, woff: null, woff2: null }
+            }
+        ]);
+    };
+
+    const addVariableFont = () => {
+        setVariants(prev => [
+            ...prev,
+            {
+                id: Math.random().toString(36).substring(7),
+                name: 'Variable',
                 isCustom: true,
                 files: { ttf: null, otf: null, woff: null, woff2: null }
             }
@@ -469,7 +481,14 @@ const Upload = () => {
                 <div className="col-span-1 md:col-span-2 bg-[#EEEFEB] p-8 rounded-4xl border-l border-y border-black border-t-0 md:border-t">
                     <div className="flex justify-between items-center mb-4">
                         <label className="font-bold uppercase text-lg">Font Variants <span className="text-sm text-red-500 normal-case ml-2">(At least one required)</span></label>
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 flex-wrap justify-end">
+                            <button
+                                type="button"
+                                onClick={addVariableFont}
+                                className="px-4 py-2 rounded-full font-bold text-sm bg-[#EEEFEB] border-2 border-black text-black hover:bg-gray-100 transition-colors"
+                            >
+                                + Variable Font
+                            </button>
                             <button
                                 type="button"
                                 onClick={addCustomVariant}
@@ -502,7 +521,7 @@ const Upload = () => {
                                                 type="text"
                                                 value={variant.name}
                                                 onChange={(e) => updateVariantName(variant.id, e.target.value)}
-                                                className="border-2 border-black rounded-lg px-3 py-1 font-bold bg-[#EEEFEB] w-full"
+                                                className="border-2 border-black rounded-lg px-3 py-1 font-bold bg-[#000000] w-full"
                                                 placeholder="e.g. Demi Bold"
                                                 autoFocus
                                             />
@@ -510,7 +529,7 @@ const Upload = () => {
                                             <select
                                                 value={variant.name}
                                                 onChange={(e) => updateVariantName(variant.id, e.target.value)}
-                                                className="border-2 border-black rounded-lg px-3 py-1 font-bold bg-[#EEEFEB]"
+                                                className="border-2 border-black rounded-lg px-3 py-1 font-bold bg-[#000000]"
                                             >
                                                 {VARIANT_NAMES.filter(name => name === variant.name || !variants.some(v => v.name === name)).map(name => (
                                                     <option key={name} value={name}>{name}</option>
@@ -552,7 +571,7 @@ const Upload = () => {
                                                         }}
                                                         className="absolute inset-0 opacity-0 cursor-pointer z-10 w-full h-full"
                                                     />
-                                                    <div className="border border-gray-300 bg-[#EEEFEB] rounded-lg p-2 text-center text-xs font-bold text-gray-500 hover:border-black hover:text-black transition-colors">
+                                                    <div className="border border-gray-300 bg-[#000000] rounded-lg p-2 text-center text-xs font-bold text-gray-500 hover:border-black hover:text-black transition-colors">
                                                         {format.toUpperCase()}
                                                     </div>
                                                 </div>
