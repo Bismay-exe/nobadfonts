@@ -1,4 +1,4 @@
-import { useState, useEffect, useLayoutEffect } from 'react';
+import { useState, useEffect, useLayoutEffect, useCallback, useRef } from 'react';
 import { useSearchParams, useLocation } from 'react-router-dom';
 import { scrollPositions } from '../components/layout/ScrollRestoration';
 import { useViewMode } from '../hooks/useViewMode';
@@ -35,7 +35,23 @@ export default function FontsCatalog() {
     const [globalExpanded, setGlobalExpanded] = useState(true);
     const [customText, setCustomText] = useState('');
 
-    const { fonts, loading, error } = useFonts(filters);
+    const { fonts, loading, loadingMore, error, hasMore, loadMore } = useFonts(filters);
+
+    const observer = useRef<IntersectionObserver | null>(null);
+    const bottomRef = useCallback((node: HTMLDivElement | null) => {
+        if (loading || loadingMore) return;
+        if (observer.current) observer.current.disconnect();
+
+        observer.current = new IntersectionObserver(entries => {
+            if (entries[0].isIntersecting && hasMore) {
+                loadMore();
+            }
+        }, {
+            rootMargin: '200px' // Load more slightly before reaching the very bottom
+        });
+
+        if (node) observer.current.observe(node);
+    }, [loading, loadingMore, hasMore, loadMore]);
 
     // Update URL when filters change
     useEffect(() => {
@@ -140,21 +156,25 @@ export default function FontsCatalog() {
                             ))}
                         </div>
                     ) : fonts.length > 0 ? (
-                        <Masonry
-                            items={fonts.filter(f => f && f.id).map(f => {
-                                const cardProps = getCardProps(f.id);
-                                return {
-                                    ...f,
-                                    viewMode,
-                                    customText,
-                                    isExpanded: cardProps.isExpanded,
-                                    onToggle: cardProps.onToggle
-                                };
-                            })}
-                            columnCount={columns}
-                            columnGutter={24}
-                            render={MasonryCard}
-                        />
+                        <>
+                            <Masonry
+                                items={fonts.filter(f => f && f.id).map(f => {
+                                    const cardProps = getCardProps(f.id);
+                                    return {
+                                        ...f,
+                                        viewMode,
+                                        customText,
+                                        isExpanded: cardProps.isExpanded,
+                                        onToggle: cardProps.onToggle
+                                    };
+                                })}
+                                columnCount={columns}
+                                columnGutter={24}
+                                render={MasonryCard}
+                            />
+                            {/* Invisible div that triggers intersection observer when user scrolls near the bottom */}
+                            <div ref={bottomRef} className="h-1 w-full" />
+                        </>
                     ) : (
                         <EmptyState />
                     )}

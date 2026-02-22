@@ -293,13 +293,6 @@ const Landing = () => {
                     </div>
                 </div>
             </section>
-
-            {/* --- OUTRO --- */}
-            <section className={`outro ${sectionClass} ${flexCenter} ${darkBg} ${lightText}`}>
-                <h2 className={`${h1Base} ${h1Responsive} w-1/2 max-[1000px]:w-[calc(100%-4rem)]`}>
-                    Use Good Fonts from NoBadFonts.in
-                </h2>
-            </section>
         </div>
     );
 };

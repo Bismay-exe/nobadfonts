@@ -1,64 +1,99 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import type { Font, FontFilterParams } from '../types/font';
 
-export function useFonts({ query, categories, sortBy = 'trending' }: FontFilterParams) {
+export function useFonts({ query, categories, sortBy = 'trending' }: FontFilterParams, initialLimit = 16) {
   const [fonts, setFonts] = useState<Font[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [hasMore, setHasMore] = useState(true);
+  const [offset, setOffset] = useState(0);
 
-  useEffect(() => {
-    async function fetchFonts() {
+  const fetchFonts = useCallback(async (isLoadMore = false) => {
+    if (isLoadMore) {
+      setLoadingMore(true);
+    } else {
       setLoading(true);
-      setError(null);
-      try {
-        const rpcParams = {
-          query: query || undefined,
-          sort_by: sortBy,
-          filter_tags: categories && categories.length > 0 ? categories : undefined
-        };
-        console.log('Fetching fonts with params:', rpcParams);
+      setOffset(0);
+      setHasMore(true);
+    }
+    setError(null);
 
-        const { data, error } = await supabase.rpc('search_fonts', rpcParams);
+    const currentOffset = isLoadMore ? offset : 0;
 
-        if (error) throw error;
+    try {
+      const rpcParams = {
+        query: query || undefined,
+        sort_by: sortBy,
+        filter_tags: categories && categories.length > 0 ? categories : undefined,
+        limit_val: initialLimit,
+        offset_val: currentOffset
+      };
+      console.log('Fetching fonts with params:', rpcParams);
 
-        // Manually fetch variants for these fonts since RPC doesn't include them
-        let fontsWithVariants = (data || []).filter((f: any) => f && typeof f === 'object');
-        
-        if (fontsWithVariants.length > 0) {
-            const fontIds = fontsWithVariants.map((f: any) => f.id);
-            const { data: variantsData } = await supabase
-                .from('font_variants')
-                .select('*')
-                .in('font_id', fontIds);
-            
-            if (variantsData) {
-                // Attach variants to their respective fonts
-                fontsWithVariants = fontsWithVariants.map((f: any) => ({
-                    ...f,
-                    font_variants: variantsData.filter(v => v.font_id === f.id)
-                }));
-            }
+      const { data, error } = await supabase.rpc('search_fonts', rpcParams);
+
+      if (error) throw error;
+
+      // Manually fetch variants for these fonts since RPC doesn't include them
+      let fontsWithVariants = (data || []).filter((f: any) => f && typeof f === 'object');
+
+      if (fontsWithVariants.length > 0) {
+        const fontIds = fontsWithVariants.map((f: any) => f.id);
+        const { data: variantsData } = await supabase
+          .from('font_variants')
+          .select('*')
+          .in('font_id', fontIds);
+
+        if (variantsData) {
+          // Attach variants to their respective fonts
+          fontsWithVariants = fontsWithVariants.map((f: any) => ({
+            ...f,
+            font_variants: variantsData.filter(v => v.font_id === f.id)
+          }));
         }
-        
+      }
+
+      if (isLoadMore) {
+        setFonts(prev => {
+          const existingIds = new Set(prev.map(p => p.id));
+          const newFonts = fontsWithVariants.filter((f: any) => !existingIds.has(f.id));
+          return [...prev, ...newFonts];
+        });
+      } else {
         setFonts(fontsWithVariants);
-        
-      } catch (err: any) {
-        console.error('Error fetching fonts:', err);
-        setError(err.message);
-      } finally {
+      }
+
+      setHasMore(fontsWithVariants.length === initialLimit);
+      setOffset(prev => prev + fontsWithVariants.length);
+
+    } catch (err: any) {
+      console.error('Error fetching fonts:', err);
+      setError(err.message);
+    } finally {
+      if (isLoadMore) {
+        setLoadingMore(false);
+      } else {
         setLoading(false);
       }
     }
+  }, [query, categories, sortBy, initialLimit, offset]);
 
+  useEffect(() => {
     // Debounce the fetch if query is present to avoid too many requests
     const timeoutId = setTimeout(() => {
-        fetchFonts();
+      fetchFonts(false);
     }, query ? 300 : 0);
 
     return () => clearTimeout(timeoutId);
-  }, [query, categories, sortBy]);
+  }, [query, categories, sortBy]); // Intentionally omitting fetchFonts to prevent loops on offset change
 
-  return { fonts, loading, error };
+  const loadMore = useCallback(() => {
+    if (!loadingMore && hasMore) {
+      fetchFonts(true);
+    }
+  }, [loadingMore, hasMore, fetchFonts]);
+
+  return { fonts, loading, loadingMore, error, hasMore, loadMore };
 }

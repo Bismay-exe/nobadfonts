@@ -14,9 +14,10 @@ interface FontCardProps {
     isExpanded?: boolean;
     onToggle?: () => void;
     customText?: string;
+    hideLike?: boolean;
 }
 
-export default function FontCard({ font, viewMode = 'font', onClick, disableLink = false, isExpanded: propIsExpanded, onToggle, customText }: FontCardProps) {
+export default function FontCard({ font, viewMode = 'font', onClick, disableLink = false, isExpanded: propIsExpanded, onToggle, customText, hideLike = false }: FontCardProps) {
     const { user } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
@@ -213,17 +214,18 @@ export default function FontCard({ font, viewMode = 'font', onClick, disableLink
                         {/* Top Row: Likes & View Button */}
                         <div className="flex items-center justify-between w-full">
                             {/* Likes */}
-                            <button
-                                onClick={toggleFavorite}
-                                className="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors group/like"
-                            >
-                                <Heart
-                                    size={22}
-                                    className={`transition-transform duration-300 ${isFavorited ? 'fill-pink-500 text-pink-500' : 'group-hover/like:scale-105'}`}
-                                />
-                                <span className="font-bold text-[16px]">{favoritesCount}</span>
-
-                            </button>
+                            {!hideLike ? (
+                                <button
+                                    onClick={toggleFavorite}
+                                    className="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors group/like"
+                                >
+                                    <Heart
+                                        size={22}
+                                        className={`transition-transform duration-300 ${isFavorited ? 'fill-pink-500 text-pink-500' : 'group-hover/like:scale-105'}`}
+                                    />
+                                    <span className="font-bold text-[16px]">{favoritesCount}</span>
+                                </button>
+                            ) : <div></div>}
 
                             {/* View Font Button */}
                             <Link
@@ -275,16 +277,18 @@ export default function FontCard({ font, viewMode = 'font', onClick, disableLink
                 </div>
                 <div className="flex items-center justify-end gap-2">
                     {/* Likes */}
-                    <button
-                        onClick={toggleFavorite}
-                        className={`flex items-center gap-1 text-zinc-400 hover:text-white transition-colors group/like ${isExpanded ? 'pointer-events-none' : 'pointer-events-auto'}`}
-                    >
-                        <Heart
-                            size={22}
-                            className={`transition-transform duration-300 ${isFavorited ? 'fill-pink-500 text-pink-500' : 'group-hover/like:scale-105'}`}
-                        />
-                        <span className="font-bold text-[16px]">{favoritesCount}</span>
-                    </button>
+                    {!hideLike && (
+                        <button
+                            onClick={toggleFavorite}
+                            className={`flex items-center gap-1 text-zinc-400 hover:text-white transition-colors group/like ${isExpanded ? 'pointer-events-none' : 'pointer-events-auto'}`}
+                        >
+                            <Heart
+                                size={22}
+                                className={`transition-transform duration-300 ${isFavorited ? 'fill-pink-500 text-pink-500' : 'group-hover/like:scale-105'}`}
+                            />
+                            <span className="font-bold text-[16px]">{favoritesCount}</span>
+                        </button>
+                    )}
 
                     {/* View Font Button */}
                     <Link
