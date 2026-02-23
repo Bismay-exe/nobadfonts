@@ -8,7 +8,7 @@ import { useFonts } from '../../hooks/useFonts';
 import { useWindowSize } from '../../hooks/useWindowSize';
 import type { Font, FontFilterParams } from '../../types/font';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useMasonry, usePositioner, useResizeObserver, useContainerPosition } from "masonic";
+import { useMasonry, usePositioner, useResizeObserver } from "masonic";
 
 const MasonryCard = ({ data }: { data: any }) => (
     <FontCard
@@ -44,6 +44,7 @@ export default function FontPicker({ isOpen, onClose, onSelect, activeSection }:
     const { fonts, loading, loadingMore, error, hasMore, loadMore } = useFonts(filters);
 
     const scrollContainerRef = useRef<HTMLDivElement>(null);
+    const [gridContainerNode, setGridContainerNode] = useState<HTMLDivElement | null>(null);
     const observer = useRef<IntersectionObserver | null>(null);
 
     const bottomRef = useCallback((node: HTMLDivElement | null) => {
@@ -63,11 +64,24 @@ export default function FontPicker({ isOpen, onClose, onSelect, activeSection }:
     }, [loading, loadingMore, hasMore, loadMore]);
 
     const { width: windowWidth } = useWindowSize();
-    const { width: containerWidth } = useContainerPosition(scrollContainerRef, [windowWidth]);
+    const [gridWidth, setGridWidth] = useState(0);
 
-    // Account for padding (px-4 = 16px*2=32px on mobile, rx-6 = 24px*2=48px on md+)
-    const padding = windowWidth >= 768 ? 48 : 32;
-    const actualWidth = (containerWidth || windowWidth) - padding;
+    useEffect(() => {
+        if (!isOpen || !gridContainerNode) return;
+
+        const ro = new ResizeObserver(entries => {
+            if (entries[0]) {
+                setGridWidth(entries[0].contentRect.width);
+            }
+        });
+
+        ro.observe(gridContainerNode);
+        setGridWidth(gridContainerNode.getBoundingClientRect().width);
+
+        return () => ro.disconnect();
+    }, [isOpen, windowWidth, gridContainerNode]);
+
+    const actualWidth = gridWidth || 0;
 
     const columns =
         actualWidth > 1280 ? 4 :
@@ -75,11 +89,21 @@ export default function FontPicker({ isOpen, onClose, onSelect, activeSection }:
                 actualWidth > 640 ? 2 :
                     1;
 
-    const positioner = usePositioner({ width: actualWidth, columnCount: columns, columnGutter: 24, rowGutter: 24 }, [columns, actualWidth]);
+    // Recreate positioner and clear cache whenever the search results change
+    const searchKey = fonts.map(f => f.id).join(',');
+    const positioner = usePositioner({ width: actualWidth || 800, columnCount: columns, columnGutter: 24, rowGutter: 24 }, [columns, actualWidth, searchKey]);
     const resizeObserver = useResizeObserver(positioner);
 
     const [scrollTop, setScrollTop] = useState(0);
     const [containerHeight, setContainerHeight] = useState(0);
+
+    // Reset scroll when fonts change (due to filtering)
+    useEffect(() => {
+        setScrollTop(0);
+        if (scrollContainerRef.current) {
+            scrollContainerRef.current.scrollTop = 0;
+        }
+    }, [fonts.length]);
 
     useEffect(() => {
         if (scrollContainerRef.current) {
@@ -146,7 +170,7 @@ export default function FontPicker({ isOpen, onClose, onSelect, activeSection }:
                             id="font-picker-scroll-container"
                             ref={scrollContainerRef}
                             onScroll={handleScroll}
-                            className="flex-1 w-full bg-black overflow-y-auto relative pt-6 pb-32"
+                            className="flex-1 w-full bg-black overflow-y-auto overflow-x-hidden relative pt-6 pb-32"
                         >
 
                             {/* Content */}
@@ -169,7 +193,9 @@ export default function FontPicker({ isOpen, onClose, onSelect, activeSection }:
                                     </div>
                                 ) : fonts.length > 0 ? (
                                     <>
-                                        {masonryGrid}
+                                        <div ref={setGridContainerNode} className="w-full">
+                                            {gridWidth > 0 && masonryGrid}
+                                        </div>
                                         <div ref={bottomRef} className="h-1 w-full" />
                                     </>
                                 ) : (
@@ -179,7 +205,7 @@ export default function FontPicker({ isOpen, onClose, onSelect, activeSection }:
                         </div>
 
                         {/* Filters Container at Bottom */}
-                        <aside className="absolute bottom-0 left-0 right-0 w-full pointer-events-none z-50 transition-all duration-300 ease-in-out">
+                        <aside className="absolute bottom-0 left-0 right-0 w-full z-110 transition-all duration-300 ease-in-out">
                             <Filters
                                 filters={filters}
                                 onChange={setFilters}
