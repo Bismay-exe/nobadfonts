@@ -2,12 +2,124 @@ import { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { useFonts } from '../hooks/useFonts';
 import { supabase } from '../lib/supabase';
 import type { Font } from '../types/font';
-import { Type, AlignLeft, MousePointerClick, Edit3, Settings, Palette } from 'lucide-react';
+import { Type, AlignLeft, MousePointerClick, Edit3, Palette } from 'lucide-react';
 import FontPicker from '../components/font-pairing/FontPicker';
-import CustomizeSidebar from '../components/font-pairing/CustomizeSidebar';
 import SEO from '../components/shared/SEO';
 import { cn } from '../lib/utils';
 import { motion } from 'framer-motion';
+
+interface StyleState {
+    size: number;
+    leading: number;
+    tracking: number;
+    color: string;
+}
+
+const InlineCustomizeOptions = ({
+    font,
+    currentVariant,
+    currentStyle,
+    onVariantChange,
+    onStyleChange
+}: {
+    font: Font | null;
+    currentVariant: string | null;
+    currentStyle: StyleState;
+    onVariantChange: (v: string | null) => void;
+    onStyleChange: (s: StyleState) => void;
+}) => {
+    const variants = font?.font_variants || [];
+    const handleStyleChange = (key: keyof StyleState, value: string | number) => {
+        onStyleChange({ ...currentStyle, [key]: value as never });
+    };
+
+    return (
+        <div className="flex items-center gap-2 md:gap-3 px-3 py-1 border-l border-white/20">
+            {variants.length > 0 && (
+                <div className="flex items-center font-bold">
+                    <select
+                        value={currentVariant || ''}
+                        onChange={(e) => onVariantChange(e.target.value || null)}
+                        className="bg-transparent text-white text-xs focus:outline-none cursor-pointer appearance-none transition-colors border-none"
+                        title="Font Variant"
+                    >
+                        <option value="" className="text-black">Regular</option>
+                        {variants.map(v => (
+                            <option key={v.id} value={v.variant_name} className="text-black">{v.variant_name}</option>
+                        ))}
+                    </select>
+                </div>
+            )}
+
+            <div className="flex items-center gap-2" title="Font Size (px)">
+                <span className="text-[10px] uppercase font-bold text-zinc-500">Sz</span>
+                <input
+                    type="range"
+                    min="10"
+                    max="200"
+                    value={currentStyle.size}
+                    onChange={(e) => handleStyleChange('size', Number(e.target.value))}
+                    className="w-16 md:w-24 h-1 bg-white/20 rounded-lg appearance-none cursor-e-resize accent-white [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:rounded-full"
+                />
+                <input
+                    type="number"
+                    value={currentStyle.size}
+                    onChange={(e) => handleStyleChange('size', Number(e.target.value))}
+                    className="w-10 bg-transparent text-xs font-bold text-white focus:outline-none focus:bg-white/10 rounded px-1 transition-colors [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none text-right"
+                />
+            </div>
+
+            <div className="flex items-center gap-2" title="Line Height">
+                <span className="text-[10px] uppercase font-bold text-zinc-500">Lh</span>
+                <input
+                    type="range"
+                    min="0.5"
+                    max="3"
+                    step="0.1"
+                    value={currentStyle.leading}
+                    onChange={(e) => handleStyleChange('leading', Number(e.target.value))}
+                    className="w-16 md:w-24 h-1 bg-white/20 rounded-lg appearance-none cursor-e-resize accent-white [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:rounded-full"
+                />
+                <input
+                    type="number"
+                    step="0.1"
+                    value={currentStyle.leading}
+                    onChange={(e) => handleStyleChange('leading', Number(e.target.value))}
+                    className="w-10 bg-transparent text-xs font-bold text-white focus:outline-none focus:bg-white/10 rounded px-1 transition-colors [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none text-right"
+                />
+            </div>
+
+            <div className="flex items-center gap-2" title="Letter Spacing (px)">
+                <span className="text-[10px] uppercase font-bold text-zinc-500">Ls</span>
+                <input
+                    type="range"
+                    min="-10"
+                    max="30"
+                    step="0.5"
+                    value={currentStyle.tracking}
+                    onChange={(e) => handleStyleChange('tracking', Number(e.target.value))}
+                    className="w-16 md:w-24 h-1 bg-white/20 rounded-lg appearance-none cursor-e-resize accent-white [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:rounded-full"
+                />
+                <input
+                    type="number"
+                    step="0.5"
+                    value={currentStyle.tracking}
+                    onChange={(e) => handleStyleChange('tracking', Number(e.target.value))}
+                    className="w-10 bg-transparent text-xs font-bold text-white focus:outline-none focus:bg-white/10 rounded px-1 transition-colors [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none text-right"
+                />
+            </div>
+
+            <div className="flex items-center pl-1 border-l border-white/10" title="Text Color">
+                <input
+                    type="color"
+                    value={currentStyle.color}
+                    onChange={(e) => handleStyleChange('color', e.target.value)}
+                    className="w-5 h-5 cursor-pointer appearance-none bg-transparent border-none p-0 [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:border-none [&::-webkit-color-swatch]:rounded-full"
+                />
+            </div>
+        </div>
+    );
+};
 
 export default function FontPairing() {
     const { fonts, loading } = useFonts({ sortBy: 'popular' });
@@ -27,7 +139,7 @@ export default function FontPairing() {
     const [uiFont, setUiFont] = useState<Font | null>(null);
 
     // Sidebar State
-    const [sidebarMode, setSidebarMode] = useState<'picker' | 'customize' | null>(null);
+    const [sidebarMode, setSidebarMode] = useState<'picker' | null>(null);
     const [activeSection, setActiveSection] = useState<'Header' | 'Body' | 'UI' | null>(null);
 
     // Customization State
@@ -159,11 +271,6 @@ export default function FontPairing() {
         setSidebarMode('picker');
     };
 
-    const handleOpenCustomize = (section: 'Header' | 'Body' | 'UI') => {
-        setActiveSection(section);
-        setSidebarMode('customize');
-    };
-
     const handleFontSelect = async (partialFont: Font) => {
         // Determine which set functions to use based on section
         let setFont: (f: Font | null) => void;
@@ -225,25 +332,7 @@ export default function FontPairing() {
                 onSelect={handleFontSelect}
             />
 
-            {/* Sidebar: Customize */}
-            <CustomizeSidebar
-                isOpen={sidebarMode === 'customize'}
-                onClose={() => setSidebarMode(null)}
-                activeSection={activeSection}
-                font={activeSection === 'Header' ? headerFont : activeSection === 'Body' ? bodyFont : uiFont}
-                currentVariant={activeSection === 'Header' ? headerVariant : activeSection === 'Body' ? bodyVariant : uiVariant}
-                currentStyle={activeSection === 'Header' ? headerStyle : activeSection === 'Body' ? bodyStyle : uiStyle}
-                onVariantChange={(v) => {
-                    if (activeSection === 'Header') setHeaderVariant(v);
-                    else if (activeSection === 'Body') setBodyVariant(v);
-                    else if (activeSection === 'UI') setUiVariant(v);
-                }}
-                onStyleChange={(s) => {
-                    if (activeSection === 'Header') setHeaderStyle(s);
-                    else if (activeSection === 'Body') setBodyStyle(s);
-                    else if (activeSection === 'UI') setUiStyle(s);
-                }}
-            />
+
 
             {/* Global Background Color Control */}
             <div className="fixed bottom-6 left-6 z-30 group">
@@ -287,13 +376,13 @@ export default function FontPairing() {
             </div>
 
             {/* Main Playground */}
-            <div className="px-4 pb-20">
+            <div className="px-0 md:px-4 pb-20">
                 <motion.div
                     layout
-                    className="max-w-480 mx-auto rounded-[3rem] p-6 md:p-16 min-h-[80vh] relative transition-colors duration-500 shadow-2xl border border-white/5"
+                    className="max-w-480 mx-auto rounded-[3rem] p-0 md:p-16 relative transition-colors duration-500 shadow-2xl border border-white/5"
                     style={{ backgroundColor: bgColor }}
                 >
-                    <div className="space-y-16 lg:space-y-24">
+                    <div className="space-y-6 lg:space-y-12">
 
                         {/* 1. Header Section */}
                         <div className="group relative">
@@ -303,20 +392,21 @@ export default function FontPairing() {
 
                             {/* Floating Controls */}
                             <div className="absolute -top-12 left-0 opacity-100 lg:opacity-0 group-hover:opacity-100 transition-all duration-300 z-10 flex items-center gap-2">
-                                <div className="bg-black/80 backdrop-blur-md rounded-full border border-white/10 p-1 flex items-center gap-1">
+                                <div className="bg-black/80 backdrop-blur-md rounded-full border border-white/10 p-1 flex items-center gap-1 shadow-2xl overflow-hidden md:overflow-visible">
                                     <button
                                         onClick={() => handleOpenPicker('Header')}
-                                        className="px-4 py-2 rounded-full font-bold text-xs bg-white text-black hover:bg-zinc-200 transition-colors flex items-center gap-2"
+                                        className="px-4 py-2 rounded-full font-bold text-xs bg-white text-black hover:bg-zinc-200 transition-colors flex items-center gap-2 whitespace-nowrap"
                                     >
                                         <Edit3 size={12} />
                                         <span>{headerFont?.name || 'Select Font'}</span>
                                     </button>
-                                    <button
-                                        onClick={() => handleOpenCustomize('Header')}
-                                        className="p-2 rounded-full text-zinc-400 hover:text-white hover:bg-white/10 transition-colors"
-                                    >
-                                        <Settings size={16} />
-                                    </button>
+                                    <InlineCustomizeOptions
+                                        font={headerFont}
+                                        currentVariant={headerVariant}
+                                        currentStyle={headerStyle}
+                                        onVariantChange={setHeaderVariant}
+                                        onStyleChange={setHeaderStyle}
+                                    />
                                 </div>
                             </div>
 
@@ -345,20 +435,21 @@ export default function FontPairing() {
 
                             {/* Floating Controls */}
                             <div className="absolute -top-12 left-0 opacity-100 lg:opacity-0 group-hover:opacity-100 transition-all duration-300 z-10 flex items-center gap-2">
-                                <div className="bg-black/80 backdrop-blur-md rounded-full border border-white/10 p-1 flex items-center gap-1">
+                                <div className="bg-black/80 backdrop-blur-md rounded-full border border-white/10 p-1 flex items-center gap-1 shadow-2xl overflow-hidden md:overflow-visible">
                                     <button
                                         onClick={() => handleOpenPicker('Body')}
-                                        className="px-4 py-2 rounded-full font-bold text-xs bg-white text-black hover:bg-zinc-200 transition-colors flex items-center gap-2"
+                                        className="px-4 py-2 rounded-full font-bold text-xs bg-white text-black hover:bg-zinc-200 transition-colors flex items-center gap-2 whitespace-nowrap"
                                     >
                                         <Edit3 size={12} />
                                         <span>{bodyFont?.name || 'Select Font'}</span>
                                     </button>
-                                    <button
-                                        onClick={() => handleOpenCustomize('Body')}
-                                        className="p-2 rounded-full text-zinc-400 hover:text-white hover:bg-white/10 transition-colors"
-                                    >
-                                        <Settings size={16} />
-                                    </button>
+                                    <InlineCustomizeOptions
+                                        font={bodyFont}
+                                        currentVariant={bodyVariant}
+                                        currentStyle={bodyStyle}
+                                        onVariantChange={setBodyVariant}
+                                        onStyleChange={setBodyStyle}
+                                    />
                                 </div>
                             </div>
 
@@ -388,20 +479,21 @@ export default function FontPairing() {
 
                             {/* Floating Controls */}
                             <div className="absolute top-0 left-0 opacity-100 lg:opacity-0 group-hover:opacity-100 transition-all duration-300 z-10 flex items-center gap-2">
-                                <div className="bg-black/80 backdrop-blur-md rounded-full border border-white/10 p-1 flex items-center gap-1">
+                                <div className="bg-black/80 backdrop-blur-md rounded-full border border-white/10 p-1 flex items-center gap-1 shadow-2xl overflow-hidden md:overflow-visible">
                                     <button
                                         onClick={() => handleOpenPicker('UI')}
-                                        className="px-4 py-2 rounded-full font-bold text-xs bg-white text-black hover:bg-zinc-200 transition-colors flex items-center gap-2"
+                                        className="px-4 py-2 rounded-full font-bold text-xs bg-white text-black hover:bg-zinc-200 transition-colors flex items-center gap-2 whitespace-nowrap"
                                     >
                                         <Edit3 size={12} />
                                         <span>{uiFont?.name || 'Select Font'}</span>
                                     </button>
-                                    <button
-                                        onClick={() => handleOpenCustomize('UI')}
-                                        className="p-2 rounded-full text-zinc-400 hover:text-white hover:bg-white/10 transition-colors"
-                                    >
-                                        <Settings size={16} />
-                                    </button>
+                                    <InlineCustomizeOptions
+                                        font={uiFont}
+                                        currentVariant={uiVariant}
+                                        currentStyle={uiStyle}
+                                        onVariantChange={setUiVariant}
+                                        onStyleChange={setUiStyle}
+                                    />
                                 </div>
                             </div>
 
@@ -420,28 +512,19 @@ export default function FontPairing() {
                                     <input
                                         value={uiLink1}
                                         onChange={(e) => setUiLink1(e.target.value)}
-                                        className="bg-transparent border-none outline-none w-20 text-center hover:text-[#BDF522] cursor-pointer transition-colors"
+                                        className="bg-transparent border-none outline-none w-20 text-center hover:text-[#BDF522] transition-colors"
                                     />
                                     <input
                                         value={uiLink2}
                                         onChange={(e) => setUiLink2(e.target.value)}
-                                        className="bg-transparent border-none outline-none w-20 text-center hover:text-[#BDF522] cursor-pointer transition-colors"
+                                        className="bg-transparent border-none outline-none w-20 text-center hover:text-[#BDF522] transition-colors"
                                     />
                                     <input
                                         value={uiLink3}
                                         onChange={(e) => setUiLink3(e.target.value)}
-                                        className="bg-transparent border-none outline-none w-24 text-center hover:text-[#BDF522] cursor-pointer transition-colors"
+                                        className="bg-transparent border-none outline-none w-24 text-center hover:text-[#BDF522] transition-colors"
                                     />
                                 </div>
-
-                                {/* Button */}
-                                <button className="px-8 py-4 rounded-full bg-white text-black font-bold hover:bg-[#BDF522] transition-colors shadow-lg hover:shadow-[0_0_20px_rgba(189,245,34,0.4)]">
-                                    <input
-                                        value={uiButtonText}
-                                        onChange={(e) => setUiButtonText(e.target.value)}
-                                        className="bg-transparent border-none outline-none text-center min-w-30 cursor-pointer font-inherit text-inherit uppercase tracking-wider"
-                                    />
-                                </button>
                             </div>
                         </div>
 
