@@ -76,7 +76,7 @@ export function PreviewAccordion({ images, vertical = false }: { images: string[
         // Target settings: Width = 3, Height = 2 (Aspect Ratio 3:2)
         // In vertical mode, Width is fixed (container width).
         // Target Height = Width * (2 / 3)
-        const targetHeight = dimensions.width * (2 / 3);
+        const targetHeight = dimensions.width * (1 / 3);
         const remainingHeight = Math.max(0, dimensions.height - targetHeight);
 
         // Distribute remaining height among inactive items
@@ -91,7 +91,7 @@ export function PreviewAccordion({ images, vertical = false }: { images: string[
     return (
         <div
             ref={containerRef}
-            className={`w-full h-full flex overflow-hidden bg-[#EEEFEB] group ${vertical ? 'flex-col rounded-4xl' : 'flex-col md:flex-row rounded-4xl border-2 border-black'}`}
+            className={`w-full h-full flex overflow-hidden bg-zinc-900 group ${vertical ? 'flex-col rounded-4xl' : 'flex-col md:flex-row rounded-4xl border-2 border-white/10'}`}
             onMouseEnter={() => setPaused(true)}
             onMouseLeave={() => setPaused(false)}
             onTouchStart={handleTouchStart}
@@ -113,12 +113,12 @@ export function PreviewAccordion({ images, vertical = false }: { images: string[
             duration-700
             ease-in-out
             overflow-hidden
-            border-black
+            border-white/10
             ${vertical
                             ? 'w-full border-b last:border-b-0'
                             : 'w-full md:w-auto md:h-full border-b md:border-b-0 md:border-r last:border-b-0 md:last:border-r-0'
                         }
-          `}
+            `}
                 >
                     <img
                         src={img}
@@ -130,9 +130,9 @@ export function PreviewAccordion({ images, vertical = false }: { images: string[
                     {/* Overlay */}
                     <div
                         className={`
-              absolute inset-0 transition-colors duration-700
-              ${activeIndex === index ? 'bg-black/0' : 'bg-black/40'}
-            `}
+                absolute inset-0 transition-colors duration-700
+                ${activeIndex === index ? 'bg-black/0' : 'bg-black/40'}
+                `}
                     />
                 </button>
             ))}

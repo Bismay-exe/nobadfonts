@@ -36,13 +36,13 @@ export default function Navbar() {
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.5 }}
                 className={cn(
-                    "fixed top-4 left-1/2 -translate-x-1/2 z-50 max-w-7xl rounded-3xl transition-all duration-300",
+                    "fixed w-full top-0 md:top-4 left-1/2 -translate-x-1/2 z-50 max-w-7xl md:rounded-3xl border-b md:border-none border-white/10 transition-all duration-300",
                     isScrolled
-                        ? "bg-black/60 backdrop-blur-lg shadow-[0_10px_40px_0_rgba(255,255,255,0.2)] py-2 px-4 w-[50%]"
-                        : "bg-transparent py-4 px-0 w-[95%]"
+                        ? "bg-black/50 backdrop-blur-lg shadow-none sm:shadow-[0_10px_40px_0_rgba(255,255,255,0.2)] py-2 md:py-3 px-4"
+                        : "bg-transparent py-2 md:py-4 px-4"
                 )}
             >
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between pt-8 sm:pt-0">
                     {/* Logo */}
                     <Link to="/" className="flex items-center gap-2 group">
                         <div className="w-10 h-10 bg-white/10 rounded-xl group-hover:bg-white/20 transition-colors backdrop-blur-sm border border-white/5">
@@ -57,7 +57,11 @@ export default function Navbar() {
                     </Link>
 
                     {/* Desktop Navigation */}
-                    <div className="hidden md:flex items-center gap-1 bg-white/5 backdrop-blur-md border border-white/5 rounded-full p-1.5 px-3 shadow-inner">
+                    <div className={cn("hidden md:flex items-center gap-1 ",
+                        isScrolled
+                            ? "bg-transparent backdrop-blur-none border-none border-white/50 rounded-full p-0 px-0"
+                            : "bg-white/10 backdrop-blur-md border border-white/5 rounded-full p-1.5 px-3"
+                    )}>
                         {navLinks.map((link) => {
                             const Icon = link.icon;
                             const isActive = location.pathname === link.path;
