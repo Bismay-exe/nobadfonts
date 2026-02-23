@@ -609,7 +609,7 @@ export default function FontDetails() {
                     </div>
 
                     {/* Gallery / Hero Display */}
-                    <div className="relative w-full bg-zinc-900 rounded-[2.5rem] overflow-hidden border border-white/10 shadow-2xl group">
+                    <div className="relative w-full bg-zinc-900 rounded-2xl md:rounded-[2.5rem] overflow-hidden border border-white/10 shadow-2xl group">
                         {galleryImages.length > 0 ? (
                             <PreviewAccordion images={galleryImages} />
                         ) : (

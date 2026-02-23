@@ -19,7 +19,7 @@ export function PreviewAccordion({ images }: PreviewAccordionProps) {
     return (
         <div className="relative w-full h-full group">
             {/* Main Image */}
-            <div className="w-full h-full relative overflow-hidden bg-black/50">
+            <div className="w-full aspect-5/3 md:aspect-21/9 relative overflow-hidden bg-black/50">
                 <AnimatePresence mode="wait">
                     <motion.img
                         key={activeIndex}
