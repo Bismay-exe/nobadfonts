@@ -159,7 +159,6 @@ export default function FontPairing() {
     const [uiLink1, setUiLink1] = useState("Home");
     const [uiLink2, setUiLink2] = useState("About");
     const [uiLink3, setUiLink3] = useState("Services");
-    const [uiButtonText, setUiButtonText] = useState("Read More");
 
     // Helper to resolve font source
     const getSource = (f: Font, vName: string | null) => {
