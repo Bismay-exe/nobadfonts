@@ -1,8 +1,8 @@
-import { useState, useEffect, useRef, useLayoutEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useFonts } from '../hooks/useFonts';
 import { supabase } from '../lib/supabase';
 import type { Font } from '../types/font';
-import { Type, AlignLeft, MousePointerClick, Edit3, Palette } from 'lucide-react';
+import { Type, AlignLeft, Edit3, Palette, Trash2 } from 'lucide-react';
 import FontPicker from '../components/font-pairing/FontPicker';
 import SEO from '../components/shared/SEO';
 import { cn } from '../lib/utils';
@@ -121,10 +121,17 @@ const InlineCustomizeOptions = ({
     );
 };
 
+interface TextBlock {
+    id: string;
+    type: 'Header' | 'Body';
+    text: string;
+    font: Font | null;
+    variant: string | null;
+    style: StyleState;
+}
+
 export default function FontPairing() {
     const { fonts, loading } = useFonts({ sortBy: 'popular' });
-    const headerRef = useRef<HTMLTextAreaElement | null>(null);
-    const bodyRef = useRef<HTMLTextAreaElement | null>(null);
 
     const autoResize = (element: HTMLTextAreaElement | null) => {
         if (element) {
@@ -133,32 +140,44 @@ export default function FontPairing() {
         }
     };
 
-    // Font State
-    const [headerFont, setHeaderFont] = useState<Font | null>(null);
-    const [bodyFont, setBodyFont] = useState<Font | null>(null);
-    const [uiFont, setUiFont] = useState<Font | null>(null);
+    // Global background color
+    const [bgColor, setBgColor] = useState('#09090b'); // zinc-950
 
     // Sidebar State
     const [sidebarMode, setSidebarMode] = useState<'picker' | null>(null);
+    const [activeBlockId, setActiveBlockId] = useState<string | null>(null);
+    // Active Section for Picker is now derived when opening
     const [activeSection, setActiveSection] = useState<'Header' | 'Body' | 'UI' | null>(null);
 
-    // Customization State
-    const [headerVariant, setHeaderVariant] = useState<string | null>(null);
-    const [bodyVariant, setBodyVariant] = useState<string | null>(null);
-    const [uiVariant, setUiVariant] = useState<string | null>(null);
+    // Default styles for block creation
+    const defaultHeaderStyle: StyleState = { size: 72, leading: 1.1, tracking: 0, color: '#FFFFFF' };
+    const defaultBodyStyle: StyleState = { size: 18, leading: 1.6, tracking: 0, color: '#A1A1AA' };
 
-    const [headerStyle, setHeaderStyle] = useState({ size: 72, leading: 1.1, tracking: 0, color: '#FFFFFF' });
-    const [bodyStyle, setBodyStyle] = useState({ size: 18, leading: 1.6, tracking: 0, color: '#A1A1AA' });
-    const [uiStyle, setUiStyle] = useState({ size: 16, leading: 1.4, tracking: 0, color: '#D4D4D8' });
+    const defaultHeaderText = "The fool doth think he is wise, but the wise man knows himself to be a fool. Love is blind, and lovers cannot see, The pretty follies that themselves commit.";
+    const defaultBodyText = "Once upon a time, there was a young girl named Lily who lived in a small village. She had always been fascinated by the strange and vivid dreams she would have every night, filled with fantastical creatures and mysterious lands. Despite her parents' skepticism, Lily was certain that there was some kind of deeper meaning to these dreams, and was determined to uncover it. One day, Lily discovered a book in the local library about the interpretation of dreams, and became engrossed in its pages. She learned about the different symbols and themes that could appear in a dream, and was amazed at the insights she gained about her own subconscious mind. However, the book also warned of the dangers of becoming too obsessed with one's dreams, as it could lead to a loss of touch with reality. Undeterred, Lily began to actively seek out her dreams, using various methods to induce sleep and remember her nightly adventures. She soon found herself spending more and more time in the dream world, and less time in the waking world. Her friends and family began to worry about her as she became increasingly distant and aloof, lost in her own thoughts and visions. Despite the warning signs, Lily could not be swayed from her quest. She continued to delve deeper into her dreams, until one night she found herself in a strange and unfamiliar place. She was surrounded by dark and twisted creatures, who threatened to consume her soul. In that moment, Lily realized the truth of what she had been seeking - the depths of the human mind can be both beautiful and terrifying.";
 
-    const [bgColor, setBgColor] = useState('#09090b'); // zinc-950
+    // Dynamic blocks state
+    const [blocks, setBlocks] = useState<TextBlock[]>([
+        {
+            id: 'block-1',
+            type: 'Header',
+            text: defaultHeaderText,
+            font: null,
+            variant: null,
+            style: { ...defaultHeaderStyle }
+        },
+        {
+            id: 'block-2',
+            type: 'Body',
+            text: defaultBodyText,
+            font: null,
+            variant: null,
+            style: { ...defaultBodyStyle }
+        }
+    ]);
 
-    // Editable text state
-    const [headerText, setHeaderText] = useState("The fool doth think he is wise, but the wise man knows himself to be a fool. Love is blind, and lovers cannot see, The pretty follies that themselves commit.");
-    const [bodyText, setBodyText] = useState("Once upon a time, there was a young girl named Lily who lived in a small village. She had always been fascinated by the strange and vivid dreams she would have every night, filled with fantastical creatures and mysterious lands. Despite her parents' skepticism, Lily was certain that there was some kind of deeper meaning to these dreams, and was determined to uncover it. One day, Lily discovered a book in the local library about the interpretation of dreams, and became engrossed in its pages. She learned about the different symbols and themes that could appear in a dream, and was amazed at the insights she gained about her own subconscious mind. However, the book also warned of the dangers of becoming too obsessed with one's dreams, as it could lead to a loss of touch with reality. Undeterred, Lily began to actively seek out her dreams, using various methods to induce sleep and remember her nightly adventures. She soon found herself spending more and more time in the dream world, and less time in the waking world. Her friends and family began to worry about her as she became increasingly distant and aloof, lost in her own thoughts and visions. Despite the warning signs, Lily could not be swayed from her quest. She continued to delve deeper into her dreams, until one night she found herself in a strange and unfamiliar place. She was surrounded by dark and twisted creatures, who threatened to consume her soul. In that moment, Lily realized the truth of what she had been seeking - the depths of the human mind can be both beautiful and terrifying.");
-    const [uiLink1, setUiLink1] = useState("Home");
-    const [uiLink2, setUiLink2] = useState("About");
-    const [uiLink3, setUiLink3] = useState("Services");
+    // Track default fonts status to avoid infinite loading loops
+    const [defaultsLoaded, setDefaultsLoaded] = useState(false);
 
     // Helper to resolve font source
     const getSource = (f: Font, vName: string | null) => {
@@ -207,90 +226,112 @@ export default function FontPairing() {
             const fontFace = new FontFace(family, `url(${src.url}) format('${src.format}')`);
             const loadedFace = await fontFace.load();
             document.fonts.add(loadedFace);
+
+            // Trigger auto-resize after font finishes loading
+            setTimeout(() => {
+                document.querySelectorAll('textarea').forEach(t => autoResize(t as HTMLTextAreaElement));
+            }, 50);
         } catch (err) {
             console.error(`Failed to load ${family}`, err);
         }
     };
 
-    // 1. Header Effect
+    // Auto-resize on block changes (text, styles, added/removed blocks)
     useEffect(() => {
-        loadFontToDoc(headerFont, headerVariant, 'header');
-    }, [headerFont, headerVariant]);
+        const timeout = setTimeout(() => {
+            document.querySelectorAll('textarea').forEach(t => {
+                if (t.value) {
+                    t.style.height = 'auto';
+                    t.style.height = `${t.scrollHeight}px`;
+                }
+            });
+        }, 50);
+        return () => clearTimeout(timeout);
+    }, [blocks]);
 
-    // 2. Body Effect
+    // Individual Font Loading Effects per block
     useEffect(() => {
-        loadFontToDoc(bodyFont, bodyVariant, 'body');
-    }, [bodyFont, bodyVariant]);
-
-    // 3. UI Effect
-    useEffect(() => {
-        loadFontToDoc(uiFont, uiVariant, 'ui');
-    }, [uiFont, uiVariant]);
+        blocks.forEach(block => {
+            loadFontToDoc(block.font, block.variant, block.id);
+        });
+    }, [blocks.map(b => `${b.id}-${b.font?.id}-${b.variant}`).join(',')]);
 
 
     // Setup initial fonts once loaded
     useEffect(() => {
-        if (!loading && fonts.length > 0 && !headerFont) {
+        if (!loading && fonts.length > 0 && !defaultsLoaded) {
             const fetchDefaults = async () => {
-                // Just meaningful defaults if available, otherwise first ones
-                const serifs = fonts.filter(f => f.category === 'Serif');
-                const sans = fonts.filter(f => f.category === 'Sans Serif');
+                // Try to find them in the initially loaded fonts
+                let lactosFont = fonts.find(f => f.name.toLowerCase().includes('lactos'));
+                let gasterFont = fonts.find(f => f.name.toLowerCase().includes('gaster'));
 
-                let hFont = serifs.length > 0 ? serifs[0] : fonts[0];
-                let bFont = sans.length > 0 ? sans[0] : (fonts[1] || fonts[0]);
-                let uFont = sans.length > 0 ? sans[0] : (fonts[1] || fonts[0]);
+                // If not found in the first batch, fetch them explicitly from Supabase
+                if (!lactosFont || !gasterFont) {
+                    const { data: specificFonts } = await supabase
+                        .from('fonts')
+                        .select('*, font_variants(*)')
+                        .or('name.ilike.%Lactos%,name.ilike.%Gaster%');
 
-                // Fetch full details for these
-                const ids = [...new Set([hFont.id, bFont.id, uFont.id])];
-                const { data } = await supabase
-                    .from('fonts')
-                    .select('*, font_variants(*)')
-                    .in('id', ids);
-
-                if (data) {
-                    const fullH = data.find(f => f.id === hFont.id) || hFont;
-                    const fullB = data.find(f => f.id === bFont.id) || bFont;
-                    const fullU = data.find(f => f.id === uFont.id) || uFont;
-
-                    setHeaderFont(fullH);
-                    setBodyFont(fullB);
-                    setUiFont(fullU);
-                } else {
-                    setHeaderFont(hFont);
-                    setBodyFont(bFont);
-                    setUiFont(uFont);
+                    if (specificFonts && specificFonts.length > 0) {
+                        lactosFont = lactosFont || specificFonts.find(f => f.name.toLowerCase().includes('lactos'));
+                        gasterFont = gasterFont || specificFonts.find(f => f.name.toLowerCase().includes('gaster'));
+                    }
                 }
+
+                // If they are local-only fonts not in Supabase, mock their Font objects
+                if (!lactosFont) lactosFont = { id: 'local-lactos', name: 'Dx Lactos', font_variants: [] } as unknown as Font;
+                if (!gasterFont) gasterFont = { id: 'local-gaster', name: 'Dx Gaster', font_variants: [] } as unknown as Font;
+
+                let hFont = lactosFont || fonts[0];
+                let bFont = gasterFont || (fonts.length > 1 ? fonts[1] : fonts[0]);
+
+                // Fetch full details for these (skip mock objects)
+                const ids = [...new Set([hFont.id, bFont.id])].filter(id => !String(id).startsWith('local-'));
+                if (ids.length > 0) {
+                    const { data } = await supabase
+                        .from('fonts')
+                        .select('*, font_variants(*)')
+                        .in('id', ids);
+
+                    if (data) {
+                        if (!String(hFont.id).startsWith('local-')) hFont = data.find(f => f.id === hFont.id) || hFont;
+                        if (!String(bFont.id).startsWith('local-')) bFont = data.find(f => f.id === bFont.id) || bFont;
+                    }
+                }
+
+                // Apply defaults up to the initial blocks
+                setBlocks(prev => {
+                    const newBlocks = [...prev];
+                    if (newBlocks[0] && newBlocks[0].type === 'Header') {
+                        newBlocks[0].font = hFont;
+                    }
+                    if (newBlocks[1] && newBlocks[1].type === 'Body') {
+                        newBlocks[1].font = bFont;
+                    }
+                    return newBlocks;
+                });
+
+                setDefaultsLoaded(true);
             };
             fetchDefaults();
         }
-    }, [loading, fonts]);
+    }, [loading, fonts, defaultsLoaded]);
 
-    const handleOpenPicker = (section: 'Header' | 'Body' | 'UI') => {
-        setActiveSection(section);
+    const handleOpenPicker = (blockId: string) => {
+        setActiveBlockId(blockId);
+        setActiveSection(blocks.find(b => b.id === blockId)?.type || null);
         setSidebarMode('picker');
     };
 
     const handleFontSelect = async (partialFont: Font) => {
-        // Determine which set functions to use based on section
-        let setFont: (f: Font | null) => void;
-        let setVariant: (v: string | null) => void;
+        if (!activeBlockId) return;
 
-        if (activeSection === 'Header') {
-            setFont = setHeaderFont;
-            setVariant = setHeaderVariant;
-        } else if (activeSection === 'Body') {
-            setFont = setBodyFont;
-            setVariant = setBodyVariant;
-        } else if (activeSection === 'UI') {
-            setFont = setUiFont;
-            setVariant = setUiVariant;
-        } else {
-            return;
-        }
-
-        // Optimistic update with what we have
-        setFont(partialFont);
-        setVariant(null); // Reset variant to default
+        // Optimistic update
+        setBlocks(prev => prev.map(b =>
+            b.id === activeBlockId
+                ? { ...b, font: partialFont, variant: null }
+                : b
+        ));
 
         // Fetch full details (variants)
         try {
@@ -302,22 +343,49 @@ export default function FontPairing() {
 
             if (error) throw error;
             if (data) {
-                setFont(data);
+                setBlocks(prev => prev.map(b =>
+                    b.id === activeBlockId
+                        ? { ...b, font: data }
+                        : b
+                ));
             }
         } catch (err) {
             console.error("Failed to fetch font details", err);
         }
     };
 
-    // Auto-resize logic
-    useLayoutEffect(() => {
-        autoResize(headerRef.current);
-    }, [headerText, headerFont, headerStyle, headerVariant]);
+    const updateBlock = (id: string, updates: Partial<TextBlock>) => {
+        setBlocks(prev => prev.map(b => b.id === id ? { ...b, ...updates } : b));
+    };
 
-    useLayoutEffect(() => {
-        autoResize(bodyRef.current);
-    }, [bodyText, bodyFont, bodyStyle, bodyVariant]);
+    const addBlock = (afterId: string, type: 'Header' | 'Body') => {
+        const index = blocks.findIndex(b => b.id === afterId);
+        if (index === -1) return;
 
+        const sourceBlock = blocks[index];
+        const newBlockId = `block-${Date.now()}`;
+
+        const newBlock: TextBlock = {
+            id: newBlockId,
+            type: type,
+            text: sourceBlock.text,
+            font: sourceBlock.font,
+            variant: sourceBlock.variant,
+            style: { ...sourceBlock.style }
+        };
+
+        const newBlocks = [...blocks];
+        newBlocks.splice(index + 1, 0, newBlock);
+
+        setBlocks(newBlocks);
+    };
+
+
+    const removeBlock = (id: string) => {
+        if (blocks.length > 1) {
+            setBlocks(prev => prev.filter(b => b.id !== id));
+        }
+    };
 
     return (
         <div className="min-h-screen bg-black text-white relative">
@@ -383,149 +451,73 @@ export default function FontPairing() {
                 >
                     <div className="space-y-6 lg:space-y-12">
 
-                        {/* 1. Header Section */}
-                        <div className="group relative">
-                            <div className="absolute -left-12 top-0 hidden xl:flex flex-col items-center gap-2 opacity-20">
-                                <Type size={24} />
-                            </div>
+                        {blocks.map((block) => (
+                            <div key={block.id} className="group relative">
+                                <div className="absolute -left-12 top-0 hidden xl:flex flex-col items-center gap-2 opacity-20 transition-opacity group-hover:opacity-100">
+                                    {block.type === 'Header' ? <Type size={24} /> : <AlignLeft size={24} />}
 
-                            {/* Floating Controls */}
-                            <div className="absolute -top-12 left-0 opacity-100 lg:opacity-0 group-hover:opacity-100 transition-all duration-300 z-10 flex items-center gap-2">
-                                <div className="bg-black/80 backdrop-blur-md rounded-full border border-white/10 p-1 flex items-center gap-1 shadow-2xl overflow-hidden md:overflow-visible">
+                                    {/* Add Block Button (Sidebar) */}
                                     <button
-                                        onClick={() => handleOpenPicker('Header')}
-                                        className="px-4 py-2 rounded-full font-bold text-xs bg-white text-black hover:bg-zinc-200 transition-colors flex items-center gap-2 whitespace-nowrap"
+                                        onClick={() => addBlock(block.id, block.type)}
+                                        className="mt-2 p-2 rounded-full bg-zinc-900 border border-white/10 text-white hover:bg-white hover:text-black transition-colors"
+                                        title={`Add ${block.type} Block Below`}
                                     >
-                                        <Edit3 size={12} />
-                                        <span>{headerFont?.name || 'Select Font'}</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="M12 5v14" /></svg>
                                     </button>
-                                    <InlineCustomizeOptions
-                                        font={headerFont}
-                                        currentVariant={headerVariant}
-                                        currentStyle={headerStyle}
-                                        onVariantChange={setHeaderVariant}
-                                        onStyleChange={setHeaderStyle}
-                                    />
+
+                                    {/* Delete Block Button (Sidebar) */}
+                                    {blocks.length > 1 && (
+                                        <button
+                                            onClick={() => removeBlock(block.id)}
+                                            className="mt-2 p-2 rounded-full bg-zinc-900 border border-white/10 text-white hover:bg-red-500 hover:text-white transition-colors"
+                                            title="Delete Block"
+                                        >
+                                            <Trash2 size={16} />
+                                        </button>
+                                    )}
                                 </div>
-                            </div>
 
-                            <textarea
-                                ref={headerRef}
-                                value={headerText}
-                                onChange={(e) => setHeaderText(e.target.value)}
-                                style={{
-                                    fontFamily: headerFont?.name ? `header-font-${headerFont.id}-${headerVariant || 'reg'}, ${headerFont.name}` : undefined,
-                                    fontSize: `${headerStyle.size}px`,
-                                    lineHeight: headerStyle.leading,
-                                    letterSpacing: `${headerStyle.tracking}px`,
-                                    color: headerStyle.color
-                                }}
-                                className="w-full bg-transparent border-none outline-none resize-none overflow-hidden placeholder:text-zinc-700 hover:bg-white/5 rounded-2xl transition-colors p-2 -ml-2 select-text"
-                                spellCheck={false}
-                            />
-                        </div>
-
-
-                        {/* 2. Body Section */}
-                        <div className="group relative">
-                            <div className="absolute -left-12 top-0 hidden xl:flex flex-col items-center gap-2 opacity-20">
-                                <AlignLeft size={24} />
-                            </div>
-
-                            {/* Floating Controls */}
-                            <div className="absolute -top-12 left-0 opacity-100 lg:opacity-0 group-hover:opacity-100 transition-all duration-300 z-10 flex items-center gap-2">
-                                <div className="bg-black/80 backdrop-blur-md rounded-full border border-white/10 p-1 flex items-center gap-1 shadow-2xl overflow-hidden md:overflow-visible">
-                                    <button
-                                        onClick={() => handleOpenPicker('Body')}
-                                        className="px-4 py-2 rounded-full font-bold text-xs bg-white text-black hover:bg-zinc-200 transition-colors flex items-center gap-2 whitespace-nowrap"
-                                    >
-                                        <Edit3 size={12} />
-                                        <span>{bodyFont?.name || 'Select Font'}</span>
-                                    </button>
-                                    <InlineCustomizeOptions
-                                        font={bodyFont}
-                                        currentVariant={bodyVariant}
-                                        currentStyle={bodyStyle}
-                                        onVariantChange={setBodyVariant}
-                                        onStyleChange={setBodyStyle}
-                                    />
+                                {/* Floating Controls */}
+                                <div className="absolute -top-12 left-0 opacity-100 lg:opacity-0 group-hover:opacity-100 transition-all duration-300 z-10 flex items-center gap-2">
+                                    <div className="bg-black/80 backdrop-blur-md rounded-full border border-white/10 p-1 flex items-center gap-1 shadow-2xl overflow-hidden md:overflow-visible">
+                                        <button
+                                            onClick={() => handleOpenPicker(block.id)}
+                                            className="px-4 py-2 rounded-full font-bold text-xs bg-white text-black hover:bg-zinc-200 transition-colors flex items-center gap-2 whitespace-nowrap"
+                                        >
+                                            <Edit3 size={12} />
+                                            <span>{block.font?.name || 'Select Font'}</span>
+                                        </button>
+                                        <InlineCustomizeOptions
+                                            font={block.font}
+                                            currentVariant={block.variant}
+                                            currentStyle={block.style}
+                                            onVariantChange={(v) => updateBlock(block.id, { variant: v })}
+                                            onStyleChange={(s) => updateBlock(block.id, { style: s })}
+                                        />
+                                    </div>
                                 </div>
+
+                                <textarea
+                                    value={block.text}
+                                    onChange={(e) => {
+                                        updateBlock(block.id, { text: e.target.value });
+                                        autoResize(e.target);
+                                    }}
+                                    onFocus={(e) => autoResize(e.target)}
+                                    style={{
+                                        fontFamily: block.font?.name ? `${block.id}-font-${block.font.id}-${block.variant || 'reg'}, ${block.font.name}` : undefined,
+                                        fontSize: `${block.style.size}px`,
+                                        lineHeight: block.style.leading,
+                                        letterSpacing: `${block.style.tracking}px`,
+                                        color: block.style.color,
+                                        minHeight: block.type === 'Header' ? '80px' : '40px'
+                                    }}
+                                    className="w-full bg-transparent border-none outline-none resize-none overflow-hidden placeholder:text-zinc-700 hover:bg-white/5 rounded-2xl transition-colors p-2 -ml-2 select-text"
+                                    rows={block.type === 'Header' ? undefined : 1}
+                                    spellCheck={false}
+                                />
                             </div>
-
-                            <textarea
-                                ref={bodyRef}
-                                value={bodyText}
-                                onChange={(e) => setBodyText(e.target.value)}
-                                style={{
-                                    fontFamily: bodyFont?.name ? `body-font-${bodyFont.id}-${bodyVariant || 'reg'}, ${bodyFont.name}` : undefined,
-                                    fontSize: `${bodyStyle.size}px`,
-                                    lineHeight: bodyStyle.leading,
-                                    letterSpacing: `${bodyStyle.tracking}px`,
-                                    color: bodyStyle.color
-                                }}
-                                className="w-full bg-transparent border-none outline-none resize-none overflow-hidden hover:bg-white/5 rounded-2xl transition-colors p-2 -ml-2"
-                                rows={1}
-                                spellCheck={false}
-                            />
-                        </div>
-
-
-                        {/* 3. UI Section */}
-                        <div className="group relative pt-12 border-t border-white/5">
-                            <div className="absolute -left-12 top-16 hidden xl:flex flex-col items-center gap-2 opacity-20">
-                                <MousePointerClick size={24} />
-                            </div>
-
-                            {/* Floating Controls */}
-                            <div className="absolute top-0 left-0 opacity-100 lg:opacity-0 group-hover:opacity-100 transition-all duration-300 z-10 flex items-center gap-2">
-                                <div className="bg-black/80 backdrop-blur-md rounded-full border border-white/10 p-1 flex items-center gap-1 shadow-2xl overflow-hidden md:overflow-visible">
-                                    <button
-                                        onClick={() => handleOpenPicker('UI')}
-                                        className="px-4 py-2 rounded-full font-bold text-xs bg-white text-black hover:bg-zinc-200 transition-colors flex items-center gap-2 whitespace-nowrap"
-                                    >
-                                        <Edit3 size={12} />
-                                        <span>{uiFont?.name || 'Select Font'}</span>
-                                    </button>
-                                    <InlineCustomizeOptions
-                                        font={uiFont}
-                                        currentVariant={uiVariant}
-                                        currentStyle={uiStyle}
-                                        onVariantChange={setUiVariant}
-                                        onStyleChange={setUiStyle}
-                                    />
-                                </div>
-                            </div>
-
-                            <div
-                                className="flex flex-col md:flex-row items-center gap-8 md:gap-16 hover:bg-white/5 rounded-2xl transition-colors p-6 -ml-6"
-                                style={{
-                                    fontFamily: uiFont?.name ? `ui-font-${uiFont.id}-${uiVariant || 'reg'}, ${uiFont.name}` : undefined,
-                                    fontSize: `${uiStyle.size}px`,
-                                    lineHeight: uiStyle.leading,
-                                    letterSpacing: `${uiStyle.tracking}px`,
-                                    color: uiStyle.color
-                                }}
-                            >
-                                {/* Nav Links */}
-                                <div className="flex gap-8 font-medium">
-                                    <input
-                                        value={uiLink1}
-                                        onChange={(e) => setUiLink1(e.target.value)}
-                                        className="bg-transparent border-none outline-none w-20 text-center hover:text-[#BDF522] transition-colors"
-                                    />
-                                    <input
-                                        value={uiLink2}
-                                        onChange={(e) => setUiLink2(e.target.value)}
-                                        className="bg-transparent border-none outline-none w-20 text-center hover:text-[#BDF522] transition-colors"
-                                    />
-                                    <input
-                                        value={uiLink3}
-                                        onChange={(e) => setUiLink3(e.target.value)}
-                                        className="bg-transparent border-none outline-none w-24 text-center hover:text-[#BDF522] transition-colors"
-                                    />
-                                </div>
-                            </div>
-                        </div>
+                        ))}
 
                     </div>
                 </motion.div>

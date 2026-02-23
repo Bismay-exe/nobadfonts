@@ -1,3 +1,5 @@
+@import url("https://www.nobadfonts.in/css/dx-lactos");
+@import url("https://www.nobadfonts.in/css/dx-gaster");
 @import url("https://www.nobadfonts.in/css/rockinsoda");
 @import url("https://www.nobadfonts.in/css/quivert");
 @import url("https://www.nobadfonts.in/css/gf-krater");
@@ -90,4 +92,12 @@
 
 @theme {
   --font-rockinsoda: "Rockinsoda", sans-serif;
+}
+
+@theme {
+  --font-dx-gaster: "Dx Gaster", sans-serif;
+}
+
+@theme {
+  --font-dx-lactos: "Dx Lactos", sans-serif;
 }
