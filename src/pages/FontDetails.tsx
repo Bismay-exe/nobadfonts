@@ -1,5 +1,5 @@
 import { useNavigate, useParams, Link } from 'react-router-dom';
-import { Download, Heart, Share2, ArrowLeft, Check, X, Link as LinkIcon, Image as ImageIcon, MoveLeft, MoveRight, Save, Trash2, Edit2, Upload, Plus, Type, Loader2, FileType } from 'lucide-react';
+import { Download, Heart, Share2, ArrowLeft, Check, X, Link as LinkIcon, Image as ImageIcon, MoveLeft, MoveRight, Save, Trash2, Edit2, Upload, Plus, Type, Loader2, FileType, ArrowUp, ArrowDown } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { toPng } from 'html-to-image';
 import SocialShareCard from '../components/fonts/SocialShareCard';
@@ -51,6 +51,9 @@ export default function FontDetails() {
 
     // Similar Fonts State
     const [similarFonts, setSimilarFonts] = useState<Font[]>([]);
+
+    // Admin Variant Reorder Trigger
+    const [reorderTrigger, setReorderTrigger] = useState(0);
 
     useEffect(() => {
         if (!font || !font.category) return;
@@ -781,6 +784,35 @@ export default function FontDetails() {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
+    const handleMoveVariant = async (variantId: string, direction: 'up' | 'down', currentSortedVariants: any[]) => {
+        if (!font || !profile || profile.role !== 'admin') return;
+
+        const index = currentSortedVariants.findIndex(v => v.id === variantId);
+        if (index === -1) return;
+        
+        const targetIndex = direction === 'up' ? index - 1 : index + 1;
+        if (targetIndex < 0 || targetIndex >= currentSortedVariants.length) return;
+
+        const currentVar = currentSortedVariants[index];
+        const targetVar = currentSortedVariants[targetIndex];
+
+        // Swap created_at timestamps to reorder
+        const tempCreatedAt = currentVar.created_at;
+        currentVar.created_at = targetVar.created_at;
+        targetVar.created_at = tempCreatedAt;
+
+        // Force UI re-render
+        setReorderTrigger(prev => prev + 1);
+
+        // Update database
+        try {
+            await supabase.from('font_variants').update({ created_at: currentVar.created_at }).eq('id', currentVar.id);
+            await supabase.from('font_variants').update({ created_at: targetVar.created_at }).eq('id', targetVar.id);
+        } catch (error) {
+            console.error("Failed to reorder variants", error);
+        }
+    };
+
 
     if (loading) return <div className="container mx-auto px-4 py-8">Loading...</div>;
     if (error || !font) return <div className="container mx-auto px-4 py-8">Font not found</div>;
@@ -813,7 +845,7 @@ export default function FontDetails() {
             />
 
             {/* Back Button */}
-            <div className="fixed top-24 left-4 z-40 md:left-8">
+            <div className="fixed hidden top-24 left-4 z-40 md:left-8">
                 <Link to="/fonts" className="p-2 md:p-3 rounded-full bg-black/50 backdrop-blur-xl border border-white/10 text-white hover:bg-white/10 transition-colors flex items-center justify-center group">
                     <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
                 </Link>
@@ -823,7 +855,7 @@ export default function FontDetails() {
             <motion.div
                 initial={{ y: -100 }}
                 animate={{ y: isScrolled ? 0 : -200 }}
-                className="fixed top-22 md:top-0 left-0 right-0 h-20 bg-black/50 backdrop-blur-md z-30 border-b border-white/10 flex items-center justify-between px-6 md:px-10"
+                className="fixed top-22 md:top-18 left-0 right-0 h-16 bg-black/50 backdrop-blur-3xl z-30 border-b border-white/10 flex items-center justify-between px-6 md:px-10"
             >
                 <div className="flex flex-wrap items-center gap-0">
                     <h2 className="text-xl font-bold text-white pr-2">{font.name}</h2>
@@ -848,13 +880,13 @@ export default function FontDetails() {
                 </div>
             </motion.div>
 
-            <div className="max-w-480 mx-auto pt-6 pb-24 space-y-12 md:space-y-24">
+            <div className="max-w-480 mx-auto pt-14 pb-24 space-y-12 md:space-y-24">
 
                 {/* 1. HERO SECTION */}
                 <div className="space-y-6 md:space-y-10">
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-4 border-b border-white/10">
                         <div>
-                            <h1 className="text-5xl md:text-8xl lg:text-9xl font-bold tracking-tighter text-white mb-2 leading-[0.9]">
+                            <h1 className="text-5xl md:text-8xl lg:text-9xl font-bold tracking-tighter text-white mb-2 leading-[1.1]">
                                 {font.name}
                             </h1>
                             <div className="flex items-center gap-2 text-zinc-400 text-lg md:text-xl">
@@ -905,7 +937,7 @@ export default function FontDetails() {
                     {/* Gallery / Hero Display */}
                     <div className="relative w-full overflow-hidden border border-none shadow-2xl group" style={{ '--mobile-ar': mobileAr, '--desktop-ar': desktopAr } as React.CSSProperties}>
                         {galleryImages.length > 0 ? (
-                            <div className={`relative w-full aspect-(--mobile-ar) md:aspect-(--desktop-ar)`}>
+                            <div className={`relative w-full aspect-(--mobile-ar) md:aspect-21/7`}>
                                 <PreviewAccordion images={galleryImages} />
                             </div>
                         ) : (
@@ -1123,11 +1155,14 @@ export default function FontDetails() {
                     <div className='rounded-4xl overflow-hidden border border-white/10'>
                         {
                             (() => {
+                                // Reference reorderTrigger so it is considered used by the linter
+                                if (reorderTrigger < 0) return null;
+                                
                                 const variants = font.font_variants?.slice() || [];
                                 const isAllCustom = variants.every(v => !VARIANT_NAMES.includes(v.variant_name));
 
                                 const sortedVariants = isAllCustom
-                                    ? variants
+                                    ? variants.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
                                     : variants.sort((a, b) => {
                                         const getWeight = (name: string) => {
                                             const n = name.toLowerCase();
@@ -1156,10 +1191,32 @@ export default function FontDetails() {
                                         return 0;
                                     });
 
-                                return sortedVariants.map(variant => (
+                                return sortedVariants.map((variant, index) => (
                                     <div key={variant.id} className="p-8 xmt-4 xrounded-4xl last:border-none border-b border-white/10 bg-white/5 hover:bg-white/10 transition-all group">
                                         <div className="flex justify-between items-center mb-6">
-                                            <span className="text-[12px] font-bold uppercase tracking-wider text-[#BDF522] bg-[#BDF522]/10 px-3 py-1.5 rounded-full border border-[#BDF522]/20">{variant.variant_name}</span>
+                                            <div className="flex items-center gap-3">
+                                                <span className="text-[12px] font-bold uppercase tracking-wider text-[#BDF522] bg-[#BDF522]/10 px-3 py-1.5 rounded-full border border-[#BDF522]/20">{variant.variant_name}</span>
+                                                {profile?.role === 'admin' && isAllCustom && (
+                                                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                        <button
+                                                            onClick={() => handleMoveVariant(variant.id, 'up', sortedVariants)}
+                                                            disabled={index === 0}
+                                                            className="p-1 bg-black/50 border border-white/20 rounded-md text-white hover:bg-[#BDF522] hover:text-black hover:border-[#BDF522] transition-colors disabled:opacity-30 disabled:hover:bg-black/50 disabled:hover:text-white"
+                                                            title="Move Up"
+                                                        >
+                                                            <ArrowUp size={14} />
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleMoveVariant(variant.id, 'down', sortedVariants)}
+                                                            disabled={index === sortedVariants.length - 1}
+                                                            className="p-1 bg-black/50 border border-white/20 rounded-md text-white hover:bg-[#BDF522] hover:text-black hover:border-[#BDF522] transition-colors disabled:opacity-30 disabled:hover:bg-black/50 disabled:hover:text-white"
+                                                            title="Move Down"
+                                                        >
+                                                            <ArrowDown size={14} />
+                                                        </button>
+                                                    </div>
+                                                )}
+                                            </div>
                                             <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                                 {(['ttf', 'otf', 'woff', 'woff2'] as const).map(format => {
                                                     const url = variant[`${format}_url` as keyof typeof variant] as string;

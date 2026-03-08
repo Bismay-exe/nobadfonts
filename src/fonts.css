@@ -1,3 +1,5 @@
+@import url("https://www.nobadfonts.in/css/cigra");
+@import url("https://www.nobadfonts.in/css/dx-alegant");
 @import url("https://www.nobadfonts.in/css/dx-lactos");
 @import url("https://www.nobadfonts.in/css/dx-gaster");
 @import url("https://www.nobadfonts.in/css/rockinsoda");
@@ -101,3 +103,288 @@
 @theme {
   --font-dx-lactos: "Dx Lactos", sans-serif;
 }
+
+@theme {
+  --font-dx-alegant: "Dx Alegant", sans-serif;
+}
+
+@theme {
+  --font-cigra: "Cigra", sans-serif;
+}
+ 
+/* Font: Abc Gravity (Added via NoBadFonts CLI) */
+
+@font-face {
+  font-family: 'Abc Gravity';
+  src: url('/fonts/abc-gravity/abc-gravity-Variable.woff2') format('woff2'),
+       url('/fonts/abc-gravity/abc-gravity-Variable.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+                
+
+@font-face {
+  font-family: 'Abc Gravity';
+  src: url('/fonts/abc-gravity/abc-gravity-Upright Variable.woff2') format('woff2'),
+       url('/fonts/abc-gravity/abc-gravity-Upright Variable.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+                
+
+@font-face {
+  font-family: 'Abc Gravity';
+  src: url('/fonts/abc-gravity/abc-gravity-Italic Variable.woff2') format('woff2'),
+       url('/fonts/abc-gravity/abc-gravity-Italic Variable.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+                
+
+@font-face {
+  font-family: 'Abc Gravity';
+  src: url('/fonts/abc-gravity/abc-gravity-XXXX Compressed Italic.woff2') format('woff2'),
+       url('/fonts/abc-gravity/abc-gravity-XXXX Compressed Italic.otf') format('opentype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+                
+
+@font-face {
+  font-family: 'Abc Gravity';
+  src: url('/fonts/abc-gravity/abc-gravity-XXX Compressed Italic.woff2') format('woff2'),
+       url('/fonts/abc-gravity/abc-gravity-XXX Compressed Italic.otf') format('opentype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+                
+
+@font-face {
+  font-family: 'Abc Gravity';
+  src: url('/fonts/abc-gravity/abc-gravity-Wide Italic.woff2') format('woff2'),
+       url('/fonts/abc-gravity/abc-gravity-Wide Italic.otf') format('opentype');
+  font-weight: 900;
+  font-style: italic;
+  font-display: swap;
+}
+                
+
+@font-face {
+  font-family: 'Abc Gravity';
+  src: url('/fonts/abc-gravity/abc-gravity-Extra Condenced Italic.woff2') format('woff2'),
+       url('/fonts/abc-gravity/abc-gravity-Extra Condenced Italic.otf') format('opentype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+                
+
+@font-face {
+  font-family: 'Abc Gravity';
+  src: url('/fonts/abc-gravity/abc-gravity-Condensed Italic.woff2') format('woff2'),
+       url('/fonts/abc-gravity/abc-gravity-Condensed Italic.otf') format('opentype');
+  font-weight: 200;
+  font-style: italic;
+  font-display: swap;
+}
+                
+
+@font-face {
+  font-family: 'Abc Gravity';
+  src: url('/fonts/abc-gravity/abc-gravity-XX Compressed.woff2') format('woff2'),
+       url('/fonts/abc-gravity/abc-gravity-XX Compressed.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+                
+
+@font-face {
+  font-family: 'Abc Gravity';
+  src: url('/fonts/abc-gravity/abc-gravity-Semi Condensed.woff2') format('woff2'),
+       url('/fonts/abc-gravity/abc-gravity-Semi Condensed.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+                
+
+@font-face {
+  font-family: 'Abc Gravity';
+  src: url('/fonts/abc-gravity/abc-gravity-Extended.woff2') format('woff2'),
+       url('/fonts/abc-gravity/abc-gravity-Extended.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+                
+
+@font-face {
+  font-family: 'Abc Gravity';
+  src: url('/fonts/abc-gravity/abc-gravity-Compressed.woff2') format('woff2'),
+       url('/fonts/abc-gravity/abc-gravity-Compressed.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+                
+
+@font-face {
+  font-family: 'Abc Gravity';
+  src: url('/fonts/abc-gravity/abc-gravity-XXXX Compressed.woff2') format('woff2'),
+       url('/fonts/abc-gravity/abc-gravity-XXXX Compressed.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+                
+
+@font-face {
+  font-family: 'Abc Gravity';
+  src: url('/fonts/abc-gravity/abc-gravity-XX Compressed Italic.woff2') format('woff2'),
+       url('/fonts/abc-gravity/abc-gravity-XX Compressed Italic.otf') format('opentype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+                
+
+@font-face {
+  font-family: 'Abc Gravity';
+  src: url('/fonts/abc-gravity/abc-gravity-Semi Condensed Italic.woff2') format('woff2'),
+       url('/fonts/abc-gravity/abc-gravity-Semi Condensed Italic.otf') format('opentype');
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}
+                
+
+@font-face {
+  font-family: 'Abc Gravity';
+  src: url('/fonts/abc-gravity/abc-gravity-Extended Italic.woff2') format('woff2'),
+       url('/fonts/abc-gravity/abc-gravity-Extended Italic.otf') format('opentype');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+                
+
+@font-face {
+  font-family: 'Abc Gravity';
+  src: url('/fonts/abc-gravity/abc-gravity-Compressed Italic.woff2') format('woff2'),
+       url('/fonts/abc-gravity/abc-gravity-Compressed Italic.otf') format('opentype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+                
+
+@font-face {
+  font-family: 'Abc Gravity';
+  src: url('/fonts/abc-gravity/abc-gravity-X Compressed.woff2') format('woff2'),
+       url('/fonts/abc-gravity/abc-gravity-X Compressed.otf') format('opentype');
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+                
+
+@font-face {
+  font-family: 'Abc Gravity';
+  src: url('/fonts/abc-gravity/abc-gravity-Normal.woff2') format('woff2'),
+       url('/fonts/abc-gravity/abc-gravity-Normal.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+                
+
+@font-face {
+  font-family: 'Abc Gravity';
+  src: url('/fonts/abc-gravity/abc-gravity-Expanded.woff2') format('woff2'),
+       url('/fonts/abc-gravity/abc-gravity-Expanded.otf') format('opentype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+                
+
+@font-face {
+  font-family: 'Abc Gravity';
+  src: url('/fonts/abc-gravity/abc-gravity-XXX Compressed.woff2') format('woff2'),
+       url('/fonts/abc-gravity/abc-gravity-XXX Compressed.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+                
+
+@font-face {
+  font-family: 'Abc Gravity';
+  src: url('/fonts/abc-gravity/abc-gravity-X Compressed Italic.woff2') format('woff2'),
+       url('/fonts/abc-gravity/abc-gravity-X Compressed Italic.otf') format('opentype');
+  font-weight: 100;
+  font-style: italic;
+  font-display: swap;
+}
+                
+
+@font-face {
+  font-family: 'Abc Gravity';
+  src: url('/fonts/abc-gravity/abc-gravity-Normal Italic.woff2') format('woff2'),
+       url('/fonts/abc-gravity/abc-gravity-Normal Italic.otf') format('opentype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+                
+
+@font-face {
+  font-family: 'Abc Gravity';
+  src: url('/fonts/abc-gravity/abc-gravity-Expanded Italic.woff2') format('woff2'),
+       url('/fonts/abc-gravity/abc-gravity-Expanded Italic.otf') format('opentype');
+  font-weight: 800;
+  font-style: italic;
+  font-display: swap;
+}
+                
+
+@font-face {
+  font-family: 'Abc Gravity';
+  src: url('/fonts/abc-gravity/abc-gravity-Wide.woff2') format('woff2'),
+       url('/fonts/abc-gravity/abc-gravity-Wide.otf') format('opentype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+                
+
+@font-face {
+  font-family: 'Abc Gravity';
+  src: url('/fonts/abc-gravity/abc-gravity-Extra Condenced.woff2') format('woff2'),
+       url('/fonts/abc-gravity/abc-gravity-Extra Condenced.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+                
+
+@font-face {
+  font-family: 'Abc Gravity';
+  src: url('/fonts/abc-gravity/abc-gravity-Condensed.woff2') format('woff2'),
+       url('/fonts/abc-gravity/abc-gravity-Condensed.otf') format('opentype');
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+                
+
+@theme {
+  --font-abc-gravity: "Abc Gravity", sans-serif;
+}
+    

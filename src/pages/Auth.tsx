@@ -114,7 +114,7 @@ export default function Auth() {
     };
 
     return (
-        <div className="fixed h-screen w-screen top-0 left-0 flex flex-col-reverse md:flex-row bg-black">
+        <div className="fixed h-screen w-screen top-0 left-0 flex flex-col-reverse md:flex-row bg-black z-100">
             {/* Form Side */}
             <div className="w-full md:h-full p-8 md:p-16 flex flex-col justify-center relativee">
 
@@ -278,7 +278,7 @@ export default function Auth() {
             </div>
 
             {/* Branding Side */}
-            <div className="flex w-full h-[40%] md:h-full bg-black border-10 border-[#FFF] rounded-4xl overflow-hidden p-0">
+            <div className="flex w-full h-[40%] md:h-full bg-black border-10 border-[#FFF] rounded-[4rem] overflow-hidden p-0">
                 <PreviewAccordion
                     vertical={true}
                     images={[

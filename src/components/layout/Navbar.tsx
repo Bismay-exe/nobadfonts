@@ -36,10 +36,10 @@ export default function Navbar() {
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.5 }}
                 className={cn(
-                    "fixed w-full top-0 md:top-4 left-1/2 -translate-x-1/2 z-50 max-w-7xl md:rounded-3xl border-b md:border-none border-white/10 transition-all duration-300",
+                    "fixed w-full left-1/2 -translate-x-1/2 z-50 border-white/10 transition-all duration-300",
                     isScrolled
-                        ? "bg-black/50 backdrop-blur-lg shadow-none sm:shadow-[0_10px_40px_0_rgba(255,255,255,0.2)] py-2 md:py-3 px-4"
-                        : "bg-transparent py-2 md:py-4 px-4"
+                        ? "top-0 md:top-0 max-w-full md:rounded-none bg-black/50 border-b backdrop-blur-3xl py-2 md:py-4 px-6 md:px-10"
+                        : "top-0 md:top-4 max-w-7xl md:rounded-3xl bg-transparent border-none py-2 md:py-4 px-4"
                 )}
             >
                 <div className="flex items-center justify-between pt-8 sm:pt-0">

@@ -1,11 +1,8 @@
 "use client";
 
-import Landing from '../components/home/Land8';
-import Hero from '../components/home/Hero/1';
-
-import { useLenis } from '../hooks/useLenis';
-import TextImageReveal from '../components/home/Hero/4';
 import SEO from '../components/shared/SEO';
+import { useLenis } from '../hooks/useLenis';
+import Hero from '../components/home/Hero/1';
 
 export default function Home() {
     useLenis();
@@ -13,8 +10,6 @@ export default function Home() {
         <div className="flex flex-col">
             <SEO />
             <Hero />
-            <TextImageReveal />
-            <Landing />
         </div>
     );
 }

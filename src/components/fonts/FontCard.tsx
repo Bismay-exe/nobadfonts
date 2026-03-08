@@ -231,7 +231,7 @@ export default function FontCard({ font, viewMode = 'font', onClick, disableLink
                             <Link
                                 to={`/fonts/${font.slug || font.id}`}
                                 onClick={(e) => e.stopPropagation()}
-                                className="bg-white text-black text-xs px-4 py-2 rounded-full font-bold hover:bg-zinc-200 transition-colors"
+                                className="bg-white text-black text-xs px-4 py-2 rounded-full font-bold font-bricolage-grotesque hover:bg-zinc-300 transition-colors"
                             >
                                 View Details
                             </Link>
@@ -257,7 +257,7 @@ export default function FontCard({ font, viewMode = 'font', onClick, disableLink
                                 <Link
                                     key={i}
                                     to={`/fonts?categories=${tag}`}
-                                    className="bg-white/5 border border-white/5 text-zinc-400 hover:bg-[#ffffff] hover:text-[#000000] text-[10px] px-2.5 py-1 rounded-full tracking-wide uppercase">
+                                    className="bg-white/5 border border-white/5 text-[#7b7b88] hover:bg-[#ffffff] hover:text-[#000000] text-[10px] md:text-[11px] px-2.5 py-1 rounded-full tracking-wider font-medium font-bricolage-grotesque uppercase">
                                     {tag}
                                 </Link>
                             ))}

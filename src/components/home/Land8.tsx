@@ -193,7 +193,7 @@ const Landing = () => {
     const lightText = "text-[#EEEFEB]";
 
     return (
-        <div ref={containerRef} className="font-['Roboto_Condensed'] bg-[#11270b]">
+        <div ref={containerRef} className="font-['Roboto_Condensed'] ">
             {/* Import Font */}
             <style>{`@import url("https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap");`}</style>
 
@@ -205,11 +205,11 @@ const Landing = () => {
             </section>
 
             {/* --- STICKY TEXT 1 --- */}
-            <section className={`sticky-text-1 ${sectionClass} ${lightBg} ${darkText}`}>
+            <section className={`sticky-text-1 @container ${sectionClass} ${lightBg} ${darkText}`}>
                 <div className={containerClass}>
                     <div
                         ref={text1Ref}
-                        className={`${h1Base} text-[20vw] font-light relative -left-[0.035em] tracking-[-0.05em] origin-top scale-y-0 will-change-transform`}
+                        className={`${h1Base} text-[20.5cqw] font-light relative -left-[0.035em] tracking-[-0.05em] origin-top scale-y-0 will-change-transform`}
                     >
                         Handpicked
                     </div>
@@ -217,11 +217,11 @@ const Landing = () => {
             </section>
 
             {/* --- STICKY TEXT 2 --- */}
-            <section className={`sticky-text-2 ${sectionClass} ${lightBg} ${darkText}`}>
+            <section className={`sticky-text-2 @container ${sectionClass} ${lightBg} ${darkText}`}>
                 <div className={containerClass}>
                     <div
                         ref={text2Ref}
-                        className={`${h1Base} text-[38vw] relative -left-[0.035em] tracking-[-0.05em] origin-top scale-y-0 will-change-transform`}
+                        className={`${h1Base} text-[39.5cqw] relative -left-[0.02em] tracking-[-0.05em] origin-top scale-y-0 will-change-transform`}
                     >
                         Clean
                     </div>
@@ -229,9 +229,9 @@ const Landing = () => {
             </section>
 
             {/* --- STICKY TEXT 3 --- */}
-            <section ref={section3Ref} className={`sticky-text-3 ${sectionClass}`}>
+            <section ref={section3Ref} className={`sticky-text-3 @container ${sectionClass}`}>
                 {/* Background Image */}
-                <div className="bg-img absolute inset-0 w-full h-full rounded-4xl overflow-hidden border-y border-[#1C1D1E] z-0">
+                <div className="bg-img absolute inset-0 w-full h-full rounded-4xl overflow-hidden z-0">
                     <img
                         src="/images/bg.avif"
                         alt=""
@@ -245,7 +245,7 @@ const Landing = () => {
                         className="w-full h-full object-cover"
                     />
                 </div>
-                <div className="fg-img absolute top-0 left-0 m-10 md:m-15 w-10 h-10 z-10 text-2xl md:text-3xl uppercase font-black leading-none">
+                <div className="fg-img absolute text-black top-0 left-0 m-10 md:m-15 w-10 h-10 z-10 text-2xl md:text-3xl uppercase font-black leading-none">
                     <img
                         src="/logo/logo-black.png"
                         alt=""
@@ -262,7 +262,7 @@ const Landing = () => {
                 >
                     <div
                         ref={text3Ref}
-                        className={`${h1Base} text-[18vw] relative -left-[0.035em] tracking-[-0.05em] origin-top scale-y-0`}
+                        className={`${h1Base} text-[18.3cqw] relative -left-[0.035em] tracking-[-0.05em] origin-top scale-y-0`}
                     >
                         Typography
                     </div>
@@ -270,7 +270,7 @@ const Landing = () => {
 
                 {/* Overlay Header with Split Text */}
                 <div className="header absolute h-full w-full flex justify-center items-center z-0 pointer-events-none">
-                    <div className="w-full text-[#ff0000] uppercase text-[18vw] md:text-[14vw] lg:text-[10vw] font-categories-elegant tracking-tight leading-[1.3] text-center">
+                    <div className="w-full text-[#ff0000] uppercase text-[18cqw] md:text-[14cqw] lg:text-[10cqw] font-categories-elegant tracking-tight leading-[1.3] text-center">
 
                         <div className="hidden lg:block">
                             <AnimatedWord addToRefs={addToRefs}>Seriously</AnimatedWord>

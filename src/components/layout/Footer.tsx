@@ -7,6 +7,15 @@ const Footer: React.FC = () => {
         <footer className="bg-black text-zinc-400 py-20 font-sans selection:bg-white selection:text-black z-50">
             <div className="max-w-480 mx-auto px-3">
 
+                <div className='scale-100 md:scale-100'>
+                    <div className='h-20rem w-20rem relative'>
+                        <img src="/logo/n.png" alt="h-full w-full" />
+                        <div className='absolute top-0 left-0 ml-42 mt-39 h-40 w-40'>
+                            <img src="/logo/starsvg.png" alt="" className='animate-spin-slow' />
+                        </div>
+                    </div>
+                </div>
+
                 {/* Main Content Grid */}
                 <div className="flex flex-col lg:flex-row justify-between gap-16 lg:gap-24 mb-24">
 
@@ -115,3 +124,5 @@ const Footer: React.FC = () => {
 };
 
 export default Footer;
+
+

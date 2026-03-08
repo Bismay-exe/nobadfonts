@@ -105,16 +105,16 @@ export function PreviewAccordion({ images, vertical = false }: { images: string[
                         flexGrow: activeIndex === index ? activeFlex : inactiveFlex
                     }}
                     className={`
-            relative
-            flex
-            cursor-pointer
-            select-none
-            transition-[flex-grow]
-            duration-700
-            ease-in-out
-            overflow-hidden
-            border-white/10
-            ${vertical
+                        relative
+                        flex
+                        cursor-pointer
+                        select-none
+                        transition-[flex-grow]
+                        duration-700
+                        ease-in-out
+                        overflow-hidden
+                        border-white/10
+                        ${vertical
                             ? 'w-full border-b last:border-b-0'
                             : 'w-full md:w-auto md:h-full border-b md:border-b-0 md:border-r last:border-b-0 md:last:border-r-0'
                         }
@@ -130,9 +130,9 @@ export function PreviewAccordion({ images, vertical = false }: { images: string[
                     {/* Overlay */}
                     <div
                         className={`
-                absolute inset-0 transition-colors duration-700
-                ${activeIndex === index ? 'bg-black/0' : 'bg-black/40'}
-                `}
+                        absolute inset-0 transition-colors duration-700
+                        ${activeIndex === index ? 'bg-black/0' : 'bg-black/40'}
+                        `}
                     />
                 </button>
             ))}
