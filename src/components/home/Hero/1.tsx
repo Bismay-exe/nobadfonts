@@ -44,7 +44,7 @@ const Hero = () => {
                     {/* Heading */}
                     <h1 ref={titleRef} className="text-[10cqw] uppercase font-abc-gravity leading-[0.8]">
                         <div>
-                            <span className="hero-line block"><span className='font-thin'>No</span> <span className='font-black'>bad</span> <span className='italic font-extralight'>fonts.</span></span>
+                            <span className="hero-line block"><span className='font-thin'>No</span> <span className='font-black'>bad</span> <span className='italic font-extralight'>fonts</span></span>
                         </div>
                         <div>
                             <span className="hero-line block">
