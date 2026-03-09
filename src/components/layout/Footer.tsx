@@ -11,7 +11,7 @@ const Footer: React.FC = () => {
   }, []);
 
     return (
-        <footer className="bg-black text-zinc-400 py-20 font-sans selection:bg-white selection:text-black z-50">
+        <footer className="hidden sm:block bg-black text-zinc-400 py-20 font-sans selection:bg-white selection:text-black z-50">
             <div className="max-w-480 mx-auto px-3">
 
                 <div className=''>

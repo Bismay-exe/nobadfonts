@@ -11,7 +11,7 @@ export default function Layout() {
             <div className="fixed inset-0 bg-[url('/noise.png')] opacity-[0.03] pointer-events-none mix-blend-overlay z-[60]" />
 
             <Navbar />
-            <main className="grow pt-24 pb-10 max-w-480 mx-auto w-full relative">
+            <main className="grow pt-24 pb-34 max-w-480 mx-auto w-full relative">
                 <AnimatePresence mode="wait">
                     <motion.div
                         key={location.pathname}

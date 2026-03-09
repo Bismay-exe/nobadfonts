@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import { useAuth } from '../contexts/AuthContext';
 import FontCard from '../components/fonts/FontCard';
 import type { Database } from '../types/database.types';
 import { ArrowLeft, Type, Image as ImageIcon, Globe, Twitter, Instagram, Linkedin, Coffee, Palette } from 'lucide-react';
@@ -10,6 +11,7 @@ type Font = Database['public']['Tables']['fonts']['Row'];
 
 export default function MemberDetails() {
     const { id } = useParams();
+    const { profile: currentUserProfile } = useAuth();
     const [profile, setProfile] = useState<Profile | null>(null);
     const [fonts, setFonts] = useState<Font[]>([]);
     const [loading, setLoading] = useState(true);
@@ -69,6 +71,30 @@ export default function MemberDetails() {
             navigate('/members');
         }
     };
+
+    // Role Check
+    if (!currentUserProfile || (currentUserProfile.role !== 'member' && currentUserProfile.role !== 'admin')) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[84.4vh]  rounded-4xl text-center p-8 space-y-6">
+                <div className="bg-red-100 p-6 rounded-full">
+                    <div className="text-6xl">🔒</div>
+                </div>
+                <h1 className="text-4xl font-black uppercase">Access Restricted</h1>
+                <p className="text-xl text-gray-600 max-w-lg">
+                    Viewing members is currently restricted to approved <strong>Members</strong> and <strong>Admins</strong>.
+                </p>
+                <div className="flex gap-4">
+                    <button onClick={() => navigate('/')} className="px-6 py-3 bg-black text-white rounded-xl font-bold hover:scale-105 transition-transform">
+                        Go Home
+                    </button>
+                    {/* Placeholder for future "Request Access" feature */}
+                    <button disabled className="px-6 py-3 border-2 border-black text-black rounded-xl font-bold opacity-50 cursor-not-allowed">
+                        Request Access
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     if (loading) return (
         <div className="flex justify-center items-center min-h-[50vh]">

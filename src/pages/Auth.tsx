@@ -114,9 +114,9 @@ export default function Auth() {
     };
 
     return (
-        <div className="fixed h-screen w-screen top-0 left-0 flex flex-col-reverse md:flex-row bg-black z-100">
+        <div className="fixed h-screen w-screen top-0 left-0 flex bg-black z-100">
             {/* Form Side */}
-            <div className="w-full md:h-full p-8 md:p-16 flex flex-col justify-center relativee">
+            <div className="w-full md:h-full p-8 md:p-16 flex flex-col justify-center gap-5 relative">
 
                 {/* Toggle Switch */}
                 {!isVerifying && (
@@ -136,7 +136,7 @@ export default function Auth() {
                     </div>
                 )}
 
-                <div className="w-full bg-[#EEEFEB]/0 text-white p-2 md:p-16 rounded-4xl">
+                <div className="w-full text-white p-2 md:p-16 rounded-4xl">
                     <h2 className="text-3xl font-bold mb-2">
                         {isVerifying ? 'Verify Email' : (isLogin ? 'Welcome Back' : 'Create Account')}
                     </h2>
@@ -278,7 +278,7 @@ export default function Auth() {
             </div>
 
             {/* Branding Side */}
-            <div className="flex w-full h-[40%] md:h-full bg-black border-10 border-[#FFF] rounded-[4rem] overflow-hidden p-0">
+            <div className="hidden md:flex w-full h-full bg-black border-10 border-[#FFF] rounded-[4rem] overflow-hidden p-0">
                 <PreviewAccordion
                     vertical={true}
                     images={[

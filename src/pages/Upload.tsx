@@ -478,6 +478,7 @@ const Upload = () => {
                             name="name"
                             value={formData.name}
                             onChange={handleChange}
+                            onBlur={(e) => setFormData(prev => ({ ...prev, name: e.target.value.trim() }))}
                             className="w-full border-2 border-white/5 bg-white/5 p-3 rounded-2xl font-bold focus:outline-none"
 
                         />
@@ -489,6 +490,7 @@ const Upload = () => {
                             name="designer"
                             value={formData.designer}
                             onChange={handleChange}
+                            onBlur={(e) => setFormData(prev => ({ ...prev, designer: e.target.value.trim() }))}
                             className="w-full border-2 border-white/5 bg-white/5 p-3 rounded-2xl font-bold focus:outline-none"
                             placeholder="Leave blank if unknown"
                         />

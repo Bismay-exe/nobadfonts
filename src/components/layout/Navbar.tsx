@@ -4,14 +4,13 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useState, useEffect } from 'react';
 import { cn } from '../../lib/utils';
-import { Menu, X, Type, Combine, Terminal, Users, Upload, User, Shield } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Type, Combine, Terminal, Users, Upload, User, Shield } from 'lucide-react';
+import { motion } from 'framer-motion';
 import Logo from '/logo/logo-black.png'; // Assuming white version exists or we filter it
 
 export default function Navbar() {
     const { user, profile } = useAuth();
     const [isScrolled, setIsScrolled] = useState(false);
-    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const location = useLocation();
 
     useEffect(() => {
@@ -26,7 +25,9 @@ export default function Navbar() {
         { name: 'Fonts', path: '/fonts', icon: Type },
         { name: 'Pairing', path: '/pairing', icon: Combine },
         { name: 'CLI', path: '/cli', icon: Terminal, badge: 'NEW' },
-        { name: 'Members', path: '/members', icon: Users },
+        ...(profile?.role === 'member' || profile?.role === 'admin'
+            ? [{ name: 'Members', path: '/members', icon: Users }]
+            : []),
     ];
 
     return (
@@ -94,7 +95,7 @@ export default function Navbar() {
                         {user ? (
                             <>
                                 {profile?.role === 'admin' && (
-                                    <Link to="/admin" className="hidden lg:flex items-center justify-center h-10 w-10 rounded-full bg-pink-500/20 text-pink-500 border border-pink-500/30 hover:bg-pink-500 hover:text-white transition-all">
+                                    <Link to="/admin" className="flex items-center justify-center h-10 w-10 rounded-full bg-pink-500/20 text-pink-500 border border-pink-500/30 hover:bg-pink-500 hover:text-white transition-all">
                                         <Shield size={18} />
                                     </Link>
                                 )}
@@ -118,63 +119,56 @@ export default function Navbar() {
                                 Login
                             </Link>
                         )}
-
-                        {/* Mobile Menu Toggle */}
-                        <button
-                            className="md:hidden p-2 text-white bg-white/10 rounded-full backdrop-blur-sm border border-white/5"
-                            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                        >
-                            {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
-                        </button>
                     </div>
                 </div>
             </motion.nav>
 
-            {/* Mobile Menu Overlay */}
-            <AnimatePresence>
-                {mobileMenuOpen && (
-                    <motion.div
-                        initial={{ opacity: 0, y: -20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
-                        className="fixed inset-0 z-40 bg-black/95 backdrop-blur-xl pt-24 px-6 md:hidden flex flex-col gap-6"
-                    >
-                        <div className="flex flex-col gap-2">
-                            {navLinks.map((link) => (
-                                <Link
-                                    key={link.path}
-                                    to={link.path}
-                                    onClick={() => setMobileMenuOpen(false)}
-                                    className="flex items-center gap-4 text-2xl font-medium text-white/80 hover:text-white p-4 rounded-xl hover:bg-white/5 transition-all border border-transparent hover:border-white/10"
-                                >
-                                    <link.icon size={24} />
-                                    {link.name}
-                                </Link>
-                            ))}
-                            {user && (
-                                <Link
-                                    to="/upload"
-                                    onClick={() => setMobileMenuOpen(false)}
-                                    className="flex items-center gap-4 text-2xl font-medium text-white/80 hover:text-white p-4 rounded-xl hover:bg-white/5 transition-all border border-transparent hover:border-white/10"
-                                >
-                                    <Upload size={24} />
-                                    Upload Font
-                                </Link>
+            {/* Mobile Bottom Dock */}
+            <div className="md:hidden fixed bottom-0 left-1/2 -translate-x-1/2 z-100">
+                <nav className="flex items-center justify-evenly w-screen py-2.5 bg-black/60 backdrop-blur-3xl border border-white/10 shadow-2xl shadow-black/50">
+                    {navLinks.map((link) => {
+                        const Icon = link.icon;
+                        const isActive = location.pathname === link.path;
+                        return (
+                            <Link
+                                key={link.path}
+                                to={link.path}
+                                className={cn(
+                                    "relative flex flex-col items-center justify-center w-12 h-12 rounded-full transition-all duration-300",
+                                    isActive
+                                        ? "text-white"
+                                        : "text-zinc-500 hover:text-white hover:bg-white/10"
+                                )}
+                            >
+                                <Icon size={20} className={cn("transition-transform duration-300", isActive && "scale-110")} />
+                                <div className={cn(`uppercase text-xs font-bricolage-grotesque pt-1 ${profile?.role === 'admin' ? 'hidden' : 'block'}`)}>{link.name}</div>
+                                <div className={cn("absolute inset-0 bg-white/30 blur-xl rounded-full -z-10 opacity-0 group-hover:opacity-100 transition-opacity", isActive && "opacity-100")}/>
+                                {link.badge && (
+                                    <span className="absolute top-1 right-1 flex h-2 w-2">
+                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-lime-400 opacity-75"></span>
+                                        <span className="relative inline-flex rounded-full h-2 w-2 bg-lime-500"></span>
+                                    </span>
+                                )}
+                            </Link>
+                        );
+                    })}
+
+                    {profile?.role === 'member' || profile?.role === 'admin' && (
+                        <Link
+                            to="/upload"
+                            className={cn(
+                                "relative flex flex-col items-center justify-center w-12 h-12 rounded-full transition-all duration-300",
+                                location.pathname === '/upload'
+                                    ? "text-white"
+                                    : "text-zinc-500 hover:text-white hover:bg-white/10"
                             )}
-                            {profile?.role === 'admin' && (
-                                <Link
-                                    to="/admin"
-                                    onClick={() => setMobileMenuOpen(false)}
-                                    className="flex items-center gap-4 text-2xl font-medium text-pink-500 p-4 rounded-xl hover:bg-pink-500/10 transition-all border border-transparent hover:border-pink-500/20"
-                                >
-                                    <Shield size={24} />
-                                    Admin Panel
-                                </Link>
-                            )}
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+                        >
+                            <Upload size={20} className={cn("transition-transform duration-300", location.pathname === '/upload' && "scale-110")} />
+                            <div className={cn("absolute inset-0 bg-white/30 blur-xl rounded-full -z-10 opacity-0 group-hover:opacity-100 transition-opacity", location.pathname === '/upload' && "opacity-100")}/>
+                        </Link>
+                    )}
+                </nav>
+            </div>
         </>
     );
 }

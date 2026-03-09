@@ -1,5 +1,5 @@
 import { useNavigate, useParams, Link } from 'react-router-dom';
-import { Download, Heart, Share2, ArrowLeft, Check, X, Link as LinkIcon, Image as ImageIcon, MoveLeft, MoveRight, Save, Trash2, Edit2, Upload, Plus, Type, Loader2, FileType, ArrowUp, ArrowDown } from 'lucide-react';
+import { Download, Heart, Share2, Check, X, Link as LinkIcon, Image as ImageIcon, MoveLeft, MoveRight, Save, Trash2, Edit2, Upload, Plus, Type, Loader2, FileType, ArrowUp, ArrowDown } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { toPng } from 'html-to-image';
 import SocialShareCard from '../components/fonts/SocialShareCard';
@@ -844,13 +844,6 @@ export default function FontDetails() {
                 keywords={font.tags || []}
             />
 
-            {/* Back Button */}
-            <div className="fixed hidden top-24 left-4 z-40 md:left-8">
-                <Link to="/fonts" className="p-2 md:p-3 rounded-full bg-black/50 backdrop-blur-xl border border-white/10 text-white hover:bg-white/10 transition-colors flex items-center justify-center group">
-                    <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
-                </Link>
-            </div>
-
             {/* Sticky Header */}
             <motion.div
                 initial={{ y: -100 }}
@@ -880,7 +873,7 @@ export default function FontDetails() {
                 </div>
             </motion.div>
 
-            <div className="max-w-480 mx-auto pt-14 pb-24 space-y-12 md:space-y-24">
+            <div className="max-w-480 mx-auto sm:pt-14 space-y-12 md:space-y-24">
 
                 {/* 1. HERO SECTION */}
                 <div className="space-y-6 md:space-y-10">
@@ -937,7 +930,7 @@ export default function FontDetails() {
                     {/* Gallery / Hero Display */}
                     <div className="relative w-full overflow-hidden border border-none shadow-2xl group" style={{ '--mobile-ar': mobileAr, '--desktop-ar': desktopAr } as React.CSSProperties}>
                         {galleryImages.length > 0 ? (
-                            <div className={`relative w-full aspect-(--mobile-ar) md:aspect-21/7`}>
+                            <div className={galleryImages.length > 1 ? `relative w-full aspect-(--mobile-ar) md:aspect-21/7` : `relative w-full`}>
                                 <PreviewAccordion images={galleryImages} />
                             </div>
                         ) : (
