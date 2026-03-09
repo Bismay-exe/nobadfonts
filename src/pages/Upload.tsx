@@ -5,6 +5,14 @@ import { useNavigate } from 'react-router-dom';
 import { Upload as UploadIcon, X, Image as ImageIcon, Link as LinkIcon } from 'lucide-react';
 import { useUpload } from '../contexts/UploadContext';
 import { FixWoff2Scanner } from '../components/admin/FixWoff2Scanner';
+import SEO from '../components/shared/SEO';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "../components/ui/select";
 
 const Upload = () => {
     const { user, profile } = useAuth();
@@ -426,7 +434,7 @@ const Upload = () => {
     // Role Check
     if (!profile || (profile.role !== 'member' && profile.role !== 'admin')) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-[84.4vh] bg-[#EEEFEB] rounded-4xl text-center p-8 space-y-6">
+            <div className="flex flex-col items-center justify-center min-h-[84.4vh]  rounded-4xl text-center p-8 space-y-6">
                 <div className="bg-red-100 p-6 rounded-full">
                     <div className="text-6xl">🔒</div>
                 </div>
@@ -448,19 +456,29 @@ const Upload = () => {
     }
 
     return (
-        <div className="mx-auto">
-            <form onSubmit={handleSubmit} className="rounded-4xl">
+        <div className="mx-auto max-w-5xl">
+            <SEO title="Upload Font" />
 
-                <h1 className="md:hidden col-span-1 md:col-span-2 text-4xl bg-[#EEEFEB] p-4 rounded-4xl border-y border-black text-center md:text-left font-black uppercase">Upload Font</h1>
+            <div className="flex items-center justify-center">
+                <div className="mt-6 mb-8 text-center">
+                    <h1 className="text-4xl md:text-6xl font-bold tracking-tighter text-white mb-4">Upload Font</h1>
+                    <p className="text-zinc-500 max-w-xl mx-auto">
+                        Share your typographic creation with the world.
+                    </p>
+                </div>
+            </div>
+
+            <form onSubmit={handleSubmit} className="rounded-4xl bg-white/5 border border-white/10 space-y-4 pt-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+
                 {/* Meta Inputs */}
-                <div className="col-span-1 space-y-4 bg-[#EEEFEB] p-8 rounded-4xl border-r border-y border-black">
+                <div className="col-span-1 space-y-4 p-4 md:p-8 border-y border-black">
                     <div>
                         <label className="block font-bold mb-2 uppercase">Font Name</label>
                         <input
                             name="name"
                             value={formData.name}
                             onChange={handleChange}
-                            className="w-full border-2 border-black p-3 rounded-2xl font-bold focus:outline-none focus:ring-4 ring-[#FF90E8]"
+                            className="w-full border-2 border-white/5 bg-white/5 p-3 rounded-2xl font-bold focus:outline-none"
 
                         />
                     </div>
@@ -471,76 +489,54 @@ const Upload = () => {
                             name="designer"
                             value={formData.designer}
                             onChange={handleChange}
-                            className="w-full border-2 border-black p-3 rounded-2xl font-bold focus:outline-none focus:ring-4 ring-[#00C2FF]"
+                            className="w-full border-2 border-white/5 bg-white/5 p-3 rounded-2xl font-bold focus:outline-none"
                             placeholder="Leave blank if unknown"
                         />
                     </div>
                 </div>
 
+                <div className='h-px mx-4 md:mx-8 bg-white/10'/>
+
                 {/* Variants Section */}
-                <div className="col-span-1 md:col-span-2 bg-[#EEEFEB] p-8 rounded-4xl border-l border-y border-black border-t-0 md:border-t">
-                    <div className="flex justify-between items-center mb-4">
+                <div className="col-span-1 md:col-span-2 p-4 md:p-8">
+                    <div className="flex justify-start items-center mb-4">
                         <label className="font-bold uppercase text-lg">Font Variants <span className="text-sm text-red-500 normal-case ml-2">(At least one required)</span></label>
-                        <div className="flex gap-2 flex-wrap justify-end">
-                            <button
-                                type="button"
-                                onClick={addVariableFont}
-                                className="px-4 py-2 rounded-full font-bold text-sm bg-[#EEEFEB] border-2 border-black text-black hover:bg-gray-100 transition-colors"
-                            >
-                                + Variable Font
-                            </button>
-                            <button
-                                type="button"
-                                onClick={addCustomVariant}
-                                className="px-4 py-2 rounded-full font-bold text-sm bg-[#EEEFEB] border-2 border-black text-black hover:bg-gray-100 transition-colors"
-                            >
-                                + Custom Variant
-                            </button>
-                            <button
-                                type="button"
-                                onClick={addVariant}
-                                disabled={variants.length >= VARIANT_NAMES.length + 10}
-                                className={`px-4 py-2 rounded-full font-bold text-sm transition-colors ${variants.length >= VARIANT_NAMES.length + 10
-                                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                                    : 'bg-black text-white hover:bg-gray-800'
-                                    }`}
-                            >
-                                + Add Std Variant
-                            </button>
-                        </div>
                     </div>
 
                     <div className="space-y-6">
                         {variants.map((variant) => (
-                            <div key={variant.id} className="p-4 border-2 border-dashed border-gray-300 rounded-2xl">
+                            <div key={variant.id} className="p-4 bg-black/30 border border-white/10 rounded-2xl">
                                 <div className="flex justify-between items-start mb-4">
                                     <div>
-                                        <label className="block text-xs font-bold uppercase mb-1">Variant Name</label>
                                         {variant.isCustom ? (
                                             <input
                                                 type="text"
                                                 value={variant.name}
                                                 onChange={(e) => updateVariantName(variant.id, e.target.value)}
-                                                className="border-2 border-black rounded-lg px-3 py-1 font-bold bg-[#000000] w-full"
+                                                className="border-2 border-white/5 rounded-lg px-3 py-1 font-bold bg-white/5 w-full focus:outline-none"
                                                 placeholder="e.g. Demi Bold"
                                                 autoFocus
                                             />
                                         ) : (
-                                            <select
+                                            <Select
                                                 value={variant.name}
-                                                onChange={(e) => updateVariantName(variant.id, e.target.value)}
-                                                className="border-2 border-black rounded-lg px-3 py-1 font-bold bg-[#000000]"
+                                                onValueChange={(value) => updateVariantName(variant.id, value)}
                                             >
-                                                {VARIANT_NAMES.filter(name => name === variant.name || !variants.some(v => v.name === name)).map(name => (
-                                                    <option key={name} value={name}>{name}</option>
-                                                ))}
-                                            </select>
+                                                <SelectTrigger className="border-2 border-white/5 rounded-lg px-4 py-2 font-bold bg-white/5 h-auto">
+                                                    <SelectValue placeholder="Select variant" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    {VARIANT_NAMES.filter(name => name === variant.name || !variants.some(v => v.name === name)).map(name => (
+                                                        <SelectItem key={name} value={name}>{name}</SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
                                         )}
                                     </div>
                                     <button
                                         type="button"
                                         onClick={() => removeVariant(variant.id)}
-                                        className="text-red-500 hover:text-red-700 p-1"
+                                        className="text-zinc-600 hover:text-red-500 p-1"
                                     >
                                         <X size={20} />
                                     </button>
@@ -550,7 +546,7 @@ const Upload = () => {
                                     {(['ttf', 'otf', 'woff', 'woff2'] as const).map(format => (
                                         <div key={format} className="relative">
                                             {variant.files[format] ? (
-                                                <div className="flex items-center justify-between bg-green-100 border border-green-300 rounded-lg p-2 text-xs font-bold">
+                                                <div className="flex items-center justify-between bg-[#BDF522]/10 border border-[#BDF522]/10 text-[#BDF522] rounded-lg p-2 text-xs font-mono">
                                                     <span className="truncate max-w-20">{variant.files[format]?.name}</span>
                                                     <button
                                                         type="button"
@@ -571,7 +567,7 @@ const Upload = () => {
                                                         }}
                                                         className="absolute inset-0 opacity-0 cursor-pointer z-10 w-full h-full"
                                                     />
-                                                    <div className="border border-gray-300 bg-[#000000] rounded-lg p-2 text-center text-xs font-bold text-gray-500 hover:border-black hover:text-black transition-colors">
+                                                    <div className="border border-white/5 bg-white/5 rounded-lg p-2 text-center text-xs font-mono text-gray-500 hover:border-black hover:text-black transition-colors">
                                                         {format.toUpperCase()}
                                                     </div>
                                                 </div>
@@ -587,15 +583,49 @@ const Upload = () => {
                             </p>
                         )}
                     </div>
+
+                    <div className="flex justify-end items-center mt-4 text-[12px] md:text-[14px]">
+                        <div className="flex gap-2 flex-wrap justify-end">
+                            <button
+                                type="button"
+                                onClick={addVariableFont}
+                                className="px-4 py-2 rounded-full font-bold hover:bg-white/90 text-white/70 hover:text-black transition-colors cursor-pointer"
+                            >
+                                + Variable Font
+                            </button>
+                            <button
+                                type="button"
+                                onClick={addCustomVariant}
+                                className="px-4 py-2 rounded-full font-bold hover:bg-white/90 text-white/70 hover:text-black transition-colors cursor-pointer"
+                            >
+                                + Custom Variant
+                            </button>
+                            <button
+                                type="button"
+                                onClick={addVariant}
+                                disabled={variants.length >= VARIANT_NAMES.length + 10}
+                                className={`px-4 py-2 rounded-full font-bold hover:bg-white/90 text-white/70 hover:text-black transition-colors cursor-pointer ${variants.length >= VARIANT_NAMES.length + 10
+                                    ? 'cursor-not-allowed'
+                                    : ''
+                                    }`}
+                            >
+                                + Std Variant
+                            </button>
+                        </div>
+                    </div>
                 </div>
+
+                <div className='h-px mx-4 md:mx-8 bg-white/10'/>
+
+
                 {/* Banner Image Section */}
-                <div className="col-span-1 md:col-span-2 bg-[#EEEFEB] p-8 rounded-4xl border-x border-b border-black md:border-t-0 space-y-4">
+                <div className="col-span-1 md:col-span-2 p-4 md:p-8 space-y-4">
                     <label className="block font-bold uppercase text-lg">Banner Gallery <span className="text-sm text-gray-500 normal-case ml-2">(Optional - Multiple images allowed)</span></label>
 
                     {/* List of items */}
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4 empty:hidden">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4 empty:hidden">
                         {bannerItems.map((item) => (
-                            <div key={item.id} className="relative group aspect-video bg-gray-100 rounded-xl overflow-hidden border-2 border-gray-200">
+                            <div key={item.id} className="relative group aspect-video bg-white/5 rounded-xl overflow-hidden border-2 border-white/5">
                                 {item.type === 'file' ? (
                                     <div className="w-full h-full flex flex-col items-center justify-center p-2 text-center">
                                         <ImageIcon className="text-gray-400 mb-1" />
@@ -611,16 +641,13 @@ const Upload = () => {
                                 <button
                                     type="button"
                                     onClick={() => removeBannerItem(item.id)}
-                                    className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                                    className="absolute top-1 right-1 text-red-500 p-1 rounded-full md:opacity-0 md:group-hover:opacity-100 transition-opacity"
                                 >
-                                    <X size={12} />
+                                    <X size={16} />
                                 </button>
                             </div>
                         ))}
-                    </div>
-
-                    <div className="flex flex-wrap gap-4">
-                        <div className="relative">
+                        <div className="relative flex justify-center items-center group aspect-video bg-white/5 rounded-xl overflow-hidden border-2 border-dashed border-white/5">
                             <input
                                 type="file"
                                 multiple
@@ -630,57 +657,60 @@ const Upload = () => {
                             />
                             <button
                                 type="button"
-                                className="flex items-center gap-2 px-4 py-2 rounded-full font-bold border-2 border-dashed border-gray-300 hover:border-black hover:bg-gray-50 transition-all text-gray-500 hover:text-black"
+                                className="flex flex-col items-center gap-2 font-bold text-gray-500"
                             >
-                                <UploadIcon size={18} /> Add Images
+                                <UploadIcon size={28} />
+                                Add Images
                             </button>
                         </div>
+                    </div>
 
-                        <div className="flex gap-2">
-                            {showUrlInput ? (
-                                <div className="flex items-center gap-2">
-                                    <input
-                                        type="url"
-                                        value={urlInput}
-                                        onChange={e => setUrlInput(e.target.value)}
-                                        placeholder="https://..."
-                                        className="border-2 border-black rounded-lg px-2 py-1 focus:outline-none"
-                                        autoFocus
-                                    />
-                                    <button
-                                        type="button"
-                                        onClick={addBannerUrl}
-                                        className="bg-black text-white px-3 py-1 rounded-lg font-bold text-sm"
-                                    >
-                                        Add
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowUrlInput(false)}
-                                        className="text-gray-500 hover:text-black"
-                                    >
-                                        <X size={18} />
-                                    </button>
-                                </div>
-                            ) : (
+                    <div className="flex gap-2">
+                        {showUrlInput ? (
+                            <div className="flex items-center gap-2">
+                                <input
+                                    type="url"
+                                    value={urlInput}
+                                    onChange={e => setUrlInput(e.target.value)}
+                                    placeholder="https://..."
+                                    className="bg-white/5 border-2 border-white/5 rounded-lg px-2 py-1 focus:outline-none"
+                                    autoFocus
+                                />
                                 <button
                                     type="button"
-                                    onClick={() => setShowUrlInput(true)}
-                                    className="flex items-center gap-2 px-4 py-2 rounded-full font-bold border-2 border-dashed border-gray-300 hover:border-black hover:bg-gray-50 transition-all text-gray-500 hover:text-black"
+                                    onClick={addBannerUrl}
+                                    className="bg-white hover:bg-white/90 text-black px-3 py-1 rounded-lg font-bold text-sm"
                                 >
-                                    <LinkIcon size={18} /> Add URL
+                                    Add
                                 </button>
-                            )}
-                        </div>
+                                <button
+                                    type="button"
+                                    onClick={() => setShowUrlInput(false)}
+                                    className="text-gray-500 hover:text-red-500"
+                                >
+                                    <X size={18} />
+                                </button>
+                            </div>
+                        ) : (
+                            <button
+                                type="button"
+                                onClick={() => setShowUrlInput(true)}
+                                className="flex items-center gap-2 px-4 py-2 rounded-full font-bold bg-white/5 hover:bg-white/90 text-white/70 hover:text-black transition-colors cursor-pointer"
+                            >
+                                <LinkIcon size={18} /> Add URL
+                            </button>
+                        )}
                     </div>
                 </div >
 
-                <div className='col-span-1 md:col-span-2 space-y-4 bg-[#EEEFEB] p-8 rounded-4xl border-y border-black'>
-                    <label className="block font-bold mb-2 uppercase">Categories</label>
-                    <div className="flex flex-col gap-6 max-h-full overflow-y-auto p-1">
+                <div className='h-px mx-4 md:mx-8 bg-white/10'/>
+
+                <div className='space-y-4 p-4 md:p-8'>
+                    <label className="block font-bold mb-4 uppercase">Categories</label>
+                    <div className="flex flex-col gap-6 max-h-full overflow-y-auto">
                         {CATEGORIES.map((group, groupIndex) => (
                             <div key={groupIndex} className="flex flex-col gap-3">
-                                <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest px-1">
+                                <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-widest px-1">
                                     {group.group}
                                 </h3>
                                 <div className="flex gap-2 flex-wrap">
@@ -690,10 +720,10 @@ const Upload = () => {
                                             type="button"
                                             onClick={() => handleTagChange(cat.id)}
                                             className={`
-                                                px-3 py-1.5 font-bold rounded-full border-2 text-sm transition-all duration-200
+                                                px-2 md:px-3 py-1 md:py-1.5 font-mono font-bold rounded-full border-2 text-sm transition-all duration-200
                                                 ${formData.tags.includes(cat.id)
-                                                    ? "bg-black text-white border-black shadow-md"
-                                                    : "bg-[#EEEFEB] text-gray-500 border-gray-200 hover:border-black hover:text-black hover:-translate-y-0.5"
+                                                    ? "bg-white text-black border-white shadow-md"
+                                                    : " text-gray-500 border-white/5 hover:border-white hover:bg-white hover:text-black hover:-translate-y-0.5"
                                                 }
                                             `}
                                         >
@@ -706,13 +736,19 @@ const Upload = () => {
                     </div>
                 </div>
 
-                <button
-                    type="submit"
-                    disabled={loading}
-                    className="col-span-1 md:col-span-2 w-full bg-[#EEEFEB] text-black py-4 rounded-4xl font-black uppercase tracking-wider hover:bg-[#FF6B00] hover:border-black border-r border-t border-y border-black transition-all flex justify-center items-center gap-2"
-                >
-                    {loading ? 'Uploading...' : 'Submit Font'}
-                </button>
+                <div className='h-px mx-4 md:mx-8 bg-white/10'/>
+
+                <div className='p-4 -mt-4'>
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className="col-span-1 md:col-span-2 w-full  text-black py-4 rounded-4xl font-black uppercase tracking-wider bg-[#BDF522] hover:bg-[#FF6B00] transition-all flex justify-center items-center gap-2"
+                    >
+                        {loading ? 'Uploading...' : 'Submit Font'}
+                    </button>
+                </div>
+
+
             </form>
             {/* Admin Tools Section */}
             {profile?.role === 'admin' && (
