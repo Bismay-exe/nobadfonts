@@ -495,7 +495,7 @@ const Upload = () => {
                     </div>
                 </div>
 
-                <div className='h-px mx-4 md:mx-8 bg-white/10'/>
+                <div className='h-px mx-4 md:mx-8 bg-white/10' />
 
                 {/* Variants Section */}
                 <div className="col-span-1 md:col-span-2 p-4 md:p-8">
@@ -520,7 +520,7 @@ const Upload = () => {
                                         ) : (
                                             <Select
                                                 value={variant.name}
-                                                onValueChange={(value) => updateVariantName(variant.id, value)}
+                                                onValueChange={(value: string) => updateVariantName(variant.id, value)}
                                             >
                                                 <SelectTrigger className="border-2 border-white/5 rounded-lg px-4 py-2 font-bold bg-white/5 h-auto">
                                                     <SelectValue placeholder="Select variant" />
@@ -615,7 +615,7 @@ const Upload = () => {
                     </div>
                 </div>
 
-                <div className='h-px mx-4 md:mx-8 bg-white/10'/>
+                <div className='h-px mx-4 md:mx-8 bg-white/10' />
 
 
                 {/* Banner Image Section */}
@@ -703,7 +703,7 @@ const Upload = () => {
                     </div>
                 </div >
 
-                <div className='h-px mx-4 md:mx-8 bg-white/10'/>
+                <div className='h-px mx-4 md:mx-8 bg-white/10' />
 
                 <div className='space-y-4 p-4 md:p-8'>
                     <label className="block font-bold mb-4 uppercase">Categories</label>
@@ -736,7 +736,7 @@ const Upload = () => {
                     </div>
                 </div>
 
-                <div className='h-px mx-4 md:mx-8 bg-white/10'/>
+                <div className='h-px mx-4 md:mx-8 bg-white/10' />
 
                 <div className='p-4 -mt-4'>
                     <button
