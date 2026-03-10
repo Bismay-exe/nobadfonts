@@ -3,6 +3,7 @@ import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import type { Database } from '../types/database.types';
+import { ArrowUpRight } from 'lucide-react';
 
 type Profile = Database['public']['Tables']['profiles']['Row'] & {
     font_count?: number;
@@ -128,7 +129,7 @@ export default function Members() {
                     </div>
                 </div>
 
-                <h2 className="text-xl font-bold text-center mb-1 group-hover:text-[#7B46F8] transition-colors line-clamp-1">
+                <h2 className="text-xl font-bold text-center mb-1 text-[#7B46F8] transition-colors line-clamp-1">
                     {member.full_name}
                 </h2>
 
@@ -180,7 +181,7 @@ export default function Members() {
 
     return (
         <div className="mx-auto">
-            <div className='bg-[#fff8da] rounded-4xl p-2 md:p-6 border-y-2 border-black'>
+            <div className='p-2 md:p-6 border-b-2 border-white/10'>
 
                 {/* Top 3 Section */}
                 {topMembers.length > 0 && (
@@ -203,18 +204,18 @@ export default function Members() {
             {/* Other Members Section */}
             {otherMembers.length > 0 && (
                 <div>
-                    <div className="bg-[#EEEFEB] border-b-2 border-black rounded-4xl overflow-hidden">
+                    <div className="overflow-hidden">
                         <table className="w-full text-left border-collapse">
-                            <tbody className="divide-y-2 divide-gray-100">
+                            <tbody className="divide-y-2 divide-white/10">
                                 {otherMembers.map((member, index) => (
-                                    <tr key={member.id} className="hover:bg-gray-50 transition-colors">
+                                    <tr key={member.id}>
                                         <td className="hidden p-4 w-16 text-center font-black text-gray-400 text-xl font-mono">
                                             #{index + 4}
                                         </td>
                                         <td className="p-4">
                                             <div className="relative flex items-center gap-4">
                                                 <Link to={`/members/${member.username || member.id}`} className="w-12 h-12 relative">
-                                                    <div className="w-12 h-12 bg-gray-200 rounded-full border-2 border-black overflow-hidden shrink-0">
+                                                    <div className="w-14 h-14 bg-gray-200 rounded-full border-2 border-black overflow-hidden shrink-0">
                                                         {member.avatar_url ? (
                                                             <img src={member.avatar_url} alt={member.full_name} className="w-full h-full object-cover" />
                                                         ) : (
@@ -244,9 +245,9 @@ export default function Members() {
                                         <td className="hidden md:block p-4 text-right">
                                             <Link
                                                 to={`/members/${member.username || member.id}`}
-                                                className="inline-block px-6 py-3 bg-black text-white font-bold rounded-full hover:bg-gray-800 transition-colors"
+                                                className="inline-flex gap-2 items-center px-6 py-3 border-2 border-white/10 text-white hover:text-black/80 font-bold rounded-full hover:bg-white transition-colors"
                                             >
-                                                View Profile
+                                                View Profile <ArrowUpRight size={22} />
                                             </Link>
                                         </td>
                                     </tr>

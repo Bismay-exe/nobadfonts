@@ -1,4 +1,4 @@
-import { useState, useEffect, useLayoutEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useLayoutEffect, useCallback, useRef, useMemo } from 'react';
 import { useSearchParams, useLocation } from 'react-router-dom';
 import { scrollPositions } from '../components/layout/ScrollRestoration';
 import { useViewMode } from '../hooks/useViewMode';
@@ -33,6 +33,9 @@ export default function FontsCatalog() {
     const [viewMode, setViewMode] = useViewMode();
     const [expandedFontId, setExpandedFontId] = useState<string | null>(null);
     const [globalExpanded, setGlobalExpanded] = useState(true);
+    const [bulkToggleVersion, setBulkToggleVersion] = useState(0);
+    const [isBulkToggling, setIsBulkToggling] = useState(false);
+    const bulkToggleTimeoutRef = useRef<any>(null);
     const [customText, setCustomText] = useState('');
 
     const { fonts, loading, loadingMore, error, hasMore, loadMore } = useFonts(filters);
@@ -65,8 +68,10 @@ export default function FontsCatalog() {
     }, [filters, setSearchParams]);
 
     // Restore scroll position when fonts are loaded
+    const restoredRef = useRef(false);
+
     useLayoutEffect(() => {
-        if (!loading && fonts.length > 0) {
+        if (!loading && fonts.length > 0 && !restoredRef.current) {
             const savedPosition = scrollPositions.get((location as any).key);
             if (savedPosition !== undefined) {
                 // Small timeout to ensure DOM is fully painted
@@ -74,27 +79,50 @@ export default function FontsCatalog() {
                     window.scrollTo(0, savedPosition);
                 }, 0);
             }
+            restoredRef.current = true;
         }
     }, [loading, fonts.length, (location as any).key]);
+
+    // Reset restoredRef on location change
+    useEffect(() => {
+        restoredRef.current = false;
+    }, [(location as any).key]);
 
     // Derived State for FontCard
     const getCardProps = (fontId: string) => {
         if (globalExpanded) {
             // Global Expand ON: All expanded, no toggle
             return {
-                isExpanded: true,
-                onToggle: undefined
+                isExpanded: expandedFontId === fontId,
+                onToggle: () => setExpandedFontId(expandedFontId === fontId ? null : fontId)
             };
         } else {
             // Global Expand OFF: Accordion behavior (Mobile-like)
             return {
-                isExpanded: expandedFontId === fontId,
-                onToggle: () => setExpandedFontId(expandedFontId === fontId ? null : fontId)
+                isExpanded: true,
+                onToggle: undefined
             };
         }
     };
 
     const { width } = useWindowSize();
+
+    const items = useMemo(() => {
+        return fonts
+            .filter(f => f && f.id)
+            .map(f => {
+                const cardProps = getCardProps(f.id)
+
+                return {
+                    ...f,
+                    viewMode,
+                    customText,
+                    isExpanded: cardProps.isExpanded,
+                    onToggle: cardProps.onToggle,
+                    bulkToggleVersion
+                }
+            })
+    }, [fonts, viewMode, customText, expandedFontId, globalExpanded])
 
     const columns =
         width > 1280 ? 4 :
@@ -113,7 +141,7 @@ export default function FontsCatalog() {
             <div className="relative pt-6 pb-32 w-full">
                 {/* Header */}
                 <div className="mb-8 text-center">
-                    <h1 className="text-4xl md:text-6xl font-bold tracking-tighter text-white mb-4">Catalog</h1>
+                    <h1 className="text-4xl md:text-6xl font-bold tracking-tighter text-white/85 mb-4">Catalog</h1>
                     <p className="text-zinc-500 max-w-xl mx-auto">
                         Discover the perfect typeface for your next project from our extensive collection of premium fonts.
                     </p>
@@ -130,6 +158,10 @@ export default function FontsCatalog() {
                         allExpanded={globalExpanded}
                         onToggleAll={() => {
                             setGlobalExpanded(!globalExpanded);
+                            setBulkToggleVersion(v => v + 1);
+                            setIsBulkToggling(true);
+                            if (bulkToggleTimeoutRef.current) clearTimeout(bulkToggleTimeoutRef.current);
+                            bulkToggleTimeoutRef.current = setTimeout(() => setIsBulkToggling(false), 450);
                             setExpandedFontId(null); // Clear individual selections when toggling all
                         }}
                         customText={customText}
@@ -157,21 +189,14 @@ export default function FontsCatalog() {
                         </div>
                     ) : fonts.length > 0 ? (
                         <>
-                            <Masonry
-                                items={fonts.filter(f => f && f.id).map(f => {
-                                    const cardProps = getCardProps(f.id);
-                                    return {
-                                        ...f,
-                                        viewMode,
-                                        customText,
-                                        isExpanded: cardProps.isExpanded,
-                                        onToggle: cardProps.onToggle
-                                    };
-                                })}
-                                columnCount={columns}
-                                columnGutter={24}
-                                render={MasonryCard}
-                            />
+                            <div className={`masonic-grid ${isBulkToggling ? 'is-bulk-toggling' : ''}`}>
+                                <Masonry
+                                    items={items}
+                                    columnCount={columns}
+                                    columnGutter={24}
+                                    render={MasonryCard}
+                                />
+                            </div>
                             {/* Invisible div that triggers intersection observer when user scrolls near the bottom */}
                             <div ref={bottomRef} className="h-1 w-full" />
                         </>

@@ -1,7 +1,7 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { ArrowUpRight, Heart } from 'lucide-react';
 import type { Font } from '../../types/font';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import { motion } from 'framer-motion';
@@ -15,13 +15,98 @@ interface FontCardProps {
     onToggle?: () => void;
     customText?: string;
     hideLike?: boolean;
+    bulkToggleVersion?: number;
 }
 
-export default function FontCard({ font, viewMode = 'font', onClick, disableLink = false, isExpanded: propIsExpanded, onToggle, customText, hideLike = false }: FontCardProps) {
+const AutoSizingText = ({
+    text,
+    fontId,
+    isLoaded,
+}: {
+    text: string
+    fontId: string
+    isLoaded: boolean
+}) => {
+
+    const containerRef = useRef<HTMLDivElement>(null)
+    const textRef = useRef<HTMLDivElement>(null)
+    const canvasRef = useRef<HTMLCanvasElement | null>(null)
+
+    if (!canvasRef.current && typeof document !== "undefined") {
+        canvasRef.current = document.createElement("canvas")
+    }
+
+    const calculateFontSize = useCallback(() => {
+
+        const container = containerRef.current
+        const textEl = textRef.current
+        const canvas = canvasRef.current
+
+        if (!container || !textEl || !canvas || !isLoaded) return
+
+        const rect = container.getBoundingClientRect()
+
+        const width = rect.width - 40
+        const height = rect.height - 40
+
+        if (width <= 0 || height <= 0) return
+
+        const ctx = canvas.getContext("2d")
+        if (!ctx) return
+
+        const base = 100
+
+        ctx.font = `${base}px font-${fontId}, sans-serif`
+
+        const words = text.split(/\s+/)
+
+        let longest = 0
+
+        for (const word of words) {
+            const w = ctx.measureText(word).width
+            if (w > longest) longest = w
+        }
+
+        if (!longest) return
+
+        const ratio = width / longest
+
+        const fontSize = Math.floor(base * ratio * 0.95)
+
+        textEl.style.fontSize = `${fontSize}px`
+
+    }, [text, fontId, isLoaded])
+
+    useEffect(() => {
+        calculateFontSize()
+    }, [calculateFontSize])
+
+
+    return (
+        <div ref={containerRef} className="w-full relative flex items-center justify-center transition-all duration-300 px-5 pt-8 pb-6 min-h-50">
+            <div
+                ref={textRef}
+                className="max-w-full text-card-foreground/80 group-hover:text-card-foreground/90 text-center leading-[1.2] transition-opacity duration-300 m-0 flex flex-col items-center justify-center p-2"
+                style={{
+                    fontFamily: isLoaded ? `'font-${fontId}'` : 'sans-serif',
+                    opacity: isLoaded ? 1 : 0
+                }}
+            >
+                {text.split(/\s+/).map((word, i) => (
+                    <span key={i} className="block whitespace-nowrap">{word}</span>
+                ))}
+            </div>
+        </div>
+    );
+};
+
+const loadedFontsCache = new Set<string>();
+
+function FontCard({ font, viewMode = 'font', onClick, disableLink = false, isExpanded: propIsExpanded, onToggle, customText, hideLike = false }: FontCardProps) {
     const { user } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
-    const [isFontLoaded, setIsFontLoaded] = useState(false);
+    const [isFontLoaded, setIsFontLoaded] = useState(() => font ? loadedFontsCache.has(font.id) : false);
     const [isFavorited, setIsFavorited] = useState(false);
     const [localIsExpanded, setLocalIsExpanded] = useState(false);
     const [favoritesCount, setFavoritesCount] = useState(font?.favorites_count || 0);
@@ -90,6 +175,7 @@ export default function FontCard({ font, viewMode = 'font', onClick, disableLink
 
         fontFace.load().then((loadedFace) => {
             document.fonts.add(loadedFace);
+            loadedFontsCache.add(font.id);
             setIsFontLoaded(true);
         }).catch((err) => {
             console.error(`Failed to load font ${font.name}:`, err);
@@ -167,7 +253,7 @@ export default function FontCard({ font, viewMode = 'font', onClick, disableLink
             initial={{ opacity: 1, scale: 1, y: 0 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ duration: 0.3 }}
-            className="group relative -mb-2 sm:mb-0 rounded-4xl border border-white/15 transition-colors overflow-hidden flex flex-col bg-card"
+            className="group relative -mb-2 sm:mb-0 bg-white/5 rounded-3xl border border-white/15 transition-colors overflow-hidden flex flex-col"
             onClick={handleCardClick}
         >
             <div className="flex flex-col h-full relative cursor-pointer">
@@ -177,93 +263,97 @@ export default function FontCard({ font, viewMode = 'font', onClick, disableLink
                     Masonry usually expects items to define height.
                     Let's use a min-height for the preview part.
                 */}
-                <div className={`w-full relative flex items-center justify-center overflow-hidden transition-all duration-300`}>
+                <>
                     {viewMode === 'image' && (font.preview_image_url || (font.gallery_images && font.gallery_images.length > 0)) ? (
-                        <div className={`w-full h-full flex items-center justify-center transition-all duration-300 ease-in-out
-                        ${isExpanded ? 'p-3' : 'p-0'}`}>
-                            <img
-                                src={font.preview_image_url || font.gallery_images?.[0]}
-                                alt={font.name}
-                                className="w-full h-full object-cover rounded-3xl shadow-[0_0_10px_0_rgba(0,0,0,0.3)]"
-                            />
+                        <div className="w-full relative flex items-center justify-center overflow-hidden transition-all duration-300 min-h-50">
+                            <div className={`w-full h-full flex items-center justify-center transition-all duration-300 ease-in-out
+                            ${isExpanded ? 'p-3' : 'p-0'}`}>
+                                <img
+                                    src={font.preview_image_url || font.gallery_images?.[0]}
+                                    alt={font.name}
+                                    className="w-full h-full object-cover rounded-3xl shadow-[0_0_10px_0_rgba(0,0,0,0.3)]"
+                                />
+                            </div>
                         </div>
                     ) : (
-                        <p
-                            className="px-6 py-10 text-8xl md:text-8xl text-card-foreground/90 text-center wrap-break-word w-full"
-                            style={{
-                                fontFamily: isFontLoaded ? `'font-${font.id}'` : 'sans-serif',
-                                opacity: isFontLoaded ? 1 : 0
-                            }}
-                        >
-                            {customText || font.name}
-                        </p>
+                        <AutoSizingText text={customText || font.name} fontId={font.id} isLoaded={isFontLoaded} />
                     )}
-                </div>
+                </>
 
                 {/* Expanded Content Section */}
-                <motion.div
-                    initial={false}
-                    animate={{
-                        height: isExpanded ? 'auto' : 0,
-                        opacity: isExpanded ? 1 : 0
+                <div
+                    style={{
+                        height: isExpanded ? "auto" : 0,
+                        overflow: "hidden"
                     }}
-                    transition={{ duration: 0.3, ease: 'easeOut' }}
-                    className="bg-linear-to-t from-black to-black/0 w-full overflow-hidden"
                 >
-                    <div className="px-4 pb-4 pt-2 flex flex-col gap-3">
-                        {/* Top Row: Likes & View Button */}
-                        <div className="flex items-center justify-between w-full">
-                            {/* Likes */}
-                            {!hideLike ? (
-                                <button
-                                    onClick={toggleFavorite}
-                                    className="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors group/like"
-                                >
-                                    <Heart
-                                        size={22}
-                                        className={`transition-transform duration-300 ${isFavorited ? 'fill-pink-500 text-pink-500' : 'group-hover/like:scale-105'}`}
-                                    />
-                                    <span className="font-bold text-[16px]">{favoritesCount}</span>
-                                </button>
-                            ) : <div></div>}
+                    <motion.div
+                        initial={false}
+                        animate={{
+                            opacity: isExpanded ? 1 : 0,
+                            y: isExpanded ? 0 : -10
+                        }}
+                        transition={{ duration: 0.25 }}
+                    >
+                        <div className="overflow-hidden">
+                            <div className="bg-linear-to-t from-black to-black/0 w-full">
+                                <div className="px-4 pb-4 pt-2 flex flex-col gap-3">
+                                    {/* Top Row: Likes & View Button */}
+                                    <div className="flex items-center justify-between w-full">
+                                        {/* Likes */}
+                                        {!hideLike ? (
+                                            <button
+                                                onClick={toggleFavorite}
+                                                className="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors group/like"
+                                            >
+                                                <Heart
+                                                    size={22}
+                                                    className={`transition-transform duration-300 ${isFavorited ? 'fill-pink-500 text-pink-500' : 'group-hover/like:scale-105'}`}
+                                                />
+                                                <span className="font-bold text-[16px]">{favoritesCount}</span>
+                                            </button>
+                                        ) : <div></div>}
 
-                            {/* View Font Button */}
-                            <Link
-                                to={`/fonts/${font.slug || font.id}`}
-                                onClick={(e) => e.stopPropagation()}
-                                className="bg-white text-black text-xs px-4 py-2 rounded-full font-bold font-bricolage-grotesque hover:bg-zinc-300 transition-colors"
-                            >
-                                View Details
-                            </Link>
-                        </div>
+                                        {/* View Font Button */}
+                                        <Link
+                                            to={`/fonts/${font.slug || font.id}`}
+                                            onClick={(e) => e.stopPropagation()}
+                                            className="bg-white text-black text-xs px-4 py-2 rounded-full font-bold font-bricolage-grotesque hover:bg-zinc-300 transition-colors"
+                                        >
+                                            View Details
+                                        </Link>
+                                    </div>
 
-                        <div className="w-full h-full">
-                            <p className="text-2xl font-bold tracking-tight mb-0.5">{font.name}</p>
-                            <p className="text-sm text-zinc-500 tracking-wide">
-                                by <Link
-                                    to={`/designers/${encodeURIComponent(font.designer || '')}`}
-                                    state={{ from: location }}
-                                    onClick={(e) => e.stopPropagation()}
-                                    className="hover:text-white hover:underline transition-colors"
-                                >
-                                    {font.designer}
-                                </Link>
-                            </p>
-                        </div>
+                                    <div className="w-full h-full">
+                                        <p className="text-2xl font-bold tracking-tight mb-0.5">{font.name}</p>
+                                        <p className="text-sm text-zinc-500 tracking-wide">
+                                            by <Link
+                                                to={`/designers/${encodeURIComponent(font.designer || '')}`}
+                                                state={{ from: location }}
+                                                onClick={(e) => e.stopPropagation()}
+                                                className="hover:text-white hover:underline transition-colors"
+                                            >
+                                                {font.designer}
+                                            </Link>
+                                        </p>
+                                    </div>
 
-                        {/* Bottom Row: Tags */}
-                        <div className="flex flex-wrap gap-1.5 mt-1">
-                            {displayTags.map((tag, i) => (
-                                <Link
-                                    key={i}
-                                    to={`/fonts?categories=${tag}`}
-                                    className="bg-white/5 border border-white/5 text-[#7b7b88] hover:bg-[#ffffff] hover:text-[#000000] text-[10px] md:text-[11px] px-2.5 py-1 rounded-full tracking-wider font-medium font-bricolage-grotesque uppercase">
-                                    {tag}
-                                </Link>
-                            ))}
+                                    {/* Bottom Row: Tags */}
+                                    <div className="flex flex-wrap gap-1.5 mt-1">
+                                        {displayTags.map((tag, i) => (
+                                            <Link
+                                                key={i}
+                                                to={`/fonts?categories=${tag}`}
+                                                className="bg-white/5 border border-white/5 text-white/60 hover:bg-white/90 hover:text-[#000000] text-[10px] md:text-[11px] px-2.5 py-1 rounded-full tracking-wider font-medium font-bricolage-grotesque uppercase">
+                                                {tag}
+                                            </Link>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </motion.div>
+                    </motion.div>
+                </div>
             </div>
 
             {/* Hover overlay gradient for collapsed state */}
@@ -309,3 +399,5 @@ export default function FontCard({ font, viewMode = 'font', onClick, disableLink
         </motion.div>
     );
 }
+
+export default React.memo(FontCard)

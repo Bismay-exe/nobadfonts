@@ -96,6 +96,7 @@
 
   body {
     @apply bg-background text-foreground antialiased;
+    @apply font-bricolage-grotesque;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
@@ -285,4 +286,15 @@ body,
 
 .animate-spin-slow {
   animation: spin 8s linear infinite;
+}
+
+/* Enable smooth positioning transitions inside Masonic grid for bulk expand/collapse */
+.masonic-grid.is-bulk-toggling [role="gridcell"],
+.masonic-grid.is-bulk-toggling > div > div {
+  transition: transform 0.3s cubic-bezier(0.2, 0, 0, 1), 
+              top 0.3s cubic-bezier(0.2, 0, 0, 1), 
+              left 0.3s cubic-bezier(0.2, 0, 0, 1) !important;
+  will-change: transform, top, left, height;
+  backface-visibility: hidden;
+  transform: translateZ(0); 
 }
