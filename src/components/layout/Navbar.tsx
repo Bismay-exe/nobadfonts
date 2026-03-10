@@ -125,7 +125,7 @@ export default function Navbar() {
 
             {/* Mobile Bottom Dock */}
             <div className="md:hidden fixed bottom-0 left-1/2 -translate-x-1/2 z-100">
-                <nav className="flex items-center justify-evenly w-screen py-2.5 bg-black/60 backdrop-blur-3xl border border-white/10 shadow-2xl shadow-black/50">
+                <nav className="flex items-center justify-evenly w-screen py-2.5 bg-black/60 backdrop-blur-3xl border-t-2 border-white/10 shadow-2xl shadow-black/50">
                     {navLinks.map((link) => {
                         const Icon = link.icon;
                         const isActive = location.pathname === link.path;
