@@ -8,7 +8,7 @@ export default function Layout() {
         <div className="flex flex-col min-h-screen px-4 md:px-8 bg-black text-foreground antialiased selection:bg-white selection:text-black overflow-x-hidden">
 
             {/* Global background noise or effects can go here */}
-            <div className="fixed inset-0 bg-[url('/noise.png')] opacity-[0.03] pointer-events-none mix-blend-overlay z-[60]" />
+            <div className="fixed inset-0 xbg-[url('/noise.png')] opacity-[0.03] pointer-events-none mix-blend-overlay z-[60]" />
 
             <Navbar />
             <main className="grow pt-24 pb-34 max-w-480 mx-auto w-full relative">

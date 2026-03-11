@@ -4,7 +4,7 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import FontCard from '../components/fonts/FontCard';
 import type { Database } from '../types/database.types';
-import { ArrowLeft, Type, Image as ImageIcon, Globe, Twitter, Instagram, Linkedin, Coffee, Palette } from 'lucide-react';
+import { ArrowLeft, Image as Globe, Twitter, Instagram, Linkedin, Coffee, Palette } from 'lucide-react';
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
 type Font = Database['public']['Tables']['fonts']['Row'];
@@ -15,7 +15,6 @@ export default function MemberDetails() {
     const [profile, setProfile] = useState<Profile | null>(null);
     const [fonts, setFonts] = useState<Font[]>([]);
     const [loading, setLoading] = useState(true);
-    const [viewMode, setViewMode] = useState<'font' | 'image'>('font');
     const [isExpanded, setIsExpanded] = useState(false);
 
     useEffect(() => {
@@ -111,16 +110,13 @@ export default function MemberDetails() {
 
     return (
         <div className="mx-auto">
-
-
             {/* Header Profile Section */}
-            <div className={`border-b border-black rounded-4xl px-8 pt-24 pb-8 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden ${profile.role === 'admin' ? 'bg-[#BDF522]' : 'bg-[#FF90E8]'}`}>
-                <button onClick={goBack} className="absolute top-8 left-8 flex items-center text-sm font-bold hover:text-gray-600 mb-8 transition-colors">
+            <div className="border-b border-black rounded-4xl md:px-8 pt-24 pb-8 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden">
+                <button onClick={goBack} className="absolute top-8 left-2 md:left-4 flex items-center text-sm font-bold hover:text-gray-600 mb-8 transition-colors">
                     <ArrowLeft size={20} className="mr-2" />
                     Back to Members
                 </button>
-                <div className="absolute top-0 right-0 w-32 h-32 bg-[#BDF522] rounded-full blur-[60px] opacity-50 -mr-10 -mt-10 pointer-events-none"></div>
-                <div className="w-32 h-32 bg-gray-100 rounded-full border-2 border-black overflow-hidden shrink-0 z-10">
+                <div className="w-48 h-48 bg-gray-100 rounded-full border-2 border-black overflow-hidden shrink-0 z-10">
                     {profile.avatar_url ? (
                         <img src={profile.avatar_url} alt={profile.full_name} className="w-full h-full object-cover" />
                     ) : (
@@ -206,46 +202,13 @@ export default function MemberDetails() {
                 </div>
             </div>
 
-
-
-            {/* Fonts Header with Toggle */}
-            <div className={`flex justify-between items-center px-8 py-4 text-black rounded-4xl border-black border-y ${profile.role === 'admin' ? 'bg-[#ffbaf1]' : 'bg-[#BDF522]'}
-                        `}>
-                <h2 className="text-3xl font-black uppercase flex flex-col items-start">
-                    Uploaded Fonts
-                    <span className="text-gray-500 font-mono text-sm font-normal">Total {fonts.length} Font{fonts.length !== 1 ? 's' : ''}</span>
-                </h2>
-                <div className="flex bg-gray-100 p-1 rounded-full border border-gray-200">
-                    <button
-                        onClick={() => setViewMode('font')}
-                        className={`p-2 rounded-full transition-all ${viewMode === 'font'
-                            ? 'bg-black text-white shadow-sm'
-                            : 'text-gray-500 hover:text-black'
-                            }`}
-                        title="Font View"
-                    >
-                        <Type size={16} />
-                    </button>
-                    <button
-                        onClick={() => setViewMode('image')}
-                        className={`p-2 rounded-full transition-all ${viewMode === 'image'
-                            ? 'bg-black text-white shadow-sm'
-                            : 'text-gray-500 hover:text-black'
-                            }`}
-                        title="Image View"
-                    >
-                        <ImageIcon size={16} />
-                    </button>
-                </div>
-            </div>
-
             <div className="gap-0"
                 style={{
                     columnWidth: 'clamp(220px, 20vw, 320px)',
                 }}>
                 {fonts.map(font => (
                     <div key={font.id} className="mb-4 break-inside-avoid">
-                        <FontCard font={font} viewMode={viewMode} />
+                        <FontCard font={font} />
                     </div>
                 ))}
             </div>

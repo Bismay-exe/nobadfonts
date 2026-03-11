@@ -92,7 +92,7 @@ export default function Profile() {
 
             {/* Membership Status Section */}
             {!isEditing && profile?.role === 'user' && (
-                <div className="bg-[#EEEFEB] border-y border-black rounded-4xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
+                <div className="bg-white/10 border border-white/10 rounded-4xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
                     <div>
                         <h3 className="text-xl font-black uppercase">Become a Contributor</h3>
                         <p className="text-gray-600 font-medium">

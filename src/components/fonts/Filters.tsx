@@ -345,10 +345,10 @@ export default function Filters({ filters, onChange, viewMode, onViewModeChange,
 
             {/* 3. Categories Panel */}
             {isCategoriesOpen && (
-                <div className="grid grid-cols-2 md:flex md:flex-row gap-6 max-h-[80vh] overflow-y-auto rounded-4xl bg-black/50 backdrop-blur-2xl p-4 lg:p-6 mb-5 border border-white/30">
+                <div className="grid grid-cols-2 md:flex md:flex-row gap-6 max-h-[67vh] overflow-y-auto rounded-4xl bg-black/50 backdrop-blur-2xl p-4 lg:p-6 mb-5 border border-white/20">
                     {CATEGORIES.map((group, groupIndex) => (
                         <div key={groupIndex} className="flex flex-col gap-2 md:gap-3">
-                            <h3 className="text-xs md:text-md font-black text-white uppercase px-1 cursor-default">
+                            <h3 className="text-xs md:text-md font-black text-white/85 uppercase px-1 cursor-default">
                                 {group.group}
                             </h3>
                             <div className="flex gap-1 md:gap-2 flex-wrap">
