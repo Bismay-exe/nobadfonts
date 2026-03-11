@@ -253,7 +253,7 @@ function FontCard({ font, viewMode = 'font', onClick, disableLink = false, isExp
             initial={{ opacity: 1, scale: 1, y: 0 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ duration: 0.3 }}
-            className="group relative -mb-2 sm:mb-0 bg-white/5 rounded-3xl border border-white/15 transition-colors overflow-hidden flex flex-col"
+            className="group relative -mb-2 sm:mb-0 bg-white/5 rounded-4xl border border-white/15 transition-colors overflow-hidden flex flex-col"
             onClick={handleCardClick}
         >
             <div className="flex flex-col h-full relative cursor-pointer">

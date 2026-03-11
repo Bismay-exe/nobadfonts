@@ -7,6 +7,10 @@
     {
       "source": "/font-file/:path*",
       "destination": "https://wcegdxhvgwbeskaidlxr.supabase.co/storage/v1/object/public/fonts/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ],
   "headers": [

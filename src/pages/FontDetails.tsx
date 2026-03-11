@@ -1,5 +1,5 @@
 import { useNavigate, useParams, Link } from 'react-router-dom';
-import { Download, Heart, Share2, Check, X, Link as LinkIcon, Image as ImageIcon, MoveLeft, MoveRight, Save, Trash2, Edit2, Upload, Plus, Type, Loader2, FileType, ArrowUp, ArrowDown } from 'lucide-react';
+import { Download, Heart, Share2, Check, X, Link as LinkIcon, Image as ImageIcon, MoveLeft, MoveRight, Save, Trash2, Edit2, Upload, Plus, Type, Loader2, FileType, ArrowUp, ArrowDown, ChevronDown } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { toPng } from 'html-to-image';
 import SocialShareCard from '../components/fonts/SocialShareCard';
@@ -39,6 +39,18 @@ export default function FontDetails() {
 
     const [variantPreviewText, setVariantPreviewText] = useState('');
     const [variantPreviewSize, setVariantPreviewSize] = useState(48);
+    const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+
+    // Close dropdown on outside click
+    useEffect(() => {
+        const handleClickOutside = () => {
+            if (activeDropdown) {
+                setActiveDropdown(null);
+            }
+        };
+        document.addEventListener('click', handleClickOutside);
+        return () => document.removeEventListener('click', handleClickOutside);
+    }, [activeDropdown]);
 
     // Admin Gallery Edit State
     const [isEditingGallery, setIsEditingGallery] = useState(false);
@@ -789,25 +801,31 @@ export default function FontDetails() {
 
         const index = currentSortedVariants.findIndex(v => v.id === variantId);
         if (index === -1) return;
-        
+
         const targetIndex = direction === 'up' ? index - 1 : index + 1;
         if (targetIndex < 0 || targetIndex >= currentSortedVariants.length) return;
 
-        const currentVar = currentSortedVariants[index];
-        const targetVar = currentSortedVariants[targetIndex];
+        // Create new array with swapped positions
+        const newOrder = [...currentSortedVariants];
+        const temp = newOrder[index];
+        newOrder[index] = newOrder[targetIndex];
+        newOrder[targetIndex] = temp;
 
-        // Swap created_at timestamps to reorder
-        const tempCreatedAt = currentVar.created_at;
-        currentVar.created_at = targetVar.created_at;
-        targetVar.created_at = tempCreatedAt;
+        // Apply explicit order_index to all
+        newOrder.forEach((v, i) => {
+            v.order_index = i;
+        });
 
         // Force UI re-render
         setReorderTrigger(prev => prev + 1);
 
-        // Update database
+        // Update database for all to guarantee full manual ordering
         try {
-            await supabase.from('font_variants').update({ created_at: currentVar.created_at }).eq('id', currentVar.id);
-            await supabase.from('font_variants').update({ created_at: targetVar.created_at }).eq('id', targetVar.id);
+            await Promise.all(
+                newOrder.map((v, i) =>
+                    supabase.from('font_variants').update({ order_index: i }).eq('id', v.id)
+                )
+            );
         } catch (error) {
             console.error("Failed to reorder variants", error);
         }
@@ -848,28 +866,30 @@ export default function FontDetails() {
             <motion.div
                 initial={{ y: -100 }}
                 animate={{ y: isScrolled ? 0 : -200 }}
-                className="fixed top-22 md:top-18 left-0 right-0 h-16 bg-black/50 backdrop-blur-3xl z-30 border-b border-white/10 flex items-center justify-between px-6 md:px-10"
+                className="fixed top-22 md:top-18 left-0 right-0 h-16 w-full bg-black/50 backdrop-blur-3xl z-30 border-b border-white/10 flex items-center justify-center px-6 md:px-10"
             >
-                <div className="flex flex-wrap items-center gap-0">
-                    <h2 className="text-xl font-bold text-white pr-2">{font.name}</h2>
-                    <span className="text-zinc-500">by {font.designer}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                    <button
-                        onClick={handleShare}
-                        disabled={shareLoading}
-                        className="p-2.5 rounded-full bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-all active:scale-95"
-                    >
-                        {shareLoading ? <Loader2 className="animate-spin" size={20} /> : <Share2 size={20} />}
-                    </button>
-                    <a
-                        href={font.woff2_url || "#"}
-                        onClick={() => downloadFont(font.woff2_url || "", `${font.name}.woff2`)}
-                        className="px-4 md:px-6 py-2.5 md:py-2.5 bg-white text-black rounded-full font-bold hover:bg-zinc-200 transition-colors flex items-center gap-2"
-                    >
-                        <Download size={18} />
-                        <span className="hidden md:inline">Download</span>
-                    </a>
+                <div className="max-w-480 w-full mx-auto flex items-center justify-between">
+                    <div className="flex flex-wrap items-center gap-0">
+                        <h2 className="text-xl font-bold text-white pr-2 leading-none">{font.name}</h2>
+                        <span className="text-zinc-500">by {font.designer}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={handleShare}
+                            disabled={shareLoading}
+                            className="p-2.5 rounded-full bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-all active:scale-95"
+                        >
+                            {shareLoading ? <Loader2 className="animate-spin" size={20} /> : <Share2 size={20} />}
+                        </button>
+                        <a
+                            href={font.woff2_url || "#"}
+                            onClick={() => downloadFont(font.woff2_url || "", `${font.name}.woff2`)}
+                            className="px-4 md:px-6 py-2.5 md:py-2.5 bg-white text-black rounded-full font-bold hover:bg-zinc-200 transition-colors flex items-center gap-2"
+                        >
+                            <Download size={18} />
+                            <span className="hidden md:inline">Download</span>
+                        </a>
+                    </div>
                 </div>
             </motion.div>
 
@@ -951,7 +971,7 @@ export default function FontDetails() {
                     {/* Tags & Metadata */}
                     <div className="flex flex-wrap gap-2 md:gap-4 justify-center">
                         {font.tags?.map(tag => (
-                            <Link key={tag} to={`/fonts?query=${tag}`} className="px-4 py-1.5 rounded-full border border-white/10 text-sm text-zinc-400 hover:text-white hover:bg-white/5 transition-colors uppercase tracking-wider">
+                            <Link key={tag} to={`/fonts?categories=${tag}`} className="px-4 py-1.5 rounded-full border border-white/10 text-sm text-zinc-400 hover:text-white hover:bg-white/5 transition-colors uppercase tracking-wider">
                                 {tag}
                             </Link>
                         ))}
@@ -1123,40 +1143,49 @@ export default function FontDetails() {
                         <h2 className="text-2xl font-bold uppercase tracking-widest text-zinc-500">Variant Previews</h2>
                         <div className="h-px bg-white/10 flex-1"></div>
                     </div>
-                    <div className="flex flex-col md:flex-row items-center justify-between gap-6 p-6 rounded-4xl border border-white/10 bg-white/5 hover:bg-white/10 transition-colors" >
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-6 p-6 rounded-4xl border border-white/10 bg-white/5" >
                         <input
                             type="text"
                             value={variantPreviewText}
                             onChange={(e) => setVariantPreviewText(e.target.value)}
                             placeholder="Type something to preview..."
-                            className="w-full md:w-1/2 text-xl bg-transparent border-b border-white/20 focus:border-[#BDF522] outline-none px-2 py-2 transition-colors placeholder:text-gray-500 text-white"
+                            className="w-full md:w-1/2 text-xl bg-transparent border-b border-white/20 focus:border-white/40 outline-none px-2 py-2 transition-colors placeholder:text-gray-500 text-white/85"
                         />
                         <div className="flex items-center gap-4 w-full md:w-auto bg-black/50 px-6 py-3 rounded-full border border-white/10 shadow-inner">
-                            <span className="text-xs font-bold uppercase text-gray-400 tracking-wider">Size</span>
+                            <span className="text-xs font-bold uppercase text-white/80 tracking-wider">Size</span>
                             <input
                                 type="range"
                                 min="16"
                                 max="150"
                                 value={variantPreviewSize}
                                 onChange={(e) => setVariantPreviewSize(Number(e.target.value))}
-                                className="w-full md:w-48 accent-[#BDF522] cursor-pointer"
+                                className="w-full md:w-48 accent-white cursor-pointer"
                             />
-                            <span className="font-mono text-sm w-12 text-right text-[#BDF522]">{variantPreviewSize}px</span>
+                            <span className="font-mono font-bold text-sm w-12 text-right text-white/80">{variantPreviewSize}px</span>
                         </div>
                     </div>
                     {/* Variants List */}
-                    <div className='rounded-4xl overflow-hidden border border-white/10'>
+                    <div className='overflow-hidden'>
                         {
                             (() => {
                                 // Reference reorderTrigger so it is considered used by the linter
                                 if (reorderTrigger < 0) return null;
-                                
+
                                 const variants = font.font_variants?.slice() || [];
                                 const isAllCustom = variants.every(v => !VARIANT_NAMES.includes(v.variant_name));
 
-                                const sortedVariants = isAllCustom
-                                    ? variants.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
-                                    : variants.sort((a, b) => {
+                                const sortedVariants = variants.sort((a, b) => {
+                                    // 1. Explicit manual order overrides everything
+                                    if (typeof a.order_index === 'number' && typeof b.order_index === 'number') {
+                                        return a.order_index - b.order_index;
+                                    }
+                                    if (typeof a.order_index === 'number') return -1;
+                                    if (typeof b.order_index === 'number') return 1;
+
+                                    // 2. Fallbacks for un-ordered variants
+                                    if (isAllCustom) {
+                                        return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+                                    } else {
                                         const getWeight = (name: string) => {
                                             const n = name.toLowerCase();
                                             if (n.includes('thin')) return 100;
@@ -1182,19 +1211,20 @@ export default function FontDetails() {
                                         if (isItalicA !== isItalicB) return isItalicA ? 1 : -1;
 
                                         return 0;
-                                    });
+                                    }
+                                });
 
                                 return sortedVariants.map((variant, index) => (
-                                    <div key={variant.id} className="p-8 xmt-4 xrounded-4xl last:border-none border-b border-white/10 bg-white/5 hover:bg-white/10 transition-all group">
+                                    <div key={variant.id} className="py-2 md:py-4 border-b md:border-b-2 border-white/10 transition-all group">
                                         <div className="flex justify-between items-center mb-6">
                                             <div className="flex items-center gap-3">
-                                                <span className="text-[12px] font-bold uppercase tracking-wider text-[#BDF522] bg-[#BDF522]/10 px-3 py-1.5 rounded-full border border-[#BDF522]/20">{variant.variant_name}</span>
-                                                {profile?.role === 'admin' && isAllCustom && (
-                                                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <span className="text-[10px] md:text-[12px] font-mono font-bold uppercase tracking-wider text-white/60 bg-white/5 px-3 py-1 rounded-full border border-white/5">{variant.variant_name}</span>
+                                                {profile?.role === 'admin' && (
+                                                    <div className="flex gap-1 opacity-100 group-hover:opacity-100 transition-opacity">
                                                         <button
                                                             onClick={() => handleMoveVariant(variant.id, 'up', sortedVariants)}
                                                             disabled={index === 0}
-                                                            className="p-1 bg-black/50 border border-white/20 rounded-md text-white hover:bg-[#BDF522] hover:text-black hover:border-[#BDF522] transition-colors disabled:opacity-30 disabled:hover:bg-black/50 disabled:hover:text-white"
+                                                            className="p-1 bg-white/5 border border-white/10 rounded-md text-white hover:bg-white/90 hover:text-black transition-colors disabled:opacity-30 disabled:hover:bg-white/50 disabled:hover:text-white"
                                                             title="Move Up"
                                                         >
                                                             <ArrowUp size={14} />
@@ -1202,7 +1232,7 @@ export default function FontDetails() {
                                                         <button
                                                             onClick={() => handleMoveVariant(variant.id, 'down', sortedVariants)}
                                                             disabled={index === sortedVariants.length - 1}
-                                                            className="p-1 bg-black/50 border border-white/20 rounded-md text-white hover:bg-[#BDF522] hover:text-black hover:border-[#BDF522] transition-colors disabled:opacity-30 disabled:hover:bg-black/50 disabled:hover:text-white"
+                                                            className="p-1 bg-white/5 border border-white/10 rounded-md text-white hover:bg-white/90 hover:text-black transition-colors disabled:opacity-30 disabled:hover:bg-black/50 disabled:hover:text-white"
                                                             title="Move Down"
                                                         >
                                                             <ArrowDown size={14} />
@@ -1210,23 +1240,63 @@ export default function FontDetails() {
                                                     </div>
                                                 )}
                                             </div>
-                                            <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                {(['ttf', 'otf', 'woff', 'woff2'] as const).map(format => {
-                                                    const url = variant[`${format}_url` as keyof typeof variant] as string;
-                                                    if (url) {
-                                                        return (
-                                                            <button
-                                                                key={format}
-                                                                onClick={() => downloadFont(url, `${font.name}-${variant.variant_name}.${format}`)}
-                                                                className="flex items-center gap-1.5 px-3 py-1.5 bg-black/50 border border-white/20 rounded-full text-[10px] font-bold uppercase hover:bg-[#BDF522] hover:text-black hover:border-[#BDF522] transition-colors cursor-pointer"
-                                                                title={`Download ${format.toUpperCase()}`}
-                                                            >
-                                                                <Download size={12} /> {format}
-                                                            </button>
-                                                        );
-                                                    }
-                                                    return null;
-                                                })}
+                                            <div className="relative group/dropdown">
+                                                {/* Desktop View: Row of buttons */}
+                                                <div className="hidden md:flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    {(['ttf', 'otf', 'woff', 'woff2'] as const).map(format => {
+                                                        const url = variant[`${format}_url` as keyof typeof variant] as string;
+                                                        if (url) {
+                                                            return (
+                                                                <button
+                                                                    key={format}
+                                                                    onClick={() => downloadFont(url, `${font.name}-${variant.variant_name}.${format}`)}
+                                                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-black/50 border border-white/20 rounded-full text-[10px] font-bold uppercase hover:bg-white/90 hover:text-black transition-colors cursor-pointer"
+                                                                    title={`Download ${format.toUpperCase()}`}
+                                                                >
+                                                                    <Download size={12} /> {format}
+                                                                </button>
+                                                            );
+                                                        }
+                                                        return null;
+                                                    })}
+                                                </div>
+
+                                                {/* Mobile View: Dropdown Button (Click based) */}
+                                                <div className="md:hidden">
+                                                    <button 
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            setActiveDropdown(activeDropdown === variant.id ? null : variant.id);
+                                                        }}
+                                                        className="flex items-center gap-1.5 px-3 py-1.5 bg-black/50 border border-white/20 rounded-full text-[10px] font-bold uppercase hover:bg-white/90 hover:text-black transition-colors"
+                                                    >
+                                                        <Download size={12} /> <ChevronDown size={12} className={`transition-transform duration-200 ${activeDropdown === variant.id ? 'rotate-180' : ''}`} />
+                                                    </button>
+                                                    
+                                                    {/* Dropdown Menu */}
+                                                    <div className={`absolute right-0 top-full mt-2 w-32 bg-white/5 backdrop-blur-2xl border border-white/10 divide-y divide-white/10 rounded-xl overflow-hidden transition-all shadow-xl z-20 flex flex-col origin-top-right transform ${activeDropdown === variant.id ? 'opacity-100 visible scale-100 pointer-events-auto' : 'opacity-0 invisible scale-95 pointer-events-none'}`}>
+                                                        {(['ttf', 'otf', 'woff', 'woff2'] as const).map(format => {
+                                                            const url = variant[`${format}_url` as keyof typeof variant] as string;
+                                                            if (url) {
+                                                                return (
+                                                                    <button
+                                                                        key={format}
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            downloadFont(url, `${font.name}-${variant.variant_name}.${format}`);
+                                                                            setActiveDropdown(null);
+                                                                        }}
+                                                                        className="flex items-center justify-between w-full px-4 py-3 text-xs font-bold uppercase text-white hover:bg-white/10 transition-colors text-left"
+                                                                    >
+                                                                        <span>{format}</span>
+                                                                        <Download size={14} className="opacity-50" />
+                                                                    </button>
+                                                                );
+                                                            }
+                                                            return null;
+                                                        })}
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                         <p
@@ -1256,7 +1326,7 @@ export default function FontDetails() {
 
                     <div className="grid lg:grid-cols-3 gap-6">
                         <div className="lg:col-span-2">
-                            <section className="bg-zinc-900 border border-white/5 rounded-[2.5rem] p-8 h-full">
+                            <section className="md:border-r border-white/10 p-2 md:p-4 h-full">
 
                                 {/* Header Tagline */}
                                 <h3 className="text-2xl font-bold mb-6 leading-tight text-white">

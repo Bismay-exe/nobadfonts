@@ -43,82 +43,84 @@ export default function Navbar() {
                         : "top-0 md:top-4 max-w-7xl md:rounded-3xl bg-transparent border-none py-2 md:py-4 px-4"
                 )}
             >
-                <div className="flex items-center justify-between pt-8 sm:pt-0">
-                    {/* Logo */}
-                    <Link to="/" className="flex items-center gap-2 group">
-                        <div className="w-10 h-10 bg-white/10 rounded-xl group-hover:bg-white/20 transition-colors backdrop-blur-sm border border-white/5">
-                            <img src={Logo} alt="" className='rounded-xl object-cover' />
-                        </div>
-                        <span className={cn(
-                            "font-advine text-3xl transition-opacity duration-300 hidden sm:block",
-                            isScrolled ? "text-white" : "text-white/90"
+                <div className="flex items-center pt-8 sm:pt-0">
+                    <div className="max-w-480 w-full mx-auto flex items-center justify-between">
+                        {/* Logo */}
+                        <Link to="/" className="flex items-center gap-2 group">
+                            <div className="w-10 h-10 bg-white/10 rounded-xl group-hover:bg-white/20 transition-colors backdrop-blur-sm border border-white/5">
+                                <img src={Logo} alt="" className='rounded-xl object-cover' />
+                            </div>
+                            <span className={cn(
+                                "font-advine text-3xl transition-opacity duration-300 hidden sm:block",
+                                isScrolled ? "text-white" : "text-white/90"
+                            )}>
+                                NoBadFonts
+                            </span>
+                        </Link>
+
+                        {/* Desktop Navigation */}
+                        <div className={cn("hidden md:flex items-center gap-1 ",
+                            isScrolled
+                                ? "bg-transparent backdrop-blur-none border-none border-white/50 rounded-full p-0 px-0"
+                                : "bg-white/10 backdrop-blur-md border border-white/5 rounded-full p-1.5 px-3"
                         )}>
-                            NoBadFonts
-                        </span>
-                    </Link>
-
-                    {/* Desktop Navigation */}
-                    <div className={cn("hidden md:flex items-center gap-1 ",
-                        isScrolled
-                            ? "bg-transparent backdrop-blur-none border-none border-white/50 rounded-full p-0 px-0"
-                            : "bg-white/10 backdrop-blur-md border border-white/5 rounded-full p-1.5 px-3"
-                    )}>
-                        {navLinks.map((link) => {
-                            const Icon = link.icon;
-                            const isActive = location.pathname === link.path;
-                            return (
-                                <Link
-                                    key={link.path}
-                                    to={link.path}
-                                    className={cn(
-                                        "relative px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 flex items-center gap-2",
-                                        isActive
-                                            ? "bg-white text-black shadow-sm"
-                                            : "text-zinc-400 hover:text-white hover:bg-white/10"
-                                    )}
-                                >
-                                    <Icon size={16} />
-                                    {link.name}
-                                    {link.badge && (
-                                        <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
-                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-lime-400 opacity-75"></span>
-                                            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-lime-500"></span>
-                                        </span>
-                                    )}
-                                </Link>
-                            );
-                        })}
-                    </div>
-
-                    {/* Right Side Actions */}
-                    <div className="flex items-center gap-3">
-                        {user ? (
-                            <>
-                                {profile?.role === 'admin' && (
-                                    <Link to="/admin" className="flex items-center justify-center h-10 w-10 rounded-full bg-pink-500/20 text-pink-500 border border-pink-500/30 hover:bg-pink-500 hover:text-white transition-all">
-                                        <Shield size={18} />
+                            {navLinks.map((link) => {
+                                const Icon = link.icon;
+                                const isActive = location.pathname === link.path;
+                                return (
+                                    <Link
+                                        key={link.path}
+                                        to={link.path}
+                                        className={cn(
+                                            "relative px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 flex items-center gap-2",
+                                            isActive
+                                                ? "bg-white text-black shadow-sm"
+                                                : "text-zinc-400 hover:text-white hover:bg-white/10"
+                                        )}
+                                    >
+                                        <Icon size={16} />
+                                        {link.name}
+                                        {link.badge && (
+                                            <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
+                                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-lime-400 opacity-75"></span>
+                                                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-lime-500"></span>
+                                            </span>
+                                        )}
                                     </Link>
-                                )}
-                                <Link to="/upload" className="hidden sm:flex items-center gap-2 bg-zinc-900 border border-zinc-800 hover:border-zinc-700 text-white px-4 py-2 rounded-full text-sm font-medium transition-all">
-                                    <Upload size={16} />
-                                    <span>Upload</span>
-                                </Link>
-                                <Link to="/profile" className="h-10 w-10 rounded-full bg-linear-to-tr from-zinc-800 to-zinc-700 border border-white/10 flex items-center justify-center text-white overflow-hidden hover:scale-105 transition-transform">
-                                    {profile?.avatar_url ? (
-                                        <img src={profile.avatar_url} alt="Profile" className="h-full w-full object-cover" />
-                                    ) : (
-                                        <User size={18} />
+                                );
+                            })}
+                        </div>
+
+                        {/* Right Side Actions */}
+                        <div className="flex items-center gap-3">
+                            {user ? (
+                                <>
+                                    {profile?.role === 'admin' && (
+                                        <Link to="/admin" className="flex items-center justify-center h-10 w-10 rounded-full bg-pink-500/20 text-pink-500 border border-pink-500/30 hover:bg-pink-500 hover:text-white transition-all">
+                                            <Shield size={18} />
+                                        </Link>
                                     )}
+                                    <Link to="/upload" className="hidden sm:flex items-center gap-2 bg-zinc-900 border border-zinc-800 hover:border-zinc-700 text-white px-4 py-2 rounded-full text-sm font-medium transition-all">
+                                        <Upload size={16} />
+                                        <span>Upload</span>
+                                    </Link>
+                                    <Link to="/profile" className="h-10 w-10 rounded-full bg-linear-to-tr from-zinc-800 to-zinc-700 border border-white/10 flex items-center justify-center text-white overflow-hidden hover:scale-105 transition-transform">
+                                        {profile?.avatar_url ? (
+                                            <img src={profile.avatar_url} alt="Profile" className="h-full w-full object-cover" />
+                                        ) : (
+                                            <User size={18} />
+                                        )}
+                                    </Link>
+                                </>
+                            ) : (
+                                <Link
+                                    to="/auth"
+                                    className="bg-white text-black px-5 py-2 rounded-full font-bold text-sm hover:bg-zinc-200 transition-colors"
+                                >
+                                    Login
                                 </Link>
-                            </>
-                        ) : (
-                            <Link
-                                to="/auth"
-                                className="bg-white text-black px-5 py-2 rounded-full font-bold text-sm hover:bg-zinc-200 transition-colors"
-                            >
-                                Login
-                            </Link>
-                        )}
+                            )}
+                        </div>
                     </div>
                 </div>
             </motion.nav>

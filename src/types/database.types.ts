@@ -72,6 +72,7 @@ export type Database = {
           created_at: string
           font_id: string
           id: string
+          order_index: number | null
           otf_url: string | null
           file_size_otf: number | null
           ttf_url: string | null
@@ -86,6 +87,7 @@ export type Database = {
           created_at?: string
           font_id: string
           id?: string
+          order_index?: number | null
           otf_url?: string | null
           file_size_otf?: number | null
           ttf_url?: string | null
@@ -100,6 +102,7 @@ export type Database = {
           created_at?: string
           font_id?: string
           id?: string
+          order_index?: number | null
           otf_url?: string | null
           file_size_otf?: number | null
           ttf_url?: string | null
