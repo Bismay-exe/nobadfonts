@@ -1,6 +1,7 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { useViewMode } from '../hooks/useViewMode';
+import { useWindowSize } from '../hooks/useWindowSize';
 import { supabase } from '../lib/supabase';
 import FontCard from '../components/fonts/FontCard';
 import EmptyState from '../components/shared/EmptyState';
@@ -8,6 +9,17 @@ import Filters from '../components/fonts/Filters';
 import type { Font, FontFilterParams } from '../types/font';
 import { ArrowLeft } from 'lucide-react';
 import SEO from '../components/shared/SEO';
+import { Masonry } from "masonic";
+
+const MasonryCard = ({ data }: { data: any }) => (
+    <FontCard
+        font={data}
+        viewMode={data.viewMode}
+        customText={data.customText}
+        isExpanded={data.isExpanded}
+        onToggle={data.onToggle}
+    />
+);
 
 export default function DesignerFonts() {
     const { designerName } = useParams();
@@ -27,6 +39,9 @@ export default function DesignerFonts() {
     const [customText, setCustomText] = useState('');
     const [expandedFontId, setExpandedFontId] = useState<string | null>(null);
     const [globalExpanded, setGlobalExpanded] = useState(true);
+    const [bulkToggleVersion, setBulkToggleVersion] = useState(0);
+    const [isBulkToggling, setIsBulkToggling] = useState(false);
+    const bulkToggleTimeoutRef = useRef<any>(null);
 
     useEffect(() => {
         const fetchDesignerFonts = async () => {
@@ -108,17 +123,41 @@ export default function DesignerFonts() {
         }
     };
 
+    const { width } = useWindowSize();
+
+    const items = useMemo(() => {
+        return filteredFonts
+            .filter(f => f && f.id)
+            .map(f => {
+                const cardProps = getCardProps(f.id)
+
+                return {
+                    ...f,
+                    viewMode,
+                    customText,
+                    isExpanded: cardProps.isExpanded,
+                    onToggle: cardProps.onToggle,
+                    bulkToggleVersion
+                }
+            })
+    }, [filteredFonts, viewMode, customText, expandedFontId, globalExpanded, bulkToggleVersion]);
+
+    const columns =
+        width > 1280 ? 4 :
+            width > 1024 ? 3 :
+                width > 640 ? 2 :
+                    1;
+
     return (
-        <div className="w-full grid grid-cols-1 lg:grid-cols-4">
+        <div>
             <SEO
                 title={`${decodeURIComponent(designerName || '')} Fonts`}
                 description={`Browse all fonts designed by ${decodeURIComponent(designerName || '')}. High-quality typography for your next project.`}
                 url={`/designers/${designerName}`}
             />
-            <div className="col-span-1 lg:col-span-4 border-y border-black flex flex-col lg:flex-col">
 
                 {/* Header (Designer Info) */}
-                <div className="bg-[#EEEFEB] rounded-4xl border-y border-black px-6 py-12 md:px-12 md:py-20 flex flex-col items-center text-center relative">
+                <div className="py-12 md:py-20 flex flex-col items-center text-center relative">
                     <button
                         onClick={() => {
                             if (location.state?.from) {
@@ -127,7 +166,7 @@ export default function DesignerFonts() {
                                 navigate('/fonts');
                             }
                         }}
-                        className="absolute top-6 left-6 md:top-10 md:left-12 flex items-center gap-2 text-sm font-bold uppercase tracking-widest hover:text-gray-600 transition-colors z-10"
+                        className="absolute top-6 left-2 md:top-10 md:left-4 flex items-center gap-2 text-sm font-bold uppercase tracking-widest hover:text-gray-600 transition-colors z-10"
                     >
                         <ArrowLeft size={16} /> Back
                     </button>
@@ -151,6 +190,10 @@ export default function DesignerFonts() {
                         allExpanded={globalExpanded}
                         onToggleAll={() => {
                             setGlobalExpanded(!globalExpanded);
+                            setBulkToggleVersion(v => v + 1);
+                            setIsBulkToggling(true);
+                            if (bulkToggleTimeoutRef.current) clearTimeout(bulkToggleTimeoutRef.current);
+                            bulkToggleTimeoutRef.current = setTimeout(() => setIsBulkToggling(false), 450);
                             setExpandedFontId(null);
                         }}
                         customText={customText}
@@ -169,31 +212,26 @@ export default function DesignerFonts() {
                     )}
 
                     {loading ? (
-                        <div className="gap-0"
+                        <div className="gap-6"
                             style={{
-                                columnWidth: 'clamp(220px, 20vw, 320px)',
+                                columnWidth: 'clamp(320px, 20vw, 420px)',
                             }}
                         >
-                            {[...Array(8)].map((_, i) => (
-                                <div key={i} className="bg-gray-100 h-96 animate-pulse border-b border-r border-[#1C1D1E]" />
+                            {[...Array(16)].map((_, i) => (
+                                <div key={i} className="bg-zinc-900/60 mb-4 sm:mb-6 rounded-4xl border border-white/20 h-64 animate-pulse" />
                             ))}
                         </div>
                     ) : filteredFonts.length > 0 ? (
-                        <div className="gap-0"
-                            style={{
-                                columnWidth: 'clamp(220px, 20vw, 320px)',
-                            }}
-                        >
-                            {filteredFonts.map((font) => (
-                                <FontCard
-                                    key={font.id}
-                                    font={font}
-                                    viewMode={viewMode}
-                                    customText={customText}
-                                    {...getCardProps(font.id)}
+                        <>
+                            <div className={`masonic-grid ${isBulkToggling ? 'is-bulk-toggling' : ''}`}>
+                                <Masonry
+                                    items={items}
+                                    columnCount={columns}
+                                    columnGutter={24}
+                                    render={MasonryCard}
                                 />
-                            ))}
-                        </div>
+                            </div>
+                        </>
                     ) : (
                         <div className="py-20">
                             <EmptyState
@@ -203,7 +241,6 @@ export default function DesignerFonts() {
                         </div>
                     )}
                 </div>
-            </div>
         </div>
     );
 }

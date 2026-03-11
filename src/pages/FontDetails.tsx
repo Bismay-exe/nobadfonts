@@ -1268,7 +1268,7 @@ export default function FontDetails() {
                                                             e.stopPropagation();
                                                             setActiveDropdown(activeDropdown === variant.id ? null : variant.id);
                                                         }}
-                                                        className="flex items-center gap-1.5 px-3 py-1.5 bg-black/50 border border-white/20 rounded-full text-[10px] font-bold uppercase hover:bg-white/90 hover:text-black transition-colors"
+                                                        className="flex items-center gap-1.5 px-3 py-1.5 bg-white/5 border border-white/10 rounded-full text-[10px] font-bold uppercase hover:bg-white/90 hover:text-black transition-colors"
                                                     >
                                                         <Download size={12} /> <ChevronDown size={12} className={`transition-transform duration-200 ${activeDropdown === variant.id ? 'rotate-180' : ''}`} />
                                                     </button>
