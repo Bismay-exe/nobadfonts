@@ -11,6 +11,14 @@
     {
       "source": "/(.*)",
       "destination": "/index.html"
+    },
+    {
+      "source": "/docs",
+      "destination": "https://bismay-exe-nobadfonts-11.mintlify.dev/docs"
+    },
+    {
+      "source": "/docs/:match*",
+      "destination": "https://bismay-exe-nobadfonts-11.mintlify.dev/docs/:match*"
     }
   ],
   "headers": [

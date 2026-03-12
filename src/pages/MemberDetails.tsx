@@ -1,13 +1,26 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import FontCard from '../components/fonts/FontCard';
 import type { Database } from '../types/database.types';
+import type { FontFilterParams } from '../types/font';
 import { ArrowLeft, Image as Globe, Twitter, Instagram, Linkedin, Coffee, Palette } from 'lucide-react';
+import { Masonry } from 'masonic';
+import { useWindowSize } from '../hooks/useWindowSize';
+import Filters from '../components/fonts/Filters';
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
 type Font = Database['public']['Tables']['fonts']['Row'];
+
+const MasonryCard = ({ data }: { data: any }) => (
+    <FontCard
+        font={data}
+        viewMode={data.viewMode}
+        isExpanded={data.isExpanded}
+        onToggle={data.onToggle}
+    />
+);
 
 export default function MemberDetails() {
     const { id } = useParams();
@@ -16,6 +29,17 @@ export default function MemberDetails() {
     const [fonts, setFonts] = useState<Font[]>([]);
     const [loading, setLoading] = useState(true);
     const [isExpanded, setIsExpanded] = useState(false);
+    const [expandedFontId, setExpandedFontId] = useState<string | null>(null);
+    const { width } = useWindowSize();
+
+    // Filter & View State
+    const [filters, setFilters] = useState<FontFilterParams>({ query: '', categories: [], sortBy: 'newest' });
+    const [viewMode, setViewMode] = useState<'font' | 'image'>('font');
+    const [customText, setCustomText] = useState('');
+    const [globalExpanded, setGlobalExpanded] = useState(false);
+    const [bulkToggleVersion, setBulkToggleVersion] = useState(0);
+    const [isBulkToggling, setIsBulkToggling] = useState(false);
+    const bulkToggleTimeoutRef = useRef<any>(null);
 
     useEffect(() => {
         if (!id) return;
@@ -62,6 +86,48 @@ export default function MemberDetails() {
     }, [id]);
 
     const navigate = useNavigate();
+
+    const columns =
+        width > 1280 ? 4 :
+            width > 1024 ? 3 :
+                width > 640 ? 2 :
+                    1;
+
+    const filteredFonts = useMemo(() => {
+        let result = [...fonts];
+        if (filters.query) {
+            const q = filters.query.toLowerCase();
+            result = result.filter(f =>
+                f.name.toLowerCase().includes(q) ||
+                (f.tags && f.tags.some((t: string) => t.toLowerCase().includes(q)))
+            );
+        }
+        if (filters.categories && filters.categories.length > 0) {
+            result = result.filter(f =>
+                f.tags && filters.categories!.some(cat => f.tags?.includes(cat))
+            );
+        }
+        result.sort((a, b) => {
+            switch (filters.sortBy) {
+                case 'popular': return (b.favorites_count || 0) - (a.favorites_count || 0);
+                case 'newest': return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
+                case 'alpha': return a.name.localeCompare(b.name);
+                default: return 0;
+            }
+        });
+        return result;
+    }, [fonts, filters]);
+
+    const masonryItems = useMemo(() =>
+        filteredFonts
+            .filter(f => f && f.id)
+            .map(f => {
+                const cardProps = globalExpanded
+                    ? { isExpanded: true, onToggle: undefined }
+                    : { isExpanded: expandedFontId === f.id, onToggle: () => setExpandedFontId(expandedFontId === f.id ? null : f.id) };
+                return { ...f, viewMode, customText, ...cardProps, bulkToggleVersion };
+            })
+    , [filteredFonts, viewMode, customText, expandedFontId, globalExpanded, bulkToggleVersion]);
 
     const goBack = () => {
         if (window.history.length > 1) {
@@ -202,23 +268,42 @@ export default function MemberDetails() {
                 </div>
             </div>
 
-            <div className="gap-0"
-                style={{
-                    columnWidth: 'clamp(220px, 20vw, 320px)',
-                }}>
-                {fonts.map(font => (
-                    <div key={font.id} className="mb-4 break-inside-avoid">
-                        <FontCard font={font} />
-                    </div>
-                ))}
-            </div>
-            {
-                fonts.length === 0 && (
-                    <div className="text-center py-24 bg-gray-50 rounded-4xl border-2 border-dashed border-gray-300">
-                        <p className="text-xl font-bold text-gray-400">This member hasn't uploaded any fonts yet.</p>
-                    </div>
-                )
-            }
+            {/* Filters */}
+            <aside className="w-full shrink-0 transition-all duration-300 ease-in-out">
+                <Filters
+                    filters={filters}
+                    onChange={setFilters}
+                    viewMode={viewMode}
+                    onViewModeChange={setViewMode}
+                    showExpandToggle={true}
+                    allExpanded={globalExpanded}
+                    onToggleAll={() => {
+                        setGlobalExpanded(!globalExpanded);
+                        setBulkToggleVersion(v => v + 1);
+                        setIsBulkToggling(true);
+                        if (bulkToggleTimeoutRef.current) clearTimeout(bulkToggleTimeoutRef.current);
+                        bulkToggleTimeoutRef.current = setTimeout(() => setIsBulkToggling(false), 450);
+                        setExpandedFontId(null);
+                    }}
+                    customText={customText}
+                    onCustomTextChange={setCustomText}
+                />
+            </aside>
+
+            {fonts.length > 0 ? (
+                <div className={`masonic-grid ${isBulkToggling ? 'is-bulk-toggling' : ''}`}>
+                    <Masonry
+                        items={masonryItems}
+                        columnCount={columns}
+                        columnGutter={24}
+                        render={MasonryCard}
+                    />
+                </div>
+            ) : (
+                <div className="text-center py-24 bg-gray-50 rounded-4xl border-2 border-dashed border-gray-300">
+                    <p className="text-xl font-bold text-gray-400">This member hasn't uploaded any fonts yet.</p>
+                </div>
+            )}
         </div >
     );
 }

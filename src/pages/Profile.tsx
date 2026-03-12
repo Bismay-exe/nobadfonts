@@ -7,14 +7,12 @@ import FontGrid from '../components/profile/FontGrid';
 import SettingsForm from '../components/profile/SettingsForm';
 import AnalyticsDashboard from '../components/profile/AnalyticsDashboard';
 import type { Font } from '../types/font';
-import { Type, Image as ImageIcon } from 'lucide-react';
 
 export default function Profile() {
     const { user, profile, loading, refreshProfile } = useAuth();
     const [activeTab, setActiveTab] = useState<'favorites' | 'downloads' | 'settings' | 'analytics'>('favorites');
     const [isEditing, setIsEditing] = useState(false);
     const [requestLoading, setRequestLoading] = useState(false);
-    const [viewMode, setViewMode] = useState<'font' | 'image'>('font');
 
     const [favorites, setFavorites] = useState<Font[]>([]);
     const [downloads, setDownloads] = useState<Font[]>([]);
@@ -135,29 +133,6 @@ export default function Profile() {
                             My Favorites
                         </button>
 
-                        <div className="flex md:flex-col bg-gray-100 p-1 rounded-4xl md:rounded-none border-y border-black items-center justify-center">
-                            <button
-                                onClick={() => setViewMode('font')}
-                                className={`p-3 aspect-square rounded-full transition-all ${viewMode === 'font'
-                                    ? 'bg-black text-white shadow-sm'
-                                    : 'text-gray-500 hover:text-black'
-                                    }`}
-                                title="Font View"
-                            >
-                                <Type size={16} />
-                            </button>
-                            <button
-                                onClick={() => setViewMode('image')}
-                                className={`p-3 aspect-square rounded-full transition-all ${viewMode === 'image'
-                                    ? 'bg-black text-white shadow-sm'
-                                    : 'text-gray-500 hover:text-black'
-                                    }`}
-                                title="Image View"
-                            >
-                                <ImageIcon size={16} />
-                            </button>
-                        </div>
-
                         <button
                             onClick={() => setActiveTab('analytics')}
                             className={`flex-1 px-6 py-4 text-lg font-bold border-y md:border-x border-black rounded-4xl md:rounded-none transition-colors ${activeTab === 'analytics'
@@ -184,7 +159,6 @@ export default function Profile() {
                             fonts={favorites}
                             loading={dataLoading}
                             emptyMessage="You haven't favorited any fonts yet."
-                            viewMode={viewMode}
                         />
                     )}
 
@@ -193,7 +167,6 @@ export default function Profile() {
                             fonts={downloads}
                             loading={dataLoading}
                             emptyMessage="You haven't downloaded any fonts yet."
-                            viewMode={viewMode}
                         />
                     )}
 
