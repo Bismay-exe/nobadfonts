@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react';
 import { cn } from '../../lib/utils';
 import { Type, Combine, Terminal, Users, Upload, User, Shield } from 'lucide-react';
 import { motion } from 'framer-motion';
-import Logo from '/logo/logo-black.png'; // Assuming white version exists or we filter it
+import Logo from '/logo/logo-white.png'; // Assuming white version exists or we filter it
 
 export default function Navbar() {
     const { user, profile } = useAuth();
