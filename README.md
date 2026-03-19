@@ -1,13 +1,6 @@
 <div align="center">
 
-```
-███╗   ██╗ ██████╗ ██████╗  █████╗ ██████╗ ███████╗ ██████╗ ███╗   ██╗████████╗███████╗
-████╗  ██║██╔═══██╗██╔══██╗██╔══██╗██╔══██╗██╔════╝██╔═══██╗████╗  ██║╚══██╔══╝██╔════╝
-██╔██╗ ██║██║   ██║██████╔╝███████║██║  ██║█████╗  ██║   ██║██╔██╗ ██║   ██║   ███████╗
-██║╚██╗██║██║   ██║██╔══██╗██╔══██║██║  ██║██╔══╝  ██║   ██║██║╚██╗██║   ██║   ╚════██║
-██║ ╚████║╚██████╔╝██████╔╝██║  ██║██████╔╝██║     ╚██████╔╝██║ ╚████║   ██║   ███████║
-╚═╝  ╚═══╝ ╚═════╝ ╚═════╝ ╚═╝  ╚═╝╚═════╝ ╚═╝      ╚═════╝ ╚═╝  ╚═══╝   ╚═╝   ╚══════╝
-```
+![Banner](https://www.nobadfonts.in/banner/banner.png)
 
 ### *"Because Comic Sans deserves to stay in 2003."*
 
@@ -705,5 +698,7 @@ Built with 🖤 by [Bismay](https://github.com/Bismay-exe)
 
 [![Visit the site](https://img.shields.io/badge/Visit-nobadfonts.in-ff69b4?style=for-the-badge&logo=vercel&logoColor=white)](https://nobadfonts.in)
 [![Star on GitHub](https://img.shields.io/github/stars/Bismay-exe/nobadfonts?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Bismay-exe/nobadfonts)
+
+![Banner](https://www.nobadfonts.in/banner/banner.png)
 
 </div>
