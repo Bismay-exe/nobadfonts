@@ -6,7 +6,6 @@ import { useState, useEffect } from 'react';
 import { cn } from '../../lib/utils';
 import { Type, Combine, Terminal, Users, Upload, User, Shield } from 'lucide-react';
 import { motion } from 'framer-motion';
-import Logo from '/logo/logo-black.png'; // Assuming white version exists or we filter it
 
 export default function Navbar() {
     const { user, profile } = useAuth();
@@ -48,7 +47,6 @@ export default function Navbar() {
                         {/* Logo */}
                         <Link to="/" className="flex items-center gap-2 group">
                             <div className="w-10 h-10 bg-white/10 rounded-xl group-hover:bg-white/20 transition-colors backdrop-blur-sm border border-white/5">
-                                <img src={Logo} alt="" className='rounded-xl object-cover' />
                             </div>
                             <span className={cn(
                                 "font-advine text-3xl transition-opacity duration-300 hidden sm:block",
