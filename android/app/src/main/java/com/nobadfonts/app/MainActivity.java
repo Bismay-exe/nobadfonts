@@ -3,18 +3,4 @@ package com.nobadfonts.app;
 import android.os.Bundle;
 import com.getcapacitor.BridgeActivity;
 
-public class MainActivity extends BridgeActivity {
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        // Hide status bar immediately
-        getBridge().getBridgeWebView().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                getBridge().getBridgeWebView().evaluateJavascript(
-                        "javascript:StatusBar.hide();", null);
-            }
-        }, 100);
-    }
-}
+public class MainActivity extends BridgeActivity {}
