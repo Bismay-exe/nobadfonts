@@ -7,6 +7,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import { UploadProvider } from './contexts/UploadContext';
 import UploadProgressPopup from './components/UploadProgressPopup';
 import { HelmetProvider } from 'react-helmet-async';
+import BackHandler from './components/capacitor/BackHandler';
 
 const FontsCatalog = React.lazy(() => import('./pages/FontsCatalog'));
 const FontDetails = React.lazy(() => import('./pages/FontDetails'));
@@ -28,6 +29,7 @@ function App() {
           <Router>
             <ScrollRestoration />
             <UploadProgressPopup />
+            <BackHandler />
             <Routes>
               <Route path="/" element={<Layout />}>
                 <Route index element={<Home />} />

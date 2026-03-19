@@ -480,12 +480,11 @@ const Upload = () => {
                             onChange={handleChange}
                             onBlur={(e) => setFormData(prev => ({ ...prev, name: e.target.value.trim() }))}
                             className="w-full border-2 border-white/5 bg-white/5 p-3 rounded-2xl font-bold focus:outline-none"
-
                         />
                     </div>
 
                     <div>
-                        <label className="block font-bold mb-2 uppercase">Designer <span className="text-sm text-gray-500 lowercase">(optional)</span></label>
+                        <label className="block font-bold mb-2 uppercase">Designer <span className="text-sm text-white/40 font-normal font-mono lowercase">(optional)</span></label>
                         <input
                             name="designer"
                             value={formData.designer}
@@ -502,7 +501,7 @@ const Upload = () => {
                 {/* Variants Section */}
                 <div className="col-span-1 md:col-span-2 p-4 md:p-8">
                     <div className="flex justify-start items-center mb-4">
-                        <label className="font-bold uppercase text-lg">Font Variants <span className="text-sm text-red-500 normal-case ml-2">(At least one required)</span></label>
+                        <label className="font-bold uppercase text-lg">Font Variants <span className="text-sm text-red-500 font-normal normal-case ml-2">(At least one required)</span></label>
                     </div>
 
                     <div className="space-y-6">
@@ -569,7 +568,7 @@ const Upload = () => {
                                                         }}
                                                         className="absolute inset-0 opacity-0 cursor-pointer z-10 w-full h-full"
                                                     />
-                                                    <div className="border border-white/5 bg-white/5 rounded-lg p-2 text-center text-xs font-mono text-gray-500 hover:border-black hover:text-black transition-colors">
+                                                    <div className="border border-white/5 bg-white/5 rounded-lg p-2 text-center text-xs font-mono text-white/40 hover:border-black hover:text-black transition-colors">
                                                         {format.toUpperCase()}
                                                     </div>
                                                 </div>
@@ -622,7 +621,7 @@ const Upload = () => {
 
                 {/* Banner Image Section */}
                 <div className="col-span-1 md:col-span-2 p-4 md:p-8 space-y-4">
-                    <label className="block font-bold uppercase text-lg">Banner Gallery <span className="text-sm text-gray-500 normal-case ml-2">(Optional - Multiple images allowed)</span></label>
+                    <label className="block font-bold uppercase text-lg">Banner Gallery <span className="text-sm text-white/40 normal-case ml-2">(Optional - Multiple images allowed)</span></label>
 
                     {/* List of items */}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4 empty:hidden">
@@ -659,7 +658,7 @@ const Upload = () => {
                             />
                             <button
                                 type="button"
-                                className="flex flex-col items-center gap-2 font-bold text-gray-500"
+                                className="flex flex-col items-center gap-2 font-bold text-white/40"
                             >
                                 <UploadIcon size={28} />
                                 Add Images
@@ -688,7 +687,7 @@ const Upload = () => {
                                 <button
                                     type="button"
                                     onClick={() => setShowUrlInput(false)}
-                                    className="text-gray-500 hover:text-red-500"
+                                    className="text-white/40 hover:text-red-500"
                                 >
                                     <X size={18} />
                                 </button>
@@ -697,7 +696,7 @@ const Upload = () => {
                             <button
                                 type="button"
                                 onClick={() => setShowUrlInput(true)}
-                                className="flex items-center gap-2 px-4 py-2 rounded-full font-bold bg-white/5 hover:bg-white/90 text-white/70 hover:text-black transition-colors cursor-pointer"
+                                className="flex items-center gap-2 px-4 py-2 rounded-full font-bold bg-white/5 hover:bg-white/90 text-white/70 hover:text-black border border-white/5 transition-colors cursor-pointer"
                             >
                                 <LinkIcon size={18} /> Add URL
                             </button>
@@ -722,10 +721,10 @@ const Upload = () => {
                                             type="button"
                                             onClick={() => handleTagChange(cat.id)}
                                             className={`
-                                                px-2 md:px-3 py-1 md:py-1.5 font-mono font-bold rounded-full border-2 text-sm transition-all duration-200
+                                                px-2 md:px-3 py-1 md:py-1.5 font-mono rounded-full border text-sm transition-all duration-200  hover:-translate-y-0.5
                                                 ${formData.tags.includes(cat.id)
                                                     ? "bg-white text-black border-white shadow-md"
-                                                    : " text-gray-500 border-white/5 hover:border-white hover:bg-white hover:text-black hover:-translate-y-0.5"
+                                                    : " text-white/40 border-white/5 hover:bg-white/80 hover:text-black"
                                                 }
                                             `}
                                         >
