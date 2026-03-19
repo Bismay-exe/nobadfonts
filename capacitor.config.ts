@@ -5,6 +5,9 @@ const config: CapacitorConfig = {
   appName: 'NoBadFonts',
   webDir: 'dist',
   plugins: {
+    StatusBar: {
+      overlay: true
+    },
     SplashScreen: {
       launchShowDuration: 2000,
       launchAutoHide: true,

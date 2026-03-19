@@ -6,7 +6,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 export default function Layout() {
     const location = useLocation();
     return (
-        <div className="flex flex-col min-h-screen px-4 md:px-8 bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))] antialiased selection:bg-[rgb(var(--color-foreground))] selection:text-[rgb(var(--color-background))] overflow-x-hidden">
+        <div className="app-container flex flex-col min-h-screen px-4 md:px-8 bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))] antialiased selection:bg-[rgb(var(--color-foreground))] selection:text-[rgb(var(--color-background))] overflow-x-hidden">
 
             {/* Global background noise or effects can go here */}
             <div className="fixed inset-0 xbg-[url('/noise.png')] opacity-[0.03] pointer-events-none mix-blend-overlay z-[60]" />

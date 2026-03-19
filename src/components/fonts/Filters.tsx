@@ -363,10 +363,10 @@ export default function Filters({ filters, onChange, viewMode, onViewModeChange,
 
             {/* 3. Categories Panel */}
             {isCategoriesOpen && (
-                <div className="grid grid-cols-2 md:flex md:flex-row gap-6 max-h-[67vh] overflow-y-auto rounded-4xl bg-[rgb(var(--color-foreground)/0.8)] backdrop-blur-2xl p-4 lg:p-6 mb-5 border border-[rgb(var(--color-background)/0.8)]">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-6 max-h-[67vh] overflow-y-auto rounded-4xl bg-[rgb(var(--color-foreground)/0.8)] backdrop-blur-2xl p-4 lg:p-6 mb-5 border border-[rgb(var(--color-background)/0.8)]">
                     {CATEGORIES.map((group, groupIndex) => (
                         <div key={groupIndex} className="flex flex-col gap-2 md:gap-3">
-                            <h3 className="text-xs md:text-md font-black text-[rgb(var(--color-background)/0.85)] uppercase px-1 cursor-default">
+                            <h3 className="text-md md:text-md font-black text-[rgb(var(--color-background)/0.85)] uppercase px-3 py-2 cursor-default">
                                 {group.group}
                             </h3>
                             <div className="flex gap-1 md:gap-2 flex-wrap">
@@ -384,9 +384,9 @@ export default function Filters({ filters, onChange, viewMode, onViewModeChange,
                                                 handleChange('categories', newCategories);
                                             }}
                                             className={`
-                                                px-2 py-1 md:px-3 md:py-1.5 font-bold rounded-full border text-[11px] md:text-sm transition-all duration-200 text-left cursor-pointer ${isSelected
+                                                px-2 py-1 md:px-3 md:py-1.5 font-medium rounded-full border text-[11px] md:text-sm whitespace-nowrap transition-all duration-200 text-left cursor-pointer ${isSelected
                                                     ? "bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))] border-[rgb(var(--color-background)/0.1)]"
-                                                    : "bg-transparent text-[rgb(var(--color-background))] border-[rgb(var(--color-background)/0.1)] hover:bg-[rgb(var(--color-background))] hover:text-[rgb(var(--color-foreground))]"
+                                                    : "bg-transparent text-[rgb(var(--color-background)/0.8)] border-[rgb(var(--color-background)/0.1)] hover:bg-[rgb(var(--color-background))] hover:text-[rgb(var(--color-foreground))]"
                                                 }
                                             `}
                                         >
@@ -414,7 +414,7 @@ export default function Filters({ filters, onChange, viewMode, onViewModeChange,
                                 className={`
                                     w-full px-4 py-3 rounded-xl text-left text-sm border transition-all duration-200
                                     ${(filters.sortBy || 'trending') === opt.id
-                                        ? "bg-[rgb(var(--color-background)/0.9)] text-[rgb(var(--color-background))] border-[rgb(var(--color-background)/0.1)]"
+                                        ? "bg-[rgb(var(--color-background)/0.9)] text-[rgb(var(--color-foreground))] border-[rgb(var(--color-background)/0.1)]"
                                         : "bg-transparent text-[rgb(var(--color-background))] hover:bg-[rgb(var(--color-background)/0.05)] hover:text-[rgb(var(--color-background))] border-transparent"
                                     }
                                 `}

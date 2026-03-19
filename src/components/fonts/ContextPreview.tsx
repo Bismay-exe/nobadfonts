@@ -1096,7 +1096,7 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                 {activeTab === 'poster' && (
                     <div className='flex flex-wrap justify-center items-center gap-5'>
                         {/* 1. Poster */}
-                        <div className="relative w-[320px] md:w-full max-w-md aspect-3/4 bg-[#F4F1EA] border border-black/10 shadow-xl p-3 md:p-8 flex flex-col justify-between animate-in fade-in duration-300">
+                        <div className="relative w-[320px] md:w-full max-w-md aspect-3/4 text-black bg-[#F4F1EA] border border-black/10 shadow-xl p-3 md:p-8 flex flex-col justify-between animate-in fade-in duration-300">
                             {/* Texture Overlay */}
                             <div className="absolute inset-0 opacity-10 pointer-events-none mix-blend-multiply bg-[url('https://www.transparenttextures.com/patterns/noise-lines.png')]"></div>
 
@@ -1107,7 +1107,7 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                                 </div>
 
                                 <div className="flex-1 flex flex-col justify-center items-center text-center">
-                                    <h1 style={{ fontFamily }} className="text-6xl md:text-8xl leading-[0.8] wrap-break-word w-full mb-4">
+                                    <h1 style={{ fontFamily }} className="text-6xl md:text-8xl text-black leading-[0.8] wrap-break-word w-full mb-4">
                                         TYPO<br />GRAPHY
                                     </h1>
                                     <div style={{ fontFamily }} className="w-16 h-16 md:w-24 md:h-24 rounded-full bg-black text-[#F4F1EA] flex items-center justify-center text-sm md:text-xl animate-spin-slow">
@@ -1115,7 +1115,7 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                                     </div>
                                 </div>
 
-                                <div className="border-t border-black pt-4 grid grid-cols-3 gap-4 text-[8px] md:text-[10px] leading-tight mt-8">
+                                <div className="border-t border-black pt-4 grid grid-cols-3 gap-4 text-[8px] md:text-[10px] leading-tight text-black mt-8">
                                     <p>
                                         LOREM IPSUM DOLOR SIT AMET, CONSECTETUR ADIPISCING ELIT.
                                         SED DO EIUSMOD TEMPOR INCIDIDUNT UT LABORE.
@@ -1238,7 +1238,7 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                             {/* 4. Text Content / Description Block */}
                             <div className="grid grid-cols-2 gap-8 z-10 mt-auto items-end">
                                 <div className="text-xs md:text-sm leading-tight">
-                                    <p className="mb-4">
+                                    <p className="mb-4 text-black">
                                         A VISUAL EXPLORATION OF MODERN STREETWEAR AND BOLD TYPOGRAPHY.
                                     </p>
                                     <button className="bg-black text-white px-3 md:px-6 py-2 md:py-3 text-[8px] md:text-xs uppercase tracking-wider hover:bg-[#FFEF00] hover:text-black transition-colors">
@@ -1338,7 +1338,7 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                                 <div className="relative flex flex-col items-center justify-center leading-[0.8] tracking-widest z-0 ">
 
                                     {/* 1. Top Solid Text */}
-                                    <h1 style={{ fontFamily }} className="text-[5rem] md:text-[6.5rem]  text-[rgb(var(--color-highlight))] relative z-20">
+                                    <h1 style={{ fontFamily }} className="text-[5rem] md:text-[6.5rem]  text-[#FFE55C] relative z-20">
                                         MOON
                                     </h1>
 
@@ -1360,7 +1360,7 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
 
                                 {/* The Central Moon Graphic */}
                                 {/* Positioned absolutely to sit on top of the text stack */}
-                                <div className="scale-75 md:scale-100 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 md:w-56 md:h-56 bg-[rgb(var(--color-highlight))] rounded-full shadow-[0_0_60px_rgba(255,229,92,0.2)] z-10 flex items-center justify-center pointer-events-none mt-4">
+                                <div className="scale-75 md:scale-100 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 md:w-56 md:h-56 bg-[#FFE55C] rounded-full shadow-[0_0_60px_rgba(255,229,92,0.2)] z-10 flex items-center justify-center pointer-events-none mt-4">
                                     {/* Craters (CSS Circles) */}
                                     <div className="absolute top-8 left-10 w-8 h-8 bg-[#FACC15] rounded-full opacity-60"></div>
                                     <div className="absolute top-16 left-8 w-3 h-3 bg-[#FACC15] rounded-full opacity-60"></div>
@@ -1382,7 +1382,7 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                         </div>
 
                         {/* 6. Poster */}
-                        <div className="relative w-[320px] md:w-full max-w-md aspect-3/4 bg-[rgb(var(--color-muted)/0.05)] overflow-hidden shadow-2xl flex flex-col justify-end animate-in fade-in zoom-in duration-300 font-sans border-8 border-[rgb(var(--color-background))]">
+                        <div className="relative w-[320px] md:w-full max-w-md aspect-3/4 bg-gray-100 overflow-hidden shadow-2xl flex flex-col justify-end animate-in fade-in zoom-in duration-300 font-sans border-8 border-white">
 
                             {/* --- 1. Paper Texture & Creases Overlay --- */}
                             {/* Main Wrinkled Paper Texture */}
@@ -1395,7 +1395,7 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
 
                             {/* --- 2. Main Typography Content --- */}
                             {/* Using a flex container to stack the words tightly */}
-                            <div className="relative z-10 flex flex-col leading-[0.85] text-[5rem] md:text-[6rem] text-[rgb(var(--color-highlight))] p-2 mb-20">
+                            <div className="relative z-10 flex flex-col leading-[0.85] text-[5rem] md:text-[6rem] text-[#FFE600] p-2 mb-20">
 
                                 {/* WORD 1: GOOD (Yellow on Purple) */}
                                 <h1 className="transform origin-bottom-left"

@@ -785,3 +785,7 @@ body,
   backface-visibility: hidden;
   transform: translateZ(0); 
 }
+
+.app-container {
+  padding-top: env(safe-area-inset-top);
+}

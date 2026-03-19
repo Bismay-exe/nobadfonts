@@ -11,6 +11,7 @@ import { HelmetProvider } from 'react-helmet-async';
 import BackHandler from './components/capacitor/BackHandler';
 
 import { SplashScreen } from '@capacitor/splash-screen';
+import { StatusBar } from "@capacitor/status-bar";
 import { useEffect } from 'react';
 
 const FontsCatalog = React.lazy(() => import('./pages/FontsCatalog'));
@@ -29,9 +30,13 @@ function App() {
   const location = useLocation();
 
   useEffect(() => {
-    // Hide splash screen after app is ready
-    SplashScreen.hide();
-  }, []);
+  const init = async () => {
+    await SplashScreen.hide();
+    await StatusBar.hide();
+  };
+
+  init();
+}, []);
 
   return (
     <HelmetProvider>
