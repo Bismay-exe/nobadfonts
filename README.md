@@ -212,19 +212,43 @@ Enforced at the database level via **Supabase Row Level Security (RLS)** — not
 
 **🏠 Landing Page**
 
-![Landing Page](https://placehold.co/900x480/0f0f0f/ffffff?text=NoBadFonts+—+Landing+Page "Hero section with animated typography showcase")
+![Landing Page](https://www.nobadfonts.in/Mockups/IpadAir/landing.png "Hero section with animated typography showcase")
 
 **🔤 Font Catalog**
 
-![Font Catalog](https://placehold.co/900x480/111111/ffffff?text=Curated+Font+Catalog "Browse and filter the curated font library")
+![Font Catalog](https://www.nobadfonts.in/Mockups/IpadAir/catalog.png "Browse and filter the curated font library")
 
-**🔬 Context-Aware Type Tester**
+**🔤 Font Details**
 
-![Type Tester](https://placehold.co/900x480/1a1a2e/ffffff?text=Interactive+Type+Tester "Preview fonts in UI, editorial, and code contexts")
+![Font Details](https://www.nobadfonts.in/Mockups/IpadAir/font.png "Font details page with all the information about the font")
+
+**🔬 Font Pairing**
+
+![Font Pairing](https://www.nobadfonts.in/Mockups/IpadAir/pairing.png "Preview and choose fonts to pair in UI, editorial, and code contexts")
+
+**🔬 NoBadFonts-cli**
+
+![NoBadFonts-cli](https://www.nobadfonts.in/Mockups/IpadAir/cli.png "CLI tool to add fonts to the platform directly from your terminal")
 
 **📱 Mobile View (Capacitor)**
 
-![Mobile](https://placehold.co/400x700/0f0f0f/ffffff?text=Native+Mobile+App "Android and iOS — same codebase, full native feel")
+
+
+**🔤 Font Catalog**
+
+![Font Catalog](https://www.nobadfonts.in/Mockups/Iphone14ProMax/catalog.png "Browse and filter the curated font library")
+
+**🔤 Font Details**
+
+![Font Details](https://www.nobadfonts.in/Mockups/Iphone14ProMax/font.png "Font details page with all the information about the font")
+
+**🔬 Font Pairing**
+
+![Font Pairing](https://www.nobadfonts.in/Mockups/Iphone14ProMax/pairing.png "Preview and choose fonts to pair in UI, editorial, and code contexts")
+
+**🔬 NoBadFonts-cli**
+
+![NoBadFonts-cli](https://www.nobadfonts.in/Mockups/Iphone14ProMax/cli.png "CLI tool to add fonts to the platform directly from your terminal")
 
 ---
 
