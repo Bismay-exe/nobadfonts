@@ -11,11 +11,11 @@ const Footer: React.FC = () => {
   }, []);
 
     return (
-        <footer className="hidden sm:block bg-black text-zinc-400 py-20 font-sans selection:bg-white selection:text-black z-50">
+        <footer className="hidden sm:block bg-black text-zinc-400 pb-20 font-sans selection:bg-white selection:text-black z-50">
             <div className="max-w-480 mx-auto px-3">
 
                 <div className=''>
-                    <div className='h-20rem w-20rem relative'>
+                    <div className='hidden h-20rem w-20rem relative'>
                         <video ref={videoRef} autoPlay loop muted playsInline src="/videos/logo.webm"></video>
                     </div>
                 </div>
