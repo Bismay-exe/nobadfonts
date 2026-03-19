@@ -17,7 +17,7 @@ export default function Cli() {
         <div className="mx-auto md:py-20 border-b-2 border-black">
 
             {/* Hero */}
-            <div className="h-[83vh] md:h-auto flex flex-col justify-center items-center px-6 mb-20 text-center">
+            <div className="h-[83vh] md:h-auto flex flex-col justify-center items-center px-0 mb-20 text-center">
                 <div className="inline-flex scale-75 md:scale-90 lg:scale-100 items-center gap-2 px-4 py-2 bg-black text-[#ff0000] rounded-full font-mono font-bold text-sm mb-6 border border-[#ff0000]">
                     <Terminal size={16} />
                     RELEASE v1.0.0
@@ -25,12 +25,12 @@ export default function Cli() {
                 <h1 className="text-[10vw] md:text-[7vw] text-[#ff0000] font-aspect-range leading-normal uppercase my-6">
                     The <span className="text-transparent bg-clip-text bg-linear-to-r from-[#ff0000] to-[#ff0000]">NoBadFonts</span> CLI
                 </h1>
-                <p className="text-xl md:text-2xl font-qurova-4zud text-[#636363] max-w-3xl mx-auto mb-10">
+                <p className="text-xl md:text-2xl text-[#636363] max-w-3xl mx-auto mb-10">
                     Stop manually downloading zip files. Add fonts directly to your project with a single command.
                 </p>
 
                 {/* Command Box */}
-                <div className="max-w-2xl mx-auto bg-[#252525] rounded-xl p-4 md:p-8 relative group overflow-hidden border-2 border-[#636363]">
+                <div className="max-w-2xl w-full mx-auto bg-white/10 rounded-xl p-2 md:p-8 relative group overflow-hidden border-2 border-[#636363]">
                     <div className="absolute top-4 left-4 flex gap-2">
                         <div className="w-3 h-3 rounded-full bg-red-500"></div>
                         <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
@@ -38,7 +38,7 @@ export default function Cli() {
                     </div>
 
                     <div className="mt-10 md:mt-6 flex flex-col md:flex-row items-end justify-between gap-4">
-                        <code className="bg-transparent text-[#f8f8f8] font-mono text-[19px] md:text-xl font-bold outline-none w-full text-left">
+                        <code className="bg-transparent text-white/90 font-mono text-[4.3vw] whitespace-nowrap md:text-xl outline-none w-full text-left">
                             <span className="text-[#ff0000]">$</span> {command}
                         </code>
                         <button
@@ -53,36 +53,36 @@ export default function Cli() {
             </div>
 
             {/* Features Grid */}
-            <div className="grid md:grid-cols-3 md:gap-8 mb-20 max-w-7xl mx-auto">
+            <div className="grid md:grid-cols-3 gap-4 md:gap-8 mb-20 max-w-7xl mx-auto">
                 {/* Feature 1 */}
-                <div className="bg-[#ffffff] border-2 border-black rounded-4xl p-8 hover:-translate-y-2 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all duration-300">
-                    <div className="w-16 h-16 bg-black text-white rounded-2xl flex items-center justify-center mb-6 rotate-3">
+                <div className="bg-white/5 border border-white/5 rounded-4xl p-8 hover:-translate-y-2 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all duration-300">
+                    <div className="w-16 h-16 bg-white text-black rounded-2xl flex items-center justify-center mb-6 rotate-3">
                         <Download size={32} />
                     </div>
                     <h3 className="text-2xl font-black uppercase mb-3">Instant Download</h3>
-                    <p className="font-medium text-gray-500">
-                        Fetches .ttf, .otf, .woff, and .woff2 files directly from our CDN and places them in your <code className="bg-gray-200 px-1 rounded">public/fonts</code> folder automatically.
+                    <p className="font-light text-white/60">
+                        Fetches .ttf, .otf, .woff, and .woff2 files directly from our CDN and places them in your <code className="bg-white text-black font-bold px-1 py-0.5 rounded">public/fonts</code> folder automatically.
                     </p>
                 </div>
 
                 {/* Feature 2 */}
-                <div className="bg-[#ffffff] border-2 border-black rounded-4xl p-8 hover:-translate-y-2 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all duration-300">
-                    <div className="w-16 h-16 bg-black text-white rounded-2xl flex items-center justify-center mb-6 -rotate-3">
+                <div className="bg-white/5 border border-white/5 rounded-4xl p-8 hover:-translate-y-2 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all duration-300">
+                    <div className="w-16 h-16 bg-white text-black rounded-2xl flex items-center justify-center mb-6 -rotate-3">
                         <FileJson size={32} />
                     </div>
                     <h3 className="text-2xl font-black uppercase mb-3">CSS Generation</h3>
-                    <p className="font-medium text-gray-800">
-                        Writes the full <code className="bg-[#EEEFEB]/50 px-1 rounded">@font-face</code> definition for you. No more guessing weights, styles, or file paths. It just works.
+                    <p className="font-light text-white/60">
+                        Writes the full <code className="bg-white text-black font-bold px-1 py-0.5 rounded">@font-face</code> definition for you. No more guessing weights, styles, or file paths. It just works.
                     </p>
                 </div>
 
                 {/* Feature 3 */}
-                <div className="bg-[#ffffff] border-2 border-black rounded-4xl p-8 hover:-translate-y-2 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all duration-300">
-                    <div className="w-16 h-16 bg-black text-white rounded-2xl flex items-center justify-center mb-6 rotate-3">
+                <div className="bg-white/5 border border-white/5 rounded-4xl p-8 hover:-translate-y-2 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all duration-300">
+                    <div className="w-16 h-16 bg-white text-black rounded-2xl flex items-center justify-center mb-6 rotate-3">
                         <Zap size={32} />
                     </div>
                     <h3 className="text-2xl font-black uppercase mb-3">Zero Config</h3>
-                    <p className="font-medium text-gray-800">
+                    <p className="font-light text-white/60">
                         Works with Vite, Next.js, Create React App, and vanilla HTML. It detects your project structure intelligently.
                     </p>
                 </div>
