@@ -29,19 +29,19 @@ class ErrorBoundary extends Component<Props, State> {
     public render() {
         if (this.state.hasError) {
             return (
-                <div className="min-h-screen flex items-center justify-center bg-red-50 p-8">
-                    <div className="bg-white p-8 rounded-4xl shadow-xl max-w-2xl w-full border-2 border-red-200">
-                        <h1 className="text-3xl font-bold text-red-600 mb-4">Something went wrong</h1>
-                        <div className="bg-gray-100 p-4 rounded-xl overflow-auto mb-4">
-                            <p className="font-mono text-red-800 font-bold mb-2">
+                <div className="min-h-screen flex items-center justify-center bg-[rgb(var(--color-destructive)/0.1)] p-8">
+                    <div className="bg-[rgb(var(--color-background))] p-8 rounded-4xl shadow-xl max-w-2xl w-full border-2 border-[rgb(var(--color-destructive)/0.2)]">
+                        <h1 className="text-3xl font-bold text-[rgb(var(--color-destructive))] mb-4">Something went wrong</h1>
+                        <div className="bg-[rgb(var(--color-muted)/0.1)] p-4 rounded-xl overflow-auto mb-4">
+                            <p className="font-mono text-[rgb(var(--color-destructive))] font-bold mb-2">
                                 {this.state.error && this.state.error.toString()}
                             </p>
-                            <pre className="font-mono text-xs text-gray-700 whitespace-pre-wrap">
+                            <pre className="font-mono text-xs text-[rgb(var(--color-muted-foreground))] whitespace-pre-wrap">
                                 {this.state.errorInfo?.componentStack}
                             </pre>
                         </div>
                         <button
-                            className="bg-red-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-red-700 transition-colors"
+                            className="bg-[rgb(var(--color-destructive))] text-white px-6 py-3 rounded-xl font-bold hover:brightness-110 transition-colors"
                             onClick={() => window.location.reload()}
                         >
                             Reload Page

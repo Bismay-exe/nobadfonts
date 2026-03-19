@@ -79,7 +79,7 @@ export default function FontGrid({ fonts, emptyMessage = "No fonts found.", load
             <div className="masonic-grid">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {[...Array(8)].map((_, i) => (
-                        <div key={i} className="bg-zinc-900/60 rounded-4xl border border-white/20 h-64 animate-pulse" />
+                        <div key={i} className="bg-[rgb(var(--color-card)/0.6)] rounded-4xl border border-[rgb(var(--color-border))] h-64 animate-pulse" />
                     ))}
                 </div>
             </div>
@@ -110,8 +110,8 @@ export default function FontGrid({ fonts, emptyMessage = "No fonts found.", load
             </aside>
 
             {fonts.length === 0 ? (
-                <div className="text-center py-12 bg-gray-50 rounded-4xl border border-dashed border-gray-200">
-                    <p className="text-gray-500">{emptyMessage}</p>
+                <div className="text-center py-12 bg-[rgb(var(--color-muted)/0.05)] rounded-4xl border border-dashed border-[rgb(var(--color-border))]">
+                    <p className="text-[rgb(var(--color-muted-foreground))]">{emptyMessage}</p>
                 </div>
             ) : (
                 <div className={`masonic-grid ${isBulkToggling ? 'is-bulk-toggling' : ''}`}>

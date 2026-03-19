@@ -166,7 +166,7 @@ export default function DesignerFonts() {
                                 navigate('/fonts');
                             }
                         }}
-                        className="absolute top-6 left-2 md:top-10 md:left-4 flex items-center gap-2 text-sm font-bold uppercase tracking-widest hover:text-gray-600 transition-colors z-10"
+                        className="absolute top-6 left-2 md:top-10 md:left-4 flex items-center gap-2 text-sm font-bold uppercase tracking-widest hover:text-[rgb(var(--color-muted-foreground))] transition-colors z-10"
                     >
                         <ArrowLeft size={16} /> Back
                     </button>
@@ -174,7 +174,7 @@ export default function DesignerFonts() {
                     <h1 className="text-4xl md:text-6xl font-black mb-4">
                         {decodeURIComponent(designerName || '')}
                     </h1>
-                    <p className="text-sm md:text-xl text-gray-500 font-medium">
+                    <p className="text-sm md:text-xl text-[rgb(var(--color-muted-foreground))] font-medium">
                         {fonts.length} {fonts.length === 1 ? 'Font' : 'Fonts'} Collection
                     </p>
                 </div>
@@ -202,10 +202,10 @@ export default function DesignerFonts() {
                 </aside>
 
                 {/* Content Grid */}
-                <div className="grow border-t border-black">
+                <div className="grow border-t border-[rgb(var(--color-border))]">
                     {error && (
                         <div className="max-w-7xl mx-auto p-6">
-                            <div className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-200">
+                            <div className="bg-[rgb(var(--color-destructive)/0.1)] text-[rgb(var(--color-destructive))] p-4 rounded-xl border border-[rgb(var(--color-destructive)/0.2)]">
                                 Error loading fonts: {error}
                             </div>
                         </div>
@@ -218,7 +218,7 @@ export default function DesignerFonts() {
                             }}
                         >
                             {[...Array(16)].map((_, i) => (
-                                <div key={i} className="bg-zinc-900/60 mb-4 sm:mb-6 rounded-4xl border border-white/20 h-64 animate-pulse" />
+                                <div key={i} className="bg-[rgb(var(--color-card)/0.6)] mb-4 sm:mb-6 rounded-4xl border border-[rgb(var(--color-border))] h-64 animate-pulse" />
                             ))}
                         </div>
                     ) : filteredFonts.length > 0 ? (

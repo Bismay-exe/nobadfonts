@@ -78,47 +78,47 @@ export default function SettingsForm({ onCancel }: { onCancel: () => void }) {
     };
 
     return (
-        <div className="bg-white/5 rounded-xl md:rounded-4xl shadow-sm border border-white/5 p-2 md:p-4 lg:p-8 mx-auto">
+        <div className="bg-[rgb(var(--color-card)/0.05)] rounded-xl md:rounded-4xl shadow-sm border border-[rgb(var(--color-border)/0.5)] p-2 md:p-4 lg:p-8 mx-auto">
             <h2 className="text-xl md:text-2xl font-bold my-6 px-2 text-center">Edit Profile</h2>
 
             {message && (
-                <div className={`p-4 rounded-lg mb-6 ${message.type === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
+                <div className={`p-4 rounded-lg mb-6 ${message.type === 'success' ? 'bg-[rgb(var(--color-highlight)/0.1)] text-[rgb(var(--color-highlight))]' : 'bg-[rgb(var(--color-destructive)/0.1)] text-[rgb(var(--color-destructive))]'}`}>
                     {message.text}
                 </div>
             )}
 
             <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
-                    <label className="block text-sm font-medium text-white/20 mb-1 pl-2">Full Name</label>
+                    <label className="block text-sm font-medium text-[rgb(var(--color-muted-foreground)/0.4)] mb-1 pl-2">Full Name</label>
                     <input
                         type="text"
                         value={fullName}
                         onChange={(e) => setFullName(e.target.value)}
-                        className="w-full px-4 py-2 border border-white/10 rounded-xl outline-none"
+                        className="w-full px-4 py-2 border border-[rgb(var(--color-border))] rounded-xl outline-none bg-transparent"
                         required
                     />
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-white/20 mb-1 pl-2">Username</label>
+                    <label className="block text-sm font-medium text-[rgb(var(--color-muted-foreground)/0.4)] mb-1 pl-2">Username</label>
                     <div className="relative">
-                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30 font-bold">@</span>
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[rgb(var(--color-muted-foreground)/0.3)] font-bold">@</span>
                         <input
                             type="text"
                             value={username}
                             onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
-                            className="w-full pl-8 pr-4 py-2 border border-white/10 rounded-xl outline-none font-mono"
+                            className="w-full pl-8 pr-4 py-2 border border-[rgb(var(--color-border))] rounded-xl outline-none font-mono bg-transparent"
                             placeholder="username"
                             required
                         />
                     </div>
-                    <p className="text-xs text-white/30 font-mono mt-1 ml-2">Only lowercase letters, numbers, and hyphens.</p>
+                    <p className="text-xs text-[rgb(var(--color-muted-foreground)/0.3)] font-mono mt-1 ml-2">Only lowercase letters, numbers, and hyphens.</p>
                 </div>
 
                 <div>
                     <div className="flex justify-between items-center mb-1 px-2">
-                        <label className="block text-sm font-medium text-white/20">Bio</label>
-                        <span className={`text-xs ${bio.length === 150 ? 'text-red-500 font-bold' : 'text-white/40'}`}>
+                        <label className="block text-sm font-medium text-[rgb(var(--color-muted-foreground)/0.4)]">Bio</label>
+                        <span className={`text-xs ${bio.length === 150 ? 'text-[rgb(var(--color-destructive))] font-bold' : 'text-[rgb(var(--color-muted-foreground)/0.4)]'}`}>
                             {bio.length}/150
                         </span>
                     </div>
@@ -127,61 +127,61 @@ export default function SettingsForm({ onCancel }: { onCancel: () => void }) {
                         onChange={(e) => setBio(e.target.value)}
                         rows={4}
                         maxLength={150}
-                        className="w-full px-4 py-2 border border-white/10 rounded-xl outline-none resize-none"
+                        className="w-full px-4 py-2 border border-[rgb(var(--color-border))] rounded-xl outline-none resize-none bg-transparent"
                         placeholder="Tell us a bit about yourself..."
                     />
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-white/20 mb-1 pl-2">Portfolio & Socials</label>
+                    <label className="block text-sm font-medium text-[rgb(var(--color-muted-foreground)/0.4)] mb-1 pl-2">Portfolio & Socials</label>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <input
                             type="url"
                             value={website}
                             onChange={(e) => setWebsite(e.target.value)}
-                            className="w-full px-4 py-2 border border-white/10 rounded-xl outline-none"
+                            className="w-full px-4 py-2 border border-[rgb(var(--color-border))] rounded-xl outline-none bg-transparent"
                             placeholder="Personal Website URL"
                         />
                         <input
                             type="url"
                             value={behance}
                             onChange={(e) => setBehance(e.target.value)}
-                            className="w-full px-4 py-2 border border-white/10 rounded-xl outline-none"
+                            className="w-full px-4 py-2 border border-[rgb(var(--color-border))] rounded-xl outline-none bg-transparent"
                             placeholder="Behance URL"
                         />
                         <input
                             type="url"
                             value={twitter}
                             onChange={(e) => setTwitter(e.target.value)}
-                            className="w-full px-4 py-2 border border-white/10 rounded-xl outline-none"
+                            className="w-full px-4 py-2 border border-[rgb(var(--color-border))] rounded-xl outline-none bg-transparent"
                             placeholder="Twitter/X URL"
                         />
                         <input
                             type="url"
                             value={instagram}
                             onChange={(e) => setInstagram(e.target.value)}
-                            className="w-full px-4 py-2 border border-white/10 rounded-xl outline-none"
+                            className="w-full px-4 py-2 border border-[rgb(var(--color-border))] rounded-xl outline-none bg-transparent"
                             placeholder="Instagram URL"
                         />
                         <input
                             type="url"
                             value={linkedin}
                             onChange={(e) => setLinkedin(e.target.value)}
-                            className="w-full px-4 py-2 border border-white/10 rounded-xl outline-none"
+                            className="w-full px-4 py-2 border border-[rgb(var(--color-border))] rounded-xl outline-none bg-transparent"
                             placeholder="LinkedIn URL"
                         />
                     </div>
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-white/20 mb-1 pl-2">Donations</label>
+                    <label className="block text-sm font-medium text-[rgb(var(--color-muted-foreground)/0.4)] mb-1 pl-2">Donations</label>
                     <div className="relative">
-                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30 font-bold">paypal.me/</span>
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[rgb(var(--color-muted-foreground)/0.3)] font-bold">paypal.me/</span>
                         <input
                             type="text"
                             value={paypalMe}
                             onChange={(e) => setPaypalMe(e.target.value)}
-                            className="w-full pl-28 pr-4 py-2 border rounded-xl outline-none border-white/10"
+                            className="w-full pl-28 pr-4 py-2 border border-[rgb(var(--color-border))] rounded-xl outline-none bg-transparent"
                             placeholder="username"
                         />
                     </div>
@@ -192,14 +192,14 @@ export default function SettingsForm({ onCancel }: { onCancel: () => void }) {
                         type="button"
                         onClick={onCancel}
                         disabled={loading}
-                        className="px-6 py-2 text-gray-600 hover:bg-gray-50 rounded-2xl transition-colors"
+                        className="px-6 py-2 text-[rgb(var(--color-muted-foreground))] hover:bg-[rgb(var(--color-muted)/0.05)] rounded-2xl transition-colors"
                     >
                         Cancel
                     </button>
                     <button
                         type="submit"
                         disabled={loading}
-                        className="px-6 py-2 bg-black text-white rounded-2xl hover:bg-gray-800 transition-colors shadow-lg disabled:opacity-50"
+                        className="px-6 py-2 bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] rounded-2xl hover:opacity-90 transition-colors shadow-lg disabled:opacity-50"
                     >
                         {loading ? 'Saving...' : 'Save Changes'}
                     </button>

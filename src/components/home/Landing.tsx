@@ -15,8 +15,8 @@ const styles = `
 @import url("https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap");
 
 :root {
-  --dark: rgba(17, 39, 11, 1);
-  --light: rgba(162, 255, 91, 1);
+  --dark: rgb(var(--color-background));
+  --light: rgb(var(--color-highlight));
 }
 
 .phive-scroll-wrapper * {
@@ -184,9 +184,9 @@ const PhiveScrollAnimation: React.FC = () => {
             const textContainer3 = self.selector?.(".sticky-text-3 .text-container")[0];
 
             // Get CSS variable (hacky way to get it from computed style in JS)
-            const outroTextBgColor = getComputedStyle(document.documentElement)
+            const outroTextBgColor = getComputedStyle(containerRef.current!)
                 .getPropertyValue("--dark")
-                .trim() || "rgba(17, 39, 11, 1)";
+                .trim() || "rgb(var(--color-background))";
 
             // --- SplitText Logic ---
             let headerSplit: any = null;
@@ -327,15 +327,10 @@ const PhiveScrollAnimation: React.FC = () => {
                     } else if (progress >= 0.25 && progress <= 0.5) {
                         const fadeProgress = (progress - 0.25) / 0.25;
                         const bgOpacity = Math.max(0, Math.min(1, 1 - fadeProgress));
-                        textContainer3.style.backgroundColor = outroTextBgColor.replace(
-                            "1)",
-                            `${bgOpacity})`
-                        );
+                        // Since we are using variables, we can set opacity on the element
+                        textContainer3.style.opacity = bgOpacity.toString();
                     } else if (progress > 0.5) {
-                        textContainer3.style.backgroundColor = outroTextBgColor.replace(
-                            "1)",
-                            "0)"
-                        );
+                        textContainer3.style.opacity = "0";
                     }
 
                     // Opacity Fading

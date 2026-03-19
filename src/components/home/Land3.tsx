@@ -13,8 +13,8 @@ const styles = `
 @import url("https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap");
 
 :root {
-  --dark: #1C1D1E;
-  --light: #EEEFEB;
+  --dark: rgb(var(--color-background));
+  --light: rgb(var(--color-card));
 }
 
 /* Initial state for text scaling animation (Must remain in CSS for precision) */
@@ -61,9 +61,9 @@ const Landing: React.FC = () => {
             const textContainer3 = self.selector?.(".sticky-text-3 .text-container")[0];
 
             // Get CSS variable
-            const outroTextBgColor = getComputedStyle(document.documentElement)
+            const outroTextBgColor = getComputedStyle(containerRef.current!)
                 .getPropertyValue("--dark")
-                .trim() || "rgba(17, 39, 11, 1)";
+                .trim() || "rgb(var(--color-background))";
 
             // --- SplitText Logic ---
             let headerSplit: any = null;
@@ -199,9 +199,9 @@ const Landing: React.FC = () => {
                     } else if (progress >= 0.25 && progress <= 0.5) {
                         const fadeProgress = (progress - 0.25) / 0.25;
                         const bgOpacity = Math.max(0, Math.min(1, 1 - fadeProgress));
-                        textContainer3.style.backgroundColor = outroTextBgColor.replace("1)", `${bgOpacity})`);
+                        textContainer3.style.opacity = bgOpacity.toString();
                     } else if (progress > 0.5) {
-                        textContainer3.style.backgroundColor = outroTextBgColor.replace("1)", "0)");
+                        textContainer3.style.opacity = "0";
                     }
 
                     // Opacity Fading
@@ -299,14 +299,14 @@ const Landing: React.FC = () => {
                     />
                 </div>
 
-                <div className={`text-container ${absoluteCoverClasses} bg-(--dark) text-(--light)`}>
+                <div className={`text-container ${absoluteCoverClasses} bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))]`}>
                     <h1 className={`${bigTextClasses} text-[18vw]`}>
                         Typography
                     </h1>
                 </div>
 
                 <div className="header absolute h-full w-full flex justify-center items-center z-0">
-                    <h1 className="w-screen text-[#ff0000] uppercase text-[18vw] md:text-[14vw] lg:text-[10vw] font-categories-elegant tracking-tight leading-[1.3] text-center">
+                    <h1 className="w-screen text-[rgb(var(--color-primary))] uppercase text-[18vw] md:text-[14vw] lg:text-[10vw] font-categories-elegant tracking-tight leading-[1.3] text-center">
                         <div className="hidden lg:block">Seriously</div>
                         <div className="lg:hidden">Just</div>
                         <div className="flex flex-col lg:flex-row lg:justify-center lg:gap-[16vw] gap-0">

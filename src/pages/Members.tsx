@@ -92,33 +92,33 @@ export default function Members() {
     const MemberCard = ({ member, rank }: { member: Profile, rank?: number }) => (
         <Link to={`/members/${member.username || member.id}`} className="block group h-full">
             <div className={`
-                bg-[#EEEFEB] border-2 border-black rounded-4xl p-6 relative h-full flex flex-col items-center transition-all duration-200
-                hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1
-                ${rank === 1 ? 'bg-yellow-50 border-yellow-400' : ''}
+                bg-[rgb(var(--color-card))] border-2 border-[rgb(var(--color-foreground))] rounded-4xl p-6 relative h-full flex flex-col items-center transition-all duration-200
+                hover:shadow-[4px_4px_0px_0px_rgba(var(--color-foreground),1)] hover:-translate-y-1
+                ${rank === 1 ? 'bg-[rgb(var(--color-highlight)/0.05)] border-[rgb(var(--color-highlight))]' : ''}
             `}>
                 {/* Rank Badge for Top 3 */}
                 {rank && (
                     <div className={`
-                        absolute -top-4 -right-4 w-10 h-10 rounded-full border-2 border-black flex items-center justify-center font-black text-lg z-10
-                        ${rank === 1 ? 'bg-[#BDF522] text-black scale-125' : ''}
-                        ${rank === 2 ? 'bg-[#ff9651]' : ''}
-                        ${rank === 3 ? 'bg-[#fffc67]' : ''}
+                        absolute -top-4 -right-4 w-10 h-10 rounded-full border-2 border-[rgb(var(--color-foreground))] flex items-center justify-center font-black text-lg z-10
+                        ${rank === 1 ? 'bg-[rgb(var(--color-highlight))] text-[rgb(var(--color-background))] scale-125' : ''}
+                        ${rank === 2 ? 'bg-[rgb(var(--color-accent))] text-[rgb(var(--color-background))]' : ''}
+                        ${rank === 3 ? 'bg-[rgb(var(--color-highlight)/0.8)] text-[rgb(var(--color-background))]' : ''}
                     `}>
                         #{rank}
                     </div>
                 )}
 
                 <div className="w-24 h-24 mb-4 relative">
-                    <div className="w-full h-full bg-gray-100 rounded-full border-2 border-black overflow-hidden">
+                    <div className="w-full h-full bg-[rgb(var(--color-foreground)/0.05)] rounded-full border-2 border-[rgb(var(--color-foreground))] overflow-hidden">
                         {member.avatar_url ? (
                             <img src={member.avatar_url} alt={member.full_name} className="w-full h-full object-cover" />
                         ) : (
-                            <div className="w-full h-full flex items-center justify-center font-black text-3xl text-gray-300 uppercase">
+                            <div className="w-full h-full flex items-center justify-center font-black text-3xl text-[rgb(var(--color-muted-foreground))] uppercase">
                                 {member.full_name.charAt(0)}
                             </div>
                         )}
                     </div>
-                    <div className={`absolute bottom-0 right-0 w-6 h-6 rounded-full border-2 border-black ${member.role === 'admin' ? 'bg-[#FF90E8]' : 'bg-[#BDF522]'}`} />
+                    <div className={`absolute bottom-0 right-0 w-6 h-6 rounded-full border-2 border-[rgb(var(--color-foreground))] ${member.role === 'admin' ? 'bg-[rgb(var(--color-accent))]' : 'bg-[rgb(var(--color-highlight))]'}`} />
                     <div className={`
                         absolute -top-4 -left-4 w-10 h-10 -rotate-45 flex items-center justify-center font-black text-4xl z-10
                         ${rank === 1 ? 'block' : 'hidden'}
@@ -129,18 +129,18 @@ export default function Members() {
                     </div>
                 </div>
 
-                <h2 className="text-xl font-bold text-center mb-1 text-[#7B46F8] transition-colors line-clamp-1">
+                <h2 className="text-xl font-bold text-center mb-1 text-[rgb(var(--color-primary))] transition-colors line-clamp-1">
                     {member.full_name}
                 </h2>
 
-                <p className="text-gray-500 font-bold text-sm mb-4">
+                <p className="text-[rgb(var(--color-muted-foreground))] font-bold text-sm mb-4">
                     {member.font_count} Uploads
                 </p>
 
                 <div className="mt-auto pt-2">
                     <span className={`
-                        inline-block px-3 py-1 rounded-full text-xs font-bold uppercase border border-black
-                        ${member.role === 'admin' ? 'bg-[#FF90E8] text-black' : 'bg-[#BDF522] text-black'}
+                        inline-block px-3 py-1 rounded-full text-xs font-bold uppercase border border-[rgb(var(--color-foreground))]
+                        ${member.role === 'admin' ? 'bg-[rgb(var(--color-accent))] text-[rgb(var(--color-background))]' : 'bg-[rgb(var(--color-highlight))] text-[rgb(var(--color-background))]'}
                     `}>
                         {member.role}
                     </span>
@@ -152,20 +152,20 @@ export default function Members() {
     // Role Check
     if (!profile || (profile.role !== 'member' && profile.role !== 'admin')) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-[84.4vh]  rounded-4xl text-center p-8 space-y-6">
-                <div className="bg-red-100 p-6 rounded-full">
-                    <div className="text-6xl">🔒</div>
+            <div className="flex flex-col items-center justify-center min-h-[84.4vh] rounded-4xl text-center p-8 space-y-6">
+                <div className="bg-[rgb(var(--color-destructive)/0.1)] p-6 rounded-full border-2 border-[rgb(var(--color-destructive)/0.2)]">
+                    <div className="text-6xl text-[rgb(var(--color-destructive))]">🔒</div>
                 </div>
-                <h1 className="text-4xl font-black uppercase">Access Restricted</h1>
-                <p className="text-xl text-gray-600 max-w-lg">
+                <h1 className="text-4xl font-black uppercase text-[rgb(var(--color-foreground))]">Access Restricted</h1>
+                <p className="text-xl text-[rgb(var(--color-muted-foreground))] max-w-lg">
                     Viewing members is currently restricted to approved <strong>Members</strong> and <strong>Admins</strong>.
                 </p>
                 <div className="flex gap-4">
-                    <button onClick={() => navigate('/')} className="px-6 py-3 bg-black text-white rounded-xl font-bold hover:scale-105 transition-transform">
+                    <button onClick={() => navigate('/')} className="px-6 py-3 bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] rounded-xl font-bold hover:scale-105 transition-transform">
                         Go Home
                     </button>
                     {/* Placeholder for future "Request Access" feature */}
-                    <button disabled className="px-6 py-3 border-2 border-black text-black rounded-xl font-bold opacity-50 cursor-not-allowed">
+                    <button disabled className="px-6 py-3 border-2 border-[rgb(var(--color-foreground))] text-[rgb(var(--color-foreground))] rounded-xl font-bold opacity-50 cursor-not-allowed">
                         Request Access
                     </button>
                 </div>
@@ -175,18 +175,18 @@ export default function Members() {
 
     if (loading) return (
         <div className="flex justify-center items-center min-h-[50vh]">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-black"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[rgb(var(--color-foreground))]"></div>
         </div>
     );
 
     return (
         <div className="mx-auto">
-            <div className='p-2 md:p-6 border-b-2 border-white/10'>
+            <div className='p-2 md:p-6 border-b border-[rgb(var(--color-border))]'>
 
                 {/* Top 3 Section */}
                 {topMembers.length > 0 && (
                     <div className="px-4 py-8">
-                        <h2 className="text-2xl font-bold pb-12 flex items-center gap-2">
+                        <h2 className="text-2xl font-bold pb-12 flex items-center gap-2 text-[rgb(var(--color-foreground))]">
                             <span className="text-3xl">👑</span> Top Contributors
                         </h2>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -206,38 +206,38 @@ export default function Members() {
                 <div>
                     <div className="overflow-hidden">
                         <table className="w-full text-left border-collapse">
-                            <tbody className="divide-y-2 divide-white/10">
+                            <tbody className="divide-y-2 divide-[rgb(var(--color-foreground)/0.1)]">
                                 {otherMembers.map((member, index) => (
                                     <tr key={member.id}>
-                                        <td className="hidden p-4 w-16 text-center font-black text-gray-400 text-xl font-mono">
+                                        <td className="hidden p-4 w-16 text-center font-black text-[rgb(var(--color-muted-foreground))] text-xl font-mono">
                                             #{index + 4}
                                         </td>
                                         <td className="p-4">
                                             <div className="relative flex items-center gap-4">
                                                 <Link to={`/members/${member.username || member.id}`} className="w-12 h-12 relative">
-                                                    <div className="w-14 h-14 bg-gray-200 rounded-full border-2 border-black overflow-hidden shrink-0">
+                                                    <div className="w-14 h-14 bg-[rgb(var(--color-foreground)/0.05)] rounded-full border-2 border-[rgb(var(--color-foreground))] overflow-hidden shrink-0">
                                                         {member.avatar_url ? (
                                                             <img src={member.avatar_url} alt={member.full_name} className="w-full h-full object-cover" />
                                                         ) : (
-                                                            <div className="w-full h-full flex items-center justify-center font-black text-gray-400">
+                                                            <div className="w-full h-full flex items-center justify-center font-black text-[rgb(var(--color-muted-foreground))]">
                                                                 {member.full_name.charAt(0)}
                                                             </div>
                                                         )}
-                                                        <td className="absolute -top-2 -right-2 w-7 h-7 bg-[#BDF522] rounded-full border-2 border-black flex items-center justify-center font-black text-xs">
+                                                        <div className="absolute -top-2 -right-2 w-7 h-7 bg-[rgb(var(--color-highlight))] rounded-full border-2 border-[rgb(var(--color-foreground))] flex items-center justify-center font-black text-[rgb(var(--color-background))] text-xs">
                                                             #{index + 4}
-                                                        </td>
+                                                        </div>
                                                     </div>
                                                 </Link>
                                                 <div>
-                                                    <div className="font-bold text-sm md:text-lg">{member.full_name}</div>
+                                                    <div className="font-bold text-sm md:text-lg text-[rgb(var(--color-foreground))]">{member.full_name}</div>
                                                     <div className="flex gap-2">
                                                         <span className={`
-                                                        inline-block px-2 py-0.5 rounded-full text-[10px] font-bold uppercase border border-black
-                                                        ${member.role === 'admin' ? 'bg-[#FF90E8] text-black' : 'bg-[#BDF522] text-black'}
+                                                        inline-block px-2 py-0.5 rounded-full text-[10px] font-bold uppercase border border-[rgb(var(--color-foreground))]
+                                                        ${member.role === 'admin' ? 'bg-[rgb(var(--color-accent))] text-[rgb(var(--color-background))]' : 'bg-[rgb(var(--color-highlight))] text-[rgb(var(--color-background))]'}
                                                         `}>
                                                             {member.role}
                                                         </span>
-                                                        <div className="text-sm font-bold text-gray-500">{member.font_count} Uploads</div>
+                                                        <div className="text-sm font-bold text-[rgb(var(--color-muted-foreground))]">{member.font_count} Uploads</div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -245,7 +245,7 @@ export default function Members() {
                                         <td className="hidden md:block p-4 text-right">
                                             <Link
                                                 to={`/members/${member.username || member.id}`}
-                                                className="inline-flex gap-2 items-center px-6 py-3 border-2 border-white/10 text-white hover:text-black/80 font-bold rounded-full hover:bg-white transition-colors"
+                                                className="inline-flex gap-2 items-center px-6 py-3 border-2 border-[rgb(var(--color-foreground)/0.1)] text-[rgb(var(--color-foreground))] hover:text-[rgb(var(--color-background))] font-bold rounded-full hover:bg-[rgb(var(--color-foreground))] transition-colors"
                                             >
                                                 View Profile <ArrowUpRight size={22} />
                                             </Link>
@@ -259,8 +259,8 @@ export default function Members() {
             )}
 
             {topMembers.length === 0 && otherMembers.length === 0 && (
-                <div className="text-center py-20 bg-gray-50 rounded-4xl border-2 border-dashed border-gray-300">
-                    <p className="text-xl font-bold text-gray-400">No active members found yet.</p>
+                <div className="text-center py-20 bg-[rgb(var(--color-card))] rounded-4xl border-2 border-dashed border-[rgb(var(--color-foreground)/0.2)]">
+                    <p className="text-xl font-bold text-[rgb(var(--color-muted-foreground))]">No active members found yet.</p>
                 </div>
             )}
         </div>

@@ -120,7 +120,7 @@ export default function FontPairingFilters({ filters, onChange, viewMode, onView
 
             {/* Categories */}
             <div>
-                <h4 className="font-semibold mb-3 text-sm uppercase tracking-wider text-gray-500">Categories</h4>
+                <h4 className="font-semibold mb-3 text-sm uppercase tracking-wider text-[rgb(var(--color-muted-foreground))]">Categories</h4>
                 <div className="flex gap-2 flex-wrap max-h-96 overflow-y-auto p-1">
                     {CATEGORIES.map(cat => {
                         const isSelected = filters.categories?.includes(cat.id);
@@ -138,8 +138,8 @@ export default function FontPairingFilters({ filters, onChange, viewMode, onView
                                 className={`
                                     px-3 py-1.5 font-bold rounded-full border-2 text-sm transition-all duration-200 text-left
                                     ${isSelected
-                                        ? "bg-black text-white border-black shadow-md"
-                                        : "bg-[#EEEFEB] text-gray-500 border-gray-200 hover:border-black hover:text-black hover:-translate-y-0.5"
+                                        ? "bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] border-[rgb(var(--color-foreground))] shadow-md"
+                                        : "bg-[rgb(var(--color-muted)/0.1)] text-[rgb(var(--color-muted-foreground))] border-[rgb(var(--color-border))] hover:border-[rgb(var(--color-foreground))] hover:text-[rgb(var(--color-foreground))] hover:-translate-y-0.5"
                                     }
                                 `}
                             >
@@ -160,9 +160,9 @@ export default function FontPairingFilters({ filters, onChange, viewMode, onView
                             placeholder="Search fonts..."
                             value={filters.query || ''}
                             onChange={(e) => handleChange('query', e.target.value)}
-                            className="w-full pl-10 pr-4 py-2 border border-gray-700 bg-black/10 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                            className="w-full pl-10 pr-4 py-2 border border-[rgb(var(--color-border))] bg-[rgb(var(--color-muted)/0.1)] rounded-full focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-accent))] focus:border-transparent transition-all"
                         />
-                        <Search className="absolute left-3 top-3 text-gray-900" size={18} />
+                        <Search className="absolute left-3 top-3 text-[rgb(var(--color-foreground))]" size={18} />
                     </div>
 
                     
@@ -172,12 +172,12 @@ export default function FontPairingFilters({ filters, onChange, viewMode, onView
                     <div>
                         {/* View Toggle */}
                     {onViewModeChange && (
-                        <div className="flex bg-black/10 h-11 p-1 w-auto rounded-full border border-gray-700">
+                        <div className="flex bg-[rgb(var(--color-muted)/0.1)] h-11 p-1 w-auto rounded-full border border-[rgb(var(--color-border))]">
                             <button
                                 onClick={() => onViewModeChange('font')}
                                 className={`p-2 aspect-square rounded-full transition-all ${viewMode === 'font'
-                                    ? 'bg-[#BDF522] text-black shadow-sma border border-gray-400'
-                                    : 'text-gray-500 hover:text-white'
+                                    ? 'bg-[rgb(var(--color-highlight))] text-[rgb(var(--color-background))] shadow-sma border border-[rgb(var(--color-border))]'
+                                    : 'text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))]'
                                     }`}
                                 title="Font View"
                             >
@@ -186,8 +186,8 @@ export default function FontPairingFilters({ filters, onChange, viewMode, onView
                             <button
                                 onClick={() => onViewModeChange('image')}
                                 className={`p-2 aspect-square rounded-full transition-all ${viewMode === 'image'
-                                    ? 'bg-[#FF90E8] text-black shadow-sm border border-gray-400'
-                                    : 'text-gray-500 hover:text-white'
+                                    ? 'bg-[rgb(var(--color-accent))] text-[rgb(var(--color-background))] shadow-sm border border-[rgb(var(--color-border))]'
+                                    : 'text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))]'
                                     }`}
                                 title="Image View"
                             >
@@ -201,7 +201,7 @@ export default function FontPairingFilters({ filters, onChange, viewMode, onView
                             <div className="flex items-center gap-3">
                                 <button
                                     onClick={() => setIsSortOpen(!isSortOpen)}
-                                    className="w-full md:w-52 px-4 py-2 flex justify-between items-center border border-gray-700 bg-black/10 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-bold"
+                                    className="w-full md:w-52 px-4 py-2 flex justify-between items-center border border-[rgb(var(--color-border))] bg-[rgb(var(--color-muted)/0.1)] rounded-full focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-accent))] transition-all font-bold"
                                 >
                                     <span>{currentSortLabel}</span>
                                     <span className={`transform transition-transform ${isSortOpen ? 'rotate-180' : ''}`}>▼</span>
@@ -228,10 +228,10 @@ export default function FontPairingFilters({ filters, onChange, viewMode, onView
                                                 setIsSortOpen(false);
                                             }}
                                             className={`
-                                            text-left px-4 py-2 rounded-full border border-black font-bold transition-colors
+                                            text-left px-4 py-2 rounded-full border border-[rgb(var(--color-foreground))] font-bold transition-colors
                                             ${filters.sortBy === opt.id
-                                                    ? 'bg-black text-white'
-                                                    : 'hover:bg-gray-100 text-gray-700'
+                                                    ? 'bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))]'
+                                                    : 'hover:bg-[rgb(var(--color-muted)/0.05)] text-[rgb(var(--color-muted-foreground))]'
                                                 }
                                         `}
                                         >

@@ -2,7 +2,484 @@
 @import "./fonts.css";
 @import "tailwindcss";
 
+* {
+  -webkit-tap-highlight-color: transparent;
+}
 
+body {
+  overscroll-behavior: none;
+}
+
+
+
+:root {
+  /* Light Theme (Default) */
+  --color-background: 255 255 255;
+  --color-foreground: 9 9 11;
+  --color-card: 244 244 245;
+  --color-card-foreground: 9 9 11;
+  --color-muted: 244 244 245;
+  --color-muted-foreground: 113 113 122;
+  --color-border: 228 228 231;
+  --color-primary: 255 0 0;
+  --color-highlight: 189 245 34;
+  --color-accent: 255 144 232; /* Pink */
+  --color-purple: 126 59 237;
+  --color-destructive: 239 68 68;
+  --color-success: 189 245 34;
+  --color-warning: 255 201 0;
+  --color-orange: 255 107 0;
+  --color-brown: 160 90 44;
+  --color-gold-1: 255 215 0;
+  --color-gold-2: 253 185 49;
+  --radius: 0.5rem;
+}
+
+[data-theme="dark"] {
+  --color-background: 5 5 5;
+  --color-foreground: 250 250 250;
+  --color-card: 10 10 10;
+  --color-card-foreground: 250 250 250;
+  --color-muted: 39 39 42;
+  --color-muted-foreground: 161 161 170;
+  --color-border: 39 39 42;
+  --color-primary: 255 0 0;
+  --color-highlight: 189 245 34;
+  --color-accent: 255 144 232;
+  --color-purple: 126 59 237;
+  --color-destructive: 239 68 68;
+  --color-success: 189 245 34;
+  --color-warning: 255 201 0;
+  --color-orange: 255 107 0;
+  --color-brown: 160 90 44;
+  --color-gold-1: 255 215 0;
+  --color-gold-2: 253 185 49;
+}
+
+[data-theme="sepia"] {
+  --color-background: 244 236 216;
+  --color-foreground: 91 70 54;
+  --color-card: 228 217 185;
+  --color-card-foreground: 91 70 54;
+  --color-muted: 212 198 169;
+  --color-muted-foreground: 137 116 99;
+  --color-border: 212 198 169;
+  --color-primary: 151 54 22;
+  --color-highlight: 147 163 70;
+  --color-accent: 191 107 107;
+  --color-purple: 91 70 140;
+  --color-destructive: 153 27 27;
+  --color-success: 147 163 70;
+  --color-warning: 180 130 50;
+  --color-orange: 160 80 40;
+  --color-brown: 100 60 40;
+  --color-gold-1: 180 150 50;
+  --color-gold-2: 160 130 40;
+}
+
+[data-theme="vibrant"] {
+  --color-background: 78 61 255;
+  --color-foreground: 255 192 203;
+  --color-card: 68 51 245;
+  --color-card-foreground: 255 192 203;
+  --color-muted: 88 71 255;
+  --color-muted-foreground: 225 162 173;
+  --color-border: 108 91 255;
+  --color-primary: 255 192 203;
+  --color-highlight: 255 255 255;
+  --color-accent: 255 144 232;
+  --color-purple: 126 59 237;
+  --color-destructive: 239 68 68;
+  --color-success: 189 245 34;
+  --color-warning: 255 201 0;
+  --color-orange: 255 107 0;
+  --color-brown: 160 90 44;
+  --color-gold-1: 255 215 0;
+  --color-gold-2: 253 185 49;
+}
+
+[data-theme="candy"] {
+  --color-background: 255 192 203;
+  --color-foreground: 255 31 31;
+  --color-card: 245 182 193;
+  --color-card-foreground: 255 31 31;
+  --color-muted: 235 172 183;
+  --color-muted-foreground: 205 11 11;
+  --color-border: 225 162 173;
+  --color-primary: 255 31 31;
+  --color-highlight: 255 255 255;
+  --color-accent: 78 61 255;
+  --color-purple: 126 59 237;
+  --color-destructive: 239 68 68;
+  --color-success: 189 245 34;
+  --color-warning: 255 201 0;
+  --color-orange: 255 107 0;
+  --color-brown: 160 90 44;
+  --color-gold-1: 255 215 0;
+  --color-gold-2: 253 185 49;
+}
+
+
+
+[data-theme="neo-red"] {
+  --color-background: 255 60 60;
+  --color-foreground: 0 0 0;
+  --color-card: 255 255 255;
+  --color-card-foreground: 0 0 0;
+  --color-muted: 255 120 120;
+  --color-muted-foreground: 40 0 0;
+  --color-border: 0 0 0;
+  --color-primary: 0 0 0;
+  --color-highlight: 255 255 0;
+  --color-accent: 0 0 255;
+  --color-purple: 126 59 237;
+  --color-destructive: 200 0 0;
+  --color-success: 0 150 0;
+  --color-warning: 255 200 0;
+  --color-orange: 255 120 0;
+  --color-brown: 120 60 40;
+  --color-gold-1: 255 215 0;
+  --color-gold-2: 253 185 49;
+}
+
+[data-theme="soft-blue"] {
+  --color-background: 0 120 255;
+  --color-foreground: 255 192 203;
+  --color-card: 255 255 255;
+  --color-card-foreground: 0 0 0;
+  --color-muted: 80 160 255;
+  --color-muted-foreground: 255 192 203;
+  --color-border: 80 160 255;
+  --color-primary: 0 0 0;
+  --color-highlight: 255 255 0;
+  --color-accent: 255 0 0;
+  --color-purple: 126 59 237;
+  --color-destructive: 239 68 68;
+  --color-success: 189 245 34;
+  --color-warning: 255 201 0;
+  --color-orange: 255 107 0;
+  --color-brown: 160 90 44;
+  --color-gold-1: 255 215 0;
+  --color-gold-2: 253 185 49;
+}
+
+[data-theme="neo-yellow"] {
+  --color-background: 255 240 0;
+  --color-foreground: 0 0 0;
+  --color-card: 255 255 255;
+  --color-card-foreground: 0 0 0;
+  --color-muted: 255 230 0;
+  --color-muted-foreground: 40 40 40;
+  --color-border: 0 0 0;
+  --color-primary: 0 0 0;
+  --color-highlight: 255 0 0;
+  --color-accent: 0 0 255;
+  --color-purple: 126 59 237;
+  --color-destructive: 239 68 68;
+  --color-success: 0 150 0;
+  --color-warning: 255 100 0;
+  --color-orange: 255 150 0;
+  --color-brown: 160 90 44;
+  --color-gold-1: 255 215 0;
+  --color-gold-2: 253 185 49;
+}
+
+[data-theme="uv"] {
+  --color-background: 120 0 255;
+  --color-foreground: 0 255 120;
+  --color-card: 100 0 220;
+  --color-card-foreground: 0 255 120;
+  --color-muted: 80 0 180;
+  --color-muted-foreground: 0 200 100;
+  --color-border: 0 255 120;
+  --color-primary: 255 255 0;
+  --color-highlight: 0 255 255;
+  --color-accent: 255 0 0;
+  --color-purple: 200 50 255;
+  --color-destructive: 255 0 100;
+  --color-success: 0 255 120;
+  --color-warning: 255 200 0;
+  --color-orange: 255 100 0;
+  --color-brown: 160 90 44;
+  --color-gold-1: 255 215 0;
+  --color-gold-2: 253 185 49;
+}
+
+[data-theme="rust"] {
+  --color-background: 40 20 10;
+  --color-foreground: 255 200 150;
+  --color-card: 60 30 15;
+  --color-card-foreground: 255 200 150;
+  --color-muted: 80 40 20;
+  --color-muted-foreground: 200 140 100;
+  --color-border: 120 60 30;
+  --color-primary: 255 80 0;
+  --color-highlight: 255 200 0;
+  --color-accent: 150 70 40;
+  --color-purple: 100 50 150;
+  --color-destructive: 180 40 20;
+  --color-success: 100 140 60;
+  --color-warning: 200 120 40;
+  --color-orange: 255 100 0;
+  --color-brown: 80 40 20;
+  --color-gold-1: 200 150 50;
+  --color-gold-2: 180 130 40;
+}
+
+[data-theme="concrete"] {
+  --color-background: 180 180 180;
+  --color-foreground: 20 20 20;
+  --color-card: 200 200 200;
+  --color-card-foreground: 20 20 20;
+  --color-muted: 160 160 160;
+  --color-muted-foreground: 80 80 80;
+  --color-border: 60 60 60;
+  --color-primary: 0 0 0;
+  --color-highlight: 255 255 255;
+  --color-accent: 100 100 100;
+  --color-purple: 80 80 120;
+  --color-destructive: 150 0 0;
+  --color-success: 0 120 0;
+  --color-warning: 180 150 0;
+  --color-orange: 180 80 0;
+  --color-brown: 100 80 60;
+  --color-gold-1: 180 150 80;
+  --color-gold-2: 150 120 60;
+}
+
+[data-theme="rgb-clash"] {
+  --color-background: 255 0 0;
+  --color-foreground: 0 255 0;
+  --color-card: 255 0 0;
+  --color-card-foreground: 0 255 0;
+  --color-muted: 200 0 0;
+  --color-muted-foreground: 0 200 0;
+  --color-border: 0 0 255;
+  --color-primary: 0 0 255;
+  --color-highlight: 255 255 0;
+  --color-accent: 255 0 255;
+  --color-purple: 120 0 255;
+  --color-destructive: 255 255 255;
+  --color-success: 0 0 0;
+  --color-warning: 255 255 0;
+  --color-orange: 255 120 0;
+  --color-brown: 0 255 255;
+  --color-gold-1: 255 255 255;
+  --color-gold-2: 0 0 0;
+}
+
+[data-theme="ikea-chaos"] {
+  --color-background: 255 230 0;
+  --color-foreground: 0 0 255;
+  --color-card: 255 230 0;
+  --color-card-foreground: 0 0 255;
+  --color-muted: 200 180 0;
+  --color-muted-foreground: 0 0 200;
+  --color-border: 0 0 255;
+  --color-primary: 255 0 0;
+  --color-highlight: 0 255 0;
+  --color-accent: 255 0 255;
+  --color-purple: 120 0 200;
+  --color-destructive: 255 0 0;
+  --color-success: 0 255 0;
+  --color-warning: 255 255 255;
+  --color-orange: 255 120 0;
+  --color-brown: 100 50 0;
+  --color-gold-1: 255 215 0;
+  --color-gold-2: 253 185 49;
+}
+
+[data-theme="neo-blue"] {
+  --color-background: 0 0 255;
+  --color-foreground: 255 192 203;
+  --color-card: 0 0 255;
+  --color-card-foreground: 255 255 255;
+  --color-muted: 0 0 200;
+  --color-muted-foreground: 255 192 203;
+  --border: 255 192 203;
+  --color-border: 255 192 203;
+  --color-primary: 255 255 255;
+  --color-highlight: 255 255 0;
+  --color-accent: 0 255 255;
+  --color-purple: 126 59 237;
+  --color-destructive: 255 0 0;
+  --color-success: 0 255 0;
+  --color-warning: 255 255 255;
+  --color-orange: 255 120 0;
+  --color-brown: 160 90 44;
+  --color-gold-1: 255 215 0;
+  --color-gold-2: 253 185 49;
+}
+
+[data-theme="terminal"] {
+  --color-background: 0 0 0;
+  --color-foreground: 0 255 0;
+  --color-card: 0 0 0;
+  --color-card-foreground: 0 255 0;
+  --color-muted: 0 40 0;
+  --color-muted-foreground: 0 200 0;
+  --color-border: 0 255 0;
+  --color-primary: 0 255 0;
+  --color-highlight: 255 255 255;
+  --color-accent: 0 255 0;
+  --color-purple: 0 100 0;
+  --color-destructive: 255 0 0;
+  --color-success: 0 255 0;
+  --color-warning: 255 255 0;
+  --color-orange: 0 150 0;
+  --color-brown: 0 80 0;
+  --color-gold-1: 0 255 0;
+  --color-gold-2: 0 180 0;
+}
+
+[data-theme="nature"] {
+  --color-background: 240 245 235;
+  --color-foreground: 40 60 40;
+  --color-card: 225 235 220;
+  --color-card-foreground: 40 60 40;
+  --color-muted: 210 220 200;
+  --color-muted-foreground: 90 110 90;
+  --color-border: 180 200 170;
+  --color-primary: 80 140 90;
+  --color-highlight: 140 180 120;
+  --color-accent: 120 160 110;
+  --color-purple: 100 120 100;
+  --color-destructive: 160 60 60;
+  --color-success: 100 160 100;
+  --color-warning: 200 160 80;
+  --color-orange: 200 120 60;
+  --color-brown: 120 90 60;
+  --color-gold-1: 200 180 100;
+  --color-gold-2: 180 160 80;
+}
+
+[data-theme="luxury"] {
+  --color-background: 10 10 10;
+  --color-foreground: 240 220 160;
+  --color-card: 20 20 20;
+  --color-card-foreground: 240 220 160;
+  --color-muted: 30 30 30;
+  --color-muted-foreground: 160 140 90;
+  --color-border: 80 70 40;
+  --color-primary: 255 215 0;
+  --color-highlight: 255 235 150;
+  --color-accent: 200 170 80;
+  --color-purple: 120 100 60;
+  --color-destructive: 200 60 40;
+  --color-success: 140 180 100;
+  --color-warning: 255 200 0;
+  --color-orange: 220 140 40;
+  --color-brown: 120 80 40;
+  --color-gold-1: 255 215 0;
+  --color-gold-2: 220 180 80;
+}
+
+
+
+/* [data-theme="brutalist"] {
+  --color-background: 240 240 240;
+  --color-foreground: 0 0 0;
+  --color-card: 255 255 255;
+  --color-card-foreground: 0 0 0;
+  --color-muted: 220 220 220;
+  --color-muted-foreground: 80 80 80;
+  --color-border: 0 0 0;
+  --color-primary: 255 224 0;
+  --color-highlight: 255 224 0;
+  --color-accent: 0 0 0;
+  --color-purple: 126 59 237;
+  --color-destructive: 239 68 68;
+  --color-success: 189 245 34;
+  --color-warning: 255 201 0;
+  --color-orange: 255 107 0;
+  --color-brown: 160 90 44;
+  --color-gold-1: 255 215 0;
+  --color-gold-2: 253 185 49;
+}
+
+[data-theme="mono"] {
+  --color-background: 255 255 255;
+  --color-foreground: 0 0 0;
+  --color-card: 250 250 250;
+  --color-card-foreground: 0 0 0;
+  --color-muted: 240 240 240;
+  --color-muted-foreground: 120 120 120;
+  --color-border: 0 0 0;
+  --color-primary: 0 0 0;
+  --color-highlight: 230 230 230;
+  --color-accent: 100 100 100;
+  --color-purple: 126 59 237;
+  --color-destructive: 239 68 68;
+  --color-success: 189 245 34;
+  --color-warning: 255 201 0;
+  --color-orange: 255 107 0;
+  --color-brown: 160 90 44;
+  --color-gold-1: 255 215 0;
+  --color-gold-2: 253 185 49;
+}
+
+[data-theme="luxury"] {
+  --color-background: 10 10 10;
+  --color-foreground: 212 175 55;
+  --color-card: 20 20 20;
+  --color-card-foreground: 212 175 55;
+  --color-muted: 30 30 30;
+  --color-muted-foreground: 160 140 80;
+  --color-border: 212 175 55 / 0.2;
+  --color-primary: 212 175 55;
+  --color-highlight: 212 175 55;
+  --color-accent: 255 255 255 / 0.1;
+  --color-purple: 126 59 237;
+  --color-destructive: 239 68 68;
+  --color-success: 189 245 34;
+  --color-warning: 255 201 0;
+  --color-orange: 255 107 0;
+  --color-brown: 160 90 44;
+  --color-gold-1: 255 215 0;
+  --color-gold-2: 253 185 49;
+}
+
+[data-theme="glass"] {
+  --color-background: 240 242 245;
+  --color-foreground: 15 23 42;
+  --color-card: 255 255 255 / 0.4;
+  --color-card-foreground: 15 23 42;
+  --color-muted: 226 232 240;
+  --color-muted-foreground: 71 85 105;
+  --color-border: 255 255 255 / 0.5;
+  --color-primary: 59 130 246;
+  --color-highlight: 255 255 255;
+  --color-accent: 255 255 255 / 0.2;
+  --color-purple: 126 59 237;
+  --color-destructive: 239 68 68;
+  --color-success: 189 245 34;
+  --color-warning: 255 201 0;
+  --color-orange: 255 107 0;
+  --color-brown: 160 90 44;
+  --color-gold-1: 255 215 0;
+  --color-gold-2: 253 185 49;
+}
+
+[data-theme="nature"] {
+  --color-background: 242 247 242;
+  --color-foreground: 34 51 34;
+  --color-card: 225 235 225;
+  --color-card-foreground: 34 51 34;
+  --color-muted: 210 220 210;
+  --color-muted-foreground: 100 120 100;
+  --color-border: 180 200 180;
+  --color-primary: 60 90 60;
+  --color-highlight: 147 197 114;
+  --color-accent: 147 197 114 / 0.2;
+  --color-purple: 126 59 237;
+  --color-destructive: 239 68 68;
+  --color-success: 189 245 34;
+  --color-warning: 255 201 0;
+  --color-orange: 255 107 0;
+  --color-brown: 160 90 44;
+  --color-gold-1: 255 215 0;
+  --color-gold-2: 253 185 49;
+} */
 
 @theme {
   --font-bricolage-grotesque: "Bricolage Grotesque", sans-serif;
@@ -24,41 +501,18 @@
   --font-mosca-laroke: "MoscaLaroke", sans-serif;
   --font-ruigslay: "Ruigslay", sans-serif;
 
-  
-    /* Colors - Void Black Theme */
-  --color-background: #050505;
-  --color-foreground: #fafafa;
-  
-  --color-card: #0a0a0a;
-  --color-card-foreground: #fafafa;
-  --color-card-hover: #fafafa;
-  --color-card-hover-foreground: #fafafa;
-  --color-card-border: #fafafa;
-  
-  --color-tag-background: #0a0a0a;
-  --color-tag-foreground: #9f9fa9;
-  
-  --color-popover: #0a0a0a;
-  --color-popover-foreground: #fafafa;
-  
-  --color-primary: #fafafa;
-  --color-primary-foreground: #050505;
-  
-  --color-secondary: #27272a;
-  --color-secondary-foreground: #fafafa;
-  
-  --color-muted: #27272a;
-  --color-muted-foreground: #a1a1aa;
-  
-  --color-accent: #27272a;
-  --color-accent-foreground: #fafafa;
-  
-  --color-destructive: #ef4444;
-  --color-destructive-foreground: #fafafa;
-
-  --color-border: #27272a;
-  --color-input: #27272a;
-  --color-ring: #d4d4d8;
+  /* Use the variables in theme */
+  --color-background: rgb(var(--color-background));
+  --color-foreground: rgb(var(--color-foreground));
+  --color-card: rgb(var(--color-card));
+  --color-card-foreground: rgb(var(--color-card-foreground));
+  --color-muted: rgb(var(--color-muted));
+  --color-muted-foreground: rgb(var(--color-muted-foreground));
+  --color-border: rgb(var(--color-border));
+  --color-primary: rgb(var(--color-primary));
+  --color-highlight: rgb(var(--color-highlight));
+  --color-accent: rgb(var(--color-accent));
+  --color-destructive: rgb(var(--color-destructive));
 
   /* Animations */
   --animate-accordion-down: accordion-down 0.2s ease-out;
@@ -104,19 +558,26 @@
 /* Utilities */
 @layer utilities {
   .glass {
-    @apply bg-black/40 backdrop-blur-xl border border-white/10;
+    background-color: rgb(var(--color-card) / 0.4);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgb(var(--color-foreground) / 0.1);
   }
   
   .glass-card {
-    @apply bg-zinc-900/30 backdrop-blur-md border border-white/5 shadow-xl;
+    background-color: rgb(var(--color-card) / 0.3);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgb(var(--color-foreground) / 0.05);
+    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
   }
   
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-linear-to-br from-white via-white to-zinc-500;
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(to bottom right, rgb(var(--color-foreground)), rgb(var(--color-foreground)), rgb(var(--color-muted-foreground)));
   }
   
   .text-gradient-gold {
-     @apply bg-clip-text text-transparent bg-linear-to-b from-[#FFD700] to-[#FDB931];
+     @apply bg-clip-text text-transparent;
+     background-image: linear-gradient(to bottom, rgb(var(--color-gold-1)), rgb(var(--color-gold-2)));
   }
 }
 

@@ -157,7 +157,8 @@ const Landing = () => {
         section.about,
         section.services {
           padding: 4em;
-          background: #87795f;
+          background: rgb(var(--color-brown));
+          color: rgb(var(--color-background));
           display: flex;
           align-items: center;
         }
@@ -166,14 +167,9 @@ const Landing = () => {
           display: flex;
           justify-content: center;
           align-items: center;
-          background-color: #13120e;
-          color: #87795f;
+          background-color: rgb(var(--color-background));
+          color: rgb(var(--color-brown));
           height: 100vh;
-        }
-
-        section.footer h1 {
-          font-size: 10vw;
-          text-transform: uppercase;
         }
 
         section.marquees {
@@ -181,7 +177,7 @@ const Landing = () => {
           display: flex;
           flex-direction: column;
           justify-content: center;
-          background-color: #fff;
+          background-color: rgb(var(--color-card));
           overflow: hidden;
         }
 
@@ -218,7 +214,7 @@ const Landing = () => {
           justify-content: center;
           align-items: center;
           overflow: hidden;
-          background: #f0f0f0; /* Placeholder bg */
+          background: rgb(var(--color-muted)); /* Placeholder bg */
         }
 
         .item.with-text {
@@ -231,7 +227,7 @@ const Landing = () => {
           font-size: 140px;
           font-weight: 100; /* Start thin */
           margin: 0;
-          color: #000;
+          color: rgb(var(--color-foreground));
         }
 
         @media (max-width: 900px) {
@@ -273,6 +269,9 @@ const Landing = () => {
                         src="https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=2094&auto=format&fit=crop"
                         alt="Hero Dystopian"
                     />
+                    <p className="font-inter text-[1rem] font-light tracking-[2px] uppercase text-[rgb(var(--color-muted-foreground))]">
+                        Scroll to explore
+                    </p>
                 </section>
 
                 <section className="about">

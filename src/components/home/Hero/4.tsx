@@ -92,7 +92,7 @@ const TextImageReveal: React.FC = () => {
 
     // Shared classes
     const sectionClass =
-        'h-screen w-full bg-[#EEEFEB] rounded-4xl border-y border-[#1C1D1E]';
+        'h-screen w-full bg-[rgb(var(--color-card))] rounded-4xl border-y border-[rgb(var(--color-foreground))]';
     const textClass =
         'text-[7.5rem] font-bold tracking-[-4px] inline-block overflow-hidden whitespace-nowrap leading-none';
     const imgSpanClass =
@@ -103,12 +103,12 @@ const TextImageReveal: React.FC = () => {
     return (
         <div
             ref={containerRef}
-            className="min-h-screen w-full overflow-x-hidden text-[#1a1a1a] font-bricolage-grotesque"
+            className="min-h-screen w-full overflow-x-hidden text-[rgb(var(--color-foreground))] font-bricolage-grotesque"
         >
 
             {/* Intro */}
             <div className={`intro ${sectionClass} flex justify-center items-center`}>
-                <p className="font-inter text-[1rem] font-light tracking-[2px] uppercase text-[#999]">
+                <p className="font-inter text-[1rem] font-light tracking-[2px] uppercase text-[rgb(var(--color-muted-foreground))]">
                     Scroll to explore
                 </p>
             </div>

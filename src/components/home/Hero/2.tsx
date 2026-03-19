@@ -72,8 +72,8 @@ const TextImageReveal: React.FC = () => {
             min-height: 100vh;
             width: 100vw;
             overflow-x: hidden;
-            background: #f5f5f0;
-            color: #1a1a1a;
+            background: rgb(var(--color-background));
+            color: rgb(var(--color-foreground));
         }
 
         .container {
@@ -99,7 +99,7 @@ const TextImageReveal: React.FC = () => {
             font-weight: 300;
             letter-spacing: 2px;
             text-transform: uppercase;
-            color: #999;
+            color: rgb(var(--color-muted-foreground));
         }
 
         .outro {

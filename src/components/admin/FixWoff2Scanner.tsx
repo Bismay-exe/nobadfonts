@@ -165,11 +165,11 @@ export const FixWoff2Scanner = () => {
     };
 
     return (
-        <div className="bg-[#EEEFEB] border-y border-black rounded-4xl p-6">
+        <div className="bg-[rgb(var(--color-card))] border-2 border-[rgb(var(--color-border))] rounded-4xl p-6">
             <h3 className="text-lg font-bold uppercase mb-4 flex items-center gap-2">
                 <RefreshCw size={20} /> Admin: Fix Missing WOFF2
             </h3>
-            <p className="text-sm text-gray-600 mb-4">
+            <p className="text-sm text-[rgb(var(--color-muted-foreground))] mb-4">
                 Scans database for variants missing WOFF2 files. Checks storage for existing files to link,
                 or generates new WOFF2 files from source TTF/OTF if missing.
             </p>
@@ -177,19 +177,19 @@ export const FixWoff2Scanner = () => {
             {!loading ? (
                 <button
                     onClick={scanAndFix}
-                    className="bg-black text-white px-6 py-2 rounded-full font-bold text-sm hover:bg-gray-800 transition-colors"
+                    className="bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] px-6 py-2 rounded-full font-bold text-sm hover:opacity-90 transition-colors"
                 >
                     Start Scan & Fix
                 </button>
             ) : (
                 <div className="space-y-4">
-                    <div className="h-4 bg-gray-200 rounded-full overflow-hidden">
+                    <div className="h-4 bg-[rgb(var(--color-border)/0.2)] rounded-full overflow-hidden">
                         <div
-                            className="h-full bg-[#BDF522] transition-all duration-300"
+                            className="h-full bg-[rgb(var(--color-highlight))] transition-all duration-300"
                             style={{ width: `${progress}%` }}
                         />
                     </div>
-                    <div className="flex justify-between text-xs font-bold text-gray-500 uppercase">
+                    <div className="flex justify-between text-xs font-bold text-[rgb(var(--color-muted-foreground))] uppercase">
                         <span>Progress: {Math.round(progress)}%</span>
                         <span>{Math.round((progress / 100) * total)} / {total} items</span>
                     </div>
@@ -198,23 +198,23 @@ export const FixWoff2Scanner = () => {
 
             {(stats.fixed > 0 || stats.generated > 0 || stats.errors > 0) && (
                 <div className="grid grid-cols-3 gap-4 mt-4">
-                    <div className="bg-green-100 p-3 rounded-xl text-center">
-                        <div className="text-2xl font-black text-green-600">{stats.fixed}</div>
-                        <div className="text-xs font-bold text-green-800 uppercase">Linked</div>
+                    <div className="bg-[rgb(var(--color-success)/0.1)] p-3 rounded-xl text-center border border-[rgb(var(--color-success)/0.2)]">
+                        <div className="text-2xl font-black text-[rgb(var(--color-success))]">{stats.fixed}</div>
+                        <div className="text-xs font-bold text-[rgb(var(--color-success))] uppercase">Linked</div>
                     </div>
-                    <div className="bg-blue-100 p-3 rounded-xl text-center">
-                        <div className="text-2xl font-black text-blue-600">{stats.generated}</div>
-                        <div className="text-xs font-bold text-blue-800 uppercase">Generated</div>
+                    <div className="bg-[rgb(var(--color-accent)/0.1)] p-3 rounded-xl text-center border border-[rgb(var(--color-accent)/0.2)]">
+                        <div className="text-2xl font-black text-[rgb(var(--color-accent))]">{stats.generated}</div>
+                        <div className="text-xs font-bold text-[rgb(var(--color-accent))] uppercase">Generated</div>
                     </div>
-                    <div className="bg-red-100 p-3 rounded-xl text-center">
-                        <div className="text-2xl font-black text-red-600">{stats.errors}</div>
-                        <div className="text-xs font-bold text-red-800 uppercase">Errors</div>
+                    <div className="bg-[rgb(var(--color-destructive)/0.1)] p-3 rounded-xl text-center border border-[rgb(var(--color-destructive)/0.2)]">
+                        <div className="text-2xl font-black text-[rgb(var(--color-destructive))]">{stats.errors}</div>
+                        <div className="text-xs font-bold text-[rgb(var(--color-destructive))] uppercase">Errors</div>
                     </div>
                 </div>
             )}
 
             {logs.length > 0 && (
-                <div className="mt-4 p-4 bg-black text-green-400 font-mono text-xs rounded-xl h-48 overflow-y-auto">
+                <div className="mt-4 p-4 bg-[rgb(var(--color-card))] border border-[rgb(var(--color-border))] text-[rgb(var(--color-success))] font-mono text-xs rounded-xl h-48 overflow-y-auto">
                     {logs.map((log, i) => (
                         <div key={i} className="mb-1">{">"} {log}</div>
                     ))}

@@ -6,6 +6,9 @@ import { Upload as UploadIcon, X, Image as ImageIcon, Link as LinkIcon } from 'l
 import { useUpload } from '../contexts/UploadContext';
 import { FixWoff2Scanner } from '../components/admin/FixWoff2Scanner';
 import SEO from '../components/shared/SEO';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { Toast } from '@capacitor/toast';
+import { motion } from 'framer-motion';
 import {
     Select,
     SelectContent,
@@ -252,16 +255,17 @@ const Upload = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!user) return alert('You must be logged in to upload');
-        if (formData.tags.length === 0) return alert('Please select at least one category.');
+        if (!user) return await Toast.show({ text: 'You must be logged in to upload', duration: 'short' });
+        if (formData.tags.length === 0) return await Toast.show({ text: 'Please select at least one category.', duration: 'short' });
 
         // Validate variants
-        if (variants.length === 0) return alert('Please add at least one font variant.');
+        if (variants.length === 0) return await Toast.show({ text: 'Please add at least one font variant.', duration: 'short' });
 
         // Validate that at least one variant has files
         const validVariants = variants.filter(v => Object.values(v.files).some(f => f !== null));
-        if (validVariants.length === 0) return alert('Please upload files for at least one variant.');
+        if (validVariants.length === 0) return await Toast.show({ text: 'Please upload files for at least one variant.', duration: 'short' });
 
+        await Haptics.impact({ style: ImpactStyle.Medium });
         setLoading(true);
 
         try {
@@ -425,7 +429,7 @@ const Upload = () => {
 
         } catch (error: any) {
             console.error('Full Error Object:', error);
-            alert(error.message || 'An error occurred during upload.');
+            await Toast.show({ text: error.message || 'An error occurred during upload.', duration: 'long' });
         } finally {
             setLoading(false);
         }
@@ -435,19 +439,19 @@ const Upload = () => {
     if (!profile || (profile.role !== 'member' && profile.role !== 'admin')) {
         return (
             <div className="flex flex-col items-center justify-center min-h-[84.4vh]  rounded-4xl text-center p-8 space-y-6">
-                <div className="bg-red-100 p-6 rounded-full">
+                <div className="bg-[rgb(var(--color-destructive)/0.1)] p-6 rounded-full">
                     <div className="text-6xl">🔒</div>
                 </div>
                 <h1 className="text-4xl font-black uppercase">Access Restricted</h1>
-                <p className="text-xl text-gray-600 max-w-lg">
+                <p className="text-xl text-[rgb(var(--color-muted-foreground))] max-w-lg">
                     Uploading fonts is currently restricted to approved <strong>Members</strong> and <strong>Admins</strong>.
                 </p>
                 <div className="flex gap-4">
-                    <button onClick={() => navigate('/')} className="px-6 py-3 bg-black text-white rounded-xl font-bold hover:scale-105 transition-transform">
+                    <button onClick={() => navigate('/')} className="px-6 py-3 bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))] rounded-xl font-bold hover:scale-105 transition-transform">
                         Go Home
                     </button>
                     {/* Placeholder for future "Request Access" feature */}
-                    <button disabled className="px-6 py-3 border-2 border-black text-black rounded-xl font-bold opacity-50 cursor-not-allowed">
+                    <button disabled className="px-6 py-3 border-2 border-[rgb(var(--color-foreground))] text-[rgb(var(--color-foreground))] rounded-xl font-bold opacity-50 cursor-not-allowed">
                         Request Access
                     </button>
                 </div>
@@ -461,17 +465,17 @@ const Upload = () => {
 
             <div className="flex items-center justify-center">
                 <div className="mt-6 mb-8 text-center">
-                    <h1 className="text-4xl md:text-6xl font-bold tracking-tighter text-white mb-4">Upload Font</h1>
-                    <p className="text-zinc-500 max-w-xl mx-auto">
+                    <h1 className="text-4xl md:text-6xl font-bold tracking-tighter text-[rgb(var(--color-foreground))] mb-4">Upload Font</h1>
+                    <p className="text-[rgb(var(--color-muted-foreground))] max-w-xl mx-auto">
                         Share your typographic creation with the world.
                     </p>
                 </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="rounded-4xl bg-white/5 border border-white/10 space-y-4 pt-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <form onSubmit={handleSubmit} className="rounded-4xl bg-[rgb(var(--color-card)/0.3)] border border-[rgb(var(--color-border))] space-y-4 pt-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
 
                 {/* Meta Inputs */}
-                <div className="col-span-1 space-y-4 p-4 md:p-8 border-y border-black">
+                <div className="col-span-1 space-y-4 p-4 md:p-8 border-y border-[rgb(var(--color-background))]">
                     <div>
                         <label className="block font-bold mb-2 uppercase">Font Name</label>
                         <input
@@ -479,81 +483,81 @@ const Upload = () => {
                             value={formData.name}
                             onChange={handleChange}
                             onBlur={(e) => setFormData(prev => ({ ...prev, name: e.target.value.trim() }))}
-                            className="w-full border-2 border-white/5 bg-white/5 p-3 rounded-2xl font-bold focus:outline-none"
+                            className="w-full border-2 border-[rgb(var(--color-border))] bg-[rgb(var(--color-background))] p-3 rounded-2xl font-bold focus:outline-none focus:border-[rgb(var(--color-foreground))]"
                         />
                     </div>
 
                     <div>
-                        <label className="block font-bold mb-2 uppercase">Designer <span className="text-sm text-white/40 font-normal font-mono lowercase">(optional)</span></label>
+                        <label className="block font-bold mb-2 uppercase">Designer <span className="text-sm text-[rgb(var(--color-foreground)/0.4)] font-normal font-mono lowercase">(optional)</span></label>
                         <input
                             name="designer"
                             value={formData.designer}
                             onChange={handleChange}
                             onBlur={(e) => setFormData(prev => ({ ...prev, designer: e.target.value.trim() }))}
-                            className="w-full border-2 border-white/5 bg-white/5 p-3 rounded-2xl font-bold focus:outline-none"
+                            className="w-full border-2 border-[rgb(var(--color-border))] bg-[rgb(var(--color-background))] p-3 rounded-2xl font-bold focus:outline-none focus:border-[rgb(var(--color-foreground))]"
                             placeholder="Leave blank if unknown"
                         />
                     </div>
                 </div>
 
-                <div className='h-px mx-4 md:mx-8 bg-white/10' />
+                <div className='h-px mx-4 md:mx-8 bg-[rgb(var(--color-foreground)/0.1)]' />
 
                 {/* Variants Section */}
                 <div className="col-span-1 md:col-span-2 p-4 md:p-8">
                     <div className="flex justify-start items-center mb-4">
-                        <label className="font-bold uppercase text-lg">Font Variants <span className="text-sm text-red-500 font-normal normal-case ml-2">(At least one required)</span></label>
+                        <label className="font-bold uppercase text-lg">Font Variants <span className="text-sm text-[rgb(var(--color-destructive))] font-normal normal-case ml-2">(At least one required)</span></label>
                     </div>
 
                     <div className="space-y-6">
                         {variants.map((variant) => (
-                            <div key={variant.id} className="p-4 bg-black/30 border border-white/10 rounded-2xl">
+                            <div key={variant.id} className="p-4 bg-[rgb(var(--color-card)/0.3)] border border-[rgb(var(--color-border))] rounded-2xl">
                                 <div className="flex justify-between items-start mb-4">
                                     <div>
                                         {variant.isCustom ? (
-                                            <input
-                                                type="text"
-                                                value={variant.name}
-                                                onChange={(e) => updateVariantName(variant.id, e.target.value)}
-                                                className="border-2 border-white/5 rounded-lg px-3 py-1 font-bold bg-white/5 w-full focus:outline-none"
-                                                placeholder="e.g. Demi Bold"
-                                                autoFocus
-                                            />
-                                        ) : (
-                                            <Select
-                                                value={variant.name}
-                                                onValueChange={(value: string) => updateVariantName(variant.id, value)}
-                                            >
-                                                <SelectTrigger className="border-2 border-white/5 rounded-lg px-4 py-2 font-bold bg-white/5 h-auto">
-                                                    <SelectValue placeholder="Select variant" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {VARIANT_NAMES.filter(name => name === variant.name || !variants.some(v => v.name === name)).map(name => (
-                                                        <SelectItem key={name} value={name}>{name}</SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
-                                        )}
-                                    </div>
-                                    <button
-                                        type="button"
-                                        onClick={() => removeVariant(variant.id)}
-                                        className="text-zinc-600 hover:text-red-500 p-1"
-                                    >
-                                        <X size={20} />
-                                    </button>
+                                                <input
+                                                    type="text"
+                                                    value={variant.name}
+                                                    onChange={(e) => updateVariantName(variant.id, e.target.value)}
+                                                    className="bg-[rgb(var(--color-background))] border-2 border-[rgb(var(--color-border))] rounded-lg px-2 py-1 focus:outline-none focus:border-[rgb(var(--color-foreground))]"
+                                                    placeholder="e.g. Demi Bold"
+                                                    autoFocus
+                                                />
+                                            ) : (
+                                                <Select
+                                                    value={variant.name}
+                                                    onValueChange={(value: string) => updateVariantName(variant.id, value)}
+                                                >
+                                                    <SelectTrigger className="border-2 border-[rgb(var(--color-border))] rounded-lg px-4 py-2 font-bold bg-[rgb(var(--color-background))] h-auto focus:border-[rgb(var(--color-foreground))]">
+                                                        <SelectValue placeholder="Select variant" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        {VARIANT_NAMES.filter(name => name === variant.name || !variants.some(v => v.name === name)).map(name => (
+                                                            <SelectItem key={name} value={name}>{name}</SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
+                                            )}
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => removeVariant(variant.id)}
+                                            className="text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-destructive))] p-1"
+                                        >
+                                            <X size={20} />
+                                        </button>
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                                     {(['ttf', 'otf', 'woff', 'woff2'] as const).map(format => (
                                         <div key={format} className="relative">
                                             {variant.files[format] ? (
-                                                <div className="flex items-center justify-between bg-[#BDF522]/10 border border-[#BDF522]/10 text-[#BDF522] rounded-lg p-2 text-xs font-mono">
+                                                <div className="flex items-center justify-between bg-[rgb(var(--color-highlight)/0.1)] border border-[rgb(var(--color-highlight)/0.2)] text-[rgb(var(--color-highlight))] rounded-lg p-2 text-xs font-mono">
                                                     <span className="truncate max-w-20">{variant.files[format]?.name}</span>
                                                     <button
                                                         type="button"
                                                         onClick={() => updateVariantFile(variant.id, format, null as any)}
                                                     >
-                                                        <X size={14} className="text-green-700" />
+                                                        <X size={14} className="text-[rgb(var(--color-destructive))]" />
                                                     </button>
                                                 </div>
                                             ) : (
@@ -568,7 +572,7 @@ const Upload = () => {
                                                         }}
                                                         className="absolute inset-0 opacity-0 cursor-pointer z-10 w-full h-full"
                                                     />
-                                                    <div className="border border-white/5 bg-white/5 rounded-lg p-2 text-center text-xs font-mono text-white/40 hover:border-black hover:text-black transition-colors">
+                                                    <div className="border border-[rgb(var(--color-border))] bg-[rgb(var(--color-background))] rounded-lg p-2 text-center text-xs font-mono text-[rgb(var(--color-muted-foreground)/0.6)] hover:border-[rgb(var(--color-foreground))] hover:text-[rgb(var(--color-foreground))] transition-colors">
                                                         {format.toUpperCase()}
                                                     </div>
                                                 </div>
@@ -590,14 +594,14 @@ const Upload = () => {
                             <button
                                 type="button"
                                 onClick={addVariableFont}
-                                className="px-4 py-2 rounded-full font-bold hover:bg-white/90 text-white/70 hover:text-black transition-colors cursor-pointer"
+                                className="px-4 py-2 rounded-full font-bold hover:bg-[rgb(var(--color-foreground)/0.1)] text-[rgb(var(--color-muted-foreground))] transition-colors cursor-pointer"
                             >
                                 + Variable Font
                             </button>
                             <button
                                 type="button"
                                 onClick={addCustomVariant}
-                                className="px-4 py-2 rounded-full font-bold hover:bg-white/90 text-white/70 hover:text-black transition-colors cursor-pointer"
+                                className="px-4 py-2 rounded-full font-bold hover:bg-[rgb(var(--color-foreground)/0.1)] text-[rgb(var(--color-muted-foreground))] transition-colors cursor-pointer"
                             >
                                 + Custom Variant
                             </button>
@@ -605,8 +609,8 @@ const Upload = () => {
                                 type="button"
                                 onClick={addVariant}
                                 disabled={variants.length >= VARIANT_NAMES.length + 10}
-                                className={`px-4 py-2 rounded-full font-bold hover:bg-white/90 text-white/70 hover:text-black transition-colors cursor-pointer ${variants.length >= VARIANT_NAMES.length + 10
-                                    ? 'cursor-not-allowed'
+                                className={`px-4 py-2 rounded-full font-bold hover:bg-[rgb(var(--color-foreground)/0.1)] text-[rgb(var(--color-muted-foreground))] transition-colors cursor-pointer ${variants.length >= VARIANT_NAMES.length + 10
+                                    ? 'cursor-not-allowed opacity-50'
                                     : ''
                                     }`}
                             >
@@ -616,20 +620,19 @@ const Upload = () => {
                     </div>
                 </div>
 
-                <div className='h-px mx-4 md:mx-8 bg-white/10' />
+                <div className='h-px mx-4 md:mx-8 bg-[rgb(var(--color-foreground)/0.1)]' />
 
 
                 {/* Banner Image Section */}
                 <div className="col-span-1 md:col-span-2 p-4 md:p-8 space-y-4">
-                    <label className="block font-bold uppercase text-lg">Banner Gallery <span className="text-sm text-white/40 normal-case ml-2">(Optional - Multiple images allowed)</span></label>
-
+                    <label className="block font-bold uppercase text-lg">Banner Gallery <span className="text-sm text-[rgb(var(--color-foreground)/0.4)] normal-case ml-2">(Optional - Multiple images allowed)</span></label>
                     {/* List of items */}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4 empty:hidden">
                         {bannerItems.map((item) => (
-                            <div key={item.id} className="relative group aspect-video bg-white/5 rounded-xl overflow-hidden border-2 border-white/5">
+                            <div key={item.id} className="relative group aspect-video bg-[rgb(var(--color-muted)/0.1)] rounded-xl overflow-hidden border-2 border-[rgb(var(--color-border))]">
                                 {item.type === 'file' ? (
                                     <div className="w-full h-full flex flex-col items-center justify-center p-2 text-center">
-                                        <ImageIcon className="text-gray-400 mb-1" />
+                                        <ImageIcon className="text-[rgb(var(--color-muted-foreground))]" />
                                         <span className="text-xs font-bold truncate w-full">{(item.content as File).name}</span>
                                     </div>
                                 ) : (
@@ -642,13 +645,13 @@ const Upload = () => {
                                 <button
                                     type="button"
                                     onClick={() => removeBannerItem(item.id)}
-                                    className="absolute top-1 right-1 text-red-500 p-1 rounded-full md:opacity-0 md:group-hover:opacity-100 transition-opacity"
+                                    className="absolute top-1 right-1 text-[rgb(var(--color-destructive))] p-1 rounded-full md:opacity-0 md:group-hover:opacity-100 transition-opacity bg-[rgb(var(--color-background)/0.5)]"
                                 >
                                     <X size={16} />
                                 </button>
                             </div>
                         ))}
-                        <div className="relative flex justify-center items-center group aspect-video bg-white/5 rounded-xl overflow-hidden border-2 border-dashed border-white/5">
+                        <div className="relative flex justify-center items-center group aspect-video bg-[rgb(var(--color-muted)/0.05)] rounded-xl overflow-hidden border-2 border-dashed border-[rgb(var(--color-border))]">
                             <input
                                 type="file"
                                 multiple
@@ -658,7 +661,7 @@ const Upload = () => {
                             />
                             <button
                                 type="button"
-                                className="flex flex-col items-center gap-2 font-bold text-white/40"
+                                className="flex flex-col items-center gap-2 font-bold text-[rgb(var(--color-muted-foreground)/0.4)]"
                             >
                                 <UploadIcon size={28} />
                                 Add Images
@@ -674,20 +677,20 @@ const Upload = () => {
                                     value={urlInput}
                                     onChange={e => setUrlInput(e.target.value)}
                                     placeholder="https://..."
-                                    className="bg-white/5 border-2 border-white/5 rounded-lg px-2 py-1 focus:outline-none"
+                                    className="bg-[rgb(var(--color-foreground)/0.05)] border-2 border-[rgb(var(--color-foreground)/0.1)] rounded-lg px-2 py-1 focus:outline-none"
                                     autoFocus
                                 />
                                 <button
                                     type="button"
                                     onClick={addBannerUrl}
-                                    className="bg-white hover:bg-white/90 text-black px-3 py-1 rounded-lg font-bold text-sm"
+                                    className="bg-[rgb(var(--color-foreground))] hover:opacity-90 text-[rgb(var(--color-background))] px-3 py-1 rounded-lg font-bold text-sm"
                                 >
                                     Add
                                 </button>
                                 <button
                                     type="button"
                                     onClick={() => setShowUrlInput(false)}
-                                    className="text-white/40 hover:text-red-500"
+                                    className="text-[rgb(var(--color-muted-foreground)/0.4)] hover:text-[rgb(var(--color-destructive))]"
                                 >
                                     <X size={18} />
                                 </button>
@@ -696,7 +699,7 @@ const Upload = () => {
                             <button
                                 type="button"
                                 onClick={() => setShowUrlInput(true)}
-                                className="flex items-center gap-2 px-4 py-2 rounded-full font-bold bg-white/5 hover:bg-white/90 text-white/70 hover:text-black border border-white/5 transition-colors cursor-pointer"
+                                className="flex items-center gap-2 px-4 py-2 rounded-full font-bold bg-[rgb(var(--color-foreground)/0.05)] hover:bg-[rgb(var(--color-foreground)/0.1)] text-[rgb(var(--color-muted-foreground))] border border-[rgb(var(--color-foreground)/0.1)] transition-colors cursor-pointer"
                             >
                                 <LinkIcon size={18} /> Add URL
                             </button>
@@ -704,14 +707,14 @@ const Upload = () => {
                     </div>
                 </div >
 
-                <div className='h-px mx-4 md:mx-8 bg-white/10' />
+                <div className='h-px mx-4 md:mx-8 bg-[rgb(var(--color-foreground)/0.1)]' />
 
                 <div className='space-y-4 p-4 md:p-8'>
                     <label className="block font-bold mb-4 uppercase">Categories</label>
                     <div className="flex flex-col gap-6 max-h-full overflow-y-auto">
                         {CATEGORIES.map((group, groupIndex) => (
                             <div key={groupIndex} className="flex flex-col gap-3">
-                                <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-widest px-1">
+                                <h3 className="text-sm font-semibold text-[rgb(var(--color-muted-foreground))] uppercase tracking-widest px-1">
                                     {group.group}
                                 </h3>
                                 <div className="flex gap-2 flex-wrap">
@@ -723,8 +726,8 @@ const Upload = () => {
                                             className={`
                                                 px-2 md:px-3 py-1 md:py-1.5 font-mono rounded-full border text-sm transition-all duration-200  hover:-translate-y-0.5
                                                 ${formData.tags.includes(cat.id)
-                                                    ? "bg-white text-black border-white shadow-md"
-                                                    : " text-white/40 border-white/5 hover:bg-white/80 hover:text-black"
+                                                    ? "bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] border-[rgb(var(--color-foreground))] shadow-md"
+                                                    : " text-[rgb(var(--color-foreground)/0.4)] border-[rgb(var(--color-foreground)/0.05)] hover:bg-[rgb(var(--color-foreground)/0.8)] hover:text-[rgb(var(--color-background))]"
                                                 }
                                             `}
                                         >
@@ -737,16 +740,17 @@ const Upload = () => {
                     </div>
                 </div>
 
-                <div className='h-px mx-4 md:mx-8 bg-white/10' />
+                <div className='h-px mx-4 md:mx-8 bg-[rgb(var(--color-foreground)/0.1)]' />
 
                 <div className='p-4 -mt-4'>
-                    <button
+                    <motion.button
+                        whileTap={{ scale: 0.98 }}
                         type="submit"
                         disabled={loading}
-                        className="col-span-1 md:col-span-2 w-full  text-black py-4 rounded-4xl font-black uppercase tracking-wider bg-[#BDF522] hover:bg-[#FF6B00] transition-all flex justify-center items-center gap-2"
+                        className="col-span-1 md:col-span-2 w-full text-[rgb(var(--color-background))] py-4 rounded-4xl font-black uppercase tracking-wider bg-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-muted-foreground))] transition-all flex justify-center items-center gap-2"
                     >
                         {loading ? 'Uploading...' : 'Submit Font'}
-                    </button>
+                    </motion.button>
                 </div>
 
 

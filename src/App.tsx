@@ -1,13 +1,17 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import Layout from './components/layout/Layout';
 import Home from './pages/Home';
 import { ScrollRestoration } from './components/layout/ScrollRestoration';
 import { AuthProvider } from './contexts/AuthContext';
 import { UploadProvider } from './contexts/UploadContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import UploadProgressPopup from './components/UploadProgressPopup';
 import { HelmetProvider } from 'react-helmet-async';
 import BackHandler from './components/capacitor/BackHandler';
+
+import { SplashScreen } from '@capacitor/splash-screen';
+import { useEffect } from 'react';
 
 const FontsCatalog = React.lazy(() => import('./pages/FontsCatalog'));
 const FontDetails = React.lazy(() => import('./pages/FontDetails'));
@@ -22,33 +26,40 @@ const Cli = React.lazy(() => import('./pages/Cli'));
 const DesignerFonts = React.lazy(() => import('./pages/DesignerFonts'));
 
 function App() {
+  const location = useLocation();
+
+  useEffect(() => {
+    // Hide splash screen after app is ready
+    SplashScreen.hide();
+  }, []);
+
   return (
     <HelmetProvider>
-      <AuthProvider>
-        <UploadProvider>
-          <Router>
+      <ThemeProvider>
+        <AuthProvider>
+          <UploadProvider>
             <ScrollRestoration />
             <UploadProgressPopup />
             <BackHandler />
-            <Routes>
-              <Route path="/" element={<Layout />}>
-                <Route index element={<Home />} />
-                <Route path="fonts" element={<FontsCatalog />} />
-                <Route path="fonts/:id" element={<FontDetails />} />
-                <Route path="pairing" element={<FontPairing />} />
-                <Route path="auth" element={<Auth />} />
-                <Route path="upload" element={<Upload />} />
-                <Route path="profile" element={<Profile />} />
-                <Route path="members" element={<Members />} />
-                <Route path="members/:id" element={<MemberDetails />} />
-                <Route path="designers/:designerName" element={<DesignerFonts />} />
-                <Route path="admin" element={<AdminDashboard />} />
-                <Route path="cli" element={<Cli />} />
-              </Route>
-            </Routes>
-          </Router>
-        </UploadProvider>
-      </AuthProvider>
+            <Routes location={location} key={location.pathname}>
+                <Route path="/" element={<Layout />}>
+                  <Route index element={<Home />} />
+                  <Route path="fonts" element={<FontsCatalog />} />
+                  <Route path="fonts/:id" element={<FontDetails />} />
+                  <Route path="pairing" element={<FontPairing />} />
+                  <Route path="auth" element={<Auth />} />
+                  <Route path="upload" element={<Upload />} />
+                  <Route path="profile" element={<Profile />} />
+                  <Route path="members" element={<Members />} />
+                  <Route path="members/:id" element={<MemberDetails />} />
+                  <Route path="designers/:designerName" element={<DesignerFonts />} />
+                  <Route path="admin" element={<AdminDashboard />} />
+                  <Route path="cli" element={<Cli />} />
+                </Route>
+              </Routes>
+          </UploadProvider>
+        </AuthProvider>
+      </ThemeProvider>
     </HelmetProvider>
   );
 }

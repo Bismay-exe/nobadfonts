@@ -141,19 +141,19 @@ export default function MemberDetails() {
     if (!currentUserProfile || (currentUserProfile.role !== 'member' && currentUserProfile.role !== 'admin')) {
         return (
             <div className="flex flex-col items-center justify-center min-h-[84.4vh]  rounded-4xl text-center p-8 space-y-6">
-                <div className="bg-red-100 p-6 rounded-full">
-                    <div className="text-6xl">🔒</div>
+                <div className="bg-[rgb(var(--color-destructive)/0.1)] p-6 rounded-full">
+                    <div className="text-6xl text-[rgb(var(--color-destructive))]">🔒</div>
                 </div>
-                <h1 className="text-4xl font-black uppercase">Access Restricted</h1>
-                <p className="text-xl text-gray-600 max-w-lg">
+                <h1 className="text-4xl font-black uppercase text-[rgb(var(--color-foreground))]">Access Restricted</h1>
+                <p className="text-xl text-[rgb(var(--color-muted-foreground))] max-w-lg">
                     Viewing members is currently restricted to approved <strong>Members</strong> and <strong>Admins</strong>.
                 </p>
                 <div className="flex gap-4">
-                    <button onClick={() => navigate('/')} className="px-6 py-3 bg-black text-white rounded-xl font-bold hover:scale-105 transition-transform">
+                    <button onClick={() => navigate('/')} className="px-6 py-3 bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] rounded-xl font-bold hover:scale-105 transition-transform">
                         Go Home
                     </button>
                     {/* Placeholder for future "Request Access" feature */}
-                    <button disabled className="px-6 py-3 border-2 border-black text-black rounded-xl font-bold opacity-50 cursor-not-allowed">
+                    <button disabled className="px-6 py-3 border-2 border-[rgb(var(--color-border))] text-[rgb(var(--color-foreground))] rounded-xl font-bold opacity-50 cursor-not-allowed">
                         Request Access
                     </button>
                 </div>
@@ -163,7 +163,7 @@ export default function MemberDetails() {
 
     if (loading) return (
         <div className="flex justify-center items-center min-h-[50vh]">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-black"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[rgb(var(--color-foreground))]"></div>
         </div>
     );
 
@@ -177,16 +177,16 @@ export default function MemberDetails() {
     return (
         <div className="mx-auto">
             {/* Header Profile Section */}
-            <div className="border-b border-black rounded-4xl md:px-8 pt-24 pb-8 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden">
-                <button onClick={goBack} className="absolute top-8 left-2 md:left-4 flex items-center text-sm font-bold hover:text-gray-600 mb-8 transition-colors">
+            <div className="border-b border-[rgb(var(--color-border))] rounded-4xl md:px-8 pt-24 pb-8 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden">
+                <button onClick={goBack} className="absolute top-8 left-2 md:left-4 flex items-center text-sm font-bold text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))] mb-8 transition-colors">
                     <ArrowLeft size={20} className="mr-2" />
                     Back to Members
                 </button>
-                <div className="w-48 h-48 bg-gray-100 rounded-full border-2 border-black overflow-hidden shrink-0 z-10">
+                <div className="w-48 h-48 bg-[rgb(var(--color-muted))] rounded-full border-2 border-[rgb(var(--color-border))] overflow-hidden shrink-0 z-10">
                     {profile.avatar_url ? (
                         <img src={profile.avatar_url} alt={profile.full_name} className="w-full h-full object-cover" />
                     ) : (
-                        <div className="w-full h-full flex items-center justify-center font-black text-4xl text-gray-300 uppercase">
+                        <div className="w-full h-full flex items-center justify-center font-black text-4xl text-[rgb(var(--color-muted-foreground)/0.4)] uppercase">
                             {profile.full_name.charAt(0)}
                         </div>
                     )}
@@ -196,12 +196,12 @@ export default function MemberDetails() {
                     <h1 className="text-4xl md:text-5xl font-black uppercase mb-3">{profile.full_name}</h1>
                     <div className="flex flex-wrap gap-2 justify-center md:justify-start items-center">
                         <span className={`
-                            px-4 py-1.5 rounded-full font-bold text-sm uppercase border border-black
-                            ${profile.role === 'admin' ? 'bg-[#FF90E8] text-black' : 'bg-[#BDF522] text-black'}
+                            px-4 py-1.5 rounded-full font-bold text-sm uppercase border border-[rgb(var(--color-border))]
+                            ${profile.role === 'admin' ? 'bg-[rgb(var(--color-accent))] text-[rgb(var(--color-background))]' : 'bg-[rgb(var(--color-highlight))] text-[rgb(var(--color-background))]'}
                         `}>
                             {profile.role}
                         </span>
-                        <span className="text-gray-500 font-mono text-sm">
+                        <span className="text-[rgb(var(--color-muted-foreground))] font-mono text-sm">
                             Uploaded {fonts.length} Font{fonts.length !== 1 ? 's' : ''}
                         </span>
                     </div>
@@ -209,27 +209,27 @@ export default function MemberDetails() {
                     {/* Social Links */}
                     <div className="flex flex-wrap gap-3 mt-4 justify-center md:justify-start">
                         {profile.website && (
-                            <a href={profile.website} target="_blank" rel="noopener noreferrer" className="p-2 bg-[#EEEFEB] rounded-full border hover:border-black transition-colors text-gray-600 hover:text-black hover:-translate-y-1 hover:shadow-md">
+                            <a href={profile.website} target="_blank" rel="noopener noreferrer" className="p-2 bg-[rgb(var(--color-card))] rounded-full border border-[rgb(var(--color-border))] hover:border-[rgb(var(--color-foreground))] transition-colors text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))] hover:-translate-y-1 hover:shadow-md">
                                 <Globe size={20} />
                             </a>
                         )}
                         {profile.behance && (
-                            <a href={profile.behance} target="_blank" rel="noopener noreferrer" className="p-2 bg-[#EEEFEB] rounded-full border hover:border-black transition-colors text-gray-600 hover:text-[#1769ff] hover:-translate-y-1 hover:shadow-md">
+                            <a href={profile.behance} target="_blank" rel="noopener noreferrer" className="p-2 bg-[rgb(var(--color-card))] rounded-full border border-[rgb(var(--color-border))] hover:border-[rgb(var(--color-foreground))] transition-colors text-[rgb(var(--color-muted-foreground))] hover:text-[#1769ff] hover:-translate-y-1 hover:shadow-md">
                                 <Palette size={20} />
                             </a>
                         )}
                         {profile.twitter && (
-                            <a href={profile.twitter} target="_blank" rel="noopener noreferrer" className="p-2 bg-[#EEEFEB] rounded-full border hover:border-black transition-colors text-gray-600 hover:text-[#1DA1F2] hover:-translate-y-1 hover:shadow-md">
+                            <a href={profile.twitter} target="_blank" rel="noopener noreferrer" className="p-2 bg-[rgb(var(--color-card))] rounded-full border border-[rgb(var(--color-border))] hover:border-[rgb(var(--color-foreground))] transition-colors text-[rgb(var(--color-muted-foreground))] hover:text-[#1DA1F2] hover:-translate-y-1 hover:shadow-md">
                                 <Twitter size={20} />
                             </a>
                         )}
                         {profile.instagram && (
-                            <a href={profile.instagram} target="_blank" rel="noopener noreferrer" className="p-2 bg-[#EEEFEB] rounded-full border hover:border-black transition-colors text-gray-600 hover:text-[#E1306C] hover:-translate-y-1 hover:shadow-md">
+                            <a href={profile.instagram} target="_blank" rel="noopener noreferrer" className="p-2 bg-[rgb(var(--color-card))] rounded-full border border-[rgb(var(--color-border))] hover:border-[rgb(var(--color-foreground))] transition-colors text-[rgb(var(--color-muted-foreground))] hover:text-[#E1306C] hover:-translate-y-1 hover:shadow-md">
                                 <Instagram size={20} />
                             </a>
                         )}
                         {profile.linkedin && (
-                            <a href={profile.linkedin} target="_blank" rel="noopener noreferrer" className="p-2 bg-[#EEEFEB] rounded-full border hover:border-black transition-colors text-gray-600 hover:text-[#0077b5] hover:-translate-y-1 hover:shadow-md">
+                            <a href={profile.linkedin} target="_blank" rel="noopener noreferrer" className="p-2 bg-[rgb(var(--color-card))] rounded-full border border-[rgb(var(--color-border))] hover:border-[rgb(var(--color-foreground))] transition-colors text-[rgb(var(--color-muted-foreground))] hover:text-[#0077b5] hover:-translate-y-1 hover:shadow-md">
                                 <Linkedin size={20} />
                             </a>
                         )}
@@ -237,13 +237,13 @@ export default function MemberDetails() {
 
                     {profile.bio && (
                         <div>
-                            <p className={`mt-4 text-gray-600 max-w-lg font-medium whitespace-pre-wrap ${!isExpanded ? 'line-clamp-5' : ''}`}>
+                            <p className={`mt-4 text-[rgb(var(--color-muted-foreground))] max-w-lg font-medium whitespace-pre-wrap ${!isExpanded ? 'line-clamp-5' : ''}`}>
                                 {profile.bio}
                             </p>
                             {(profile.bio.length > 150 || profile.bio.split('\n').length > 5) && (
                                 <button
                                     onClick={() => setIsExpanded(!isExpanded)}
-                                    className="text-sm font-bold text-gray-500 hover:text-black mt-1"
+                                    className="text-sm font-bold text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))] mt-1"
                                 >
                                     {isExpanded ? 'Show less' : '...more'}
                                 </button>
@@ -258,7 +258,7 @@ export default function MemberDetails() {
                                 href={`https://paypal.me/${profile.paypal_me}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center gap-2 px-6 py-3 bg-[#0070BA] text-white font-bold rounded-xl hover:bg-[#003087] transition-all hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1"
+                                className="inline-flex items-center gap-2 px-6 py-3 bg-[rgb(var(--color-primary))] text-[rgb(var(--color-background))] font-bold rounded-xl hover:opacity-90 transition-all hover:shadow-[4px_4px_0px_0px_rgb(var(--color-foreground))] hover:-translate-y-1"
                             >
                                 <Coffee size={20} />
                                 Buy me a coffee
@@ -300,8 +300,8 @@ export default function MemberDetails() {
                     />
                 </div>
             ) : (
-                <div className="text-center py-24 bg-gray-50 rounded-4xl border-2 border-dashed border-gray-300">
-                    <p className="text-xl font-bold text-gray-400">This member hasn't uploaded any fonts yet.</p>
+                <div className="text-center py-24 bg-[rgb(var(--color-muted)/0.3)] rounded-4xl border-2 border-dashed border-[rgb(var(--color-border))]">
+                    <p className="text-xl font-bold text-[rgb(var(--color-muted-foreground))]">This member hasn't uploaded any fonts yet.</p>
                 </div>
             )}
         </div >

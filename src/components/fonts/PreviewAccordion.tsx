@@ -109,7 +109,7 @@ export function PreviewAccordion({ images, vertical = false }: { images: string[
     return (
         <div
             ref={containerRef}
-            className={`w-full h-full flex overflow-hidden bg-zinc-900 group ${vertical ? 'flex-col rounded-4xl' : 'flex-col md:flex-row rounded-4xl border-2 border-white/10'}`}
+            className={`w-full h-full flex overflow-hidden bg-[rgb(var(--color-card))] group ${vertical ? 'flex-col rounded-4xl' : 'flex-col md:flex-row rounded-4xl border-2 border-[rgb(var(--color-border))]'}`}
             onMouseEnter={() => setPaused(true)}
             onMouseLeave={() => setPaused(false)}
             onTouchStart={handleTouchStart}
@@ -133,7 +133,7 @@ export function PreviewAccordion({ images, vertical = false }: { images: string[
                         duration-700
                         ease-in-out
                         overflow-hidden
-                        border-white/10
+                        border-[rgb(var(--color-border))]
                         ${vertical
                             ? (images.length > 1 ? 'w-full border-b last:border-b-0' : 'w-full h-auto max-h-[80vh]')
                             : (images.length > 1 ? 'w-full md:w-auto md:h-full border-b md:border-b-0 md:border-r last:border-b-0 md:last:border-r-0' : 'w-full h-auto max-h-[80vh]')
@@ -152,7 +152,7 @@ export function PreviewAccordion({ images, vertical = false }: { images: string[
                         <div
                             className={`
                             absolute inset-0 transition-colors duration-700
-                            ${activeIndex === index ? 'bg-black/0' : 'bg-black/40'}
+                            ${activeIndex === index ? 'bg-transparent' : 'bg-[rgb(var(--color-background)/0.4)]'}
                             `}
                         />
                     )}

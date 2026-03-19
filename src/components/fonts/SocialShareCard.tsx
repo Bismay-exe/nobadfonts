@@ -16,24 +16,24 @@ const SocialShareCard = forwardRef<HTMLDivElement, SocialShareCardProps>(({ font
     return (
         <div
             ref={ref}
-            className="w-300 h-157.5 bg-black text-white relative overflow-hidden flex flex-col justify-between p-16"
+            className="w-300 h-157.5 bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))] relative overflow-hidden flex flex-col justify-between p-16"
             style={{
-                background: 'linear-gradient(135deg, #1a1a1a 0%, #000000 100%)'
+                background: 'linear-gradient(135deg, rgb(var(--color-background)) 0%, rgba(var(--color-background), 0.8) 100%)'
             }}
         >
             {/* Background Texture/Elements */}
-            <div className="absolute top-0 right-0 w-150 h-150 bg-[#BDF522] rounded-full blur-[150px] opacity-20 -mr-32 -mt-32 pointer-events-none"></div>
-            <div className="absolute bottom-0 left-0 w-150 h-150 bg-[#FF90E8] rounded-full blur-[120px] opacity-10 -ml-20 -mb-20 pointer-events-none"></div>
+            <div className="absolute top-0 right-0 w-150 h-150 bg-[rgb(var(--color-highlight))] rounded-full blur-[150px] opacity-20 -mr-32 -mt-32 pointer-events-none"></div>
+            <div className="absolute bottom-0 left-0 w-150 h-150 bg-[rgb(var(--color-accent))] rounded-full blur-[120px] opacity-10 -ml-20 -mb-20 pointer-events-none"></div>
 
             {/* Header */}
-            <div className="relative z-10 flex justify-between items-center border-b border-gray-800 pb-8">
+            <div className="relative z-10 flex justify-between items-center border-b border-[rgb(var(--color-border))] pb-8">
                 <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-[#EEEFEB] rounded-xl overflow-hidden flex items-center justify-center">
+                    <div className="w-12 h-12 bg-[rgb(var(--color-muted))] rounded-xl overflow-hidden flex items-center justify-center">
                         <img src="/logo/logo.png" alt="" className='w-full h-full object-contain' />
                     </div>
-                    <span className="font-bold text-xl text-gray-400">NoBadFonts</span>
+                    <span className="font-bold text-xl text-[rgb(var(--color-muted-foreground))]">NoBadFonts</span>
                 </div>
-                <div className="px-6 py-2 border border-gray-700 rounded-full text-sm font-mono text-gray-400 uppercase">
+                <div className="px-6 py-2 border border-[rgb(var(--color-border))] rounded-full text-sm font-mono text-[rgb(var(--color-muted-foreground))] uppercase">
                     Free Download
                 </div>
             </div>
@@ -57,12 +57,12 @@ const SocialShareCard = forwardRef<HTMLDivElement, SocialShareCardProps>(({ font
             {/* Footer */}
             <div className="relative z-10 flex justify-between items-end">
                 <div>
-                    <p className="text-gray-500 text-sm uppercase tracking-wider mb-2">Designed By</p>
+                    <p className="text-[rgb(var(--color-muted-foreground))] text-sm uppercase tracking-wider mb-2">Designed By</p>
                     <p className="text-2xl font-bold">{font.designer || 'Unknown Designer'}</p>
                 </div>
 
                 <div className="flex">
-                    <span className="px-6 py-3 bg-[#BDF522] text-black rounded-xl font-black">
+                    <span className="px-6 py-3 bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] rounded-xl font-black">
                         GET IT ON nobadfonts.in
                     </span>
                 </div>

@@ -34,43 +34,43 @@ const InlineCustomizeOptions = ({
     };
 
     return (
-        <div className="flex items-center gap-2 md:gap-3 px-3 py-1 border-l border-white/20">
+        <div className="flex items-center gap-2 md:gap-3 px-3 py-1 border-l border-[rgb(var(--color-border))]">
             {variants.length > 0 && (
                 <div className="flex items-center font-bold">
                     <select
                         value={currentVariant || ''}
                         onChange={(e) => onVariantChange(e.target.value || null)}
-                        className="bg-transparent text-white text-xs focus:outline-none cursor-pointer appearance-none transition-colors border-none"
+                        className="bg-transparent text-[rgb(var(--color-foreground))] text-xs focus:outline-none cursor-pointer appearance-none transition-colors border-none"
                         title="Font Variant"
                     >
-                        <option value="" className="text-black">Regular</option>
+                        <option value="" className="bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))]">Regular</option>
                         {variants.map(v => (
-                            <option key={v.id} value={v.variant_name} className="text-black">{v.variant_name}</option>
+                            <option key={v.id} value={v.variant_name} className="bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))]">{v.variant_name}</option>
                         ))}
                     </select>
                 </div>
             )}
 
             <div className="flex items-center gap-2" title="Font Size (px)">
-                <span className="text-[10px] uppercase font-bold text-zinc-500">Sz</span>
+                <span className="text-[10px] uppercase font-bold text-[rgb(var(--color-muted-foreground))]">Sz</span>
                 <input
                     type="range"
                     min="10"
                     max="200"
                     value={currentStyle.size}
                     onChange={(e) => handleStyleChange('size', Number(e.target.value))}
-                    className="w-16 md:w-24 h-1 bg-white/20 rounded-lg appearance-none cursor-e-resize accent-white [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:rounded-full"
+                    className="w-16 md:w-24 h-1 bg-[rgb(var(--color-muted)/0.2)] rounded-lg appearance-none cursor-e-resize accent-[rgb(var(--color-foreground))] [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [\u0026::-webkit-slider-thumb]:bg-[rgb(var(--color-foreground))] [\u0026::-webkit-slider-thumb]:rounded-full"
                 />
                 <input
                     type="number"
                     value={currentStyle.size}
                     onChange={(e) => handleStyleChange('size', Number(e.target.value))}
-                    className="w-10 bg-transparent text-xs font-bold text-white focus:outline-none focus:bg-white/10 rounded px-1 transition-colors [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none text-right"
+                    className="w-10 bg-transparent text-xs font-bold text-[rgb(var(--color-foreground))] focus:outline-none focus:bg-[rgb(var(--color-muted)/0.1)] rounded px-1 transition-colors [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none text-right"
                 />
             </div>
 
             <div className="flex items-center gap-2" title="Line Height">
-                <span className="text-[10px] uppercase font-bold text-zinc-500">Lh</span>
+                <span className="text-[10px] uppercase font-bold text-[rgb(var(--color-muted-foreground))]">Lh</span>
                 <input
                     type="range"
                     min="0.5"
@@ -78,19 +78,19 @@ const InlineCustomizeOptions = ({
                     step="0.1"
                     value={currentStyle.leading}
                     onChange={(e) => handleStyleChange('leading', Number(e.target.value))}
-                    className="w-16 md:w-24 h-1 bg-white/20 rounded-lg appearance-none cursor-e-resize accent-white [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:rounded-full"
+                    className="w-16 md:w-24 h-1 bg-[rgb(var(--color-muted)/0.2)] rounded-lg appearance-none cursor-e-resize accent-[rgb(var(--color-foreground))] [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [\u0026::-webkit-slider-thumb]:bg-[rgb(var(--color-foreground))] [\u0026::-webkit-slider-thumb]:rounded-full"
                 />
                 <input
                     type="number"
                     step="0.1"
                     value={currentStyle.leading}
                     onChange={(e) => handleStyleChange('leading', Number(e.target.value))}
-                    className="w-10 bg-transparent text-xs font-bold text-white focus:outline-none focus:bg-white/10 rounded px-1 transition-colors [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none text-right"
+                    className="w-10 bg-transparent text-xs font-bold text-[rgb(var(--color-foreground))] focus:outline-none focus:bg-[rgb(var(--color-muted)/0.1)] rounded px-1 transition-colors [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none text-right"
                 />
             </div>
 
             <div className="flex items-center gap-2" title="Letter Spacing (px)">
-                <span className="text-[10px] uppercase font-bold text-zinc-500">Ls</span>
+                <span className="text-[10px] uppercase font-bold text-[rgb(var(--color-muted-foreground))]">Ls</span>
                 <input
                     type="range"
                     min="-10"
@@ -98,18 +98,18 @@ const InlineCustomizeOptions = ({
                     step="0.5"
                     value={currentStyle.tracking}
                     onChange={(e) => handleStyleChange('tracking', Number(e.target.value))}
-                    className="w-16 md:w-24 h-1 bg-white/20 rounded-lg appearance-none cursor-e-resize accent-white [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:rounded-full"
+                    className="w-16 md:w-24 h-1 bg-[rgb(var(--color-muted)/0.2)] rounded-lg appearance-none cursor-e-resize accent-[rgb(var(--color-foreground))] [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [\u0026::-webkit-slider-thumb]:bg-[rgb(var(--color-foreground))] [\u0026::-webkit-slider-thumb]:rounded-full"
                 />
                 <input
                     type="number"
                     step="0.5"
                     value={currentStyle.tracking}
                     onChange={(e) => handleStyleChange('tracking', Number(e.target.value))}
-                    className="w-10 bg-transparent text-xs font-bold text-white focus:outline-none focus:bg-white/10 rounded px-1 transition-colors [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none text-right"
+                    className="w-10 bg-transparent text-xs font-bold text-[rgb(var(--color-foreground))] focus:outline-none focus:bg-[rgb(var(--color-muted)/0.1)] rounded px-1 transition-colors [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none text-right"
                 />
             </div>
 
-            <div className="flex items-center pl-1 border-l border-white/10" title="Text Color">
+            <div className="flex items-center pl-1 border-l border-[rgb(var(--color-border))]" title="Text Color">
                 <input
                     type="color"
                     value={currentStyle.color}
@@ -141,7 +141,7 @@ export default function FontPairing() {
     };
 
     // Global background color
-    const [bgColor, setBgColor] = useState('#09090b'); // zinc-950
+    const [bgColor, setBgColor] = useState('rgb(var(--color-background))');
 
     // Sidebar State
     const [sidebarMode, setSidebarMode] = useState<'picker' | null>(null);
@@ -150,8 +150,8 @@ export default function FontPairing() {
     const [activeSection, setActiveSection] = useState<'Header' | 'Body' | 'UI' | null>(null);
 
     // Default styles for block creation
-    const defaultHeaderStyle: StyleState = { size: 72, leading: 1.1, tracking: 0, color: '#FFFFFF' };
-    const defaultBodyStyle: StyleState = { size: 18, leading: 1.6, tracking: 0, color: '#A1A1AA' };
+    const defaultHeaderStyle: StyleState = { size: 72, leading: 1.1, tracking: 0, color: 'rgb(var(--color-foreground))' };
+    const defaultBodyStyle: StyleState = { size: 18, leading: 1.6, tracking: 0, color: 'rgb(var(--color-muted-foreground))' };
 
     const defaultHeaderText = "The fool doth think he is wise, but the wise man knows himself to be a fool. Love is blind, and lovers cannot see, The pretty follies that themselves commit.";
     const defaultBodyText = "Once upon a time, there was a young girl named Lily who lived in a small village. She had always been fascinated by the strange and vivid dreams she would have every night, filled with fantastical creatures and mysterious lands. Despite her parents' skepticism, Lily was certain that there was some kind of deeper meaning to these dreams, and was determined to uncover it. One day, Lily discovered a book in the local library about the interpretation of dreams, and became engrossed in its pages. She learned about the different symbols and themes that could appear in a dream, and was amazed at the insights she gained about her own subconscious mind. However, the book also warned of the dangers of becoming too obsessed with one's dreams, as it could lead to a loss of touch with reality. Undeterred, Lily began to actively seek out her dreams, using various methods to induce sleep and remember her nightly adventures. She soon found herself spending more and more time in the dream world, and less time in the waking world. Her friends and family began to worry about her as she became increasingly distant and aloof, lost in her own thoughts and visions. Despite the warning signs, Lily could not be swayed from her quest. She continued to delve deeper into her dreams, until one night she found herself in a strange and unfamiliar place. She was surrounded by dark and twisted creatures, who threatened to consume her soul. In that moment, Lily realized the truth of what she had been seeking - the depths of the human mind can be both beautiful and terrifying.";
@@ -388,7 +388,13 @@ export default function FontPairing() {
     };
 
     return (
-        <div className="min-h-screen bg-black text-white relative">
+        <div className="min-h-screen bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))] relative text-selection">
+            <style>{`
+                .text-selection ::selection {
+                    background: rgb(var(--color-foreground));
+                    color: rgb(var(--color-background));
+                }
+            `}</style>
             <SEO title="Font Pairing Playground" />
 
             {/* Fullpage Modal: Picker */}
@@ -403,11 +409,11 @@ export default function FontPairing() {
 
             {/* Global Background Color Control */}
             <div className="fixed bottom-6 left-6 z-30 group">
-                <button className="bg-zinc-800 text-white p-4 rounded-full shadow-[0_0_20px_rgba(0,0,0,0.5)] border border-white/10 hover:scale-110 transition-transform">
+                <button className="bg-[rgb(var(--color-muted))] text-[rgb(var(--color-foreground))] p-4 rounded-full shadow-[0_0_20px_rgba(0,0,0,0.5)] border border-[rgb(var(--color-border))] hover:scale-110 transition-transform">
                     <Palette size={24} />
                 </button>
-                <div className="absolute left-0 bottom-full mb-4 bg-zinc-900 p-4 rounded-2xl border border-white/10 shadow-xl hidden group-hover:block w-56 animate-in fade-in slide-in-from-bottom-2">
-                    <p className="text-xs font-bold mb-3 uppercase text-zinc-500">Background Color</p>
+                <div className="absolute left-0 bottom-full mb-4 bg-[rgb(var(--color-card))] p-4 rounded-2xl border border-[rgb(var(--color-border))] shadow-xl hidden group-hover:block w-56 animate-in fade-in slide-in-from-bottom-2">
+                    <p className="text-xs font-bold mb-3 uppercase text-[rgb(var(--color-muted-foreground))]">Background Color</p>
                     <div className="flex flex-wrap gap-2">
                         {[
                             '#000000', '#09090b', '#18181b', '#27272a', // Zincs
@@ -418,8 +424,8 @@ export default function FontPairing() {
                                 key={color}
                                 onClick={() => setBgColor(color)}
                                 className={cn(
-                                    "w-8 h-8 rounded-full border border-white/10 transition-transform hover:scale-110",
-                                    bgColor === color && "ring-2 ring-white ring-offset-2 ring-offset-black"
+                                    "w-8 h-8 rounded-full border border-[rgb(var(--color-border))] transition-transform hover:scale-110",
+                                    bgColor === color && "ring-2 ring-[rgb(var(--color-foreground))] ring-offset-2 ring-offset-[rgb(var(--color-background))]"
                                 )}
                                 style={{ backgroundColor: color }}
                             />
@@ -432,10 +438,10 @@ export default function FontPairing() {
             <div className="pt-8 pb-12 px-6">
                 <div className="max-w-480 mx-auto flex flex-col md:flex-col items-center justify-center gap-6">
                     <div className="mb-8 text-center">
-                        <h1 className="text-4xl md:text-6xl font-bold tracking-tighter text-white mb-4">
+                        <h1 className="text-4xl md:text-6xl font-bold tracking-tighter text-[rgb(var(--color-foreground))] mb-4">
                             Type Pairing.
                         </h1>
-                        <p className="text-zinc-500 max-w-xl mx-auto">
+                        <p className="text-[rgb(var(--color-muted-foreground))] max-w-xl mx-auto">
                             Mix, match, and experiment with real-time editing.
                         </p>
                     </div>
@@ -446,7 +452,7 @@ export default function FontPairing() {
             <div className="px-0 md:px-4 pb-20">
                 <motion.div
                     layout
-                    className="max-w-480 mx-auto rounded-[3rem] p-0 md:p-16 relative transition-colors duration-500 shadow-2xl border border-white/5"
+                    className="max-w-480 mx-auto rounded-[3rem] p-0 md:p-16 relative transition-colors duration-500 shadow-2xl border border-[rgb(var(--color-border)/0.5)]"
                     style={{ backgroundColor: bgColor }}
                 >
                     <div className="space-y-6 lg:space-y-12">
@@ -459,7 +465,7 @@ export default function FontPairing() {
                                     {/* Add Block Button (Sidebar) */}
                                     <button
                                         onClick={() => addBlock(block.id, block.type)}
-                                        className="mt-2 p-2 rounded-full bg-zinc-900 border border-white/10 text-white hover:bg-white hover:text-black transition-colors"
+                                        className="mt-2 p-2 rounded-full bg-[rgb(var(--color-muted))] border border-[rgb(var(--color-border))] text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground))] hover:text-[rgb(var(--color-background))] transition-colors"
                                         title={`Add ${block.type} Block Below`}
                                     >
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="M12 5v14" /></svg>
@@ -469,7 +475,7 @@ export default function FontPairing() {
                                     {blocks.length > 1 && (
                                         <button
                                             onClick={() => removeBlock(block.id)}
-                                            className="mt-2 p-2 rounded-full bg-zinc-900 border border-white/10 text-white hover:bg-red-500 hover:text-white transition-colors"
+                                            className="mt-2 p-2 rounded-full bg-[rgb(var(--color-muted))] border border-[rgb(var(--color-border))] text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-destructive))] hover:text-[rgb(var(--color-background))] transition-colors"
                                             title="Delete Block"
                                         >
                                             <Trash2 size={16} />
@@ -479,10 +485,10 @@ export default function FontPairing() {
 
                                 {/* Floating Controls */}
                                 <div className="absolute -top-12 left-0 opacity-100 lg:opacity-0 group-hover:opacity-100 transition-all duration-300 z-10 flex items-center gap-2">
-                                    <div className="bg-black/80 backdrop-blur-md rounded-full border border-white/10 p-1 flex items-center gap-1 shadow-2xl overflow-hidden md:overflow-visible">
+                                    <div className="bg-[rgb(var(--color-background)/0.8)] backdrop-blur-md rounded-full border border-[rgb(var(--color-border))] p-1 flex items-center gap-1 shadow-2xl overflow-hidden md:overflow-visible">
                                         <button
                                             onClick={() => handleOpenPicker(block.id)}
-                                            className="px-4 py-2 rounded-full font-bold text-xs bg-white text-black hover:bg-zinc-200 transition-colors flex items-center gap-2 whitespace-nowrap"
+                                            className="px-4 py-2 rounded-full font-bold text-xs bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] hover:bg-[rgb(var(--color-muted-foreground))] transition-colors flex items-center gap-2 whitespace-nowrap"
                                         >
                                             <Edit3 size={12} />
                                             <span>{block.font?.name || 'Select Font'}</span>
@@ -512,7 +518,7 @@ export default function FontPairing() {
                                         color: block.style.color,
                                         minHeight: block.type === 'Header' ? '80px' : '40px'
                                     }}
-                                    className="w-full bg-transparent border-none outline-none resize-none overflow-hidden placeholder:text-zinc-700 hover:bg-white/5 rounded-2xl transition-colors p-2 -ml-2 select-text"
+                                    className="w-full bg-transparent border-none outline-none resize-none overflow-hidden placeholder-[rgb(var(--color-muted-foreground)/0.5)] hover:bg-[rgb(var(--color-foreground)/0.05)] rounded-2xl transition-colors p-2 -ml-2 select-text"
                                     rows={block.type === 'Header' ? undefined : 1}
                                     spellCheck={false}
                                 />

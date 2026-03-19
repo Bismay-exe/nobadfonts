@@ -6,11 +6,15 @@ import App from './App.tsx';
 import { AuthProvider } from './contexts/AuthContext';
 import ErrorBoundary from './components/shared/ErrorBoundary';
 
+import { BrowserRouter } from 'react-router-dom';
+
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
         <AuthProvider>
             <ErrorBoundary>
-                <App />
+                <BrowserRouter>
+                    <App />
+                </BrowserRouter>
             </ErrorBoundary>
         </AuthProvider>
     </StrictMode>

@@ -139,19 +139,13 @@ const Landing = () => {
                 ease: "none"
             }, 0);
 
-            // 2. Fade Background Color (rgba(17, 39, 11, 1) -> transparent)
-            tl.to(textContainer3Ref.current, {
-                backgroundColor: "rgba(17, 39, 11, 0)",
-                duration: 0.25,
-                ease: "none"
-            }, 0.25);
-
-            // 3. Fade Opacity
+            // 2. Fade Background Color
+            // Handle via opacity for variable compatibility
             tl.to(textContainer3Ref.current, {
                 opacity: 0,
-                duration: 0.25,
+                duration: 0.5,
                 ease: "none"
-            }, 0.5);
+            }, 0.25);
 
             // 4. Reveal Text (Spans)
             tl.fromTo(headerWordsRef.current,
@@ -187,10 +181,10 @@ const Landing = () => {
     const containerClass = "text-container absolute top-0 left-0 w-full h-full z-10 will-change-transform";
 
     // Colors
-    const darkBg = "bg-[#1C1D1E]";
-    const lightBg = "bg-[#EEEFEB]";
-    const darkText = "text-[#1C1D1E]";
-    const lightText = "text-[#EEEFEB]";
+    const darkBg = "bg-[rgb(var(--color-background))]";
+    const lightBg = "bg-[rgb(var(--color-foreground))]";
+    const darkText = "text-[rgb(var(--color-background))]";
+    const lightText = "text-[rgb(var(--color-foreground))]";
 
     return (
         <div ref={containerRef} className="font-['Roboto_Condensed'] ">
@@ -270,7 +264,7 @@ const Landing = () => {
 
                 {/* Overlay Header with Split Text */}
                 <div className="header absolute h-full w-full flex justify-center items-center z-0 pointer-events-none">
-                    <div className="w-full text-[#ff0000] uppercase text-[18cqw] md:text-[14cqw] lg:text-[10cqw] font-categories-elegant tracking-tight leading-[1.3] text-center">
+                    <div className="w-full text-[rgb(var(--color-primary))] uppercase text-[18cqw] md:text-[14cqw] lg:text-[10cqw] font-categories-elegant tracking-tight leading-[1.3] text-center">
 
                         <div className="hidden lg:block">
                             <AnimatedWord addToRefs={addToRefs}>Seriously</AnimatedWord>

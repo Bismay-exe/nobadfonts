@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { Toast } from '@capacitor/toast';
+import { motion } from 'framer-motion';
 import ProfileHeader from '../components/profile/ProfileHeader';
 import FontGrid from '../components/profile/FontGrid';
 import SettingsForm from '../components/profile/SettingsForm';
@@ -31,7 +34,7 @@ export default function Profile() {
             await refreshProfile();
         } catch (error) {
             console.error('Error requesting access:', error);
-            alert('Failed to request access. Please try again.');
+            await Toast.show({ text: 'Failed to request access. Please try again.', duration: 'short' });
         } finally {
             setRequestLoading(false);
         }
@@ -90,10 +93,10 @@ export default function Profile() {
 
             {/* Membership Status Section */}
             {!isEditing && profile?.role === 'user' && (
-                <div className="bg-white/10 border border-white/10 rounded-4xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
+                <div className="bg-[rgb(var(--color-foreground)/0.1)] border border-[rgb(var(--color-foreground)/0.1)] rounded-4xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
                     <div>
                         <h3 className="text-xl font-black uppercase">Become a Contributor</h3>
-                        <p className="text-gray-600 font-medium">
+                        <p className="text-[rgb(var(--color-muted-foreground))] font-medium">
                             {profile.membership_status === 'pending'
                                 ? "Your request is under review by our admins."
                                 : profile.membership_status === 'rejected'
@@ -104,17 +107,21 @@ export default function Profile() {
                     </div>
 
                     {profile.membership_status === 'pending' ? (
-                        <div className="px-6 py-3 bg-yellow-100 text-yellow-800 font-bold rounded-xl border-2 border-yellow-400 uppercase tracking-wide">
+                        <div className="px-6 py-3 bg-[rgb(var(--color-muted))] text-[rgb(var(--color-muted-foreground))] font-bold rounded-xl border-2 border-[rgb(var(--color-border))] uppercase tracking-wide">
                             Request Pending
                         </div>
                     ) : (
-                        <button
-                            onClick={handleRequestAccess}
+                        <motion.button
+                            whileTap={{ scale: 0.95 }}
+                            onClick={async () => {
+                                await Haptics.impact({ style: ImpactStyle.Medium });
+                                handleRequestAccess();
+                            }}
                             disabled={requestLoading}
-                            className="px-6 py-3 bg-[#BDF522] hover:bg-[#a9db1e] text-black font-black uppercase rounded-xl border-2 border-black transition-all hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="px-6 py-3 bg-[rgb(var(--color-highlight))] hover:opacity-80 text-[rgb(var(--color-background))] font-black uppercase rounded-xl border-2 border-[rgb(var(--color-background))] transition-all hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(rgb(var(--color-background)),1)] disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {requestLoading ? 'Requesting...' : (profile.membership_status === 'rejected' ? 'Request Again' : 'Request Access')}
-                        </button>
+                        </motion.button>
                     )}
                 </div>
             )}
@@ -123,35 +130,47 @@ export default function Profile() {
                 <>
                     {/* Tabs */}
                     <div className="flex flex-col md:flex-row gap-2 md:gap-0">
-                        <button
-                            onClick={() => setActiveTab('favorites')}
-                            className={`flex-1 px-6 py-4 text-lg font-bold border-y md:border-r border-black rounded-4xl md:rounded-r-none transition-colors ${activeTab === 'favorites'
-                                ? 'bg-[#FFC900]'
-                                : 'bg-[#EEEFEB]'
+                        <motion.button
+                            whileTap={{ scale: 0.98 }}
+                            onClick={async () => {
+                                await Haptics.impact({ style: ImpactStyle.Light });
+                                setActiveTab('favorites');
+                            }}
+                            className={`flex-1 px-6 py-4 text-lg font-bold border-y md:border-r border-[rgb(var(--color-background))] rounded-4xl md:rounded-r-none transition-colors ${activeTab === 'favorites'
+                                ? 'bg-[rgb(var(--color-gold-1))]'
+                                : 'bg-[rgb(var(--color-surface,var(--color-muted)))]'
                                 }`}
                         >
                             My Favorites
-                        </button>
+                        </motion.button>
 
-                        <button
-                            onClick={() => setActiveTab('analytics')}
-                            className={`flex-1 px-6 py-4 text-lg font-bold border-y md:border-x border-black rounded-4xl md:rounded-none transition-colors ${activeTab === 'analytics'
-                                ? 'bg-[#ff90e8]' // Pink to match admin/member vibe
-                                : 'bg-[#EEEFEB]'
+                        <motion.button
+                            whileTap={{ scale: 0.98 }}
+                            onClick={async () => {
+                                await Haptics.impact({ style: ImpactStyle.Light });
+                                setActiveTab('analytics');
+                            }}
+                            className={`flex-1 px-6 py-4 text-lg font-bold border-y md:border-x border-[rgb(var(--color-background))] rounded-4xl md:rounded-none transition-colors ${activeTab === 'analytics'
+                                ? 'bg-[rgb(var(--color-accent))]' // Pink to match admin/member vibe
+                                : 'bg-[rgb(var(--color-surface,var(--color-muted)))]'
                                 }`}
                         >
                             Analytics
-                        </button>
+                        </motion.button>
 
-                        <button
-                            onClick={() => setActiveTab('downloads')}
-                            className={`flex-1 px-6 py-4 text-lg font-bold border-y border-l rounded-4xl md:rounded-l-none border-black transition-colors ${activeTab === 'downloads'
-                                ? 'bg-[#04ff96]'
-                                : 'bg-[#EEEFEB]'
+                        <motion.button
+                            whileTap={{ scale: 0.98 }}
+                            onClick={async () => {
+                                await Haptics.impact({ style: ImpactStyle.Light });
+                                setActiveTab('downloads');
+                            }}
+                            className={`flex-1 px-6 py-4 text-lg font-bold border-y border-l rounded-4xl md:rounded-l-none border-[rgb(var(--color-background))] transition-colors ${activeTab === 'downloads'
+                                ? 'bg-[rgb(189_245_34)]' // Using raw highlight or success
+                                : 'bg-[rgb(var(--color-surface,var(--color-muted)))]'
                                 }`}
                         >
                             My Download History
-                        </button>
+                        </motion.button>
                     </div>
 
                     {activeTab === 'favorites' && (

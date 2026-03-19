@@ -147,19 +147,12 @@ const App = () => {
             }, 0);
 
             // 2. Fade Background Color (25% -> 50% of progress)
-            // Note: CSS Variable --dark is rgba(17, 39, 11, 1). We fade to opacity 0.
-            tl.to(textContainer3Ref.current, {
-                backgroundColor: "rgba(17, 39, 11, 0)",
-                duration: 0.25,
-                ease: "none"
-            }, 0.25);
-
-            // 3. Fade Opacity (50% -> 75% of progress)
+            // We handle this via opacity now to be compatible with variables
             tl.to(textContainer3Ref.current, {
                 opacity: 0,
-                duration: 0.25,
+                duration: 0.5,
                 ease: "none"
-            }, 0.5);
+            }, 0.25);
 
             // 4. Reveal Text (75% -> 95% of progress)
             // We use the spans we created in the JSX
@@ -196,8 +189,8 @@ const App = () => {
         @import url("https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap");
 
         :root {
-            --dark: rgba(17, 39, 11, 1);
-            --light: rgba(162, 255, 91, 1);
+            --dark: rgb(var(--color-background));
+            --light: rgb(var(--color-highlight));
         }
 
         * {

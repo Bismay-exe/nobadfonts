@@ -35,7 +35,7 @@ const Hero = () => {
     }, []);
 
     return (
-        <div ref={containerRef} className="@container max-w-480 h-full text-[#EEEFEB] font-mono selection:bg-[#ff0000] selection:text-[#1C1D1E] overflow-hidden flex flex-col">
+        <div ref={containerRef} className="@container max-w-480 h-full text-[rgb(var(--color-foreground))] font-mono selection:bg-[rgb(var(--color-primary))] selection:text-[rgb(var(--color-background))] overflow-hidden flex flex-col">
 
             {/* Main Content */}
             <main className="flex-1 flex flex-col justify-center items-center relative p-4 sm:p-8 md:p-26 py-14">
@@ -55,30 +55,30 @@ const Hero = () => {
 
                     {/* Subtext & Actions */}
                     <div className="hero-content mt-8 md:mt-12 max-w-xl mx-auto flex flex-col items-center gap-8">
-                        <p className="text-md md:text-xl text-gray-600 leading-none font-medium">
+                        <p className="text-md md:text-xl text-[rgb(var(--color-muted-foreground))] leading-none font-medium">
                             A curated directory of open-source typefaces that actually look good.
                             No clutter, just type.
                         </p>
 
                         {/* Search Bar / CTA */}
-                        <div className="w-full max-w-md relative group scale-75 md:scale-100 text-gray-400 font-sans">
+                        <div className="w-full max-w-md relative group scale-75 md:scale-100 text-[rgb(var(--color-muted-foreground))] font-sans">
                             <input
                                 type="text"
                                 placeholder="Try 'Inter' or 'Geist'..."
-                                className="w-full h-14 pl-6 pr-14 bg-[#1C1D1E] rounded-2xl border border-[#1C1D1E] focus:border-none focus:bg-[#1C1D1E] outline-none transition-all placeholder:text-[#EEEFEB]/80 font-medium"
+                                className="w-full h-14 pl-6 pr-14 bg-[rgb(var(--color-background))] rounded-2xl border border-[rgb(var(--color-foreground))] focus:border-none focus:ring-2 focus:ring-[rgb(var(--color-primary))] outline-none transition-all placeholder:text-[rgb(var(--color-foreground)/0.8)] font-medium"
                             />
-                            <button className="absolute right-2 top-2 h-10 w-10 bg-[#EEEFEB] text-[#1C1D1E] rounded-xl flex items-center justify-center group-focus-within:bg-[#ff0000] transition-colors">
+                            <button className="absolute right-2 top-2 h-10 w-10 bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] rounded-xl flex items-center justify-center group-focus-within:bg-[rgb(var(--color-primary))] transition-colors">
                                 <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                                 </svg>
                             </button>
                         </div>
 
-                        <div className="flex gap-4 text-sm text-gray-300 font-inter font-bold">
-                            <span className='text-gray-500'>Popular:</span>
-                            <span className="cursor-pointer hover:underline decoration-[#ff0000] underline-offset-4">Helvetica</span>
-                            <span className="cursor-pointer hover:underline decoration-[#ff0000] underline-offset-4">Futura</span>
-                            <span className="cursor-pointer hover:underline decoration-[#ff0000] underline-offset-4">Garamond</span>
+                        <div className="flex gap-4 text-sm text-[rgb(var(--color-muted-foreground))] font-inter font-bold">
+                            <span className='text-[rgb(var(--color-muted-foreground)/0.5)]'>Popular:</span>
+                            <span className="cursor-pointer hover:underline decoration-[rgb(var(--color-primary))] underline-offset-4">Helvetica</span>
+                            <span className="cursor-pointer hover:underline decoration-[rgb(var(--color-primary))] underline-offset-4">Futura</span>
+                            <span className="cursor-pointer hover:underline decoration-[rgb(var(--color-primary))] underline-offset-4">Garamond</span>
                         </div>
                     </div>
                 </div>

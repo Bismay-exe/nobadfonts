@@ -5,6 +5,8 @@ import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import { motion } from 'framer-motion';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { Toast } from '@capacitor/toast';
 
 interface FontCardProps {
     font: Font;
@@ -200,6 +202,8 @@ function FontCard({ font, viewMode = 'font', onClick, disableLink = false, isExp
 
         const newStatus = !isFavorited;
         setIsFavorited(newStatus); // Optimistic update
+        
+        await Haptics.impact({ style: ImpactStyle.Medium });
         // We might want to update local favorite count state here too for immediate feedback, 
         // but for now we rely on the prop or a re-fetch if needed. 
         // Since `font` prop isn't updated instantly, the count won't change immediately unless we track it locally.
@@ -229,7 +233,7 @@ function FontCard({ font, viewMode = 'font', onClick, disableLink = false, isExp
             console.error('Error updating favorite:', error);
             setIsFavorited(!newStatus); // Revert on error
             setFavoritesCount(prev => newStatus ? prev - 1 : prev + 1); // Revert count
-            alert('Failed to update favorites');
+            await Toast.show({ text: 'Failed to update favorites', duration: 'short' });
         }
     };
 
@@ -246,14 +250,16 @@ function FontCard({ font, viewMode = 'font', onClick, disableLink = false, isExp
         } else {
             setLocalIsExpanded(!localIsExpanded);
         }
+        Haptics.impact({ style: ImpactStyle.Light });
     };
 
     return (
         <motion.div
             initial={{ opacity: 1, scale: 1, y: 0 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
+            whileTap={{ scale: 0.98 }}
             transition={{ duration: 0.3 }}
-            className="group relative -mb-2 sm:mb-0 bg-white/5 rounded-4xl border border-white/15 transition-colors overflow-hidden flex flex-col"
+            className="group relative -mb-2 sm:mb-0 bg-[rgb(var(--color-foreground)/0.05)] rounded-4xl border border-[rgb(var(--color-foreground)/0.15)] transition-colors overflow-hidden flex flex-col"
             onClick={handleCardClick}
         >
             <div className="flex flex-col h-full relative cursor-pointer">
@@ -296,7 +302,7 @@ function FontCard({ font, viewMode = 'font', onClick, disableLink = false, isExp
                         transition={{ duration: 0.25 }}
                     >
                         <div className="overflow-hidden">
-                            <div className="bg-linear-to-t from-black to-black/0 w-full">
+                            <div className="bg-linear-to-t from-[rgb(var(--color-background))] to-[rgb(var(--color-background)/0)] w-full">
                                 <div className="px-4 pb-4 pt-2 flex flex-col gap-3">
                                     {/* Top Row: Likes & View Button */}
                                     <div className="flex items-center justify-between w-full">
@@ -304,7 +310,7 @@ function FontCard({ font, viewMode = 'font', onClick, disableLink = false, isExp
                                         {!hideLike ? (
                                             <button
                                                 onClick={toggleFavorite}
-                                                className="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors group/like"
+                                                className="flex items-center gap-2 text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))] transition-colors group/like"
                                             >
                                                 <Heart
                                                     size={22}
@@ -318,7 +324,7 @@ function FontCard({ font, viewMode = 'font', onClick, disableLink = false, isExp
                                         <Link
                                             to={`/fonts/${font.slug || font.id}`}
                                             onClick={(e) => e.stopPropagation()}
-                                            className="bg-white text-black text-xs px-4 py-2 rounded-full font-bold font-bricolage-grotesque hover:bg-zinc-300 transition-colors"
+                                            className="bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] text-xs px-4 py-2 rounded-full font-bold font-bricolage-grotesque hover:opacity-80 transition-colors"
                                         >
                                             View Details
                                         </Link>
@@ -326,12 +332,12 @@ function FontCard({ font, viewMode = 'font', onClick, disableLink = false, isExp
 
                                     <div className="w-full h-full">
                                         <p className="text-2xl font-bold tracking-tight mb-0.5">{font.name}</p>
-                                        <p className="text-sm text-zinc-500 tracking-wide">
+                                        <p className="text-sm text-[rgb(var(--color-muted-foreground))] tracking-wide">
                                             by <Link
                                                 to={`/designers/${encodeURIComponent(font.designer || '')}`}
                                                 state={{ from: location }}
                                                 onClick={(e) => e.stopPropagation()}
-                                                className="hover:text-white hover:underline transition-colors"
+                                                className="hover:text-[rgb(var(--color-foreground))] hover:underline transition-colors"
                                             >
                                                 {font.designer}
                                             </Link>
@@ -344,7 +350,7 @@ function FontCard({ font, viewMode = 'font', onClick, disableLink = false, isExp
                                             <Link
                                                 key={i}
                                                 to={`/fonts?categories=${tag}`}
-                                                className="bg-white/5 border border-white/5 text-white/60 hover:bg-white/90 hover:text-[#000000] text-[10px] md:text-[11px] px-2.5 py-1 rounded-full tracking-wider font-medium font-bricolage-grotesque uppercase">
+                                                className="bg-[rgb(var(--color-foreground)/0.05)] border border-[rgb(var(--color-foreground)/0.05)] text-[rgb(var(--color-foreground)/0.6)] hover:bg-[rgb(var(--color-foreground)/0.9)] hover:text-[rgb(var(--color-background))] text-[10px] md:text-[11px] px-2.5 py-1 rounded-full tracking-wider font-medium font-bricolage-grotesque uppercase">
                                                 {tag}
                                             </Link>
                                         ))}
@@ -358,19 +364,19 @@ function FontCard({ font, viewMode = 'font', onClick, disableLink = false, isExp
 
             {/* Hover overlay gradient for collapsed state */}
             <div
-                className={`absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent flex justify-between items-end p-6 z-10 transition-opacity duration-300 pointer-events-none ${isExpanded ? 'opacity-0' : 'opacity-0 group-hover:opacity-100'
+                className={`absolute inset-0 bg-linear-to-t from-[rgb(var(--color-background)/0.8)] via-transparent to-transparent flex justify-between items-end p-6 z-10 transition-opacity duration-300 pointer-events-none ${isExpanded ? 'opacity-0' : 'opacity-0 group-hover:opacity-100'
                     }`}
             >
                 <div className="flex flex-col">
-                    <p className={`text-white font-bold text-lg transition-transform duration-300 ${isExpanded ? 'translate-y-2' : 'translate-y-2 group-hover:translate-y-0'}`}>{font.name}</p>
-                    <p className={`text-zinc-400 text-xs transition-transform duration-300 delay-75 ${isExpanded ? 'translate-y-2' : 'translate-y-2 group-hover:translate-y-0'}`}>{font.designer}</p>
+                    <p className={`text-[rgb(var(--color-foreground))] font-bold text-lg transition-transform duration-300 ${isExpanded ? 'translate-y-2' : 'translate-y-2 group-hover:translate-y-0'}`}>{font.name}</p>
+                    <p className={`text-[rgb(var(--color-muted-foreground))] text-xs transition-transform duration-300 delay-75 ${isExpanded ? 'translate-y-2' : 'translate-y-2 group-hover:translate-y-0'}`}>{font.designer}</p>
                 </div>
                 <div className="flex items-center justify-end gap-2">
                     {/* Likes */}
                     {!hideLike && (
                         <button
                             onClick={toggleFavorite}
-                            className={`flex items-center gap-1 text-zinc-400 hover:text-white transition-colors group/like ${isExpanded ? 'pointer-events-none' : 'pointer-events-auto'}`}
+                            className={`flex items-center gap-1 text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))] transition-colors group/like ${isExpanded ? 'pointer-events-none' : 'pointer-events-auto'}`}
                         >
                             <Heart
                                 size={22}
@@ -390,7 +396,7 @@ function FontCard({ font, viewMode = 'font', onClick, disableLink = false, isExp
                                 e.preventDefault();
                             }
                         }}
-                        className={`text-xs px-4 py-2 font-bold hover:text-white transition-colors ${isExpanded ? 'pointer-events-none' : 'pointer-events-auto'}`}
+                        className={`text-xs px-4 py-2 font-bold text-[rgb(var(--color-foreground))] hover:opacity-80 transition-colors ${isExpanded ? 'pointer-events-none' : 'pointer-events-auto'}`}
                     >
                         <ArrowUpRight size={22} />
                     </Link>

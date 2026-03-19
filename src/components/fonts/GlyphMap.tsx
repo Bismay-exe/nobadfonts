@@ -26,6 +26,14 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
     const [viewMode, setViewMode] = useState<'solid' | 'outline'>('solid');
     const [setMode, setSetMode] = useState<'basic' | 'full'>('basic');
     const [selectedChar, setSelectedChar] = useState<string>('Y');
+    const [themeTrigger, setThemeTrigger] = useState(0);
+    const getRGB = (name: string) =>
+        getComputedStyle(document.documentElement)
+            .getPropertyValue(name)
+            .trim();
+
+    const rgb = (name: string) => `rgb(${getRGB(name)})`;
+    const rgba = (name: string, alpha: number) => `rgba(${getRGB(name)}, ${alpha})`;
 
     // Variant State
     const [activeVariant, setActiveVariant] = useState<{ name: string; url: string } | null>(null);
@@ -115,6 +123,10 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
         if (!ctx) return;
 
         const render = () => {
+            const fg = rgb('--color-foreground');
+            const strokeColor = rgba('--color-muted-foreground', 0.5);
+            const guideColor = rgba('--color-muted-foreground', 0.2);
+            const labelColor = rgba('--color-muted-foreground', 0.4);
             // Metrics and Setup
             const dpr = window.devicePixelRatio || 1;
             const rect = container.getBoundingClientRect();
@@ -158,7 +170,7 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
             // Draw Guidelines function
             const drawLine = (y: number, label: string, value: number, isDashed = false) => {
                 ctx.beginPath();
-                ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+                ctx.strokeStyle = guideColor;
                 ctx.lineWidth = 1;
                 if (isDashed) ctx.setLineDash([4, 4]);
                 else ctx.setLineDash([]);
@@ -166,7 +178,7 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
                 ctx.lineTo(width, y);
                 ctx.stroke();
 
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+                ctx.fillStyle = labelColor;
                 ctx.font = '12px monospace';
                 ctx.textAlign = 'left';
                 ctx.fillText(label, 10, y - 6);
@@ -193,15 +205,15 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
 
             // Draw Glyph Body
             if (viewMode === 'solid') {
-                ctx.fillStyle = 'white';
-                path.fill = 'white';
+                ctx.fillStyle = fg;
+                path.fill = fg;
                 path.stroke = null;
                 path.draw(ctx);
             } else {
-                ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+                ctx.strokeStyle = strokeColor;
                 ctx.lineWidth = 1;
                 path.fill = null;
-                path.stroke = 'rgba(255,255,255,0.5)';
+                path.stroke = strokeColor;
                 path.strokeWidth = 1;
                 path.draw(ctx);
 
@@ -216,14 +228,14 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
                         startX = cmd.x * scale;
                         startY = -cmd.y * scale; // Flip Y for canvas
                         // Draw Point (On-Curve)
-                        ctx.fillStyle = 'white';
+                        ctx.fillStyle = fg;
                         ctx.arc(startX, startY, 3, 0, Math.PI * 2);
                         ctx.fill();
                     } else if (cmd.type === 'L') {
                         const x = cmd.x * scale;
                         const y = -cmd.y * scale;
                         // Draw Point (On-Curve)
-                        ctx.fillStyle = 'white';
+                        ctx.fillStyle = fg;
                         ctx.arc(x, y, 3, 0, Math.PI * 2); // Square or Circle? Image showed square-ish dots for on-curve
                         ctx.fillRect(x - 2, y - 2, 4, 4); // Let's use squares for on-curve points like standard vector tools
                         startX = x;
@@ -235,7 +247,7 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
                         const y = -cmd.y * scale;
 
                         // Draw Handle Lines
-                        ctx.strokeStyle = '#666';
+                        ctx.strokeStyle = strokeColor;
                         ctx.lineWidth = 1;
                         ctx.beginPath();
                         ctx.moveTo(startX, startY);
@@ -244,13 +256,13 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
                         ctx.stroke();
 
                         // Draw Control Point (Off-Curve)
-                        ctx.fillStyle = '#666'; // Grey for control points
+                        ctx.fillStyle = fg; // Grey for control points
                         ctx.beginPath();
                         ctx.arc(x1, y1, 2, 0, Math.PI * 2);
                         ctx.fill();
 
                         // Draw End Point (On-Curve)
-                        ctx.fillStyle = 'white';
+                        ctx.fillStyle = fg;
                         ctx.fillRect(x - 2, y - 2, 4, 4);
 
                         startX = x;
@@ -264,7 +276,7 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
                         const y = -cmd.y * scale;
 
                         // Draw Handle Lines: Start -> C1, C2 -> End
-                        ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+                        ctx.strokeStyle = rgba('--color-muted-foreground', 0.3);
                         ctx.lineWidth = 1;
                         ctx.setLineDash([]);
 
@@ -279,12 +291,12 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
                         ctx.stroke();
 
                         // Draw Control Points (Off-Curve) - Small Circles
-                        ctx.fillStyle = 'white';
+                        ctx.fillStyle = fg;
                         ctx.beginPath(); ctx.arc(x1, y1, 2, 0, Math.PI * 2); ctx.fill();
                         ctx.beginPath(); ctx.arc(x2, y2, 2, 0, Math.PI * 2); ctx.fill();
 
                         // Draw End Point (On-Curve) - Square
-                        ctx.fillStyle = 'white';
+                        ctx.fillStyle = fg;
                         ctx.fillRect(x - 2.5, y - 2.5, 5, 5);
 
                         startX = x;
@@ -310,11 +322,23 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
 
         return () => resizeObserver.disconnect();
 
-    }, [fontFamily, fontUrl, activeVariant, selectedChar, viewMode, fontObject]);
+    }, [fontFamily, fontUrl, activeVariant, selectedChar, viewMode, fontObject, themeTrigger]);
+
+    useEffect(() => {
+    const handleThemeChange = () => {
+        setThemeTrigger(t => t + 1);
+    };
+
+    window.addEventListener('theme-change', handleThemeChange);
+
+    return () => {
+        window.removeEventListener('theme-change', handleThemeChange);
+    };
+}, []);
 
 
     return (
-        <div className="w-full bg-[#0D0D0D] text-white rounded-4xl border border-white/20">
+        <div className="w-full bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))] rounded-4xl border border-[rgb(var(--color-border))]">
 
             <div className="lg:flex items-start relative">
                 {/* Left: sticky ONLY inside this section */}
@@ -326,7 +350,7 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
                         lg:sticky
                         lg:top-0
                         self-start
-                        border-r border-white/10
+                        border-r border-[rgb(var(--color-border)/0.5)]
                     "
                 >
                     {/* Toolbar */}
@@ -334,21 +358,21 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
                         <div className='flex justify-between w-full md:w-auto'>
                             <div className="flex items-center gap-6">
                                 <h2 className="text-xl font-bold tracking-tight">{setMode === 'basic' ? 'Basic Set' : `${availableGlyphs.length} Glyphs`}</h2>
-                                <div className="flex items-center gap-2 text-xs font-mono text-gray-400">
+                                <div className="flex items-center gap-2 text-xs font-mono text-[rgb(var(--color-muted-foreground))]">
                                     <span>{selectedChar ? selectedChar.startsWith('U+') ? selectedChar : `U+${selectedChar.charCodeAt(0).toString(16).toUpperCase().padStart(4, '0')}` : ''}</span>
                                 </div>
                             </div>
                             {/* Set Toggle */}
-                            <div className="md:hidden flex items-center gap-4 text-sm font-medium text-gray-400 border-l border-white/10 pl-8">
+                            <div className="md:hidden flex items-center gap-4 text-sm font-medium text-[rgb(var(--color-muted-foreground))] border-l border-[rgb(var(--color-border)/0.5)] pl-8">
                                 <button
                                     onClick={() => setSetMode('basic')}
-                                    className={`transition-colors hover:text-white ${setMode === 'basic' ? 'text-white' : ''}`}
+                                    className={`transition-colors hover:text-[rgb(var(--color-foreground))] ${setMode === 'basic' ? 'text-[rgb(var(--color-foreground))]' : ''}`}
                                 >
                                     Basic Set
                                 </button>
                                 <button
                                     onClick={() => setSetMode('full')}
-                                    className={`transition-colors hover:text-white ${setMode === 'full' ? 'text-white' : ''}`}
+                                    className={`transition-colors hover:text-[rgb(var(--color-foreground))] ${setMode === 'full' ? 'text-[rgb(var(--color-foreground))]' : ''}`}
                                 >
                                     Full Set
                                 </button>
@@ -358,7 +382,7 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
                         <div className="flex justify-between w-full md:w-auto items-center gap-0 md:gap-8 mt-4 md:mt-0">
                             {/* Variant Selector (if variants exist) */}
                             {variants.length > 0 && (
-                                <div className="border-r border-white/10 pr-8">
+                                <div className="border-r border-[rgb(var(--color-border)/0.5)] pr-8">
                                     <select
                                         value={activeVariant?.name || (variants.some(v => v.url === fontUrl) ? variants.find(v => v.url === fontUrl)?.name : 'Regular')}
                                         onChange={(e) => {
@@ -371,7 +395,7 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
                                                 setActiveVariant(null);
                                             }
                                         }}
-                                        className="bg-[#1A1A1A] border border-white/20 text-white text-sm px-4 py-2 rounded-lg focus:outline-none focus:border-white cursor-pointer"
+                                        className="bg-[rgb(var(--color-muted)/0.1)] border border-[rgb(var(--color-border))] text-[rgb(var(--color-foreground))] text-sm px-4 py-2 rounded-lg focus:outline-none focus:border-[rgb(var(--color-foreground))] cursor-pointer"
                                     >
                                         {!variants.some(v => v.url === fontUrl) && <option value="Regular">Regular</option>}
                                         {variants.slice().sort((a, b) => {
@@ -408,33 +432,34 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
                             )}
 
                             {/* View Toggle */}
-                            <div className="flex items-center gap-4 text-sm font-medium text-gray-400">
+                            <div className="flex items-center gap-4 text-sm font-medium text-[rgb(var(--color-muted-foreground))]">
                                 <button
                                     onClick={() => setViewMode('solid')}
-                                    className={`transition-colors hover:text-white ${viewMode === 'solid' ? 'text-white' : ''}`}
+                                    className={`transition-colors hover:text-[rgb(var(--color-foreground))] ${viewMode === 'solid' ? 'text-[rgb(var(--color-foreground))]' : ''}`}
                                 >
                                     Solid
                                 </button>
                                 <button
                                     onClick={() => setViewMode('outline')}
-                                    className={`transition-colors hover:text-white ${viewMode === 'outline' ? 'text-white' : ''}`}
+                                    className={`transition-colors hover:text-[rgb(var(--color-foreground))] ${viewMode === 'outline' ? 'text-[rgb(var(--color-foreground))]' : ''}`}
                                 >
                                     Outlines
                                 </button>
                             </div>
 
                             {/* Set Toggle */}
-                            <div className="hidden md:flex items-center gap-4 text-sm font-medium text-gray-400 border-l border-white/10 pl-8">
+                            <div className="hidden md:flex items-center gap-4 text-sm font-medium text-[rgb(var(--color-muted-foreground))] border-l border-[rgb(var(--color-border)/0.5)] pl-8">
                                 <button
                                     onClick={() => setSetMode('basic')}
-                                    className={`transition-colors hover:text-white ${setMode === 'basic' ? 'text-white' : ''}`}
+                                    className={`transition-colors hover:text-[rgb(var(--color-foreground))] ${setMode === 'basic' ? 'text-[rgb(var(--color-foreground))]' : ''}`}
                                 >
                                     Basic Set
                                 </button>
                                 <button
                                     onClick={() => setSetMode('full')}
-                                    className={`transition-colors hover:text-white ${setMode === 'full' ? 'text-white' : ''}`}
+                                    className={`transition-colors hover:text-[rgb(var(--color-foreground))] ${setMode === 'full' ? 'text-[rgb(var(--color-foreground))]' : ''}`}
                                 >
+
                                     Full Set
                                 </button>
                             </div>
@@ -469,7 +494,7 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
                                         const range = RANGES.find(r => r.name === e.target.value);
                                         if (range) setSelectedRange(range);
                                     }}
-                                    className="bg-[#1A1A1A] border border-white/20 text-white text-sm px-4 py-2 rounded-lg focus:outline-none focus:border-white"
+                                    className="bg-[rgb(var(--color-muted)/0.1)] border border-[rgb(var(--color-border))] text-[rgb(var(--color-foreground))] text-sm px-4 py-2 rounded-lg focus:outline-none focus:border-[rgb(var(--color-foreground))]"
                                 >
                                     {RANGES.map(r => <option key={r.name} value={r.name}>{r.name}</option>)}
                                 </select>
@@ -478,12 +503,12 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
                             {isScanning ? (
                                 <div className="grid grid-cols-6 md:grid-cols-10 gap-2 opacity-50">Loading...</div>
                             ) : (
-                                <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-px bg-[#EEEFEB]/10 border border-white/10">
+                                <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-px bg-[rgb(var(--color-muted)/0.1)] border border-[rgb(var(--color-border)/0.5)]">
                                     {availableGlyphs.length > 0 ? availableGlyphs.map(char => (
                                         <button
                                             key={char}
                                             onClick={() => setSelectedChar(char)}
-                                            className={`aspect-square flex items-center justify-center bg-[#0D0D0D] hover:bg-[#EEEFEB]/5 transition-colors ${selectedChar === char ? 'ring-1 ring-white z-10' : ''}`}
+                                            className={`aspect-square flex items-center justify-center bg-[rgb(var(--color-background))] hover:bg-[rgb(var(--color-muted)/0.05)] transition-colors ${selectedChar === char ? 'ring-1 ring-[rgb(var(--color-foreground))] z-10' : ''}`}
                                         >
                                             <span style={{ fontFamily: `"${fontFamily}"` }} className="text-2xl">{char}</span>
                                         </button>
@@ -506,12 +531,12 @@ function CategoryView({ fontFamily, basicUppercase, basicLowercase, basicNumeral
     return (
         <div className="space-y-6 md:space-y-12">
             {/* Mobile Tabs */}
-            <div className="flex justify-center gap-4 md:hidden border-b border-white/10 pb-4">
+            <div className="flex justify-center gap-4 md:hidden border-b border-[rgb(var(--color-border)/0.5)] pb-4">
                 {(['Uppercase', 'Lowercase', 'Numerals'] as const).map(tab => (
                     <button
                         key={tab}
                         onClick={() => setActiveTab(tab)}
-                        className={`text-sm font-medium transition-colors ${activeTab === tab ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
+                        className={`text-sm font-medium transition-colors ${activeTab === tab ? 'text-[rgb(var(--color-foreground))]' : 'text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))]'}`}
                     >
                         {tab}
                     </button>
@@ -520,13 +545,13 @@ function CategoryView({ fontFamily, basicUppercase, basicLowercase, basicNumeral
 
             {/* Uppercase */}
             <div className={activeTab === 'Uppercase' ? 'block' : 'hidden md:block'}>
-                <h3 className="hidden md:block text-xs font-mono text-gray-500 uppercase mb-4 text-right">Uppercase</h3>
-                <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-px bg-[#EEEFEB]/10 border border-white/10">
+                <h3 className="hidden md:block text-xs font-mono text-[rgb(var(--color-muted-foreground))] uppercase mb-4 text-right">Uppercase</h3>
+                <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-px bg-[rgb(var(--color-muted)/0.1)] border border-[rgb(var(--color-border)/0.5)]">
                     {basicUppercase.map((char: string) => (
                         <button
                             key={char}
                             onClick={() => setSelectedChar(char)}
-                            className={`aspect-square flex items-center justify-center bg-[#0D0D0D] hover:bg-[#EEEFEB]/5 transition-colors ${selectedChar === char ? 'ring-1 ring-white z-10' : ''}`}
+                            className={`aspect-square flex items-center justify-center bg-[rgb(var(--color-background))] hover:bg-[rgb(var(--color-muted)/0.05)] transition-colors ${selectedChar === char ? 'ring-1 ring-[rgb(var(--color-foreground))] z-10' : ''}`}
                         >
                             <span style={{ fontFamily: `"${fontFamily}"` }} className="text-2xl">{char}</span>
                         </button>
@@ -536,13 +561,13 @@ function CategoryView({ fontFamily, basicUppercase, basicLowercase, basicNumeral
 
             {/* Lowercase */}
             <div className={activeTab === 'Lowercase' ? 'block' : 'hidden md:block'}>
-                <h3 className="hidden md:block text-xs font-mono text-gray-500 uppercase mb-4 text-right">Lowercase</h3>
-                <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-px bg-[#EEEFEB]/10 border border-white/10">
+                <h3 className="hidden md:block text-xs font-mono text-[rgb(var(--color-muted-foreground))] uppercase mb-4 text-right">Lowercase</h3>
+                <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-px bg-[rgb(var(--color-muted)/0.1)] border border-[rgb(var(--color-border)/0.5)]">
                     {basicLowercase.map((char: string) => (
                         <button
                             key={char}
                             onClick={() => setSelectedChar(char)}
-                            className={`aspect-square flex items-center justify-center bg-[#0D0D0D] hover:bg-[#EEEFEB]/5 transition-colors ${selectedChar === char ? 'ring-1 ring-white z-10' : ''}`}
+                            className={`aspect-square flex items-center justify-center bg-[rgb(var(--color-background))] hover:bg-[rgb(var(--color-muted)/0.05)] transition-colors ${selectedChar === char ? 'ring-1 ring-[rgb(var(--color-foreground))] z-10' : ''}`}
                         >
                             <span style={{ fontFamily: `"${fontFamily}"` }} className="text-2xl">{char}</span>
                         </button>
@@ -552,13 +577,13 @@ function CategoryView({ fontFamily, basicUppercase, basicLowercase, basicNumeral
 
             {/* Numerals */}
             <div className={activeTab === 'Numerals' ? 'block' : 'hidden md:block'}>
-                <h3 className="hidden md:block text-xs font-mono text-gray-500 uppercase mb-4 text-right">Numerals</h3>
-                <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-px bg-[#EEEFEB]/10 border border-white/10">
+                <h3 className="hidden md:block text-xs font-mono text-[rgb(var(--color-muted-foreground))] uppercase mb-4 text-right">Numerals</h3>
+                <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-px bg-[rgb(var(--color-muted)/0.1)] border border-[rgb(var(--color-border)/0.5)]">
                     {basicNumerals.map((char: string) => (
                         <button
                             key={char}
                             onClick={() => setSelectedChar(char)}
-                            className={`aspect-square flex items-center justify-center bg-[#0D0D0D] hover:bg-[#EEEFEB]/5 transition-colors ${selectedChar === char ? 'ring-1 ring-white z-10' : ''}`}
+                            className={`aspect-square flex items-center justify-center bg-[rgb(var(--color-background))] hover:bg-[rgb(var(--color-muted)/0.05)] transition-colors ${selectedChar === char ? 'ring-1 ring-[rgb(var(--color-foreground))] z-10' : ''}`}
                         >
                             <span style={{ fontFamily: `"${fontFamily}"` }} className="text-2xl">{char}</span>
                         </button>

@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { Smartphone, Monitor, Image as ImageIcon, Menu, Battery, Wifi, Signal, ChevronDown, MoreHorizontal, Music, Heart, Shuffle, SkipBack, Play, SkipForward, Repeat, CreditCard, ArrowDown, ArrowUp, TrendingUp, Bell, ArrowUpRight, Star, ShoppingBag, ArrowLeft, ArrowRight, Search, MapPin, Grid, Settings, Tv, Lightbulb, Flame, Wind, Lock, HomeIcon, ChevronRight, CloudRain, Zap, Plus, Sun, Cloud, Droplets, Eye, RotateCw, Shield, CheckCircle } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
 
 interface ContextPreviewProps {
     fontFamily: string;
@@ -21,31 +23,34 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
     return (
         <div className="flex flex-col h-full">
             {/* Tabs */}
-            <div className="flex gap-2 p-4 border-b border-gray-200 overflow-x-auto">
-                <button
-                    onClick={() => setActiveTab('poster')}
+            <div className="flex gap-2 p-4 border-b border-[rgb(var(--color-border))] overflow-x-auto">
+                <motion.button
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => { setActiveTab('poster'); Haptics.impact({ style: ImpactStyle.Light }); }}
                     className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm  transition-all whitespace-nowrap
-                        ${activeTab === 'poster' ? 'bg-black text-white shadow-md' : 'bg-white text-gray-500 hover:bg-gray-100'}
+                        ${activeTab === 'poster' ? 'bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] shadow-md' : 'bg-[rgb(var(--color-background))] text-[rgb(var(--color-muted-foreground))] hover:bg-[rgb(var(--color-muted)/0.1)]'}
                     `}
                 >
                     <ImageIcon size={16} /> Typographic Poster
-                </button>
-                <button
-                    onClick={() => setActiveTab('app')}
+                </motion.button>
+                <motion.button
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => { setActiveTab('app'); Haptics.impact({ style: ImpactStyle.Light }); }}
                     className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm  transition-all whitespace-nowrap
-                        ${activeTab === 'app' ? 'bg-black text-white shadow-md' : 'bg-white text-gray-500 hover:bg-gray-100'}
+                        ${activeTab === 'app' ? 'bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] shadow-md' : 'bg-[rgb(var(--color-background))] text-[rgb(var(--color-muted-foreground))] hover:bg-[rgb(var(--color-muted)/0.1)]'}
                     `}
                 >
                     <Smartphone size={16} /> Mobile App
-                </button>
-                <button
-                    onClick={() => setActiveTab('hero')}
+                </motion.button>
+                <motion.button
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => { setActiveTab('hero'); Haptics.impact({ style: ImpactStyle.Light }); }}
                     className={`hidden lg:flex items-center gap-2 px-4 py-2 rounded-full text-sm  transition-all whitespace-nowrap
-                        ${activeTab === 'hero' ? 'bg-black text-white shadow-md' : 'bg-white text-gray-500 hover:bg-gray-100'}
+                        ${activeTab === 'hero' ? 'bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] shadow-md' : 'bg-[rgb(var(--color-background))] text-[rgb(var(--color-muted-foreground))] hover:bg-[rgb(var(--color-muted)/0.1)]'}
                     `}
                 >
                     <Monitor size={16} /> Website Hero
-                </button>
+                </motion.button>
             </div>
 
             {/* Preview Container */}
@@ -54,40 +59,50 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                 {/* HERO VIEW */}
                 {activeTab === 'hero' && (
                     <div className='hidden lg:flex flex-wrap justify-center items-center gap-5'>
-                        <div className="w-full max-w-4xl bg-white rounded-xl shadow-xl overflow-hidden border border-gray-200 animate-in fade-in duration-300">
+                        <div className="w-full max-w-4xl bg-[rgb(var(--color-background))] rounded-xl shadow-xl overflow-hidden border border-[rgb(var(--color-border))] animate-in fade-in duration-300">
                             {/* Fake Browser Chrome */}
-                            <div className="bg-gray-100 px-4 py-3 flex items-center gap-4 border-b border-gray-200">
+                            <div className="bg-[rgb(var(--color-muted)/0.05)] px-4 py-3 flex items-center gap-4 border-b border-[rgb(var(--color-border))]">
                                 <div className="flex gap-2">
                                     <div className="w-3 h-3 rounded-full bg-red-400"></div>
                                     <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
                                     <div className="w-3 h-3 rounded-full bg-green-400"></div>
                                 </div>
-                                <div className="flex-1 bg-white h-6 rounded-md shadow-sm opacity-50"></div>
+                                <div className="flex-1 bg-[rgb(var(--color-background))] h-6 rounded-md shadow-sm opacity-50"></div>
                             </div>
 
                             {/* Content */}
                             <div className="flex flex-col md:flex-row h-100">
                                 <div className="flex-1 p-12 flex flex-col justify-center gap-6">
-                                    <span style={{ fontFamily }} className="text-sm tracking-widest uppercase text-blue-600">
+                                    <span style={{ fontFamily }} className="text-sm tracking-widest uppercase text-[rgb(var(--color-accent))]">
                                         Introducing
                                     </span>
-                                    <h1 style={{ fontFamily }} className="text-5xl md:text-6xl leading-tight text-gray-900">
+                                    <h1 style={{ fontFamily }} className="text-5xl md:text-6xl leading-tight text-[rgb(var(--color-foreground))]">
                                         Future of Typography.
                                     </h1>
-                                    <p className="text-gray-500 leading-relaxed max-w-md">
+                                    <p className="text-[rgb(var(--color-muted-foreground))] leading-relaxed max-w-md">
                                         Experience the perfect blend of aesthetics and readability.
                                         Designed for modern interfaces and bold statements.
                                     </p>
                                     <div className="flex gap-4 pt-4">
-                                        <button style={{ fontFamily }} className="px-8 py-3 bg-black text-white rounded-lg">
+                                        <motion.button
+                                            whileTap={{ scale: 0.95 }}
+                                            onClick={() => Haptics.impact({ style: ImpactStyle.Light })}
+                                            style={{ fontFamily }}
+                                            className="px-8 py-3 bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] rounded-lg"
+                                        >
                                             Get Started
-                                        </button>
-                                        <button style={{ fontFamily }} className="px-8 py-3 bg-gray-100 text-black rounded-lg">
+                                        </motion.button>
+                                        <motion.button
+                                            whileTap={{ scale: 0.95 }}
+                                            onClick={() => Haptics.impact({ style: ImpactStyle.Light })}
+                                            style={{ fontFamily }}
+                                            className="px-8 py-3 bg-[rgb(var(--color-muted)/0.1)] text-[rgb(var(--color-foreground))] rounded-lg"
+                                        >
                                             Learn More
-                                        </button>
+                                        </motion.button>
                                     </div>
                                 </div>
-                                <div className="w-1/3 bg-gray-100 m-8 rounded-2xl hidden md:flex items-center justify-center text-gray-300">
+                                <div className="w-1/3 bg-[rgb(var(--color-muted)/0.05)] m-8 rounded-2xl hidden md:flex items-center justify-center text-[rgb(var(--color-muted-foreground))]">
                                     <ImageIcon size={64} />
                                 </div>
                             </div>
@@ -111,121 +126,129 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                                         <ArrowRight size={14} />
                                         <RotateCw size={14} />
                                     </div>
-                                    <div className="flex-1 bg-gray-100 rounded-md h-6 flex items-center px-2 gap-2 text-[10px] text-gray-500 max-w-md mx-auto">
-                                        <Lock size={10} className="text-green-600" />
+                                    <div className="flex-1 bg-[rgb(var(--color-muted)/0.05)] rounded-md h-6 flex items-center px-2 gap-2 text-[10px] text-[rgb(var(--color-muted-foreground))] max-w-md mx-auto">
+                                        <Lock size={10} className="text-[rgb(var(--color-highlight))]" />
                                         <span>untitledui.com/product</span>
                                     </div>
                                 </div>
                             </div>
 
                             {/* --- Website Content --- */}
-                            <div className="bg-white relative">
+                            <div className="bg-[rgb(var(--color-background))] relative">
 
                                 {/* Background Decoration */}
-                                <div className="absolute top-0 right-0 -translate-y-12 translate-x-1/4 w-200 h-200 bg-indigo-50/50 rounded-full blur-3xl pointer-events-none"></div>
-                                <div className="absolute bottom-0 left-0 translate-y-1/4 -translate-x-1/4 w-150 h-150 bg-blue-50/50 rounded-full blur-3xl pointer-events-none"></div>
+                                <div className="absolute top-0 right-0 -translate-y-12 translate-x-1/4 w-200 h-200 bg-[rgb(var(--color-accent)/0.05)] rounded-full blur-3xl pointer-events-none"></div>
+                                <div className="absolute bottom-0 left-0 translate-y-1/4 -translate-x-1/4 w-150 h-150 bg-[rgb(var(--color-accent)/0.05)] rounded-full blur-3xl pointer-events-none"></div>
 
                                 {/* Hero Section */}
                                 <section className="px-8 pt-12 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10 max-w-6xl mx-auto">
 
                                     {/* Left Content */}
                                     <div className="flex flex-col items-start gap-6">
-                                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-700 text-xs font-medium">
-                                            <span className="flex h-2 w-2 rounded-full bg-indigo-600"></span>
+                                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[rgb(var(--color-accent)/0.1)] border border-[rgb(var(--color-accent)/0.2)] text-[rgb(var(--color-accent))] text-xs font-medium">
+                                            <span className="flex h-2 w-2 rounded-full bg-[rgb(var(--color-accent))]"></span>
                                             New feature released!
                                             <ChevronRight size={12} />
                                         </div>
 
-                                        <h1 style={{ fontFamily }} className="text-5xl md:text-6xl text-gray-900 leading-[1.1]">
+                                        <h1 style={{ fontFamily }} className="text-5xl md:text-6xl text-[rgb(var(--color-foreground))] leading-[1.1]">
                                             Beautiful analytics to grow smarter
                                         </h1>
 
-                                        <p className="text-lg text-gray-500 leading-relaxed max-w-lg">
+                                        <p className="text-lg text-[rgb(var(--color-muted-foreground))] leading-relaxed max-w-lg">
                                             Powerful, self-serve product and growth analytics to help you convert, engage, and retain more users. Trusted by over 4,000 startups.
                                         </p>
 
                                         <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto pt-2">
-                                            <button className="flex items-center justify-center gap-2 text-base font-bold text-white bg-indigo-600 hover:bg-indigo-700 px-6 py-3 rounded-xl transition-all shadow-lg shadow-indigo-200 hover:shadow-indigo-300">
+                                            <motion.button
+                                                whileTap={{ scale: 0.95 }}
+                                                onClick={() => Haptics.impact({ style: ImpactStyle.Light })}
+                                                className="flex items-center justify-center gap-2 text-base font-bold text-[rgb(var(--color-background))] bg-[rgb(var(--color-accent))] hover:bg-[rgb(var(--color-accent)/0.9)] px-6 py-3 rounded-xl transition-all shadow-lg"
+                                            >
                                                 <Play size={18} fill="currentColor" />
                                                 Demo
-                                            </button>
-                                            <button className="flex items-center justify-center gap-2 text-base font-bold text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 px-6 py-3 rounded-xl transition-all">
+                                            </motion.button>
+                                            <motion.button
+                                                whileTap={{ scale: 0.95 }}
+                                                onClick={() => Haptics.impact({ style: ImpactStyle.Light })}
+                                                className="flex items-center justify-center gap-2 text-base font-bold text-[rgb(var(--color-foreground))] bg-[rgb(var(--color-background))] border border-[rgb(var(--color-border))] hover:bg-[rgb(var(--color-muted)/0.05)] px-6 py-3 rounded-xl transition-all"
+                                            >
                                                 Sign up
-                                            </button>
+                                            </motion.button>
                                         </div>
 
-                                        <div className="flex items-center gap-6 pt-4 text-sm text-gray-500 font-medium">
-                                            <span className="flex items-center gap-1"><CheckCircle size={16} className="text-green-500" /> Free 14-day trial</span>
-                                            <span className="flex items-center gap-1"><CheckCircle size={16} className="text-green-500" /> No credit card</span>
+                                        <div className="flex items-center gap-6 pt-4 text-sm text-[rgb(var(--color-muted-foreground))] font-medium">
+                                            <span className="flex items-center gap-1"><CheckCircle size={16} className="text-[rgb(var(--color-highlight))]" /> Free 14-day trial</span>
+                                            <span className="flex items-center gap-1"><CheckCircle size={16} className="text-[rgb(var(--color-highlight))]" /> No credit card</span>
                                         </div>
                                     </div>
 
                                     {/* Right Visual (Abstract UI Composition) */}
                                     <div className="relative w-full flex items-center justify-center perspective-[1000px]">
                                         {/* Background Glow */}
-                                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4 bg-indigo-500/10 rounded-full blur-3xl"></div>
+                                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4 bg-[rgb(var(--color-accent)/0.1)] rounded-full blur-3xl"></div>
 
                                         {/* Main Dashboard Card */}
-                                        <div className="absolute w-[90%] bg-white rounded-2xl shadow-2xl border border-gray-100 p-4 transform rotate-y-[-5deg] rotate-x-[5deg] transition-transform hover:rotate-0 duration-700 ease-out">
+                                        <div className="absolute w-[90%] bg-[rgb(var(--color-background))] rounded-2xl shadow-2xl border border-[rgb(var(--color-border)/0.5)] p-4 transform rotate-y-[-5deg] rotate-x-[5deg] transition-transform hover:rotate-0 duration-700 ease-out">
 
                                             {/* Fake Header */}
-                                            <div className="flex justify-between items-center mb-6 border-b border-gray-50 pb-4">
+                                            <div className="flex justify-between items-center mb-6 border-b border-[rgb(var(--color-border)/0.3)] pb-4">
                                                 <div>
-                                                    <h3 className="text-lg font-bold text-gray-900">Overview</h3>
-                                                    <p className="text-xs text-gray-400">Welcome back, Olivia</p>
+                                                    <h3 className="text-lg font-bold text-[rgb(var(--color-foreground))]">Overview</h3>
+                                                    <p className="text-xs text-[rgb(var(--color-muted-foreground))]">Welcome back, Olivia</p>
                                                 </div>
                                                 <div className="flex gap-2">
-                                                    <div className="w-8 h-8 rounded-md bg-gray-50 border border-gray-100"></div>
-                                                    <div className="w-8 h-8 rounded-md bg-indigo-50 border border-indigo-100 text-indigo-600 flex items-center justify-center"><TrendingUp size={16} /></div>
+                                                    <div className="w-8 h-8 rounded-md bg-[rgb(var(--color-muted)/0.1)] border border-[rgb(var(--color-border))]"></div>
+                                                    <div className="w-8 h-8 rounded-md bg-[rgb(var(--color-accent)/0.1)] border border-[rgb(var(--color-accent)/0.2)] text-[rgb(var(--color-accent))] flex items-center justify-center"><TrendingUp size={16} /></div>
                                                 </div>
                                             </div>
 
                                             {/* Chart Simulation */}
                                             <div className="flex items-end gap-3 h-32 px-2 mb-6">
                                                 {[30, 45, 25, 60, 40, 70, 50, 80].map((h, i) => (
-                                                    <div key={i} className="flex-1 bg-indigo-50 rounded-t-sm relative group overflow-hidden">
-                                                        <div style={{ height: `${h}%` }} className="absolute bottom-0 w-full bg-indigo-500 rounded-t-sm group-hover:bg-indigo-600 transition-colors"></div>
+                                                    <div key={i} className="flex-1 bg-[rgb(var(--color-accent)/0.1)] rounded-t-sm relative group overflow-hidden">
+                                                        <div style={{ height: `${h}%` }} className="absolute bottom-0 w-full bg-[rgb(var(--color-accent))] rounded-t-sm group-hover:bg-[rgb(var(--color-accent)/0.8)] transition-colors"></div>
                                                     </div>
                                                 ))}
                                             </div>
 
                                             {/* Bottom Stats */}
                                             <div className="grid grid-cols-3 gap-4">
-                                                <div className="p-3 bg-gray-50 rounded-lg">
-                                                    <p className="text-[10px] text-gray-400 font-bold uppercase">Users</p>
-                                                    <p className="text-lg font-bold text-gray-900">2.4k</p>
+                                                <div className="p-3 bg-[rgb(var(--color-muted)/0.05)] rounded-lg">
+                                                    <p className="text-[10px] text-[rgb(var(--color-muted-foreground))] font-bold uppercase">Users</p>
+                                                    <p className="text-lg font-bold text-[rgb(var(--color-foreground))]">2.4k</p>
                                                 </div>
-                                                <div className="p-3 bg-gray-50 rounded-lg">
-                                                    <p className="text-[10px] text-gray-400 font-bold uppercase">Sessions</p>
-                                                    <p className="text-lg font-bold text-gray-900">48k</p>
+                                                <div className="p-3 bg-[rgb(var(--color-muted)/0.05)] rounded-lg">
+                                                    <p className="text-[10px] text-[rgb(var(--color-muted-foreground))] font-bold uppercase">Sessions</p>
+                                                    <p className="text-lg font-bold text-[rgb(var(--color-foreground))]">48k</p>
                                                 </div>
-                                                <div className="p-3 bg-indigo-50 rounded-lg border border-indigo-100">
-                                                    <p className="text-[10px] text-indigo-400 font-bold uppercase">Growth</p>
-                                                    <p className="text-lg font-bold text-indigo-600">+12%</p>
+                                                <div className="p-3 bg-[rgb(var(--color-accent)/0.1)] rounded-lg border border-[rgb(var(--color-accent)/0.2)]">
+                                                    <p className="text-[10px] text-[rgb(var(--color-accent))] font-bold uppercase">Growth</p>
+                                                    <p className="text-lg font-bold text-[rgb(var(--color-accent))]">+12%</p>
                                                 </div>
                                             </div>
                                         </div>
 
                                         {/* Floating Badge 1 (Users) */}
-                                        <div className="absolute top-10 -left-4 bg-white p-3 rounded-xl shadow-xl border border-gray-100 flex items-center gap-3 animate-bounce [animation-duration:3s]">
+                                        <div className="absolute top-10 -left-4 bg-[rgb(var(--color-background))] p-3 rounded-xl shadow-xl border border-[rgb(var(--color-border)/0.5)] flex items-center gap-3 animate-bounce [animation-duration:3s]">
                                             <div className="flex -space-x-2">
-                                                <div className="w-8 h-8 rounded-full border-2 border-white bg-red-100"></div>
-                                                <div className="w-8 h-8 rounded-full border-2 border-white bg-blue-100"></div>
-                                                <div className="w-8 h-8 rounded-full border-2 border-white bg-green-100"></div>
+                                                <div className="w-8 h-8 rounded-full border-2 border-[rgb(var(--color-background))] bg-red-100"></div>
+                                                <div className="w-8 h-8 rounded-full border-2 border-[rgb(var(--color-background))] bg-blue-100"></div>
+                                                <div className="w-8 h-8 rounded-full border-2 border-[rgb(var(--color-background))] bg-green-100"></div>
                                             </div>
                                             <div>
-                                                <p className="text-xs font-bold text-gray-900">New Users</p>
-                                                <p className="text-[10px] text-gray-500">+24 today</p>
+                                                <p className="text-xs font-bold text-[rgb(var(--color-foreground))]">New Users</p>
+                                                <p className="text-[10px] text-[rgb(var(--color-muted-foreground))]">+24 today</p>
                                             </div>
                                         </div>
 
                                         {/* Floating Badge 2 (Security) */}
-                                        <div className="absolute -bottom-6 -right-2 bg-white p-3 rounded-xl shadow-xl border border-gray-100 flex items-center gap-3 animate-bounce [animation-duration:4s]">
+                                        <div className="absolute -bottom-6 -right-2 bg-[rgb(var(--color-background))] p-3 rounded-xl shadow-xl border border-[rgb(var(--color-border)/0.5)] flex items-center gap-3 animate-bounce [animation-duration:4s]">
                                             <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600">
                                                 <Shield size={20} />
                                             </div>
                                             <div>
-                                                <p className="text-xs font-bold text-gray-900">Audit Log</p>
+                                                <p className="text-xs font-bold text-[rgb(var(--color-foreground))]">Audit Log</p>
                                                 <p className="text-[10px] text-green-600">Secure & Encrypted</p>
                                             </div>
                                         </div>
@@ -245,9 +268,9 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                             <div className="absolute top-0 left-1/2 -translate-x-1/2 h-10 w-30 bg-black rounded-b-xl z-20"></div>
 
                             {/* Screen */}
-                            <div className="w-full h-full bg-white rounded-[2.2rem] overflow-hidden flex flex-col relative text-gray-900">
+                            <div className="w-full h-full bg-[rgb(var(--color-background))] rounded-[2.2rem] overflow-hidden flex flex-col relative text-[rgb(var(--color-foreground))]">
                                 {/* Status Bar */}
-                                <div className="h-12 px-6 flex justify-between items-center text-xs  text-black z-10 pt-2">
+                                <div className="h-12 px-6 flex justify-between items-center text-xs  text-[rgb(var(--color-foreground))] z-10 pt-2">
                                     <span>9:41</span>
                                     <div className="flex gap-1">
                                         <Signal size={12} />
@@ -260,40 +283,40 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                                 <div className="p-6 flex-1 flex flex-col gap-6">
                                     <div className="flex justify-between items-center">
                                         <Menu size={24} />
-                                        <div className="w-8 h-8 bg-gray-200 rounded-full"></div>
+                                        <div className="w-8 h-8 bg-[rgb(var(--color-muted)/0.15)] rounded-full"></div>
                                     </div>
 
                                     <div>
                                         <h2 style={{ fontFamily }} className="text-3xl leading-none mb-2">Discover</h2>
-                                        <p className="text-gray-400 text-sm">New collections today</p>
+                                        <p className="text-[rgb(var(--color-muted-foreground))] text-sm">New collections today</p>
                                     </div>
 
-                                    {/* Cards */}
+                                     {/* Cards */}
                                     <div className="flex gap-4 overflow-x-auto pb-4 -mx-6 px-6 no-scrollbar">
-                                        <div className="shrink-0 w-48 h-64 bg-black rounded-2xl p-4 flex flex-col justify-end text-white">
+                                        <div className="shrink-0 w-48 h-64 bg-[rgb(var(--color-foreground))] rounded-2xl p-4 flex flex-col justify-end text-[rgb(var(--color-background))]">
                                             <span style={{ fontFamily }} className="text-xl">Minimalist</span>
                                             <span className="text-xs opacity-70">24 Items</span>
                                         </div>
-                                        <div className="shrink-0 w-48 h-64 bg-gray-100 rounded-2xl p-4 flex flex-col justify-end">
+                                        <div className="shrink-0 w-48 h-64 bg-[rgb(var(--color-muted)/0.1)] rounded-2xl p-4 flex flex-col justify-end">
                                             <span style={{ fontFamily }} className="text-xl">Abstract</span>
-                                            <span className="text-xs opacity-70 text-gray-500">18 Items</span>
+                                            <span className="text-xs opacity-70 text-[rgb(var(--color-muted-foreground))]">18 Items</span>
                                         </div>
                                     </div>
 
-                                    <div className="flex-1 bg-gray-50 rounded-2xl p-4 flex items-center gap-4">
-                                        <div className="w-12 h-12 bg-gray-200 rounded-xl"></div>
+                                    <div className="flex-1 bg-[rgb(var(--color-muted)/0.05)] rounded-2xl p-4 flex items-center gap-4">
+                                        <div className="w-12 h-12 bg-[rgb(var(--color-muted)/0.1)] rounded-xl"></div>
                                         <div>
                                             <h3 style={{ fontFamily }} >Grid System</h3>
-                                            <p className="text-xs text-gray-400">By Studio A</p>
+                                            <p className="text-xs text-[rgb(var(--color-muted-foreground))]">By Studio A</p>
                                         </div>
                                     </div>
                                 </div>
 
                                 {/* Nav Bar */}
-                                <div className="h-20 bg-white/90 backdrop-blur border-t px-8 flex justify-between items-center pb-4">
-                                    <div className="w-6 h-6 rounded-md bg-black"></div>
-                                    <div className="w-6 h-6 rounded-md bg-gray-200"></div>
-                                    <div className="w-6 h-6 rounded-md bg-gray-200"></div>
+                                <div className="h-20 bg-[rgb(var(--color-background)/0.9)] backdrop-blur border-t border-[rgb(var(--color-border))] px-8 flex justify-between items-center pb-4">
+                                    <div className="w-6 h-6 rounded-md bg-[rgb(var(--color-foreground))]"></div>
+                                    <div className="w-6 h-6 rounded-md bg-[rgb(var(--color-muted)/0.2)]"></div>
+                                    <div className="w-6 h-6 rounded-md bg-[rgb(var(--color-muted)/0.2)]"></div>
                                 </div>
                             </div>
                         </div>
@@ -304,11 +327,11 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                             <div className="absolute top-0 left-1/2 -translate-x-1/2 h-10 w-30 bg-black rounded-b-xl z-20"></div>
 
                             {/* Screen */}
-                            <div className="w-full h-full bg-slate-900 rounded-[2.2rem] overflow-hidden flex flex-col relative text-white">
+                            <div className="w-full h-full bg-[rgb(var(--color-card))] rounded-[2.2rem] overflow-hidden flex flex-col relative text-[rgb(var(--color-foreground))]">
 
                                 {/* Background linear Blob */}
-                                <div className="absolute top-[-20%] left-[-20%] w-[140%] h-[60%] bg-indigo-600/90 rounded-full blur-3xl pointer-events-none"></div>
-                                <div className="absolute bottom-[-10%] right-[-20%] w-full h-[50%] bg-purple-600/60 rounded-full blur-3xl pointer-events-none"></div>
+                                <div className="absolute top-[-20%] left-[-20%] w-[140%] h-[60%] bg-[rgb(var(--color-accent)/0.4)] rounded-full blur-3xl pointer-events-none"></div>
+                                <div className="absolute bottom-[-10%] right-[-20%] w-full h-[50%] bg-[rgb(var(--color-highlight)/0.2)] rounded-full blur-3xl pointer-events-none"></div>
 
                                 {/* Status Bar */}
                                 <div className="h-12 px-6 flex justify-between items-center text-xs  text-white z-10 pt-2">
@@ -324,9 +347,9 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                                 <div className="p-6 w-full flex flex-col z-10">
                                     {/* Header */}
                                     <div className="flex justify-between items-center mb-8">
-                                        <ChevronDown size={24} className="text-white/70" />
-                                        <span className="text-xs font-medium tracking-widest uppercase text-white/50">Now Playing</span>
-                                        <MoreHorizontal size={24} className="text-white/70" />
+                                        <ChevronDown size={24} className="text-[rgb(var(--color-foreground)/0.7)]" />
+                                        <span className="text-xs font-medium tracking-widest uppercase text-[rgb(var(--color-muted-foreground))]">Now Playing</span>
+                                        <MoreHorizontal size={24} className="text-[rgb(var(--color-foreground)/0.7)]" />
                                     </div>
 
                                     {/* Album Art */}
@@ -341,18 +364,18 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                                         <div className="flex justify-between items-end">
                                             <div>
                                                 <h2 style={{ fontFamily }} className="text-2xl  mb-1">Nightcall</h2>
-                                                <p className="text-slate-400 text-sm">Kavinsky • Drive OST</p>
+                                                <p className="text-[rgb(var(--color-muted-foreground))] text-sm">Kavinsky • Drive OST</p>
                                             </div>
-                                            <Heart size={24} className="text-emerald-400 fill-emerald-400/20 mb-1" />
+                                            <Heart size={24} className="text-[rgb(var(--color-destructive))] fill-[rgb(var(--color-destructive)/0.2)] mb-1" />
                                         </div>
                                     </div>
 
                                     {/* Progress */}
                                     <div className="mb-8">
-                                        <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden cursor-pointer">
-                                            <div className="h-full w-2/3 bg-white rounded-full"></div>
+                                        <div className="h-1.5 w-full bg-[rgb(var(--color-muted)/0.2)] rounded-full overflow-hidden cursor-pointer">
+                                            <div className="h-full w-2/3 bg-[rgb(var(--color-foreground))] rounded-full"></div>
                                         </div>
-                                        <div className="flex justify-between text-[10px] font-medium text-slate-400 mt-2">
+                                        <div className="flex justify-between text-[10px] font-medium text-[rgb(var(--color-muted-foreground))] mt-2">
                                             <span>2:14</span>
                                             <span>4:18</span>
                                         </div>
@@ -360,18 +383,18 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
 
                                     {/* Controls */}
                                     <div className="flex justify-between items-center px-2">
-                                        <Shuffle size={20} className="text-white/40" />
-                                        <SkipBack size={28} className="text-white fill-white" />
-                                        <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-lg shadow-white/10 text-black hover:scale-105 transition-transform cursor-pointer">
-                                            <Play size={28} className="ml-1 fill-black" />
+                                        <Shuffle size={20} className="text-[rgb(var(--color-foreground)/0.4)]" />
+                                        <SkipBack size={28} className="text-[rgb(var(--color-foreground))] fill-current" />
+                                        <div className="w-16 h-16 bg-[rgb(var(--color-foreground))] rounded-full flex items-center justify-center shadow-lg shadow-[rgb(var(--color-foreground)/0.1)] text-[rgb(var(--color-background))] hover:scale-105 transition-transform cursor-pointer">
+                                            <Play size={28} className="ml-1 fill-current" />
                                         </div>
-                                        <SkipForward size={28} className="text-white fill-white" />
-                                        <Repeat size={20} className="text-white/40" />
+                                        <SkipForward size={28} className="text-[rgb(var(--color-foreground))] fill-current" />
+                                        <Repeat size={20} className="text-[rgb(var(--color-foreground)/0.4)]" />
                                     </div>
                                 </div>
 
                                 {/* Bottom Indicator */}
-                                <div className="h-1 w-1/3 bg-white/20 rounded-full mx-auto mb-2"></div>
+                                <div className="h-1 w-1/3 bg-[rgb(var(--color-foreground)/0.2)] rounded-full mx-auto mb-2"></div>
                             </div>
                         </div>
 
@@ -381,7 +404,7 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                             <div className="absolute top-0 left-1/2 -translate-x-1/2 h-10 w-30 bg-black rounded-b-xl z-20"></div>
 
                             {/* Screen */}
-                            <div className="w-full h-full bg-gray-900 rounded-[2.2rem] overflow-hidden flex flex-col relative text-white">
+                            <div className="w-full h-full bg-[rgb(var(--color-background))] rounded-[2.2rem] overflow-hidden flex flex-col relative text-[rgb(var(--color-foreground))]">
 
                                 {/* Status Bar */}
                                 <div className="h-12 px-6 flex justify-between items-center text-xs  text-white z-10 pt-2">
@@ -403,46 +426,58 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                                                 JD
                                             </div>
                                             <div>
-                                                <p className="text-gray-400 text-[10px] uppercase tracking-wider">Welcome back</p>
+                                                <p className="text-[rgb(var(--color-muted-foreground))] text-[10px] uppercase tracking-wider">Welcome back</p>
                                                 <p className=" text-sm">John Doe</p>
                                             </div>
                                         </div>
-                                        <div className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center border border-gray-700">
-                                            <Bell size={18} className="text-gray-300" />
+                                        <div className="w-10 h-10 bg-[rgb(var(--color-muted)/0.1)] rounded-full flex items-center justify-center border border-[rgb(var(--color-border))]">
+                                            <Bell size={18} className="text-[rgb(var(--color-muted-foreground))]" />
                                         </div>
                                     </div>
 
                                     {/* Balance Card */}
-                                    <div className="relative overflow-hidden bg-linear-to-br from-indigo-600 to-blue-700 rounded-3xl p-6 shadow-lg shadow-blue-900/20 group">
+                                    <div className="relative overflow-hidden bg-linear-to-br from-[rgb(var(--color-accent))] to-[rgb(var(--color-accent)/0.8)] rounded-3xl p-6 shadow-lg shadow-[rgb(var(--color-accent)/0.2)] group">
                                         {/* Decorative Blur */}
-                                        <div className="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-3xl group-hover:bg-white/20 transition-all duration-500"></div>
+                                        <div className="absolute -right-10 -top-10 w-40 h-40 bg-[rgb(var(--color-background)/0.1)] rounded-full blur-3xl group-hover:bg-[rgb(var(--color-background)/0.2)] transition-all duration-500"></div>
 
-                                        <p className="text-blue-200 text-xs font-medium mb-1">Total Balance</p>
+                                        <p className="text-[rgb(var(--color-background)/0.8)] text-xs font-medium mb-1">Total Balance</p>
                                         <h2 style={{ fontFamily }} className="text-3xl  mb-4">$24,484.00</h2>
 
                                         <div className="flex items-center gap-2 text-xs font-medium">
-                                            <div className="bg-emerald-500/20 text-emerald-300 px-2 py-1 rounded-lg flex items-center gap-1 backdrop-blur-sm border border-emerald-500/20">
+                                            <div className="bg-[rgb(var(--color-highlight)/0.2)] text-[rgb(var(--color-highlight))] px-2 py-1 rounded-lg flex items-center gap-1 backdrop-blur-sm border border-[rgb(var(--color-highlight)/0.2)]">
                                                 <TrendingUp size={12} /> +2.4%
                                             </div>
-                                            <span className="text-blue-200/60">vs last week</span>
+                                            <span className="text-[rgb(var(--color-background)/0.6)]">vs last week</span>
                                         </div>
                                     </div>
 
-                                    {/* Quick Actions */}
-                                    <div className="flex justify-between gap-3">
-                                        <button className="flex-1 bg-gray-800 hover:bg-gray-700 active:scale-95 py-4 rounded-2xl flex flex-col items-center gap-2 transition-all border border-gray-700/50">
-                                            <ArrowUp size={20} className="text-emerald-400" />
-                                            <span className="text-xs font-medium text-gray-300">Send</span>
-                                        </button>
-                                        <button className="flex-1 bg-gray-800 hover:bg-gray-700 active:scale-95 py-4 rounded-2xl flex flex-col items-center gap-2 transition-all border border-gray-700/50">
-                                            <ArrowDown size={20} className="text-blue-400" />
-                                            <span className="text-xs font-medium text-gray-300">Receive</span>
-                                        </button>
-                                        <button className="flex-1 bg-gray-800 hover:bg-gray-700 active:scale-95 py-4 rounded-2xl flex flex-col items-center gap-2 transition-all border border-gray-700/50">
-                                            <CreditCard size={20} className="text-purple-400" />
-                                            <span className="text-xs font-medium text-gray-300">Top up</span>
-                                        </button>
+                                    {/* Quick Actions */}                                     <div className="flex justify-between gap-3">
+                                        <motion.button
+                                            whileTap={{ scale: 0.95 }}
+                                            onClick={() => Haptics.impact({ style: ImpactStyle.Light })}
+                                            className="flex-1 bg-[rgb(var(--color-muted)/0.1)] hover:bg-[rgb(var(--color-muted)/0.2)] active:scale-95 py-4 rounded-2xl flex flex-col items-center gap-2 transition-all border border-[rgb(var(--color-border)/0.5)]"
+                                        >
+                                            <ArrowUp size={20} className="text-[rgb(var(--color-highlight))]" />
+                                            <span className="text-xs font-medium text-[rgb(var(--color-muted-foreground))]">Send</span>
+                                        </motion.button>
+                                        <motion.button
+                                            whileTap={{ scale: 0.95 }}
+                                            onClick={() => Haptics.impact({ style: ImpactStyle.Light })}
+                                            className="flex-1 bg-[rgb(var(--color-muted)/0.1)] hover:bg-[rgb(var(--color-muted)/0.2)] active:scale-95 py-4 rounded-2xl flex flex-col items-center gap-2 transition-all border border-[rgb(var(--color-border)/0.5)]"
+                                        >
+                                            <ArrowDown size={20} className="text-[rgb(var(--color-accent))]" />
+                                            <span className="text-xs font-medium text-[rgb(var(--color-muted-foreground))]">Receive</span>
+                                        </motion.button>
+                                        <motion.button
+                                            whileTap={{ scale: 0.95 }}
+                                            onClick={() => Haptics.impact({ style: ImpactStyle.Light })}
+                                            className="flex-1 bg-[rgb(var(--color-muted)/0.1)] hover:bg-[rgb(var(--color-muted)/0.2)] active:scale-95 py-4 rounded-2xl flex flex-col items-center gap-2 transition-all border border-[rgb(var(--color-border)/0.5)]"
+                                        >
+                                            <CreditCard size={20} className="text-[rgb(var(--color-highlight))]" />
+                                            <span className="text-xs font-medium text-[rgb(var(--color-muted-foreground))]">Top up</span>
+                                        </motion.button>
                                     </div>
+
 
                                     {/* Market List */}
                                     <div>
@@ -499,7 +534,7 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                             <div className="absolute top-0 left-1/2 -translate-x-1/2 h-10 w-30 bg-black rounded-b-xl z-20"></div>
 
                             {/* Screen */}
-                            <div className="w-full h-full bg-[#F5F5F7] rounded-[2.2rem] overflow-hidden flex flex-col relative text-gray-900 font-sans">
+                            <div className="w-full h-full bg-[rgb(var(--color-muted)/0.05)] rounded-[2.2rem] overflow-hidden flex flex-col relative text-[rgb(var(--color-foreground))] font-sans">
 
                                 {/* Status Bar */}
                                 <div className="absolute top-0 w-full h-12 px-6 flex justify-between items-center text-xs font-bold text-black z-30 pt-2">
@@ -525,11 +560,10 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                                     <img src="https://media.istockphoto.com/id/1912499984/photo/comfortable-olive-green-armchair-with-wooden-legs-isolated-on-white-background.jpg?s=612x612&w=0&k=20&c=gSTPHLk0GRDrHilO0e4gMP8w1NuV-wr7e3L2yIE_Y6Q=" alt="" className="w-48 h-48 z-10" />
                                     <div className="w-48 h-48 bg-orange-200 rounded-full blur-3xl absolute opacity-10"></div>
                                 </div>
-
                                 {/* Product Details Sheet (Bottom Half) */}
-                                <div className="flex-1 bg-[#e6e6e6] bg-linear-to-b from-[#e6e6e6] to-[#ffffff] border-t border-black/10 rounded-t-[2.5rem] -mt-8 relative z-10 flex flex-col shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
+                                <div className="flex-1 bg-[rgb(var(--color-background))] border-t border-[rgb(var(--color-border))] rounded-t-[2.5rem] -mt-8 relative z-10 flex flex-col shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
                                     {/* Drag Handle */}
-                                    <div className="w-12 h-1 bg-[#c0c0c0] rounded-full mx-auto mt-3"></div>
+                                    <div className="w-12 h-1 bg-[rgb(var(--color-muted)/0.3)] rounded-full mx-auto mt-3"></div>
 
                                     <div className="p-8 flex-1 flex flex-col">
                                         {/* Header Info */}
@@ -543,11 +577,10 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                                                 <span className="text-xs font-bold text-green-700">4.8</span>
                                             </div>
                                         </div>
-
                                         {/* Price */}
                                         <div className="mb-6">
                                             <span className="text-3xl font-bold tracking-tight">$640</span>
-                                            <span className="text-sm text-gray-400 line-through ml-2">$850</span>
+                                            <span className="text-sm text-[rgb(var(--color-muted-foreground))] line-through ml-2">$850</span>
                                         </div>
 
                                         {/* Color Selector */}
@@ -570,15 +603,18 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                                         </div>
 
                                         {/* Action Button */}
-                                        <button className="absolute bottom-3 bg-black text-white py-4 px-15 rounded-2xl font-bold text-sm mt-4 active:scale-95 transition-transform flex items-center justify-center gap-2 shadow-lg shadow-black/20">
+                                        <motion.button
+                                            whileTap={{ scale: 0.95 }}
+                                            onClick={() => Haptics.impact({ style: ImpactStyle.Light })}
+                                            className="absolute bottom-3 bg-black text-white py-4 px-15 rounded-2xl font-bold text-sm mt-4 active:scale-95 transition-transform flex items-center justify-center gap-2 shadow-lg shadow-black/20"
+                                        >
                                             <ShoppingBag size={18} />
                                             Add to Cart
-                                        </button>
+                                        </motion.button>
                                     </div>
                                 </div>
-
                                 {/* Bottom Indicator */}
-                                <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1/3 h-1 bg-gray-300 rounded-full mb-1"></div>
+                                <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1/3 h-1 bg-[rgb(var(--color-muted)/0.3)] rounded-full mb-1"></div>
                             </div>
                         </div>
 
@@ -657,14 +693,18 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                                     </p>
 
                                     {/* Action Slider Button */}
-                                    <div className="h-16 bg-white/10 backdrop-blur-xl rounded-4xl p-2 flex items-center border border-white/20 relative overflow-hidden group cursor-pointer">
+                                    <motion.div
+                                        whileTap={{ scale: 0.98 }}
+                                        onClick={() => Haptics.impact({ style: ImpactStyle.Medium })}
+                                        className="h-16 bg-white/10 backdrop-blur-xl rounded-4xl p-2 flex items-center border border-white/20 relative overflow-hidden group cursor-pointer"
+                                    >
                                         <div className="absolute inset-y-0 left-0 w-1/2 bg-white/10 blur-xl group-hover:translate-x-full transition-transform duration-700"></div>
 
                                         <div className="h-12 w-12 bg-white rounded-full flex items-center justify-center text-black shadow-lg z-10">
                                             <ArrowRight size={20} />
                                         </div>
                                         <span className="flex-1 text-center font-bold text-sm tracking-wide">Slide to Book</span>
-                                    </div>
+                                    </motion.div>
 
                                 </div>
 
@@ -693,24 +733,22 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                                         <Battery size={12} />
                                     </div>
                                 </div>
-
                                 {/* Header */}
                                 <div className="px-4 pt-2 pb-6 flex justify-between items-center z-10">
                                     <div>
-                                        <p className="text-xs text-gray-400 font-medium uppercase tracking-wider mb-1">Welcome Home</p>
+                                        <p className="text-xs text-[rgb(var(--color-muted-foreground))] font-medium uppercase tracking-wider mb-1">Welcome Home</p>
                                         <h2 style={{ fontFamily }} className="text-2xl font-bold">Alex's Place</h2>
                                     </div>
-                                    <div className="w-10 h-10 rounded-full bg-gray-700 overflow-hidden border-2 border-white/10">
+                                    <div className="w-10 h-10 rounded-full bg-[rgb(var(--color-muted)/0.2)] overflow-hidden border-2 border-[rgb(var(--color-border))]">
                                         <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4YreOWfDX3kK-QLAbAL4ufCPc84ol2MA8Xg&s" alt="User" className="w-full h-full object-cover" />
                                     </div>
                                 </div>
-
                                 {/* Room Selector */}
                                 <div className="px-4 mb-6 overflow-x-auto no-scrollbar flex gap-4 z-10">
-                                    <span className="text-sm font-bold border-b-2 border-orange-500 pb-1 text-white whitespace-nowrap">Living Room</span>
-                                    <span className="text-sm font-medium text-gray-500 pb-1 whitespace-nowrap">Bedroom</span>
-                                    <span className="text-sm font-medium text-gray-500 pb-1 whitespace-nowrap">Kitchen</span>
-                                    <span className="text-sm font-medium text-gray-500 pb-1 whitespace-nowrap">Office</span>
+                                    <span className="text-sm font-bold border-b-2 border-[rgb(var(--color-accent))] pb-1 text-[rgb(var(--color-foreground))] whitespace-nowrap">Living Room</span>
+                                    <span className="text-sm font-medium text-[rgb(var(--color-muted-foreground))] pb-1 whitespace-nowrap">Bedroom</span>
+                                    <span className="text-sm font-medium text-[rgb(var(--color-muted-foreground))] pb-1 whitespace-nowrap">Kitchen</span>
+                                    <span className="text-sm font-medium text-[rgb(var(--color-muted-foreground))] pb-1 whitespace-nowrap">Office</span>
                                 </div>
 
                                 {/* Main Controls - Scrollable */}
@@ -719,12 +757,11 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                                     {/* Thermostat Widget */}
                                     <div className="w-full bg-white/5 border border-white/10 rounded-3xl p-4 flex items-center justify-between relative overflow-hidden">
                                         {/* Decorative Ring */}
-                                        <div className="absolute -right-12 -bottom-12 w-40 h-40 border-10 border-orange-500/20 rounded-full"></div>
-
+                                        <div className="absolute -right-12 -bottom-12 w-40 h-40 border-10 border-[rgb(var(--color-accent)/0.2)] rounded-full"></div>
                                         <div>
-                                            <p className="text-sm font-medium text-gray-400 mb-1">Thermostat</p>
+                                            <p className="text-sm font-medium text-[rgb(var(--color-muted-foreground))] mb-1">Thermostat</p>
                                             <h3 className="text-4xl font-bold mb-1">24°c</h3>
-                                            <p className="text-xs text-orange-400 font-bold uppercase tracking-wide flex items-center gap-1">
+                                            <p className="text-xs text-[rgb(var(--color-highlight))] font-bold uppercase tracking-wide flex items-center gap-1">
                                                 <Flame size={10} /> Heating
                                             </p>
                                         </div>
@@ -1301,7 +1338,7 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                                 <div className="relative flex flex-col items-center justify-center leading-[0.8] tracking-widest z-0 ">
 
                                     {/* 1. Top Solid Text */}
-                                    <h1 style={{ fontFamily }} className="text-[5rem] md:text-[6.5rem]  text-[#FFE55C] relative z-20">
+                                    <h1 style={{ fontFamily }} className="text-[5rem] md:text-[6.5rem]  text-[rgb(var(--color-highlight))] relative z-20">
                                         MOON
                                     </h1>
 
@@ -1323,7 +1360,7 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
 
                                 {/* The Central Moon Graphic */}
                                 {/* Positioned absolutely to sit on top of the text stack */}
-                                <div className="scale-75 md:scale-100 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 md:w-56 md:h-56 bg-[#FFE55C] rounded-full shadow-[0_0_60px_rgba(255,229,92,0.2)] z-10 flex items-center justify-center pointer-events-none mt-4">
+                                <div className="scale-75 md:scale-100 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 md:w-56 md:h-56 bg-[rgb(var(--color-highlight))] rounded-full shadow-[0_0_60px_rgba(255,229,92,0.2)] z-10 flex items-center justify-center pointer-events-none mt-4">
                                     {/* Craters (CSS Circles) */}
                                     <div className="absolute top-8 left-10 w-8 h-8 bg-[#FACC15] rounded-full opacity-60"></div>
                                     <div className="absolute top-16 left-8 w-3 h-3 bg-[#FACC15] rounded-full opacity-60"></div>
@@ -1345,7 +1382,7 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                         </div>
 
                         {/* 6. Poster */}
-                        <div className="relative w-[320px] md:w-full max-w-md aspect-3/4 bg-gray-100 overflow-hidden shadow-2xl flex flex-col justify-end animate-in fade-in zoom-in duration-300 font-sans border-8 border-white">
+                        <div className="relative w-[320px] md:w-full max-w-md aspect-3/4 bg-[rgb(var(--color-muted)/0.05)] overflow-hidden shadow-2xl flex flex-col justify-end animate-in fade-in zoom-in duration-300 font-sans border-8 border-[rgb(var(--color-background))]">
 
                             {/* --- 1. Paper Texture & Creases Overlay --- */}
                             {/* Main Wrinkled Paper Texture */}
@@ -1358,7 +1395,7 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
 
                             {/* --- 2. Main Typography Content --- */}
                             {/* Using a flex container to stack the words tightly */}
-                            <div className="relative z-10 flex flex-col leading-[0.85] text-[5rem] md:text-[6rem] text-[#FFE600] p-2 mb-20">
+                            <div className="relative z-10 flex flex-col leading-[0.85] text-[5rem] md:text-[6rem] text-[rgb(var(--color-highlight))] p-2 mb-20">
 
                                 {/* WORD 1: GOOD (Yellow on Purple) */}
                                 <h1 className="transform origin-bottom-left"

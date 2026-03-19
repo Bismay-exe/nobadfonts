@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { AlignLeft, AlignCenter, AlignRight, LayoutTemplate, BoxSelect, ChevronDown } from 'lucide-react';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import ContextPreview from './ContextPreview';
 import type { Font } from '../../types/font';
 
@@ -197,26 +198,30 @@ export default function FontTester({ font }: FontTesterProps) {
                             {font.font_variants && font.font_variants.length > 0 && (
                                 <div className="relative">
                                     <button
-                                        onClick={() => setVariantDropdownOpen(!variantDropdownOpen)}
-                                        className="h-8 px-3 py-1 bg-white/10 hover:bg-white/90 hover:text-black border border-white/10 rounded-md text-xs font-medium whitespace-nowrap hover:border-black transition-colors flex items-center gap-2 cursor-pointer"
+                                        onClick={() => {
+                                            setVariantDropdownOpen(!variantDropdownOpen);
+                                            Haptics.impact({ style: ImpactStyle.Light });
+                                        }}
+                                        className="h-8 px-3 py-1 bg-[rgb(var(--color-muted)/0.1)] hover:bg-[rgb(var(--color-foreground)/0.9)] hover:text-[rgb(var(--color-background))] border border-[rgb(var(--color-border))] rounded-md text-xs font-medium whitespace-nowrap hover:border-[rgb(var(--color-foreground))] transition-colors flex items-center gap-2 cursor-pointer"
                                     >
                                         {selectedVariant?.variant_name || 'Select Variant'}
                                         <ChevronDown size={14} className={`transition-transform ${variantDropdownOpen ? 'rotate-180' : ''}`} />
                                     </button>
 
-                                    <div className={`absolute left-0 top-full mt-2 w-48 bg-white/5 backdrop-blur-2xl border border-white/10 divide-y divide-white/10 rounded-xl overflow-y-auto max-h-64 custom-scrollbar transition-all shadow-xl z-20 flex flex-col origin-top-left transform ${variantDropdownOpen ? 'opacity-100 visible scale-100 pointer-events-auto' : 'opacity-0 invisible scale-95 pointer-events-none'}`}>
+                                    <div className={`absolute left-0 top-full mt-2 w-48 bg-[rgb(var(--color-card)/0.05)] backdrop-blur-2xl border border-[rgb(var(--color-border))] divide-y divide-[rgb(var(--color-border)/0.5)] rounded-xl overflow-y-auto max-h-64 custom-scrollbar transition-all shadow-xl z-20 flex flex-col origin-top-left transform ${variantDropdownOpen ? 'opacity-100 visible scale-100 pointer-events-auto' : 'opacity-0 invisible scale-95 pointer-events-none'}`}>
                                         {sortedVariants.map(variant => (
                                             <button
                                                 key={variant.id}
                                                 onClick={() => {
                                                     setSelectedVariant(variant);
                                                     setVariantDropdownOpen(false);
+                                                    Haptics.impact({ style: ImpactStyle.Light });
                                                 }}
-                                                className="px-4 py-3 text-xs font-bold text-white hover:bg-white/10 transition-colors text-left flex justify-between items-center cursor-pointer"
+                                                className="px-4 py-3 text-xs font-bold text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-muted)/0.1)] transition-colors text-left flex justify-between items-center cursor-pointer"
                                             >
                                                 <span>{variant.variant_name}</span>
                                                 {selectedVariant?.id === variant.id && (
-                                                    <span className="w-1.5 h-1.5 rounded-full bg-white"></span>
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-[rgb(var(--color-foreground))]"></span>
                                                 )}
                                             </button>
                                         ))}
@@ -226,33 +231,33 @@ export default function FontTester({ font }: FontTesterProps) {
 
                             <div className="flex gap-2 items-end">
                                 {/* Preset Buttons */}
-                                <button onClick={() => setText(TEXT_PRESETS.sentence)} className="h-8 px-3 py-1 bg-white/10 hover:bg-white/90 hover:text-black border border-white/10 rounded-md text-xs font-medium hover:border-black transition-colors cursor-pointer">Abc</button>
-                                <button onClick={() => setText(TEXT_PRESETS.alphabet)} className="h-8 px-3 py-1 bg-white/10 hover:bg-white/90 hover:text-black border border-white/10 rounded-md text-xs whitespace-nowrap font-medium hover:border-black transition-colors cursor-pointer">A-Z</button>
-                                <button onClick={() => setText(TEXT_PRESETS.numerals)} className="h-8 px-3 py-1 bg-white/10 hover:bg-white/90 hover:text-black border border-white/10 rounded-md text-xs font-medium hover:border-black transition-colors cursor-pointer">123</button>
-                                <button onClick={() => setText(TEXT_PRESETS.paragraph)} className="h-8 px-3 py-1 bg-white/10 hover:bg-white/90 hover:text-black border border-white/10 rounded-md text-xs font-medium hover:border-black transition-colors cursor-pointer">¶</button>
+                                <button onClick={() => { setText(TEXT_PRESETS.sentence); Haptics.impact({ style: ImpactStyle.Light }); }} className="h-8 px-3 py-1 bg-[rgb(var(--color-muted)/0.1)] hover:bg-[rgb(var(--color-foreground)/0.9)] hover:text-[rgb(var(--color-background))] border border-[rgb(var(--color-border))] rounded-md text-xs font-medium hover:border-[rgb(var(--color-foreground))] transition-colors cursor-pointer">Abc</button>
+                                <button onClick={() => { setText(TEXT_PRESETS.alphabet); Haptics.impact({ style: ImpactStyle.Light }); }} className="h-8 px-3 py-1 bg-[rgb(var(--color-muted)/0.1)] hover:bg-[rgb(var(--color-foreground)/0.9)] hover:text-[rgb(var(--color-background))] border border-[rgb(var(--color-border))] rounded-md text-xs whitespace-nowrap font-medium hover:border-[rgb(var(--color-foreground))] transition-colors cursor-pointer">A-Z</button>
+                                <button onClick={() => { setText(TEXT_PRESETS.numerals); Haptics.impact({ style: ImpactStyle.Light }); }} className="h-8 px-3 py-1 bg-[rgb(var(--color-muted)/0.1)] hover:bg-[rgb(var(--color-foreground)/0.9)] hover:text-[rgb(var(--color-background))] border border-[rgb(var(--color-border))] rounded-md text-xs font-medium hover:border-[rgb(var(--color-foreground))] transition-colors cursor-pointer">123</button>
+                                <button onClick={() => { setText(TEXT_PRESETS.paragraph); Haptics.impact({ style: ImpactStyle.Light }); }} className="h-8 px-3 py-1 bg-[rgb(var(--color-muted)/0.1)] hover:bg-[rgb(var(--color-foreground)/0.9)] hover:text-[rgb(var(--color-background))] border border-[rgb(var(--color-border))] rounded-md text-xs font-medium hover:border-[rgb(var(--color-foreground))] transition-colors cursor-pointer">¶</button>
                             </div>
                         </div>
                         <div className="flex gap-3 md:gap-4 w-full">
                             <div className="w-full">
-                                <div className="flex justify-between text-xs font-mono text-white/70 uppercase">
+                                <div className="flex justify-between text-xs font-mono text-[rgb(var(--color-muted-foreground))] uppercase">
                                     <span>Size</span>
                                     <span>{fontSize}px</span>
                                 </div>
-                                <input type="range" min="12" max="200" value={fontSize} onChange={(e) => setFontSize(Number(e.target.value))} className="w-full accent-white h-1 bg-white/20 rounded-lg appearance-none cursor-pointer" />
+                                <input type="range" min="12" max="200" value={fontSize} onChange={(e) => setFontSize(Number(e.target.value))} className="w-full accent-[rgb(var(--color-foreground))] h-1 bg-[rgb(var(--color-muted)/0.1)] rounded-lg appearance-none cursor-pointer" />
                             </div>
                             <div className="w-full">
-                                <div className="flex justify-between text-xs font-mono font-bold text-gray-400 uppercase">
+                                <div className="flex justify-between text-xs font-mono font-bold text-[rgb(var(--color-muted-foreground))] uppercase">
                                     <span>Leading</span>
                                     <span>{lineHeight}</span>
                                 </div>
-                                <input type="range" min="0.8" max="3" step="0.1" value={lineHeight} onChange={(e) => setLineHeight(Number(e.target.value))} className="w-full accent-white h-1 bg-white/20 rounded-lg appearance-none cursor-pointer" />
+                                <input type="range" min="0.8" max="3" step="0.1" value={lineHeight} onChange={(e) => setLineHeight(Number(e.target.value))} className="w-full accent-[rgb(var(--color-foreground))] h-1 bg-[rgb(var(--color-muted)/0.1)] rounded-lg appearance-none cursor-pointer" />
                             </div>
                             <div className="w-full">
-                                <div className="flex justify-between text-xs font-mono font-bold text-gray-400 uppercase">
+                                <div className="flex justify-between text-xs font-mono font-bold text-[rgb(var(--color-muted-foreground))] uppercase">
                                     <span>Tracking</span>
                                     <span>{letterSpacing}px</span>
                                 </div>
-                                <input type="range" min="-10" max="50" value={letterSpacing} onChange={(e) => setLetterSpacing(Number(e.target.value))} className="w-full accent-white h-1 bg-white/20 rounded-lg appearance-none cursor-pointer" />
+                                <input type="range" min="-10" max="50" value={letterSpacing} onChange={(e) => setLetterSpacing(Number(e.target.value))} className="w-full accent-[rgb(var(--color-foreground))] h-1 bg-[rgb(var(--color-muted)/0.1)] rounded-lg appearance-none cursor-pointer" />
                             </div>
                         </div>
 
@@ -260,25 +265,28 @@ export default function FontTester({ font }: FontTesterProps) {
                             <div className="flex gap-2">
                                 {/* OpenType Features Toggle */}
                                 <button
-                                    onClick={() => setShowMobileFeatures(!showMobileFeatures)}
-                                    className={`px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-colors space-nowrap border border-white/10 cursor-pointer
-                                        ${showMobileFeatures ? 'bg-white/90 text-black' : 'bg-white/10 text-white/80 hover:bg-white/90 hover:text-black'}
+                                    onClick={() => {
+                                        setShowMobileFeatures(!showMobileFeatures);
+                                        Haptics.impact({ style: ImpactStyle.Light });
+                                    }}
+                                    className={`px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-colors space-nowrap border border-[rgb(var(--color-border))] cursor-pointer
+                                        ${showMobileFeatures ? 'bg-[rgb(var(--color-foreground)/0.9)] text-[rgb(var(--color-background))]' : 'bg-[rgb(var(--color-muted)/0.1)] text-[rgb(var(--color-muted-foreground))] hover:bg-[rgb(var(--color-foreground)/0.9)] hover:text-[rgb(var(--color-background))]'}
                                     `}
                                 >
                                     <BoxSelect size={14} /> Features
                                 </button>
                             </div>
-                            <div className="flex bg-white/10 rounded-lg border border-white/10 p-1 gap-1 flex-1 sm:flex-none">
-                                <button onClick={() => setTextAlign('left')} className={`flex-1 sm:flex-none p-1 rounded cursor-pointer ${textAlign === 'left' ? 'bg-[#EEEFEB] text-black shadow-sm' : 'text-gray-400'}`}><AlignLeft size={16} className="mx-auto" /></button>
-                                <button onClick={() => setTextAlign('center')} className={`flex-1 sm:flex-none p-1 rounded cursor-pointer ${textAlign === 'center' ? 'bg-[#EEEFEB] text-black shadow-sm' : 'text-gray-400'}`}><AlignCenter size={16} className="mx-auto" /></button>
-                                <button onClick={() => setTextAlign('right')} className={`flex-1 sm:flex-none p-1 rounded cursor-pointer ${textAlign === 'right' ? 'bg-[#EEEFEB] text-black shadow-sm' : 'text-gray-400'}`}><AlignRight size={16} className="mx-auto" /></button>
+                            <div className="flex bg-[rgb(var(--color-muted)/0.1)] rounded-lg border border-[rgb(var(--color-border))] p-1 gap-1 flex-1 sm:flex-none">
+                                <button onClick={() => { setTextAlign('left'); Haptics.impact({ style: ImpactStyle.Light }); }} className={`flex-1 sm:flex-none p-1 rounded cursor-pointer ${textAlign === 'left' ? 'bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] shadow-sm' : 'text-[rgb(var(--color-muted-foreground))]'}`}><AlignLeft size={16} className="mx-auto" /></button>
+                                <button onClick={() => { setTextAlign('center'); Haptics.impact({ style: ImpactStyle.Light }); }} className={`flex-1 sm:flex-none p-1 rounded cursor-pointer ${textAlign === 'center' ? 'bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] shadow-sm' : 'text-[rgb(var(--color-muted-foreground))]'}`}><AlignCenter size={16} className="mx-auto" /></button>
+                                <button onClick={() => { setTextAlign('right'); Haptics.impact({ style: ImpactStyle.Light }); }} className={`flex-1 sm:flex-none p-1 rounded cursor-pointer ${textAlign === 'right' ? 'bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] shadow-sm' : 'text-[rgb(var(--color-muted-foreground))]'}`}><AlignRight size={16} className="mx-auto" /></button>
                             </div>
 
                             <div className="flex gap-2">
-                                <div className="relative w-8 h-8 rounded-full border border-white/20 overflow-hidden cursor-pointer shadow-sm hover:scale-110 transition-transform" style={{ backgroundColor: textColor }}>
+                                <div className="relative w-8 h-8 rounded-full border border-[rgb(var(--color-border))] overflow-hidden cursor-pointer shadow-sm hover:scale-110 transition-transform" style={{ backgroundColor: textColor }}>
                                     <input type="color" value={textColor} onChange={(e) => setTextColor(e.target.value)} className="opacity-0 absolute inset-0 w-full h-full cursor-pointer" />
                                 </div>
-                                <div className="relative w-8 h-8 rounded-full border border-white/20 overflow-hidden cursor-pointer shadow-sm hover:scale-110 transition-transform" style={{ backgroundColor: bgColor }}>
+                                <div className="relative w-8 h-8 rounded-full border border-[rgb(var(--color-border))] overflow-hidden cursor-pointer shadow-sm hover:scale-110 transition-transform" style={{ backgroundColor: bgColor }}>
                                     <input type="color" value={bgColor} onChange={(e) => setBgColor(e.target.value)} className="opacity-0 absolute inset-0 w-full h-full cursor-pointer" />
                                 </div>
                             </div>
@@ -286,7 +294,7 @@ export default function FontTester({ font }: FontTesterProps) {
                     </div>
 
                     {/* Features - Toggleable on all devices */}
-                    <div className={`${showMobileFeatures ? 'flex' : 'hidden'} flex-wrap gap-2 mt-4 pt-4 border-t border-white/10 animate-in fade-in slide-in-from-top-2 duration-200`}>
+                    <div className={`${showMobileFeatures ? 'flex' : 'hidden'} flex-wrap gap-2 mt-4 pt-4 border-t border-[rgb(var(--color-border))] animate-in fade-in slide-in-from-top-2 duration-200`}>
                         <Toggle label="Ligatures" code="liga" checked={features.liga} onChange={() => setFeatures(p => ({ ...p, liga: !p.liga }))} />
                         <Toggle label="Discretionary" code="dlig" checked={features.dlig} onChange={() => setFeatures(p => ({ ...p, dlig: !p.dlig }))} />
                         <Toggle label="Small Caps" code="smcp" checked={features.smcp} onChange={() => setFeatures(p => ({ ...p, smcp: !p.smcp }))} />
@@ -300,7 +308,7 @@ export default function FontTester({ font }: FontTesterProps) {
 
             {/* Preview Area */}
             <div
-                className="flex-1 border-2 border-white/10 rounded-4xl relative transition-colors duration-300 min-h-40"
+                className="flex-1 border-2 border-[rgb(var(--color-border))] rounded-4xl relative transition-colors duration-300 min-h-40"
                 style={{ backgroundColor: bgColor }}
             >
                 <textarea
@@ -311,7 +319,7 @@ export default function FontTester({ font }: FontTesterProps) {
                         autoResize(e.target);
                     }}
                     onFocus={(e) => autoResize(e.target)}
-                    className="w-full bg-transparent resize-none outline-none border-none p-8 md:p-12 overflow-hidden placeholder-gray-500 selection:bg-gray-500/30"
+                    className="w-full bg-transparent resize-none outline-none border-none p-8 md:p-12 overflow-hidden placeholder-[rgb(var(--color-muted-foreground)/0.5)] selection:bg-[rgb(var(--color-muted-foreground)/0.3)]"
                     style={{
                         fontFamily: `"${fontName}", sans-serif`,
                         fontSize: `${fontSize}px`,
@@ -325,9 +333,9 @@ export default function FontTester({ font }: FontTesterProps) {
                 />
             </div>
 
-            <div className="border-y border-white/10">
-                <div className="p-4 border-b border-white/10">
-                    <h3 className="font-bold text-lg flex items-center gap-2">
+            <div className="border-y border-[rgb(var(--color-border))]">
+                <div className="p-4 border-b border-[rgb(var(--color-border))]">
+                    <h3 className="font-bold text-lg flex items-center gap-2 text-[rgb(var(--color-foreground))]">
                         <LayoutTemplate size={20} />
                         Real-World Context
                     </h3>
@@ -343,11 +351,14 @@ export default function FontTester({ font }: FontTesterProps) {
 function Toggle({ label, code, checked, onChange }: { label: string, code: string, checked: boolean, onChange: () => void }) {
     return (
         <button
-            onClick={onChange}
+            onClick={() => {
+                onChange();
+                Haptics.impact({ style: ImpactStyle.Light });
+            }}
             className={`px-3 py-1.5 rounded-md border flex items-center gap-2 transition-all text-xs font-bold
                 ${checked
-                    ? 'bg-white/90 text-black border-black shadow-md'
-                    : 'bg-white/10 text-white/70 border-white/10 hover:bg-white/90 hover:text-black'}
+                    ? 'bg-[rgb(var(--color-foreground)/0.9)] text-[rgb(var(--color-background))] border-[rgb(var(--color-foreground))] shadow-md'
+                    : 'bg-[rgb(var(--color-muted)/0.1)] text-[rgb(var(--color-muted-foreground))] border-[rgb(var(--color-border))] hover:bg-[rgb(var(--color-foreground)/0.9)] hover:text-[rgb(var(--color-background))]'}
             `}
         >
             <span>{label}</span>

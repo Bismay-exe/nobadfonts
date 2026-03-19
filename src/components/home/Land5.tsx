@@ -213,7 +213,7 @@ const Landing5 = () => {
             <div>
 
                 {/* Marquees Section */}
-                <section className="marquees h-full md:h-full flex flex-col justify-center bg-[#EEEFEB] rounded-4xl border-y border-[#1C1D1E] overflow-hidden">
+                <section className="marquees h-full md:h-full flex flex-col justify-center bg-[rgb(var(--color-card))] rounded-4xl border-y border-[rgb(var(--color-foreground))] overflow-hidden">
                     {MARQUEE_DATA.map((marquee) => (
                         <div
                             key={marquee.id}
@@ -225,12 +225,12 @@ const Landing5 = () => {
                                     <React.Fragment key={colIndex}>
                                         {item.type === 'text' ? (
                                             <div className="item with-text flex-1 md:flex-[1.5] flex justify-center items-center bg-transparent">
-                                                <div className="marquee-text uppercase text-[60px] md:text-[190px] font-thin m-0 text-[#1C1D1E]">
+                                                <div className="marquee-text uppercase text-[60px] md:text-[190px] font-thin m-0 text-[rgb(var(--color-foreground))]">
                                                     {item.content}
                                                 </div>
                                             </div>
                                         ) : (
-                                            <div className="item aspect-3/2 w-full flex-1 flex justify-center items-center overflow-hidden bg-[#f0f0f0] rounded-xl md:rounded-2xl lg:rounded-4xl">
+                                            <div className="item aspect-3/2 w-full flex-1 flex justify-center items-center overflow-hidden bg-[rgb(var(--color-muted))] rounded-xl md:rounded-2xl lg:rounded-4xl">
                                                 <img
                                                     src={item.src}
                                                     alt=""
@@ -246,7 +246,7 @@ const Landing5 = () => {
                 </section>
 
                 {/* Services Section */}
-                <section className="services w-full min-h-screen p-8 md:p-16 bg-[#EEEFEB] text-[#1C1D1E] rounded-4xl border-y border-[#1C1D1E] flex items-center">
+                <section className="services w-full min-h-screen p-8 md:p-16 bg-[rgb(var(--color-card))] text-[rgb(var(--color-foreground))] rounded-4xl border-y border-[rgb(var(--color-foreground))] flex items-center">
                     <p className="text-[24px] md:text-[42px] font-medium uppercase leading-[1.1]">
                         In this meticulously designed dystopian world, you'll find yourself
                         immersed in stories of resilience and intrigue.
@@ -254,7 +254,7 @@ const Landing5 = () => {
                 </section>
 
                 {/* Footer Section */}
-                <section className="footer w-full h-screen flex justify-center items-center rounded-4xl bg-[#EEEFEB] border-y border-[#1C1D1E] text-[#1C1D1E]">
+                <section className="footer w-full h-screen flex justify-center items-center rounded-4xl bg-[rgb(var(--color-card))] border-y border-[rgb(var(--color-foreground))] text-[rgb(var(--color-foreground))]">
                     <h2 className="text-[10vw] uppercase">The End</h2>
                 </section>
             </div>
