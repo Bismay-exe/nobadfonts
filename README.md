@@ -233,23 +233,24 @@ Enforced at the database level via **Supabase Row Level Security (RLS)** — not
 **📱 Mobile View (Capacitor)**
 
 
-
-**🔤 Font Catalog**
-
-![Font Catalog](https://www.nobadfonts.in/Mockups/Iphone14ProMax/catalog.png "Browse and filter the curated font library")
-
-**🔤 Font Details**
-
-![Font Details](https://www.nobadfonts.in/Mockups/Iphone14ProMax/font.png "Font details page with all the information about the font")
-
-**🔬 Font Pairing**
-
-![Font Pairing](https://www.nobadfonts.in/Mockups/Iphone14ProMax/pairing.png "Preview and choose fonts to pair in UI, editorial, and code contexts")
-
-**🔬 NoBadFonts-cli**
-
-![NoBadFonts-cli](https://www.nobadfonts.in/Mockups/Iphone14ProMax/cli.png "CLI tool to add fonts to the platform directly from your terminal")
-
+<table>
+    <tr align="center">
+        <b>🔤 Font Catalog</b><br/>|
+        <img src="https://www.nobadfonts.in/Mockups/Iphone14ProMax/catalog.png" width="300" />
+    </tr>
+    <tr align="center">
+        <b>🔤 Font Details</b><br/>
+        <img src="https://www.nobadfonts.in/Mockups/Iphone14ProMax/font.png" width="300" />
+    </tr>
+    <tr align="center">
+        <b>🔬 Font Pairing</b><br/>
+        <img src="https://www.nobadfonts.in/Mockups/Iphone14ProMax/pairing.png" width="300" />
+    </tr>
+    <tr align="center">
+        <b>🔬 NoBadFonts-cli</b><br/>
+        <img src="https://www.nobadfonts.in/Mockups/Iphone14ProMax/cli.png" width="300" />
+    </tr>
+</table>
 ---
 
 ## 🗺️ App Structure Diagram
