@@ -12,6 +12,8 @@ import BackHandler from './components/capacitor/BackHandler';
 
 import { SplashScreen } from '@capacitor/splash-screen';
 import { StatusBar } from "@capacitor/status-bar";
+import { App as CapApp } from '@capacitor/app';
+import { Browser } from '@capacitor/browser';
 import { useEffect } from 'react';
 
 const FontsCatalog = React.lazy(() => import('./pages/FontsCatalog'));
@@ -30,13 +32,32 @@ function App() {
   const location = useLocation();
 
   useEffect(() => {
-  const init = async () => {
-    await SplashScreen.hide();
-    await StatusBar.hide();
-  };
+    const init = async () => {
+      await SplashScreen.hide();
+      await StatusBar.hide();
+    };
 
-  init();
-}, []);
+    init();
+
+    // Listen for deep links
+    const handleUrlOpen = CapApp.addListener('appUrlOpen', async (data: any) => {
+      console.log('App opened with URL:', data.url);
+      
+      if (data.url.includes('nobadfonts://auth')) {
+        // Close the in-app browser
+        await Browser.close();
+        
+        // Use the URL to set the session
+        // Supabase will automatically pick up the session if we're on the right page
+        // or we can manually parse it if needed.
+        // For now, let's just ensure the browser closes.
+      }
+    });
+
+    return () => {
+      handleUrlOpen.then(h => h.remove());
+    };
+  }, []);
 
   return (
     <HelmetProvider>

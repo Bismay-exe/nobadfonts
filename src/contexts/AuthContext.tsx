@@ -1,6 +1,8 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import type { User, Session } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
+import { Capacitor } from '@capacitor/core';
+import { Browser } from '@capacitor/browser';
 import type { Database } from '../types/database.types';
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
@@ -70,13 +72,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     const signInWithGoogle = async () => {
-        const { error } = await supabase.auth.signInWithOAuth({
+        const isNative = Capacitor.isNativePlatform();
+        const redirectTo = isNative ? 'nobadfonts://auth' : window.location.origin;
+
+        const { data, error } = await supabase.auth.signInWithOAuth({
             provider: 'google',
             options: {
-                redirectTo: window.location.origin
+                redirectTo,
+                skipBrowserRedirect: isNative,
             }
         });
+
         if (error) throw error;
+
+        if (isNative && data?.url) {
+            await Browser.open({ url: data.url, windowName: '_self' });
+        }
     };
 
     const signOut = async () => {

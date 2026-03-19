@@ -4,6 +4,8 @@ import { supabase } from '../lib/supabase';
 import { PreviewAccordion } from '../components/fonts/PreviewAccordion';
 import { useAuth } from '../contexts/AuthContext';
 import { Toast } from '@capacitor/toast';
+import { Capacitor } from '@capacitor/core';
+import { Browser } from '@capacitor/browser';
 
 export default function Auth() {
     const { user, loading: authLoading } = useAuth();
@@ -85,13 +87,22 @@ export default function Auth() {
 
     const handleSocialLogin = async (provider: 'google' | 'github') => {
         try {
-            const { error } = await supabase.auth.signInWithOAuth({
+            const isNative = Capacitor.isNativePlatform();
+            const redirectTo = isNative ? 'nobadfonts://auth' : `${window.location.origin}/profile`;
+
+            const { data, error } = await supabase.auth.signInWithOAuth({
                 provider,
                 options: {
-                    redirectTo: `${window.location.origin}/profile`,
+                    redirectTo,
+                    skipBrowserRedirect: isNative,
                 },
             });
+
             if (error) throw error;
+
+            if (isNative && data?.url) {
+                await Browser.open({ url: data.url, windowName: '_self' });
+            }
         } catch (err: any) {
             setError(err.message);
         }
