@@ -1,5 +1,8 @@
 name: Build Android APK
 
+permissions:
+  contents: write
+
 on:
   push:
     branches:
