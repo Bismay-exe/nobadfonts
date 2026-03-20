@@ -1,7 +1,7 @@
 import { App } from '@capacitor/app';
 
 const GITHUB_API =
-  'https://api.github.com/repos/Bismay-exe/nobadfonts/releases/latest';
+  'https://api.github.com/repos/Bismay-exe/nobadfonts/releases';
 
 export const checkForUpdate = async () => {
   try {
@@ -14,7 +14,10 @@ export const checkForUpdate = async () => {
     const res = await fetch(GITHUB_API);
     if (!res.ok) throw new Error(`GitHub API returned ${res.status}`);
     
-    const data = await res.json();
+    const releases = await res.json();
+    if (!Array.isArray(releases) || releases.length === 0) throw new Error('No releases found');
+    
+    const data = releases[0]; // The first one is the most recent
     console.log('[UpdateCheck] Latest Release Data:', data);
 
     // Parse version from tag (e.g., "beta-12" -> 12)
