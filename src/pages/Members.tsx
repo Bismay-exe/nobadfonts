@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import type { Database } from '../types/database.types';
 import { ArrowUpRight } from 'lucide-react';
+import { cn } from '../lib/utils';
 
 type Profile = Database['public']['Tables']['profiles']['Row'] & {
     font_count?: number;
@@ -90,60 +91,57 @@ export default function Members() {
     }, []);
 
     const MemberCard = ({ member, rank }: { member: Profile, rank?: number }) => (
-        <Link to={`/members/${member.username || member.id}`} className="block group h-full">
-            <div className={`
-                bg-[rgb(var(--color-card))] border-2 border-[rgb(var(--color-foreground))] rounded-4xl p-6 relative h-full flex flex-col items-center transition-all duration-200
-                hover:shadow-[4px_4px_0px_0px_rgba(var(--color-foreground),1)] hover:-translate-y-1
-                ${rank === 1 ? 'bg-[rgb(var(--color-highlight)/0.05)] border-[rgb(var(--color-highlight))]' : ''}
-            `}>
+        <Link to={`/members/${member.username || member.id}`} className="block group">
+            <div className="relative flex flex-col items-center transition-all duration-300">
                 {/* Rank Badge for Top 3 */}
                 {rank && (
                     <div className={`
-                        absolute -top-4 -right-4 w-10 h-10 rounded-full border-2 border-[rgb(var(--color-foreground))] flex items-center justify-center font-black text-lg z-10
-                        ${rank === 1 ? 'bg-[rgb(var(--color-highlight))] text-[rgb(var(--color-background))] scale-125' : ''}
-                        ${rank === 2 ? 'bg-[rgb(var(--color-accent))] text-[rgb(var(--color-background))]' : ''}
-                        ${rank === 3 ? 'bg-[rgb(var(--color-highlight)/0.8)] text-[rgb(var(--color-background))]' : ''}
+                        absolute -top-2 -right-2 w-8 h-8 rounded-full border-2 border-[rgb(var(--color-foreground))] flex items-center justify-center font-black text-xs z-20 shadow-lg
+                        ${rank === 1 ? 'bg-[#FFD700] text-black scale-110' : ''}
+                        ${rank === 2 ? 'bg-[#C0C0C0] text-black' : ''}
+                        ${rank === 3 ? 'bg-[#CD7F32] text-white' : ''}
                     `}>
                         #{rank}
                     </div>
                 )}
 
-                <div className="w-24 h-24 mb-4 relative">
-                    <div className="w-full h-full bg-[rgb(var(--color-foreground)/0.05)] rounded-full border-2 border-[rgb(var(--color-foreground))] overflow-hidden">
+                <div className="w-24 h-24 md:w-28 md:h-28 mb-3 relative">
+                    <div className={`
+                        w-full h-full rounded-full border-4 border-[rgb(var(--color-foreground))] overflow-hidden transition-all duration-300
+                        group-hover:shadow-[0_0_20px_rgba(var(--color-foreground),0.1)] group-hover:scale-105
+                        ${rank === 1 ? 'border-[rgb(var(--color-highlight))]' : ''}
+                    `}>
                         {member.avatar_url ? (
                             <img src={member.avatar_url} alt={member.full_name} className="w-full h-full object-cover" />
                         ) : (
-                            <div className="w-full h-full flex items-center justify-center font-black text-3xl text-[rgb(var(--color-muted-foreground))] uppercase">
+                            <div className="w-full h-full flex items-center justify-center font-black text-3xl text-[rgb(var(--color-muted-foreground))] uppercase bg-[rgb(var(--color-foreground)/0.05)]">
                                 {member.full_name.charAt(0)}
                             </div>
                         )}
                     </div>
-                    <div className={`absolute bottom-0 right-0 w-6 h-6 rounded-full border-2 border-[rgb(var(--color-foreground))] ${member.role === 'admin' ? 'bg-[rgb(var(--color-accent))]' : 'bg-[rgb(var(--color-highlight))]'}`} />
-                    <div className={`
-                        absolute -top-4 -left-4 w-10 h-10 -rotate-45 flex items-center justify-center font-black text-4xl z-10
-                        ${rank === 1 ? 'block' : 'hidden'}
-                        ${rank === 2 ? 'block' : ''}
-                        ${rank === 3 ? 'block' : ''}
-                    `}>
-                        👑
-                    </div>
+
+                    {/* Crown for #1 */}
+                    {rank === 1 && (
+                        <div className="absolute -top-8 left-1/2 -translate-x-1/2 text-4xl animate-bounce pointer-events-none">
+                            👑
+                        </div>
+                    )}
                 </div>
 
-                <h2 className="text-xl font-bold text-center mb-1 text-[rgb(var(--color-primary))] transition-colors line-clamp-1">
-                    {member.full_name}
-                </h2>
-
-                <p className="text-[rgb(var(--color-muted-foreground))] font-bold text-sm mb-4">
-                    {member.font_count} Uploads
-                </p>
-
-                <div className="mt-auto pt-2">
-                    <span className={`
-                        inline-block px-3 py-1 rounded-full text-xs font-bold uppercase border border-[rgb(var(--color-foreground))]
-                        ${member.role === 'admin' ? 'bg-[rgb(var(--color-accent))] text-[rgb(var(--color-background))]' : 'bg-[rgb(var(--color-highlight))] text-[rgb(var(--color-background))]'}
-                    `}>
+                <div className="text-center">
+                    <h2 className="text-lg font-bold text-[rgb(var(--color-foreground))] group-hover:text-[rgb(var(--color-primary))] transition-colors line-clamp-1">
+                        {member.full_name}
+                    </h2>
+                    <p className="text-[rgb(var(--color-muted-foreground))] font-bold text-[10px] uppercase tracking-wider">
+                        {member.font_count} Uploads
+                    </p>
+                    {/* Role Indicator */}
+                    <div className={cn(
+                        "mt-2 inline-flex items-center px-3 py-0.5 rounded-full text-[10px] font-black uppercase border-2 border-[rgb(var(--color-foreground))] shadow-[2px_2px_0px_0px_rgba(var(--color-foreground),1)]",
+                        member.role === 'admin' ? 'bg-[rgb(var(--color-accent))] text-[rgb(var(--color-background))]' : 'bg-[rgb(var(--color-highlight))] text-[rgb(var(--color-background))]'
+                    )}>
                         {member.role}
-                    </span>
+                    </div>
                 </div>
             </div>
         </Link>
@@ -185,17 +183,28 @@ export default function Members() {
 
                 {/* Top 3 Section */}
                 {topMembers.length > 0 && (
-                    <div className="px-4 py-8">
-                        <h2 className="text-2xl font-bold pb-12 flex items-center gap-2 text-[rgb(var(--color-foreground))]">
-                            <span className="text-3xl">👑</span> Top Contributors
-                        </h2>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                            {/* Display order matches array slice: 1st, 2nd, 3rd */}
-                            {topMembers.map((member, index) => (
-                                <div key={member.id} className={index === 0 ? 'md:-mt-6' : ''}>
-                                    <MemberCard member={member} rank={index + 1} />
+                    <div className="px-4 py-12 md:py-20">
+                        <div className="flex items-center md:items-end justify-center gap-4 md:gap-16 lg:gap-24">
+                            {/* Rank 2 */}
+                            {topMembers[1] && (
+                                <div className="order-1 scale-80 md:scale-100 pb-4">
+                                    <MemberCard member={topMembers[1]} rank={2} />
                                 </div>
-                            ))}
+                            )}
+
+                            {/* Rank 1 */}
+                            {topMembers[0] && (
+                                <div className="order-2 transform -translate-y-12 scale-110 md:scale-125 z-10">
+                                    <MemberCard member={topMembers[0]} rank={1} />
+                                </div>
+                            )}
+
+                            {/* Rank 3 */}
+                            {topMembers[2] && (
+                                <div className="order-3 scale-80 md:scale-100 pb-2">
+                                    <MemberCard member={topMembers[2]} rank={3} />
+                                </div>
+                            )}
                         </div>
                     </div>
                 )}
@@ -209,10 +218,7 @@ export default function Members() {
                             <tbody className="divide-y-2 divide-[rgb(var(--color-foreground)/0.1)]">
                                 {otherMembers.map((member, index) => (
                                     <tr key={member.id}>
-                                        <td className="hidden p-4 w-16 text-center font-black text-[rgb(var(--color-muted-foreground))] text-xl font-mono">
-                                            #{index + 4}
-                                        </td>
-                                        <td className="p-4">
+                                        <td className="px-2 py-4">
                                             <div className="relative flex items-center gap-4">
                                                 <Link to={`/members/${member.username || member.id}`} className="w-12 h-12 relative">
                                                     <div className="w-14 h-14 bg-[rgb(var(--color-foreground)/0.05)] rounded-full border-2 border-[rgb(var(--color-foreground))] overflow-hidden shrink-0">
@@ -223,7 +229,7 @@ export default function Members() {
                                                                 {member.full_name.charAt(0)}
                                                             </div>
                                                         )}
-                                                        <div className="absolute -top-2 -right-2 w-7 h-7 bg-[rgb(var(--color-highlight))] rounded-full border-2 border-[rgb(var(--color-foreground))] flex items-center justify-center font-black text-[rgb(var(--color-background))] text-xs">
+                                                        <div className="absolute -top-2 -right-2 w-6 h-6 bg-[rgb(var(--color-highlight))] rounded-full border border-[rgb(var(--color-foreground))] flex items-center justify-center font-black text-[rgb(var(--color-background))] text-xs">
                                                             #{index + 4}
                                                         </div>
                                                     </div>

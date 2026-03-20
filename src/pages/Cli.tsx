@@ -17,7 +17,7 @@ export default function Cli() {
         <div className="mx-auto md:py-20">
 
             {/* Hero */}
-            <div className="h-[83vh] md:h-auto flex flex-col justify-center items-center px-0 mb-20 text-center">
+            <div className="flex flex-col justify-center items-center px-0 mb-20 text-center">
                 <div className="inline-flex scale-75 md:scale-90 lg:scale-100 items-center gap-2 px-4 py-2 bg-[rgb(var(--color-background))] text-[rgb(var(--color-primary))] rounded-full font-mono font-bold text-sm mb-6 border border-[rgb(var(--color-primary))]">
                     <Terminal size={16} />
                     RELEASE v1.0.0
