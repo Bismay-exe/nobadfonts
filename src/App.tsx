@@ -15,9 +15,9 @@ import { SplashScreen } from '@capacitor/splash-screen';
 import { StatusBar } from "@capacitor/status-bar";
 import { App as CapApp } from '@capacitor/app';
 import { Browser } from '@capacitor/browser';
-import { Dialog } from '@capacitor/dialog';
 import { checkForUpdate } from './utils/updateChecker';
-import { useEffect } from 'react';
+import { UpdateModal } from './components/modals/UpdateModal';
+import { useEffect, useState } from 'react';
 
 const FontsCatalog = React.lazy(() => import('./pages/FontsCatalog'));
 const FontDetails = React.lazy(() => import('./pages/FontDetails'));
@@ -33,6 +33,19 @@ const DesignerFonts = React.lazy(() => import('./pages/DesignerFonts'));
 
 function App() {
   const location = useLocation();
+  const [updateInfo, setUpdateInfo] = useState<{
+    isOpen: boolean;
+    latestBuild: string;
+    currentBuild: string;
+    releaseNotes: string;
+    apkUrl: string;
+  }>({
+    isOpen: false,
+    latestBuild: '',
+    currentBuild: '',
+    releaseNotes: '',
+    apkUrl: ''
+  });
 
   useEffect(() => {
     const init = async () => {
@@ -81,14 +94,13 @@ function App() {
       const result = await checkForUpdate();
 
       if (result.hasUpdate && result.apkUrl) {
-        const { value } = await Dialog.confirm({
-          title: 'Update Available',
-          message: `New version (beta-${result.latestBuild}) available. Update now?`,
+        setUpdateInfo({
+          isOpen: true,
+          latestBuild: String(result.latestBuild),
+          currentBuild: String(result.currentBuild),
+          releaseNotes: result.releaseNotes || 'New version available.',
+          apkUrl: result.apkUrl
         });
-
-        if (value) {
-          window.open(result.apkUrl, '_system');
-        }
       }
     };
 
@@ -119,6 +131,14 @@ function App() {
                   <Route path="cli" element={<Cli />} />
                 </Route>
               </Routes>
+            <UpdateModal
+              isOpen={updateInfo.isOpen}
+              latestVersion={updateInfo.latestBuild}
+              currentVersion={updateInfo.currentBuild}
+              releaseNotes={updateInfo.releaseNotes}
+              onUpdate={() => window.open(updateInfo.apkUrl, '_system')}
+              onClose={() => setUpdateInfo(prev => ({ ...prev, isOpen: false }))}
+            />
           </UploadProvider>
         </AuthProvider>
       </ThemeProvider>
