@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useFonts } from '../hooks/useFonts';
 import { supabase } from '../lib/supabase';
 import type { Font } from '../types/font';
-import { Type, AlignLeft, Edit3, Palette, Trash2 } from 'lucide-react';
+import { Type, AlignLeft, Edit3, Palette, Trash2, Plus } from 'lucide-react';
 import FontPicker from '../components/font-pairing/FontPicker';
 import SEO from '../components/shared/SEO';
 import { cn } from '../lib/utils';
@@ -142,6 +142,7 @@ export default function FontPairing() {
 
     // Global background color
     const [bgColor, setBgColor] = useState('rgb(var(--color-background))');
+    const [showBgColorPicker, setShowBgColorPicker] = useState(false);
 
     // Sidebar State
     const [sidebarMode, setSidebarMode] = useState<'picker' | null>(null);
@@ -405,37 +406,60 @@ export default function FontPairing() {
                 onSelect={handleFontSelect}
             />
 
-
-
             {/* Global Background Color Control */}
-            <div className="fixed bottom-6 left-6 z-30 group">
-                <button className="bg-[rgb(var(--color-muted))] text-[rgb(var(--color-foreground))] p-4 rounded-full shadow-[0_0_20px_rgba(0,0,0,0.5)] border border-[rgb(var(--color-border))] hover:scale-110 transition-transform">
+            <div className="fixed bottom-20 md:bottom-6 left-6 z-30">
+                <button
+                    onClick={() => setShowBgColorPicker(!showBgColorPicker)}
+                    className="bg-[rgb(var(--color-muted))] text-[rgb(var(--color-foreground))] p-4 rounded-full shadow-[0_0_20px_rgba(0,0,0,0.5)] border border-[rgb(var(--color-border))] hover:scale-110 transition-transform"
+                >
                     <Palette size={24} />
                 </button>
-                <div className="absolute left-0 bottom-full mb-4 bg-[rgb(var(--color-card))] p-4 rounded-2xl border border-[rgb(var(--color-border))] shadow-xl hidden group-hover:block w-56 animate-in fade-in slide-in-from-bottom-2">
-                    <p className="text-xs font-bold mb-3 uppercase text-[rgb(var(--color-muted-foreground))]">Background Color</p>
-                    <div className="flex flex-wrap gap-2">
-                        {[
-                            '#000000', '#09090b', '#18181b', '#27272a', // Zincs
-                            '#ffffff', '#f4f4f5', '#e4e4e7', // Whites
-                            '#1a0b0b', '#0b1a0b', '#0b0b1a' // Tints
-                        ].map(color => (
-                            <button
-                                key={color}
-                                onClick={() => setBgColor(color)}
-                                className={cn(
-                                    "w-8 h-8 rounded-full border border-[rgb(var(--color-border))] transition-transform hover:scale-110",
-                                    bgColor === color && "ring-2 ring-[rgb(var(--color-foreground))] ring-offset-2 ring-offset-[rgb(var(--color-background))]"
-                                )}
-                                style={{ backgroundColor: color }}
+                {showBgColorPicker && (
+                    <div className="absolute left-0 bottom-full mb-4 bg-[rgb(var(--color-card))] p-4 rounded-2xl border border-[rgb(var(--color-border))] shadow-xl w-56 animate-in fade-in slide-in-from-bottom-2">
+                        <p className="text-xs font-bold mb-3 uppercase text-[rgb(var(--color-muted-foreground))]">Background Color</p>
+                        <div className="flex flex-wrap gap-2">
+                            {[
+                                '#000000', '#09090b', '#18181b', '#27272a', // Zincs
+                                '#ffffff', '#f4f4f5', '#e4e4e7', // Whites
+                                '#1a0b0b', '#0b1a0b', '#0b0b1a' // Tints
+                            ].map(color => (
+                                <button
+                                    key={color}
+                                    onClick={() => {
+                                        setBgColor(color);
+                                        setShowBgColorPicker(false);
+                                    }}
+                                    className={cn(
+                                        "w-8 h-8 rounded-full border border-[rgb(var(--color-border))] transition-transform hover:scale-110",
+                                        bgColor === color && "ring-2 ring-[rgb(var(--color-foreground))] ring-offset-2 ring-offset-[rgb(var(--color-background))]"
+                                    )}
+                                    style={{ backgroundColor: color }}
+                                />
+                            ))}
+
+                            {/* Custom Color Picker */}
+                        <div className="relative w-8 h-8 group/picker">
+                            <input
+                                type="color"
+                                value={bgColor.startsWith('#') ? bgColor : '#ffffff'}
+                                onChange={(e) => setBgColor(e.target.value)}
+                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                title="Choose Custom Color"
                             />
-                        ))}
+                            <div className={cn(
+                                "w-full h-full rounded-full border border-[rgb(var(--color-border))] flex items-center justify-center bg-linear-to-tr from-indigo-500 via-purple-500 to-pink-500 group-hover/picker:scale-110 transition-transform shadow-sm",
+                                bgColor.startsWith('#') && "ring-2 ring-[rgb(var(--color-foreground))] ring-offset-2 ring-offset-[rgb(var(--color-background))]"
+                            )}>
+                                <Plus size={14} className="text-white" />
+                            </div>
+                        </div>
                     </div>
                 </div>
+                )}
             </div>
 
             {/* Header */}
-            <div className="pt-8 pb-12 px-6">
+            <div className="md:pt-8 pb-12 px-6">
                 <div className="max-w-480 mx-auto flex flex-col md:flex-col items-center justify-center gap-6">
                     <div className="mb-8 text-center">
                         <h1 className="text-4xl md:text-6xl font-bold tracking-tighter text-[rgb(var(--color-foreground))] mb-4">
@@ -452,7 +476,7 @@ export default function FontPairing() {
             <div className="px-0 md:px-4 pb-20">
                 <motion.div
                     layout
-                    className="max-w-480 mx-auto rounded-[3rem] p-0 md:p-16 relative transition-colors duration-500 shadow-2xl border border-[rgb(var(--color-border)/0.5)]"
+                    className="max-w-480 mx-auto rounded-2xl md:rounded-[3rem] p-4 md:p-16 relative transition-colors duration-500 shadow-2xl border border-[rgb(var(--color-border)/0.5)]"
                     style={{ backgroundColor: bgColor }}
                 >
                     <div className="space-y-6 lg:space-y-12">

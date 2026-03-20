@@ -38,10 +38,7 @@ export default function Navbar() {
 
     return (
         <>
-            <motion.nav
-                initial={{ y: -100, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.5 }}
+            <nav
                 className={cn(
                     "fixed top-0 w-full left-1/2 -translate-x-1/2 z-50 border-[rgb(var(--color-border)/0.1)] transition-all duration-300",
                     isScrolled
@@ -73,8 +70,8 @@ export default function Navbar() {
                         {/* Desktop Navigation */}
                         <div className={cn("hidden md:flex items-center gap-1 ",
                             isScrolled
-                                ? "bg-transparent backdrop-blur-none border-none border-white/50 rounded-full p-0 px-0"
-                                : "bg-white/10 backdrop-blur-md border border-white/5 rounded-full p-1.5 px-3"
+                                ? "bg-transparent backdrop-blur-none border-none border-[rgb(var(--color-foreground))] rounded-full p-0 px-0"
+                                : "bg-[rgb(var(--color-foreground)/0.15)] backdrop-blur-md border border-[rgb(var(--color-foreground)/0.15)] rounded-full p-1"
                         )}>
                             {navLinks.map((link) => {
                                 const Icon = link.icon;
@@ -223,7 +220,7 @@ export default function Navbar() {
                         </div>
                     </div>
                 </div>
-            </motion.nav>
+            </nav>
 
             {/* Mobile Bottom Dock */}
             <div className="md:hidden fixed bottom-0 left-1/2 -translate-x-1/2 z-100">
