@@ -136,7 +136,7 @@ function App() {
               latestVersion={updateInfo.latestBuild}
               currentVersion={updateInfo.currentBuild}
               releaseNotes={updateInfo.releaseNotes}
-              onUpdate={() => window.open(updateInfo.apkUrl, '_system')}
+              apkUrl={updateInfo.apkUrl}
               onClose={() => setUpdateInfo(prev => ({ ...prev, isOpen: false }))}
             />
           </UploadProvider>

@@ -1,12 +1,15 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { Download, X, Sparkles, ArrowRight } from 'lucide-react';
+import { useState } from 'react';
+import { installApk } from '../../utils/apkInstaller';
+import { Toast } from '@capacitor/toast';
 
 interface UpdateModalProps {
   isOpen: boolean;
   latestVersion: string;
   currentVersion: string;
   releaseNotes: string;
-  onUpdate: () => void;
+  apkUrl: string;
   onClose: () => void;
 }
 
@@ -15,9 +18,27 @@ export const UpdateModal = ({
   latestVersion,
   currentVersion,
   releaseNotes,
-  onUpdate,
+  apkUrl,
   onClose
 }: UpdateModalProps) => {
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [progress, setProgress] = useState(0);
+
+  const handleUpdate = async () => {
+    try {
+      setIsDownloading(true);
+      await installApk(apkUrl, (p) => setProgress(p));
+    } catch (err) {
+      console.error('Update failed:', err);
+      Toast.show({
+        text: 'Failed to download update. Please try again.',
+        duration: 'long'
+      });
+      setIsDownloading(false);
+      setProgress(0);
+    }
+  };
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -81,20 +102,42 @@ export const UpdateModal = ({
 
                 {/* Action Buttons */}
                 <div className="flex flex-col gap-3">
-                  <motion.button
-                    whileTap={{ scale: 0.98 }}
-                    onClick={onUpdate}
-                    className="flex items-center justify-center gap-2 w-full py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-2xl transition-all shadow-lg shadow-blue-600/20"
-                  >
-                    <Download className="w-5 h-5" />
-                    Update Now
-                  </motion.button>
-                  <button
-                    onClick={onClose}
-                    className="w-full py-3 text-gray-400 hover:text-white text-sm font-medium transition-colors"
-                  >
-                    Maybe Later
-                  </button>
+                  {isDownloading ? (
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between text-xs text-blue-400 font-semibold uppercase tracking-wider">
+                        <span>Downloading Update</span>
+                        <span>{progress}%</span>
+                      </div>
+                      <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
+                        <motion.div 
+                          className="h-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]"
+                          initial={{ width: 0 }}
+                          animate={{ width: `${progress}%` }}
+                          transition={{ type: "spring", bounce: 0, duration: 0.3 }}
+                        />
+                      </div>
+                      <p className="text-[10px] text-gray-500 text-center italic">
+                        Please don't close the app...
+                      </p>
+                    </div>
+                  ) : (
+                    <>
+                      <motion.button
+                        whileTap={{ scale: 0.98 }}
+                        onClick={handleUpdate}
+                        className="flex items-center justify-center gap-2 w-full py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-2xl transition-all shadow-lg shadow-blue-600/20"
+                      >
+                        <Download className="w-5 h-5" />
+                        Update Now
+                      </motion.button>
+                      <button
+                        onClick={onClose}
+                        className="w-full py-3 text-gray-400 hover:text-white text-sm font-medium transition-colors"
+                      >
+                        Maybe Later
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
 
