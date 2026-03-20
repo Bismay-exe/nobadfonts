@@ -864,7 +864,7 @@ export default function FontDetails() {
             <motion.div
                 initial={{ y: -100 }}
                 animate={{ y: isScrolled ? 0 : -200 }}
-                className="fixed top-[calc(4rem+env(safe-area-inset-top))] md:top-[calc(4.5rem+env(safe-area-inset-top))] left-0 right-0 w-full bg-[rgb(var(--color-background)/0.5)] backdrop-blur-3xl z-30 border-b border-[rgb(var(--color-foreground)/0.1)] flex items-center justify-center py-2 px-6 md:px-10"
+                className="fixed top-[calc(3.59rem+env(safe-area-inset-top))] md:top-[calc(4.5rem+env(safe-area-inset-top))] left-0 right-0 w-full bg-[rgb(var(--color-background)/0.5)] backdrop-blur-3xl z-30 border-b border-[rgb(var(--color-foreground)/0.1)] flex items-center justify-center py-2 px-6 md:px-10"
             >
                 <div className="max-w-480 w-full mx-auto flex items-center justify-between">
                     <div className="flex flex-wrap items-center gap-0">
