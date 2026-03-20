@@ -9,14 +9,11 @@ import ProfileHeader from '../components/profile/ProfileHeader';
 import FontGrid from '../components/profile/FontGrid';
 import SettingsForm from '../components/profile/SettingsForm';
 import AnalyticsDashboard from '../components/profile/AnalyticsDashboard';
-import { App } from '@capacitor/app';
-import { Info, RefreshCw } from 'lucide-react';
 import type { Font } from '../types/font';
 
 export default function Profile() {
     const { user, profile, loading, refreshProfile } = useAuth();
-    const [activeTab, setActiveTab] = useState<'favorites' | 'downloads' | 'settings' | 'analytics' | 'about'>('favorites');
-    const [appInfo, setAppInfo] = useState<{ version: string; build: string }>({ version: '...', build: '...' });
+    const [activeTab, setActiveTab] = useState<'favorites' | 'downloads' | 'settings' | 'analytics'>('favorites');
     const [isEditing, setIsEditing] = useState(false);
     const [requestLoading, setRequestLoading] = useState(false);
 
@@ -78,13 +75,7 @@ export default function Profile() {
             }
         };
 
-        const fetchAppInfo = async () => {
-            const info = await App.getInfo();
-            setAppInfo({ version: info.version, build: info.build });
-        };
-
         fetchData();
-        fetchAppInfo();
     }, [user, activeTab]);
 
     if (loading) return <div>Loading...</div>;
@@ -138,19 +129,19 @@ export default function Profile() {
             {!isEditing && (
                 <>
                     {/* Tabs */}
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                    <div className="flex flex-col md:flex-row gap-2 md:gap-0">
                         <motion.button
                             whileTap={{ scale: 0.98 }}
                             onClick={async () => {
                                 await Haptics.impact({ style: ImpactStyle.Light });
                                 setActiveTab('favorites');
                             }}
-                            className={`px-6 py-4 text-lg font-bold border border-[rgb(var(--color-background))] rounded-2xl transition-colors ${activeTab === 'favorites'
-                                ? 'bg-[rgb(var(--color-gold-1))] text-black'
+                            className={`flex-1 px-6 py-4 text-lg font-bold border-y md:border-r border-[rgb(var(--color-background))] rounded-4xl md:rounded-r-none transition-colors ${activeTab === 'favorites'
+                                ? 'bg-[rgb(var(--color-gold-1))]'
                                 : 'bg-[rgb(var(--color-surface,var(--color-muted)))]'
                                 }`}
                         >
-                            Favorites
+                            My Favorites
                         </motion.button>
 
                         <motion.button
@@ -159,8 +150,8 @@ export default function Profile() {
                                 await Haptics.impact({ style: ImpactStyle.Light });
                                 setActiveTab('analytics');
                             }}
-                            className={`px-6 py-4 text-lg font-bold border border-[rgb(var(--color-background))] rounded-2xl transition-colors ${activeTab === 'analytics'
-                                ? 'bg-[rgb(var(--color-accent))] text-white'
+                            className={`flex-1 px-6 py-4 text-lg font-bold border-y md:border-x border-[rgb(var(--color-background))] rounded-4xl md:rounded-none transition-colors ${activeTab === 'analytics'
+                                ? 'bg-[rgb(var(--color-accent))]' // Pink to match admin/member vibe
                                 : 'bg-[rgb(var(--color-surface,var(--color-muted)))]'
                                 }`}
                         >
@@ -173,26 +164,12 @@ export default function Profile() {
                                 await Haptics.impact({ style: ImpactStyle.Light });
                                 setActiveTab('downloads');
                             }}
-                            className={`px-6 py-4 text-lg font-bold border border-[rgb(var(--color-background))] rounded-2xl transition-colors ${activeTab === 'downloads'
-                                ? 'bg-[rgb(189_245_34)] text-black' 
+                            className={`flex-1 px-6 py-4 text-lg font-bold border-y border-l rounded-4xl md:rounded-l-none border-[rgb(var(--color-background))] transition-colors ${activeTab === 'downloads'
+                                ? 'bg-[rgb(189_245_34)]' // Using raw highlight or success
                                 : 'bg-[rgb(var(--color-surface,var(--color-muted)))]'
                                 }`}
                         >
-                            Downloads
-                        </motion.button>
-
-                        <motion.button
-                            whileTap={{ scale: 0.98 }}
-                            onClick={async () => {
-                                await Haptics.impact({ style: ImpactStyle.Light });
-                                setActiveTab('about');
-                            }}
-                            className={`px-6 py-4 text-lg font-bold border border-[rgb(var(--color-background))] rounded-2xl transition-colors ${activeTab === 'about'
-                                ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/20' 
-                                : 'bg-[rgb(var(--color-surface,var(--color-muted)))]'
-                                }`}
-                        >
-                            About
+                            My Download History
                         </motion.button>
                     </div>
 
@@ -215,46 +192,6 @@ export default function Profile() {
                     {activeTab === 'analytics' && (
                         <div className="pt-8 px-4">
                             <AnalyticsDashboard />
-                        </div>
-                    )}
-
-                    {activeTab === 'about' && (
-                        <div className="pt-8 px-4 flex flex-col items-center gap-6">
-                            <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-3xl flex items-center justify-center shadow-2xl shadow-blue-500/20">
-                                <Info className="w-12 h-12 text-white" />
-                            </div>
-                            
-                            <div className="text-center">
-                                <h3 className="text-2xl font-black uppercase mb-1">Fontique</h3>
-                                <p className="text-[rgb(var(--color-muted-foreground))] font-medium">Professional Font Curator</p>
-                            </div>
-
-                            <div className="w-full max-w-sm bg-[rgb(var(--color-foreground)/0.05)] rounded-3xl p-6 border border-[rgb(var(--color-foreground)/0.1)]">
-                                <div className="flex justify-between items-center mb-4">
-                                    <span className="text-[rgb(var(--color-muted-foreground))] font-bold uppercase text-xs tracking-wider">Version</span>
-                                    <span className="font-mono font-bold text-lg">{appInfo.version}</span>
-                                </div>
-                                <div className="flex justify-between items-center pb-6 border-b border-[rgb(var(--color-foreground)/0.1)]">
-                                    <span className="text-[rgb(var(--color-muted-foreground))] font-bold uppercase text-xs tracking-wider">Build</span>
-                                    <span className="font-mono font-bold text-lg">{appInfo.build}</span>
-                                </div>
-
-                                <motion.button
-                                    whileTap={{ scale: 0.95 }}
-                                    onClick={async () => {
-                                        await Haptics.impact({ style: ImpactStyle.Medium });
-                                        window.dispatchEvent(new CustomEvent('check-app-update'));
-                                    }}
-                                    className="w-full mt-6 flex items-center justify-center gap-2 py-4 bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] rounded-2xl font-black uppercase tracking-wide hover:opacity-90 transition-all shadow-xl"
-                                >
-                                    <RefreshCw className="w-5 h-5" />
-                                    Check for Updates
-                                </motion.button>
-                            </div>
-
-                            <p className="text-[rgb(var(--color-muted-foreground))] text-xs font-medium">
-                                Made with ❤️ for designers
-                            </p>
                         </div>
                     )}
                 </>

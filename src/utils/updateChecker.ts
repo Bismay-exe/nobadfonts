@@ -1,33 +1,21 @@
 import { App } from '@capacitor/app';
-import { Toast } from '@capacitor/toast';
 
 const GITHUB_API =
-  'https://api.github.com/repos/Bismay-exe/nobadfonts/releases?per_page=1';
+  'https://api.github.com/repos/Bismay-exe/nobadfonts/releases';
 
-export const checkForUpdate = async (manual = false) => {
+export const checkForUpdate = async () => {
   try {
-    if (manual) {
-      await Toast.show({ text: 'Checking for updates...', duration: 'short' });
-    }
     // 1. Get current app version
     const appInfo = await App.getInfo();
     const currentBuild = Number(appInfo.build);
     console.log('[UpdateCheck] Current Build:', currentBuild);
 
     // 2. Fetch latest GitHub release
-    const res = await fetch(GITHUB_API, {
-      headers: {
-        'User-Agent': 'nobadfonts-capacitor-app'
-      }
-    });
-
+    const res = await fetch(GITHUB_API);
     if (!res.ok) throw new Error(`GitHub API returned ${res.status}`);
     
     const releases = await res.json();
-    if (!Array.isArray(releases) || releases.length === 0) {
-      if (manual) await Toast.show({ text: 'No releases found.', duration: 'short' });
-      return { hasUpdate: false };
-    }
+    if (!Array.isArray(releases) || releases.length === 0) throw new Error('No releases found');
     
     const data = releases[0]; // The first one is the most recent
     console.log('[UpdateCheck] Latest Release Data:', data);
@@ -55,16 +43,10 @@ export const checkForUpdate = async (manual = false) => {
       };
     }
 
-    if (manual) {
-      await Toast.show({ text: 'You are on the latest version!', duration: 'short' });
-    }
     return { hasUpdate: false };
 
   } catch (err) {
     console.error('[UpdateCheck] Check failed:', err);
-    if (manual) {
-      await Toast.show({ text: 'Update check failed. Check your connection.', duration: 'short' });
-    }
     return { hasUpdate: false, error: err };
   }
 };
