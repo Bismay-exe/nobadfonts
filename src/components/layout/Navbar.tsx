@@ -8,11 +8,14 @@ import { Type, Combine, Terminal, Users, Upload, User, Shield, Plus, Sun, Moon, 
 import { motion } from 'framer-motion';
 import { useTheme } from '../../contexts/ThemeContext';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { useUpdate } from '../../contexts/UpdateContext';
+import { Download } from 'lucide-react';
 import Logo from '/logo/logo.png'; // Assuming white version exists or we filter it
 
 export default function Navbar() {
     const { user, profile } = useAuth();
     const { theme, toggleTheme } = useTheme();
+    const { hasUpdate, isDownloading, progress, openModal, closeModal, isModalOpen } = useUpdate();
     const [isScrolled, setIsScrolled] = useState(false);
     const location = useLocation();
 
@@ -102,6 +105,51 @@ export default function Navbar() {
 
                         {/* Right Side Actions */}
                         <div className="flex items-center gap-3">
+                            {/* Update Download Icon */}
+                            {hasUpdate && (
+                                <motion.button
+                                    whileTap={{ scale: 0.95 }}
+                                    onClick={async () => {
+                                        await Haptics.impact({ style: ImpactStyle.Light });
+                                        isModalOpen ? closeModal() : openModal();
+                                    }}
+                                    className="relative h-10 w-10 flex items-center justify-center rounded-full bg-[rgb(var(--color-foreground)/0.05)] border border-[rgb(var(--color-border)/0.2)] text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.1)] transition-all cursor-pointer group"
+                                    title="Software Update Available"
+                                >
+                                    {isDownloading && (
+                                        <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 40 40">
+                                            <circle
+                                                cx="20"
+                                                cy="20"
+                                                r="18"
+                                                fill="none"
+                                                stroke="rgb(var(--color-foreground) / 0.1)"
+                                                strokeWidth="2"
+                                            />
+                                            <motion.circle
+                                                cx="20"
+                                                cy="20"
+                                                r="18"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                strokeWidth="2"
+                                                strokeDasharray="113.1"
+                                                initial={{ strokeDashoffset: 113.1 }}
+                                                animate={{ strokeDashoffset: 113.1 - (113.1 * progress) / 100 }}
+                                                transition={{ type: "spring", bounce: 0, duration: 0.5 }}
+                                            />
+                                        </svg>
+                                    )}
+                                    <Download size={18} className={cn("transition-transform duration-300 group-hover:-translate-y-0.5", isDownloading && "animate-pulse")} />
+                                    {!isDownloading && (
+                                        <span className="absolute top-0 right-0 flex h-3 w-3">
+                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                                            <span className="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
+                                        </span>
+                                    )}
+                                </motion.button>
+                            )}
+
                             {/* Theme Switcher */}
                             <motion.button
                                 whileTap={{ scale: 0.95 }}

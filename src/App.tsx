@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import Layout from './components/layout/Layout';
 import Home from './pages/Home';
@@ -15,9 +15,8 @@ import { SplashScreen } from '@capacitor/splash-screen';
 import { StatusBar } from "@capacitor/status-bar";
 import { App as CapApp } from '@capacitor/app';
 import { Browser } from '@capacitor/browser';
-import { checkForUpdate } from './utils/updateChecker';
 import { UpdateModal } from './components/modals/UpdateModal';
-import { useEffect, useState } from 'react';
+import { UpdateProvider, useUpdate } from './contexts/UpdateContext';
 
 const FontsCatalog = React.lazy(() => import('./pages/FontsCatalog'));
 const FontDetails = React.lazy(() => import('./pages/FontDetails'));
@@ -31,21 +30,9 @@ const FontPairing = React.lazy(() => import('./pages/FontPairing'));
 const Cli = React.lazy(() => import('./pages/Cli'));
 const DesignerFonts = React.lazy(() => import('./pages/DesignerFonts'));
 
-function App() {
+function AppContent() {
   const location = useLocation();
-  const [updateInfo, setUpdateInfo] = useState<{
-    isOpen: boolean;
-    latestBuild: string;
-    currentBuild: string;
-    releaseNotes: string;
-    apkUrl: string;
-  }>({
-    isOpen: false,
-    latestBuild: '',
-    currentBuild: '',
-    releaseNotes: '',
-    apkUrl: ''
-  });
+  const { isModalOpen, updateInfo, closeModal } = useUpdate();
 
   useEffect(() => {
     const init = async () => {
@@ -89,56 +76,48 @@ function App() {
     };
   }, []);
 
-  useEffect(() => {
-    const runUpdateCheck = async () => {
-      const result = await checkForUpdate();
+  return (
+    <>
+      <ScrollRestoration />
+      <UploadProgressPopup />
+      <BackHandler />
+      <Routes location={location} key={location.pathname}>
+        <Route path="/" element={<Layout />}>
+          <Route index element={<Home />} />
+          <Route path="fonts" element={<FontsCatalog />} />
+          <Route path="fonts/:id" element={<FontDetails />} />
+          <Route path="pairing" element={<FontPairing />} />
+          <Route path="auth" element={<Auth />} />
+          <Route path="upload" element={<Upload />} />
+          <Route path="profile" element={<Profile />} />
+          <Route path="members" element={<Members />} />
+          <Route path="members/:id" element={<MemberDetails />} />
+          <Route path="designers/:designerName" element={<DesignerFonts />} />
+          <Route path="admin" element={<AdminDashboard />} />
+          <Route path="cli" element={<Cli />} />
+        </Route>
+      </Routes>
+      <UpdateModal
+        isOpen={isModalOpen}
+        latestVersion={updateInfo?.latestBuild || ''}
+        currentVersion={updateInfo?.currentBuild || ''}
+        releaseNotes={updateInfo?.releaseNotes || ''}
+        apkUrl={updateInfo?.apkUrl || ''}
+        onClose={closeModal}
+      />
+    </>
+  );
+}
 
-      if (result.hasUpdate && result.apkUrl) {
-        setUpdateInfo({
-          isOpen: true,
-          latestBuild: String(result.latestBuild),
-          currentBuild: String(result.currentBuild),
-          releaseNotes: result.releaseNotes || 'New version available.',
-          apkUrl: result.apkUrl
-        });
-      }
-    };
-
-    runUpdateCheck();
-  }, []);
-
+function App() {
   return (
     <HelmetProvider>
       <ThemeProvider>
         <AuthProvider>
           <UploadProvider>
-            <ScrollRestoration />
-            <UploadProgressPopup />
-            <BackHandler />
-            <Routes location={location} key={location.pathname}>
-                <Route path="/" element={<Layout />}>
-                  <Route index element={<Home />} />
-                  <Route path="fonts" element={<FontsCatalog />} />
-                  <Route path="fonts/:id" element={<FontDetails />} />
-                  <Route path="pairing" element={<FontPairing />} />
-                  <Route path="auth" element={<Auth />} />
-                  <Route path="upload" element={<Upload />} />
-                  <Route path="profile" element={<Profile />} />
-                  <Route path="members" element={<Members />} />
-                  <Route path="members/:id" element={<MemberDetails />} />
-                  <Route path="designers/:designerName" element={<DesignerFonts />} />
-                  <Route path="admin" element={<AdminDashboard />} />
-                  <Route path="cli" element={<Cli />} />
-                </Route>
-              </Routes>
-            <UpdateModal
-              isOpen={updateInfo.isOpen}
-              latestVersion={updateInfo.latestBuild}
-              currentVersion={updateInfo.currentBuild}
-              releaseNotes={updateInfo.releaseNotes}
-              apkUrl={updateInfo.apkUrl}
-              onClose={() => setUpdateInfo(prev => ({ ...prev, isOpen: false }))}
-            />
+            <UpdateProvider>
+              <AppContent />
+            </UpdateProvider>
           </UploadProvider>
         </AuthProvider>
       </ThemeProvider>

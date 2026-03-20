@@ -1,54 +1,28 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { Download, X, ArrowRight } from 'lucide-react';
-import { useState } from 'react';
-import { installApk } from '../../utils/apkInstaller';
-import { Toast } from '@capacitor/toast';
+import { useUpdate } from '../../contexts/UpdateContext';
 
-interface UpdateModalProps {
-  isOpen: boolean;
-  latestVersion: string;
-  currentVersion: string;
-  releaseNotes: string;
-  apkUrl: string;
-  onClose: () => void;
-}
-
-export const UpdateModal = ({
-  isOpen,
-  latestVersion,
-  currentVersion,
-  releaseNotes,
-  apkUrl,
-  onClose
-}: UpdateModalProps) => {
-  const [isDownloading, setIsDownloading] = useState(false);
-  const [progress, setProgress] = useState(0);
+export const UpdateModal = () => {
+  const { isModalOpen, updateInfo, closeModal, isDownloading, progress, startDownload } = useUpdate();
+  
+  if (!updateInfo) return null;
+  
+  const { latestBuild, currentBuild, releaseNotes } = updateInfo;
 
   const handleUpdate = async () => {
-    try {
-      setIsDownloading(true);
-      await installApk(apkUrl, (p) => setProgress(p));
-    } catch (err) {
-      console.error('Update failed:', err);
-      Toast.show({
-        text: 'Failed to download update. Please try again.',
-        duration: 'long'
-      });
-      setIsDownloading(false);
-      setProgress(0);
-    }
+    await startDownload();
   };
 
   return (
     <AnimatePresence>
-      {isOpen && (
+      {isModalOpen && (
         <>
           {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={onClose}
+            onClick={closeModal}
             className="fixed inset-0 bg-[rgb(var(--color-background)/0.3)] backdrop-blur-sm z-999"
           />
 
@@ -70,7 +44,7 @@ export const UpdateModal = ({
                     <h2 className="text-xl font-bold text-[rgb(var(--color-background))]">Update Ready</h2>
                   </div>
                   <button
-                    onClick={onClose}
+                    onClick={closeModal}
                     className="p-2"
                   >
                     <X className="w-5 h-5 text-[rgb(var(--color-background))]" />
@@ -81,12 +55,12 @@ export const UpdateModal = ({
                 <div className="flex items-center gap-4 mb-6 p-4 bg-[rgb(var(--color-background)/0.3)] rounded-2xl border border-[rgb(var(--color-muted))]">
                   <div className="flex-1">
                     <p className="text-xs text-[rgb(var(--color-background))] uppercase tracking-wider font-semibold mb-1">Current</p>
-                    <p className="text-[rgb(var(--color-background))] font-medium">Beta v0.{currentVersion}</p>
+                    <p className="text-[rgb(var(--color-background))] font-medium">Beta v0.{currentBuild}</p>
                   </div>
                   <ArrowRight className="w-4 h-4 text-[rgb(var(--color-background))]" />
                   <div className="flex-1 text-right">
                     <p className="text-xs text-[rgb(var(--color-background))] uppercase tracking-wider font-semibold mb-1">Latest</p>
-                    <p className="text-[rgb(var(--color-background))] font-bold">Beta v0.{latestVersion}</p>
+                    <p className="text-[rgb(var(--color-background))] font-bold">Beta v0.{latestBuild}</p>
                   </div>
                 </div>
 
@@ -131,7 +105,7 @@ export const UpdateModal = ({
                         Update Now
                       </motion.button>
                       <button
-                        onClick={onClose}
+                        onClick={closeModal}
                         className="w-full py-3 text-[rgb(var(--color-background)/0.8)] hover:[rgb(var(--color-background))] text-sm font-medium transition-colors"
                       >
                         Maybe Later
