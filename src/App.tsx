@@ -16,7 +16,7 @@ import { StatusBar } from "@capacitor/status-bar";
 import { App as CapApp } from '@capacitor/app';
 import { Browser } from '@capacitor/browser';
 import { UpdateModal } from './components/modals/UpdateModal';
-import { UpdateProvider, useUpdate } from './contexts/UpdateContext';
+import { UpdateProvider } from './contexts/UpdateContext';
 
 const FontsCatalog = React.lazy(() => import('./pages/FontsCatalog'));
 const FontDetails = React.lazy(() => import('./pages/FontDetails'));
@@ -32,7 +32,7 @@ const DesignerFonts = React.lazy(() => import('./pages/DesignerFonts'));
 
 function AppContent() {
   const location = useLocation();
-  const { isModalOpen, updateInfo, closeModal } = useUpdate();
+
 
   useEffect(() => {
     const init = async () => {
@@ -97,14 +97,7 @@ function AppContent() {
           <Route path="cli" element={<Cli />} />
         </Route>
       </Routes>
-      <UpdateModal
-        isOpen={isModalOpen}
-        latestVersion={updateInfo?.latestBuild || ''}
-        currentVersion={updateInfo?.currentBuild || ''}
-        releaseNotes={updateInfo?.releaseNotes || ''}
-        apkUrl={updateInfo?.apkUrl || ''}
-        onClose={closeModal}
-      />
+      <UpdateModal />
     </>
   );
 }
