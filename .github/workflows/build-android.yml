@@ -44,6 +44,14 @@ jobs:
       - name: Sync Capacitor
         run: npx cap sync
 
+      - name: Update Android version
+        run: |
+          BUILD_NUMBER=${{ github.run_number }}
+
+          sed -i "s/versionCode [0-9]*/versionCode $BUILD_NUMBER/" android/app/build.gradle
+
+          sed -i "s/versionName \".*\"/versionName \"0.$BUILD_NUMBER\"/" android/app/build.gradle
+
       - name: Make gradlew executable
         working-directory: android
         run: chmod +x gradlew
@@ -62,7 +70,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: beta-${{ github.run_number }}
-          name: Beta Build ${{ github.run_number }}
+          name: Beta v0.${{ github.run_number }}
           prerelease: true
           files: android/app/build/outputs/apk/debug/app-debug.apk
         env:

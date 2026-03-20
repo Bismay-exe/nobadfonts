@@ -14,6 +14,8 @@ import { SplashScreen } from '@capacitor/splash-screen';
 import { StatusBar } from "@capacitor/status-bar";
 import { App as CapApp } from '@capacitor/app';
 import { Browser } from '@capacitor/browser';
+import { Dialog } from '@capacitor/dialog';
+import { checkForUpdate } from './utils/updateChecker';
 import { useEffect } from 'react';
 
 const FontsCatalog = React.lazy(() => import('./pages/FontsCatalog'));
@@ -57,6 +59,25 @@ function App() {
     return () => {
       handleUrlOpen.then(h => h.remove());
     };
+  }, []);
+
+  useEffect(() => {
+    const runUpdateCheck = async () => {
+      const result = await checkForUpdate();
+
+      if (result.hasUpdate && result.apkUrl) {
+        const { value } = await Dialog.confirm({
+          title: 'Update Available',
+          message: `New version (beta-${result.latestBuild}) available. Update now?`,
+        });
+
+        if (value) {
+          window.open(result.apkUrl, '_system');
+        }
+      }
+    };
+
+    runUpdateCheck();
   }, []);
 
   return (
