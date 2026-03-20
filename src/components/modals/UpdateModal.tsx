@@ -81,12 +81,12 @@ export const UpdateModal = ({
                 <div className="flex items-center gap-4 mb-6 p-4 bg-[rgb(var(--color-background)/0.3)] rounded-2xl border border-[rgb(var(--color-muted))]">
                   <div className="flex-1">
                     <p className="text-xs text-[rgb(var(--color-background))] uppercase tracking-wider font-semibold mb-1">Current</p>
-                    <p className="text-[rgb(var(--color-background))] font-medium">Build {currentVersion}</p>
+                    <p className="text-[rgb(var(--color-background))] font-medium">Beta v0.{currentVersion}</p>
                   </div>
                   <ArrowRight className="w-4 h-4 text-[rgb(var(--color-background))]" />
                   <div className="flex-1 text-right">
                     <p className="text-xs text-[rgb(var(--color-background))] uppercase tracking-wider font-semibold mb-1">Latest</p>
-                    <p className="text-[rgb(var(--color-background))] font-bold">Build {latestVersion}</p>
+                    <p className="text-[rgb(var(--color-background))] font-bold">Beta v0.{latestVersion}</p>
                   </div>
                 </div>
 
