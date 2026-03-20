@@ -138,7 +138,7 @@ export default function FontsCatalog() {
                 url="/fonts"
             />
 
-            <div className="relative pt-6 w-full">
+            <div className="relative pt-0 md:pt-6 w-full">
                 {/* Header */}
                 <div className="mb-8 text-center">
                     <h1 className="text-4xl md:text-6xl font-bold tracking-tighter text-[rgb(var(--color-foreground)/0.85)] mb-4">Catalog</h1>

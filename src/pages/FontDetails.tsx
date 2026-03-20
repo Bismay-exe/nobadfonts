@@ -891,7 +891,7 @@ export default function FontDetails() {
                 </div>
             </motion.div>
 
-            <div className="max-w-480 mx-auto sm:pt-8 space-y-6 md:space-y-12">
+            <div className="max-w-480 mx-auto pt-0 sm:pt-8 space-y-6 md:space-y-12">
 
                 {/* Font Info Section */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 mt-4">
