@@ -42,11 +42,11 @@ export default function Navbar() {
                 className={cn(
                     "fixed w-full left-1/2 -translate-x-1/2 z-50 border-[rgb(var(--color-border)/0.1)] transition-all duration-300",
                     isScrolled
-                        ? "top-0 md:top-0 max-w-full md:rounded-none bg-[rgb(var(--color-background)/0.5)] border-b backdrop-blur-3xl py-2 md:py-4 px-6 md:px-10"
-                        : "top-0 md:top-4 max-w-7xl md:rounded-3xl bg-transparent border-none py-2 md:py-4 px-4"
+                        ? "top-[env(safe-area-inset-top)] md:top-0 max-w-full md:rounded-none bg-[rgb(var(--color-background)/0.5)] border-b backdrop-blur-3xl py-3 md:py-4 px-6 md:px-10"
+                        : "top-[calc(1rem+env(safe-area-inset-top))] md:top-4 max-w-7xl md:rounded-3xl bg-transparent border-none py-4 px-4"
                 )}
             >
-                <div className="flex items-center pt-8 sm:pt-0">
+                <div className="flex items-center">
                     <div className="max-w-480 w-full mx-auto flex items-center justify-between">
                         {/* Logo */}
                         <Link
