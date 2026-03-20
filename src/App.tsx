@@ -9,6 +9,7 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import UploadProgressPopup from './components/UploadProgressPopup';
 import { HelmetProvider } from 'react-helmet-async';
 import BackHandler from './components/capacitor/BackHandler';
+import { supabase } from './lib/supabase';
 
 import { SplashScreen } from '@capacitor/splash-screen';
 import { StatusBar } from "@capacitor/status-bar";
@@ -46,13 +47,27 @@ function App() {
       console.log('App opened with URL:', data.url);
       
       if (data.url.includes('nobadfonts://auth')) {
+        // Extract tokens from the URL hash
+        // The URL looks like: nobadfonts://auth#access_token=...&refresh_token=...
+        const url = new URL(data.url.replace('#', '?'));
+        const accessToken = url.searchParams.get('access_token');
+        const refreshToken = url.searchParams.get('refresh_token');
+
+        if (accessToken && refreshToken) {
+          const { error } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken,
+          });
+          
+          if (error) {
+            console.error('Error setting session:', error);
+          } else {
+            console.log('Session set successfully from deep link');
+          }
+        }
+        
         // Close the in-app browser
         await Browser.close();
-        
-        // Use the URL to set the session
-        // Supabase will automatically pick up the session if we're on the right page
-        // or we can manually parse it if needed.
-        // For now, let's just ensure the browser closes.
       }
     });
 
