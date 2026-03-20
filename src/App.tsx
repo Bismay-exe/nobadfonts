@@ -90,8 +90,8 @@ function App() {
   }, []);
 
   useEffect(() => {
-    const runUpdateCheck = async () => {
-      const result = await checkForUpdate();
+    const runUpdateCheck = async (manual = false) => {
+      const result = await checkForUpdate(manual);
 
       if (result.hasUpdate && result.apkUrl) {
         setUpdateInfo({
@@ -104,7 +104,14 @@ function App() {
       }
     };
 
+    // Auto check on mount
     runUpdateCheck();
+
+    // Listen for manual check requests
+    const handleManualCheck = () => runUpdateCheck(true);
+    window.addEventListener('check-app-update', handleManualCheck);
+
+    return () => window.removeEventListener('check-app-update', handleManualCheck);
   }, []);
 
   return (
