@@ -324,8 +324,10 @@ export const Filters = React.memo(({ filters, onChange, viewMode, onViewModeChan
                                 <>
                                     <div className="w-px h-6 bg-[rgb(var(--color-background)/0.1)] mx-1"></div>
                                     <button
-                                        onClick={() => {
+                                        onClick={async () => {
                                             closeAllPanels();
+                                            await Haptics.impact({ style: ImpactStyle.Medium });
+                                            window.scrollTo({ top: 0, behavior: 'smooth' });
                                             onToggleAll();
                                         }}
                                         className="p-2 rounded-full text-[rgb(var(--color-background))] hover:text-[rgb(var(--color-background))] hover:bg-[rgb(var(--color-background)/0.1)] transition-all duration-300"
