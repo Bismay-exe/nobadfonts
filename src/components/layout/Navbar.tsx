@@ -36,6 +36,16 @@ export default function Navbar() {
             : []),
     ], [profile?.role]);
 
+    const mobileNavLinks = useMemo(() => [
+        { name: 'Fonts', path: '/fonts', icon: Type },
+        { name: 'Pairing', path: '/pairing', icon: Combine },
+        { name: 'CLI', path: '/cli', icon: Terminal, badge: 'NEW' },
+        ...(profile?.role === 'member' || profile?.role === 'admin'
+            ? [{ name: 'Members', path: '/members', icon: Users },
+            { name: 'Upload', path: '/upload', icon: Upload },]
+            : []),
+    ], [profile?.role]);
+
     return (
         <>
             <nav
@@ -224,8 +234,8 @@ export default function Navbar() {
 
             {/* Mobile Bottom Dock */}
             <div className="md:hidden fixed bottom-0 left-1/2 -translate-x-1/2 z-100">
-                <nav className="flex items-center justify-evenly w-screen py-2.5 bg-[rgb(var(--color-background)/0.6)] backdrop-blur-3xl border-t border-[rgb(var(--color-border)/0.3)] shadow-2xl">
-                    {navLinks.map((link) => {
+                <nav className="flex items-center justify-evenly w-screen px-2 py-2.5 bg-[rgb(var(--color-background)/0.6)] backdrop-blur-3xl border-t border-[rgb(var(--color-border)/0.3)] shadow-2xl">
+                    {mobileNavLinks.map((link) => {
                         const Icon = link.icon;
                         const isActive = location.pathname === link.path;
                         return (
@@ -233,23 +243,41 @@ export default function Navbar() {
                                 key={link.path}
                                 to={link.path}
                                 onClick={async () => {
-                                    await Haptics.impact({ style: ImpactStyle.Light });
+                                    await Haptics.selectionChanged()
                                 }}
                                 className={cn(
-                                    "relative flex flex-col items-center justify-center w-12 h-12 rounded-full transition-all duration-300",
+                                    "relative flex flex-col items-center justify-center h-12 px-4 rounded-full transition-all duration-300",
                                     isActive
                                         ? "text-[rgb(var(--color-foreground))]"
                                         : "text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.1)]"
                                 )}
+                                style={{ WebkitTapHighlightColor: 'transparent' }}
                             >
-                                <motion.div
-                                    whileTap={{ scale: 0.9 }}
-                                    className="flex flex-col items-center justify-center"
-                                >
-                                    <Icon size={20} className={cn("transition-transform duration-300", isActive && "scale-110")} />
-                                    <div className={cn(`uppercase text-xs font-bricolage-grotesque pt-1 ${profile?.role === 'admin' ? 'hidden' : 'block'}`)}>{link.name}</div>
-                                </motion.div>
-                                <div className={cn("absolute inset-0 bg-[rgb(var(--color-foreground)/0.3)] blur-md rounded-full -z-10 opacity-0 group-hover:opacity-100 transition-opacity", isActive && "opacity-100")} />
+                                {/* Animated Background Pill */}
+                                {isActive && (
+                                    <motion.div
+                                        layoutId="active-nav-pill"
+                                        className="absolute inset-0 bg-white/10 rounded-full"
+                                        transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+                                    />
+                                )}
+
+                                {/* Icon & Label */}
+                                <span className="relative z-10 flex items-center gap-2">
+                                    <Icon size={20} strokeWidth={isActive ? 3.5 : 2} />
+
+                                    {isActive && (
+                                        <motion.span
+                                            initial={{ opacity: 0, width: 0 }}
+                                            animate={{ opacity: 1, width: 'auto' }}
+                                            exit={{ opacity: 0, width: 0 }}
+                                            className="font-black text-md overflow-hidden whitespace-nowrap"
+                                        >
+                                            {link.name}
+                                        </motion.span>
+                                    )}
+                                </span>
+
                                 {link.badge && (
                                     <span className="absolute top-1 right-1 flex h-2 w-2">
                                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[rgb(var(--color-success)/0.75)]"></span>
@@ -259,31 +287,6 @@ export default function Navbar() {
                             </Link>
                         );
                     })}
-
-                    {/* Mobile Upload Button */}
-                    {(profile?.role === 'member' || profile?.role === 'admin') && (
-                        <Link
-                            to="/upload"
-                            onClick={async () => {
-                                await Haptics.impact({ style: ImpactStyle.Light });
-                            }}
-                            className={cn(
-                                "relative flex flex-col items-center justify-center w-12 h-12 rounded-full transition-all duration-300",
-                                location.pathname === '/upload'
-                                    ? "text-[rgb(var(--color-foreground))]"
-                                    : "text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.1)]"
-                            )}
-                        >
-                            <motion.div
-                                whileTap={{ scale: 0.9 }}
-                                className="flex flex-col items-center justify-center"
-                            >
-                                <Upload size={18} className={cn("transition-transform duration-300", location.pathname === '/upload' && "scale-110")} />
-                                <div className={cn("uppercase text-[10px] font-bricolage-grotesque pt-1")}>Upload</div>
-                            </motion.div>
-                            <div className={cn("absolute inset-0 bg-[rgb(var(--color-background)/0.3)] blur-xl rounded-full -z-10 opacity-0 group-hover:opacity-100 transition-opacity", location.pathname === '/upload' && "opacity-100")} />
-                        </Link>
-                    )}
                 </nav>
             </div>
         </>
