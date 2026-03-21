@@ -1,9 +1,5 @@
 import { useNavigate, useParams, Link } from 'react-router-dom';
-import { Download, Heart, Share2, Image as ImageIcon, Edit2, Loader2, Layout, Type, Trash2, FileType } from 'lucide-react';
-
-
-
-
+import { Download, Heart, Share2, Image as ImageIcon, Edit2, Loader2, Layout, Type, Trash2, FileType, User, Terminal, Sun, Moon, Coffee, Sparkles, Cherry, Gem, Leaf, Flame, Cloud, SunDim, Waves, Anchor, Building, Joystick, ShoppingBag, Droplets, ArrowLeft } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { toPng } from 'html-to-image';
 import SocialShareCard from '../components/fonts/SocialShareCard';
@@ -11,6 +7,7 @@ import ShareModal from '../components/fonts/ShareModal';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import { useFont } from '../hooks/useFont';
+import { useTheme } from '../contexts/ThemeContext';
 import FontTester from '../components/fonts/FontTester';
 import { PreviewAccordion } from '../components/fonts/PreviewAccordion';
 import FontCard from '../components/fonts/FontCard';
@@ -30,6 +27,7 @@ export default function FontDetails() {
 
     const { id } = useParams();
     const { user, profile } = useAuth();
+    const { theme, toggleTheme } = useTheme();
     const navigate = useNavigate();
     const { font, loading, error, isFavorited, setIsFavorited } = useFont(id);
     const [isFontLoaded, setIsFontLoaded] = useState(false);
@@ -341,12 +339,10 @@ export default function FontDetails() {
     // Scroll Detection
     const [isScrolled, setIsScrolled] = useState(false);
     useEffect(() => {
-        const handleScroll = () => setIsScrolled(window.scrollY > 500);
+        const handleScroll = () => setIsScrolled(window.scrollY > 5);
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
-
-
 
 
     if (loading) return <div className="container mx-auto px-4 py-8">Loading...</div>;
@@ -372,6 +368,91 @@ export default function FontDetails() {
                 url={`/fonts/${id}`}
                 keywords={font.tags || []}
             />
+
+            <nav
+                className={cn(
+                    "fixed top-0 w-full left-1/2 -translate-x-1/2 z-50 border-[rgb(var(--color-border)/0.1)] transition-all duration-300",
+                    isScrolled
+                        ? "max-w-full md:rounded-none bg-[rgb(var(--color-background)/0.5)] border-b backdrop-blur-3xl py-2 md:py-4 px-6 md:px-10"
+                        : "md:top-4 max-w-full md:rounded-3xl bg-transparent border-none py-2 px-4"
+                )}
+            >
+                <div className="flex items-center pt-[env(safe-area-inset-top)] md:pt-0">
+                    <div className="max-w-480 w-full mx-auto flex items-center justify-between">
+                        {/* Logo */}
+                        <Link
+                            to="/"
+                            onClick={async () => {
+                                await Haptics.impact({ style: ImpactStyle.Light });
+                            }}
+                            className="flex items-center gap-2 group"
+                        >
+                            <ArrowLeft className='h-6 w-6' strokeWidth={2.5} />
+                            <span className=
+                                "text-[rgb(var(--color-foreground))] font-bold"
+                            >
+                                Back
+                            </span>
+                        </Link>
+
+                        {/* Right Side Actions */}
+                        <div className="flex items-center gap-3">
+
+                            {/* Theme Switcher */}
+                            <motion.button
+                                whileTap={{ scale: 0.95 }}
+                                onClick={async () => {
+                                    await Haptics.impact({ style: ImpactStyle.Light });
+                                    toggleTheme();
+                                }}
+                                className="h-10 w-10 flex items-center justify-center rounded-full bg-[rgb(var(--color-foreground)/0.05)] border border-[rgb(var(--color-border)/0.2)] text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.1)] transition-all cursor-pointer group"
+                                title={`Switch Theme (Current: ${theme.charAt(0).toUpperCase() + theme.slice(1)})`}
+                            >
+                                <div className="transition-transform duration-300 group-hover:rotate-12 group-active:scale-90">
+                                    {theme === 'light' && <Sun size={18} />}
+                                    {theme === 'dark' && <Moon size={18} />}
+                                    {theme === 'sepia' && <Coffee size={18} />}
+                                    {theme === 'vibrant' && <Sparkles size={18} />}
+                                    {theme === 'candy' && <Cherry size={18} />}
+                                    {theme === 'soft-blue' && <Cloud size={18} />}
+                                    {theme === 'luxury' && <Gem size={18} />}
+                                    {theme === 'terminal' && <Terminal size={18} />}
+                                    {theme === 'nature' && <Leaf size={18} />}
+                                    {theme === 'neo-red' && <Flame size={18} />}
+                                    {theme === 'neo-blue' && <Droplets size={18} />}
+                                    {theme === 'neo-yellow' && <SunDim size={18} />}
+                                    {theme === 'uv' && <Waves size={18} />}
+                                    {theme === 'rust' && <Anchor size={18} />}
+                                    {theme === 'concrete' && <Building size={18} />}
+                                    {theme === 'rgb-clash' && <Joystick size={18} />}
+                                    {theme === 'ikea-chaos' && <ShoppingBag size={18} />}
+                                </div>
+                            </motion.button>
+
+                            {user ? (
+                                <Link to="/profile"
+                                    onClick={async () => {
+                                        await Haptics.impact({ style: ImpactStyle.Light });
+                                    }}
+                                    className="h-10 w-10 rounded-full bg-[rgb(var(--color-foreground)/0.1)] border border-[rgb(var(--color-border)/0.2)] flex items-center justify-center text-[rgb(var(--color-foreground))] overflow-hidden hover:bg-[rgb(var(--color-foreground)/0.2)] hover:scale-105 transition-transform">
+                                    {profile?.avatar_url ? (
+                                        <img src={profile.avatar_url} alt="Profile" className="h-full w-full object-cover" />
+                                    ) : (
+                                        <User size={18} />
+                                    )}
+                                </Link>
+                            ) : (
+                                <Link
+                                    to="/auth"
+                                    className="bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] px-5 py-2 rounded-full font-bold text-sm hover:bg-[rgb(var(--color-muted-foreground))] transition-colors"
+                                >
+                                    Login
+                                </Link>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            </nav>
 
             {/* Sticky Header */}
             <motion.div
@@ -404,7 +485,7 @@ export default function FontDetails() {
                 </div>
             </motion.div>
 
-            <div className="max-w-480 mx-auto pt-0 sm:pt-8 space-y-6 md:space-y-12">
+            <div className="max-w-480 mx-auto pt-16 md:pt-24 px-4 md:px-8 space-y-6 md:space-y-12">
 
                 {/* Font Info Section */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 mt-4">

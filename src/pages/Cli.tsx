@@ -1,7 +1,8 @@
 
-import { Terminal, Copy, Check, Download, Zap, FileJson } from 'lucide-react';
+import { Terminal, Check, Download, Zap, FileJson } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { CustomClipboard } from '../components/ui/CustomIcons';
 
 export default function Cli() {
     const [copied, setCopied] = useState(false);
@@ -45,7 +46,7 @@ export default function Cli() {
                             onClick={() => copyCommand(command)}
                             className="p-2 bg-[rgb(var(--color-primary))] text-[rgb(var(--color-background))] rounded-lg hover:bg-[rgb(var(--color-highlight))] transition-colors font-bold flex items-center gap-2 shrink-0"
                         >
-                            {copied ? <Check size={20} /> : <Copy size={20} />}
+                            {copied ? <Check className='h-5 w-5' strokeWidth={3} /> : <CustomClipboard className='h-5 w-5' />}
                             <span className="md:hidden font-mono uppercase tracking-widest text-xs">Copy</span>
                         </button>
                     </div>

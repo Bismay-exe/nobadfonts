@@ -1,16 +1,17 @@
 "use client";
 
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useState, useEffect, useMemo } from 'react';
 import { cn } from '../../lib/utils';
-import { Type, Combine, Terminal, Users, Upload, User, Shield, Plus, Sun, Moon, Coffee, Sparkles, Cherry, Gem, Leaf, Flame, Cloud, SunDim, Waves, Anchor, Building, Joystick, ShoppingBag, Droplets } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Type, Combine, Terminal, Users, User, Shield, Plus, Sun, Moon, Coffee, Sparkles, Cherry, Gem, Leaf, Flame, Cloud, SunDim, Waves, Anchor, Building, Joystick, ShoppingBag, Droplets } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../../contexts/ThemeContext';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { useUpdate } from '../../contexts/UpdateContext';
 import { Download } from 'lucide-react';
 import Logo from '/logo/logo.png'; // Assuming white version exists or we filter it
+import { CustomSerifA, CustomTerminal, CustomUpload, CustomUsers } from '../ui/CustomIcons';
 
 export default function Navbar() {
     const { user, profile } = useAuth();
@@ -18,6 +19,14 @@ export default function Navbar() {
     const { hasUpdate, isDownloading, progress, openModal, closeModal, isModalOpen } = useUpdate();
     const [isScrolled, setIsScrolled] = useState(false);
     const location = useLocation();
+    const navigate = useNavigate();
+    
+    // Local state for instantaneous UI updates so animations don't lag
+    const [activeTab, setActiveTab] = useState(location.pathname);
+
+    useEffect(() => {
+        setActiveTab(location.pathname);
+    }, [location.pathname]);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -37,13 +46,11 @@ export default function Navbar() {
     ], [profile?.role]);
 
     const mobileNavLinks = useMemo(() => [
-        { name: 'Fonts', path: '/fonts', icon: Type },
+        { name: 'Fonts', path: '/fonts', icon: CustomSerifA },
         { name: 'Pairing', path: '/pairing', icon: Combine },
-        { name: 'CLI', path: '/cli', icon: Terminal, badge: 'NEW' },
-        ...(profile?.role === 'member' || profile?.role === 'admin'
-            ? [{ name: 'Members', path: '/members', icon: Users },
-            { name: 'Upload', path: '/upload', icon: Upload },]
-            : []),
+        { name: 'CLI', path: '/cli', icon: CustomTerminal, badge: 'NEW' },
+        { name: 'Members', path: '/members', icon: CustomUsers },
+        { name: 'Upload', path: '/upload', icon: CustomUpload },
     ], [profile?.role]);
 
     return (
@@ -234,57 +241,65 @@ export default function Navbar() {
 
             {/* Mobile Bottom Dock */}
             <div className="md:hidden fixed bottom-0 left-1/2 -translate-x-1/2 z-100">
-                <nav className="flex items-center justify-evenly w-screen px-2 py-2.5 bg-[rgb(var(--color-background)/0.6)] backdrop-blur-3xl border-t border-[rgb(var(--color-border)/0.3)] shadow-2xl">
+                <nav className="flex items-center justify-evenly w-screen px-2 py-2.5 bg-[rgb(var(--color-background)/0.6)] backdrop-blur-3xl border-t border-[rgb(var(--color-border)/0.3)]">
                     {mobileNavLinks.map((link) => {
                         const Icon = link.icon;
-                        const isActive = location.pathname === link.path;
+                        const isActive = activeTab === link.path;
+
                         return (
-                            <Link
+                            <motion.button
                                 key={link.path}
-                                to={link.path}
-                                onClick={async () => {
-                                    await Haptics.selectionChanged()
+                                layout // Smoothly adjusts the surrounding buttons when width changes
+                                onClick={async (e) => {
+                                    e.preventDefault();
+                                    if (activeTab === link.path) return;
+                                    
+                                    setActiveTab(link.path); // Instant UI feedback
+                                    await Haptics.selectionChanged();
+                                    
+                                    // Let the button layout animation finish (300ms) before hitting the React Router tree
+                                    setTimeout(() => {
+                                        navigate(link.path);
+                                    }, 300);
                                 }}
                                 className={cn(
-                                    "relative flex flex-col items-center justify-center h-12 px-4 rounded-full transition-all duration-300",
+                                    "relative flex items-center justify-center max-h-12 py-2 rounded-full transition-all duration-300 ease-in-out",
                                     isActive
-                                        ? "text-[rgb(var(--color-foreground))]"
-                                        : "text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.1)]"
+                                        ? "bg-[rgb(var(--color-foreground)/0.8)] text-[rgb(var(--color-background))] px-4 shadow-sm"
+                                        : "bg-transparent text-[rgb(var(--color-foreground))] hover:text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.1)] px-3"
                                 )}
                                 style={{ WebkitTapHighlightColor: 'transparent' }}
                             >
-                                {/* Animated Background Pill */}
-                                {isActive && (
-                                    <motion.div
-                                        layoutId="active-nav-pill"
-                                        className="absolute inset-0 bg-white/10 rounded-full"
-                                        transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-                                    />
-                                )}
+                                {/* Icon */}
+                                <Icon className={cn(
+                                    "shrink-0 w-4.5 h-4.5",
+                                    isActive
+                                        ? "fill-[rgb(var(--color-background))]"
+                                        : "text-[rgb(var(--color-foreground))]" 
+                                )}/>
 
-                                {/* Icon & Label */}
-                                <span className="relative z-10 flex items-center gap-2">
-                                    <Icon size={20} strokeWidth={isActive ? 3.5 : 2} />
-
+                                {/* Animating Text */}
+                                <AnimatePresence initial={false}>
                                     {isActive && (
                                         <motion.span
-                                            initial={{ opacity: 0, width: 0 }}
-                                            animate={{ opacity: 1, width: 'auto' }}
-                                            exit={{ opacity: 0, width: 0 }}
-                                            className="font-black text-md overflow-hidden whitespace-nowrap"
+                                            initial={{ width: 0, opacity: 0, marginLeft: 0 }}
+                                            animate={{ width: 'auto', opacity: 1, marginLeft: 8 }}
+                                            exit={{ width: 0, opacity: 0, marginLeft: 0 }}
+                                            transition={{ type: 'spring', bounce: 0, duration: 0.35 }}
+                                            className="font-boldx font-rayton-brink text-[28px] mt-1 overflow-hidden whitespace-nowrap"
                                         >
                                             {link.name}
                                         </motion.span>
                                     )}
-                                </span>
+                                </AnimatePresence>
 
                                 {link.badge && (
-                                    <span className="absolute top-1 right-1 flex h-2 w-2">
+                                    <span className="absolute top-0 right-0 flex h-2.5 w-2.5 transform translate-x-1/2 -translate-y-1/2">
                                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[rgb(var(--color-success)/0.75)]"></span>
-                                        <span className="relative inline-flex rounded-full h-2 w-2 bg-[rgb(var(--color-success))]"></span>
+                                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[rgb(var(--color-success))]"></span>
                                     </span>
                                 )}
-                            </Link>
+                            </motion.button>
                         );
                     })}
                 </nav>

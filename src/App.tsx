@@ -86,12 +86,13 @@ function AppContent() {
         </div>
       }>
         <Routes location={location} key={location.pathname}>
+          <Route path="/auth" element={<Auth />} />
+          <Route path="/fonts/:id" element={<FontDetails />} />
           <Route path="/" element={<Layout />}>
             <Route index element={<Home />} />
             <Route path="fonts" element={<FontsCatalog />} />
             <Route path="fonts/:id" element={<FontDetails />} />
             <Route path="pairing" element={<FontPairing />} />
-            <Route path="auth" element={<Auth />} />
             <Route path="upload" element={<Upload />} />
             <Route path="profile" element={<Profile />} />
             <Route path="members" element={<Members />} />

@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { Upload as UploadIcon, X, Image as ImageIcon, Link as LinkIcon, Lock } from 'lucide-react';
+import { Upload as UploadIcon, X, Image as ImageIcon, Link as LinkIcon } from 'lucide-react';
 import { useUpload } from '../contexts/UploadContext';
 import { FixWoff2Scanner } from '../components/admin/FixWoff2Scanner';
 import SEO from '../components/shared/SEO';
@@ -16,6 +16,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "../components/ui/select";
+import { CustomLock } from '../components/ui/CustomIcons';
 
 const VARIANT_NAMES = [
     "Thin", "Extra Light", "Light", "Regular", "Medium", "Semi Bold", "Bold", "Extra Bold", "Black",
@@ -427,11 +428,11 @@ const Upload = () => {
             <div className="flex flex-col items-center justify-center w-full md:h-[86vh] max-w-480 bg-[rgb(var(--color-background))] rounded-4xl text-center space-y-6 z-90">
                 <div className="bg-[rgb(var(--color-destructive)/0.9)] p-10 rounded-full mt-40 md:mt-0">
                     <div className="text-6xl">
-                        <Lock size={40} strokeWidth={3.5} />
+                        <CustomLock className='h-24 w-24' />
                     </div>
                 </div>
                 <h1 className="text-2xl md:text-4xl font-black uppercase">Access Restricted</h1>
-                <p className="text-md md:text-xl text-[rgb(var(--color-muted-foreground))] max-w-lg">
+                <p className="text-md md:text-xl text-[rgb(var(--color-muted-foreground))] max-w-sm">
                     Uploading fonts is currently restricted to approved <strong>Members</strong> and <strong>Admins</strong>.
                 </p>
                 <div className="flex gap-4">

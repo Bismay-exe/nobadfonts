@@ -9,6 +9,7 @@ import { ArrowLeft, Image as Globe, Twitter, Instagram, Linkedin, Coffee, Palett
 import { Masonry } from 'masonic';
 import { useWindowSize } from '../hooks/useWindowSize';
 import Filters from '../components/fonts/Filters';
+import { CustomLock } from '../components/ui/CustomIcons';
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
 type Font = Database['public']['Tables']['fonts']['Row'];
@@ -154,21 +155,19 @@ export default function MemberDetails() {
     // Role Check
     if (!currentUserProfile || (currentUserProfile.role !== 'member' && currentUserProfile.role !== 'admin')) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-[84.4vh]  rounded-4xl text-center p-8 space-y-6">
-                <div className="bg-[rgb(var(--color-destructive)/0.1)] p-6 rounded-full">
-                    <div className="text-6xl text-[rgb(var(--color-destructive))]">🔒</div>
+            <div className="flex flex-col items-center justify-center w-full md:h-[86vh] max-w-480 bg-[rgb(var(--color-background))] rounded-4xl text-center space-y-6 z-90">
+                <div className="bg-[rgb(var(--color-destructive)/0.9)] p-10 rounded-full mt-40 md:mt-0">
+                    <div className="text-6xl">
+                        <CustomLock className='h-24 w-24' />
+                    </div>
                 </div>
-                <h1 className="text-4xl font-black uppercase text-[rgb(var(--color-foreground))]">Access Restricted</h1>
-                <p className="text-xl text-[rgb(var(--color-muted-foreground))] max-w-lg">
+                <h1 className="text-2xl md:text-4xl font-black uppercase">Access Restricted</h1>
+                <p className="text-md md:text-xl text-[rgb(var(--color-muted-foreground))] max-w-sm">
                     Viewing members is currently restricted to approved <strong>Members</strong> and <strong>Admins</strong>.
                 </p>
                 <div className="flex gap-4">
-                    <button onClick={() => navigate('/')} className="px-6 py-3 bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] rounded-xl font-bold hover:scale-105 transition-transform">
-                        Go Home
-                    </button>
-                    {/* Placeholder for future "Request Access" feature */}
-                    <button disabled className="px-6 py-3 border-2 border-[rgb(var(--color-border))] text-[rgb(var(--color-foreground))] rounded-xl font-bold opacity-50 cursor-not-allowed">
-                        Request Access
+                    <button onClick={() => navigate('/fonts')} className="px-6 py-3 bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] rounded-2xl font-bold hover:scale-105 transition-transform">
+                        Explore Fonts
                     </button>
                 </div>
             </div>

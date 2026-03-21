@@ -11,7 +11,7 @@ const Footer: React.FC = memo(() => {
     }, []);
 
     return (
-        <footer className="hidden sm:block bg-[rgb(var(--color-background))] text-[rgb(var(--color-muted-foreground))] pb-20 font-sans selection:bg-[rgb(var(--color-foreground))] selection:text-[rgb(var(--color-background))] z-50">
+        <footer className="hidden sm:block bg-[rgb(var(--color-background))] text-[rgb(var(--color-muted-foreground))] pb-20 font-sans selection:bg-[rgb(var(--color-foreground))] selection:text-[rgb(var(--color-background))]">
             <div className="max-w-480 mx-auto px-3">
 
                 <div className=''>
