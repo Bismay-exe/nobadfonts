@@ -486,7 +486,7 @@ export default function FontDetails() {
                 {/* Tags & Metadata */}
                 <div className="flex flex-wrap gap-2 md:gap-4 justify-center">
                     {font.tags?.map(tag => (
-                        <Link key={tag} to={`/fonts?categories=${tag}`} className="px-4 py-1.5 rounded-full border border-[rgb(var(--color-foreground)/0.1)] text-sm text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.05)] transition-colors uppercase tracking-wider">
+                        <Link key={tag} to={`/fonts?categories=${tag}`} className="px-4 py-1.5 rounded-full border border-[rgb(var(--color-foreground)/0.1)] text-sm text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-background))] hover:bg-[rgb(var(--color-foreground)/0.9)] transition-colors uppercase tracking-wider">
                             {tag}
                         </Link>
                     ))}
