@@ -1,5 +1,4 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
-import opentype from 'opentype.js';
 
 interface GlyphMapProps {
     fontFamily: string;
@@ -56,20 +55,33 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
     const [isScanning, setIsScanning] = useState(false);
 
     // OpenType Font Object
-    const [fontObject, setFontObject] = useState<opentype.Font | null>(null);
+    const [fontObject, setFontObject] = useState<any | null>(null);
 
     // Load OpenType Font
     useEffect(() => {
         const targetUrl = activeVariant ? activeVariant.url : fontUrl;
         if (!targetUrl) return;
 
-        opentype.load(targetUrl, (err, font) => {
-            if (err) {
-                console.error('Font loading error:', err);
-            } else if (font) {
-                setFontObject(font);
+        let isMounted = true;
+
+        const loadFont = async () => {
+            try {
+                const opentype = await import('opentype.js');
+                opentype.load(targetUrl, (err, font) => {
+                    if (err) {
+                        console.error('Font loading error:', err);
+                    } else if (font && isMounted) {
+                        setFontObject(font);
+                    }
+                });
+            } catch (err) {
+                console.error('Failed to load opentype.js:', err);
             }
-        });
+        };
+
+        loadFont();
+
+        return () => { isMounted = false; };
     }, [fontUrl, activeVariant]);
 
     // Basic Set
@@ -222,7 +234,7 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
                 let startX = 0;
                 let startY = 0;
 
-                glyph.path.commands.forEach(cmd => {
+                glyph.path.commands.forEach((cmd: any) => {
                     ctx.beginPath();
                     if (cmd.type === 'M') {
                         startX = cmd.x * scale;

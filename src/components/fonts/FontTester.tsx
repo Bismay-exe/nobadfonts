@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { AlignLeft, AlignCenter, AlignRight, LayoutTemplate, BoxSelect, ChevronDown } from 'lucide-react';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import ContextPreview from './ContextPreview';
@@ -56,12 +56,12 @@ const getVariantWeightAndStyle = (name: string) => {
 export default function FontTester({ font }: FontTesterProps) {
     const [text, setText] = useState(TEXT_PRESETS.sentence);
 
-    const autoResize = (element: HTMLTextAreaElement | null) => {
+    const autoResize = useCallback((element: HTMLTextAreaElement | null) => {
         if (element) {
             element.style.height = 'auto';
             element.style.height = `${element.scrollHeight}px`;
         }
-    };
+    }, []);
 
     // Typography Settings
     const [fontSize, setFontSize] = useState(48);
@@ -154,9 +154,9 @@ export default function FontTester({ font }: FontTesterProps) {
     }, [font, fontName, selectedVariant]);
 
     // Construct Font Feature Settings string
-    const fontFeatureSettings = Object.entries(features)
+    const fontFeatureSettings = useMemo(() => Object.entries(features)
         .map(([key, enabled]) => `"${key}" ${enabled ? 1 : 0}`)
-        .join(', ');
+        .join(', '), [features]);
 
     // Auto-resize on changes
     useEffect(() => {
@@ -170,7 +170,7 @@ export default function FontTester({ font }: FontTesterProps) {
         return () => clearTimeout(timeout);
     }, [text, fontSize, lineHeight, letterSpacing, features]);
 
-    const sortedVariants = [...(font.font_variants || [])].sort((a, b) => {
+    const sortedVariants = useMemo(() => [...(font.font_variants || [])].sort((a, b) => {
         const aProps = getVariantWeightAndStyle(a.variant_name);
         const bProps = getVariantWeightAndStyle(b.variant_name);
 
@@ -181,7 +181,7 @@ export default function FontTester({ font }: FontTesterProps) {
             return aProps.isItalic ? 1 : -1;
         }
         return a.variant_name.localeCompare(b.variant_name);
-    });
+    }), [font.font_variants]);
 
     return (
         <div className="overflow-hidden flex flex-col h-full shadow-lg">

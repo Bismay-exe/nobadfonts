@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { X } from 'lucide-react';
 import { useViewMode } from '../../hooks/useViewMode';
 import Filters from '../fonts/Filters';
@@ -90,8 +90,13 @@ export default function FontPicker({ isOpen, onClose, onSelect, activeSection }:
                     1;
 
     // Recreate positioner and clear cache whenever the search results change
-    const searchKey = fonts.map(f => f.id).join(',');
-    const positioner = usePositioner({ width: actualWidth || 800, columnCount: columns, columnGutter: 24, rowGutter: 24 }, [columns, actualWidth, searchKey]);
+    const searchKey = useMemo(() => fonts.map(f => f.id).join(','), [fonts]);
+    const positioner = usePositioner({ 
+        width: actualWidth || 800, 
+        columnCount: columns, 
+        columnGutter: 24, 
+        rowGutter: 24 
+    }, [columns, actualWidth, searchKey]);
     const resizeObserver = useResizeObserver(positioner);
 
     const [scrollTop, setScrollTop] = useState(0);

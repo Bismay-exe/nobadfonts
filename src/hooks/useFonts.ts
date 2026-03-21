@@ -10,17 +10,14 @@ export function useFonts({ query, categories, sortBy = 'trending' }: FontFilterP
   const [hasMore, setHasMore] = useState(true);
   const [offset, setOffset] = useState(0);
 
-  const fetchFonts = useCallback(async (isLoadMore = false) => {
+  const fetchFonts = useCallback(async (isLoadMore = false, currentOffset = 0) => {
     if (isLoadMore) {
       setLoadingMore(true);
     } else {
       setLoading(true);
-      setOffset(0);
       setHasMore(true);
     }
     setError(null);
-
-    const currentOffset = isLoadMore ? offset : 0;
 
     try {
       const rpcParams = {
@@ -66,7 +63,7 @@ export function useFonts({ query, categories, sortBy = 'trending' }: FontFilterP
       }
 
       setHasMore(fontsWithVariants.length === initialLimit);
-      setOffset(prev => prev + fontsWithVariants.length);
+      setOffset(currentOffset + fontsWithVariants.length);
 
     } catch (err: any) {
       console.error('Error fetching fonts:', err);
@@ -78,22 +75,22 @@ export function useFonts({ query, categories, sortBy = 'trending' }: FontFilterP
         setLoading(false);
       }
     }
-  }, [query, categories, sortBy, initialLimit, offset]);
+  }, [query, categories, sortBy, initialLimit]);
 
   useEffect(() => {
     // Debounce the fetch if query is present to avoid too many requests
     const timeoutId = setTimeout(() => {
-      fetchFonts(false);
+      fetchFonts(false, 0);
     }, query ? 300 : 0);
 
     return () => clearTimeout(timeoutId);
-  }, [query, categories, sortBy]); // Intentionally omitting fetchFonts to prevent loops on offset change
+  }, [fetchFonts, query]);
 
   const loadMore = useCallback(() => {
     if (!loadingMore && hasMore) {
-      fetchFonts(true);
+      fetchFonts(true, offset);
     }
-  }, [loadingMore, hasMore, fetchFonts]);
+  }, [loadingMore, hasMore, fetchFonts, offset]);
 
   return { fonts, loading, loadingMore, error, hasMore, loadMore };
 }

@@ -1,9 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, Suspense } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import Layout from './components/layout/Layout';
-import Home from './pages/Home';
 import { ScrollRestoration } from './components/layout/ScrollRestoration';
-import { AuthProvider } from './contexts/AuthContext';
 import { UploadProvider } from './contexts/UploadContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import UploadProgressPopup from './components/UploadProgressPopup';
@@ -29,6 +27,7 @@ const AdminDashboard = React.lazy(() => import('./pages/AdminDashboard'));
 const FontPairing = React.lazy(() => import('./pages/FontPairing'));
 const Cli = React.lazy(() => import('./pages/Cli'));
 const DesignerFonts = React.lazy(() => import('./pages/DesignerFonts'));
+const Home = React.lazy(() => import('./pages/Home'));
 
 function AppContent() {
   const location = useLocation();
@@ -81,22 +80,28 @@ function AppContent() {
       <ScrollRestoration />
       <UploadProgressPopup />
       <BackHandler />
-      <Routes location={location} key={location.pathname}>
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Home />} />
-          <Route path="fonts" element={<FontsCatalog />} />
-          <Route path="fonts/:id" element={<FontDetails />} />
-          <Route path="pairing" element={<FontPairing />} />
-          <Route path="auth" element={<Auth />} />
-          <Route path="upload" element={<Upload />} />
-          <Route path="profile" element={<Profile />} />
-          <Route path="members" element={<Members />} />
-          <Route path="members/:id" element={<MemberDetails />} />
-          <Route path="designers/:designerName" element={<DesignerFonts />} />
-          <Route path="admin" element={<AdminDashboard />} />
-          <Route path="cli" element={<Cli />} />
-        </Route>
-      </Routes>
+      <Suspense fallback={
+        <div className="fixed inset-0 flex items-center justify-center bg-[rgb(var(--color-background))] z-50">
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-[rgb(var(--color-foreground)/0.1)] border-t-[rgb(var(--color-foreground))]"></div>
+        </div>
+      }>
+        <Routes location={location} key={location.pathname}>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Home />} />
+            <Route path="fonts" element={<FontsCatalog />} />
+            <Route path="fonts/:id" element={<FontDetails />} />
+            <Route path="pairing" element={<FontPairing />} />
+            <Route path="auth" element={<Auth />} />
+            <Route path="upload" element={<Upload />} />
+            <Route path="profile" element={<Profile />} />
+            <Route path="members" element={<Members />} />
+            <Route path="members/:id" element={<MemberDetails />} />
+            <Route path="designers/:designerName" element={<DesignerFonts />} />
+            <Route path="admin" element={<AdminDashboard />} />
+            <Route path="cli" element={<Cli />} />
+          </Route>
+        </Routes>
+      </Suspense>
       <UpdateModal />
     </>
   );
@@ -106,13 +111,11 @@ function App() {
   return (
     <HelmetProvider>
       <ThemeProvider>
-        <AuthProvider>
-          <UploadProvider>
-            <UpdateProvider>
-              <AppContent />
-            </UpdateProvider>
-          </UploadProvider>
-        </AuthProvider>
+        <UploadProvider>
+          <UpdateProvider>
+            <AppContent />
+          </UpdateProvider>
+        </UploadProvider>
       </ThemeProvider>
     </HelmetProvider>
   );

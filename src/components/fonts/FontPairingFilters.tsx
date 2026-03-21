@@ -1,6 +1,6 @@
 import { Search, Type, Image } from 'lucide-react';
 import type { FontFilterParams } from '../../types/font';
-import { useState } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 
 interface FiltersProps {
     filters: FontFilterParams;
@@ -106,14 +106,14 @@ const SORT_OPTIONS = [
 ];
 
 export default function FontPairingFilters({ filters, onChange, viewMode, onViewModeChange }: FiltersProps) {
-    const handleChange = (key: keyof FontFilterParams, value: any) => {
+    const handleChange = useCallback((key: keyof FontFilterParams, value: any) => {
         onChange({ ...filters, [key]: value });
-    };
+    }, [filters, onChange]);
 
     const [isSortOpen, setIsSortOpen] = useState(false);
 
     // Find current label
-    const currentSortLabel = SORT_OPTIONS.find(opt => opt.id === (filters.sortBy || 'trending'))?.label || 'Trending';
+    const currentSortLabel = useMemo(() => SORT_OPTIONS.find(opt => opt.id === (filters.sortBy || 'trending'))?.label || 'Trending', [filters.sortBy]);
 
     return (
         <div className="gap-8 sticky top-24 flex flex-col">

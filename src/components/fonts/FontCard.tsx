@@ -1,7 +1,7 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { ArrowUpRight, Heart } from 'lucide-react';
 import type { Font } from '../../types/font';
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import { motion } from 'framer-motion';
@@ -20,7 +20,9 @@ interface FontCardProps {
     bulkToggleVersion?: number;
 }
 
-const AutoSizingText = ({
+const measurementCanvas = typeof document !== 'undefined' ? document.createElement('canvas') : null;
+
+const AutoSizingText = React.memo(({
     text,
     fontId,
     isLoaded,
@@ -32,19 +34,12 @@ const AutoSizingText = ({
 
     const containerRef = useRef<HTMLDivElement>(null)
     const textRef = useRef<HTMLDivElement>(null)
-    const canvasRef = useRef<HTMLCanvasElement | null>(null)
-
-    if (!canvasRef.current && typeof document !== "undefined") {
-        canvasRef.current = document.createElement("canvas")
-    }
 
     const calculateFontSize = useCallback(() => {
-
         const container = containerRef.current
         const textEl = textRef.current
-        const canvas = canvasRef.current
 
-        if (!container || !textEl || !canvas || !isLoaded) return
+        if (!container || !textEl || !measurementCanvas || !isLoaded) return
 
         const rect = container.getBoundingClientRect()
 
@@ -53,7 +48,7 @@ const AutoSizingText = ({
 
         if (width <= 0 || height <= 0) return
 
-        const ctx = canvas.getContext("2d")
+        const ctx = measurementCanvas.getContext("2d")
         if (!ctx) return
 
         const base = 100
@@ -83,6 +78,16 @@ const AutoSizingText = ({
         calculateFontSize()
     }, [calculateFontSize])
 
+    useEffect(() => {
+        const resizeObserver = new ResizeObserver(() => {
+            calculateFontSize()
+        })
+        if (containerRef.current) {
+            resizeObserver.observe(containerRef.current)
+        }
+        return () => resizeObserver.disconnect()
+    }, [calculateFontSize])
+
 
     return (
         <div ref={containerRef} className="w-full relative flex items-center justify-center transition-all duration-300 px-5 pt-8 pb-6 min-h-50">
@@ -100,7 +105,7 @@ const AutoSizingText = ({
             </div>
         </div>
     );
-};
+});
 
 const loadedFontsCache = new Set<string>();
 
@@ -134,55 +139,55 @@ function FontCard({ font, viewMode = 'font', onClick, disableLink = false, isExp
     }, [font?.favorites_count]);
 
 
+    const fontSource = useMemo(() => {
+        if (!font) return null;
+        // 1. Try to find 'Regular' in variants
+        if (font.font_variants && font.font_variants.length > 0) {
+            const regular = font.font_variants.find(v => v.variant_name === 'Regular');
+            if (regular) {
+                if (regular.woff2_url) return { url: regular.woff2_url, format: 'woff2' };
+                if (regular.woff_url) return { url: regular.woff_url, format: 'woff' };
+                if (regular.ttf_url) return { url: regular.ttf_url, format: 'truetype' };
+                if (regular.otf_url) return { url: regular.otf_url, format: 'opentype' };
+            }
+        }
+        // 2. Fallback to Main Font Files
+        if (font.woff2_url) return { url: font.woff2_url, format: 'woff2' };
+        if (font.woff_url) return { url: font.woff_url, format: 'woff' };
+        if (font.ttf_url) return { url: font.ttf_url, format: 'truetype' };
+        if (font.otf_url) return { url: font.otf_url, format: 'opentype' };
+        // 3. Fallback to ANY variant
+        if (font.font_variants && font.font_variants.length > 0) {
+            const anyVariant = font.font_variants[0];
+            if (anyVariant.woff2_url) return { url: anyVariant.woff2_url, format: 'woff2' };
+            if (anyVariant.woff_url) return { url: anyVariant.woff_url, format: 'woff' };
+            if (anyVariant.ttf_url) return { url: anyVariant.ttf_url, format: 'truetype' };
+            if (anyVariant.otf_url) return { url: anyVariant.otf_url, format: 'opentype' };
+        }
+        return null;
+    }, [font]);
+
     useEffect(() => {
-        if (!font) return;
-
-        const getFontSource = () => {
-            // 1. Try to find 'Regular' in variants
-            if (font.font_variants && font.font_variants.length > 0) {
-                const regular = font.font_variants.find(v => v.variant_name === 'Regular');
-                if (regular) {
-                    if (regular.woff2_url) return { url: regular.woff2_url, format: 'woff2' };
-                    if (regular.woff_url) return { url: regular.woff_url, format: 'woff' };
-                    if (regular.ttf_url) return { url: regular.ttf_url, format: 'truetype' };
-                    if (regular.otf_url) return { url: regular.otf_url, format: 'opentype' };
-                }
-            }
-
-            // 2. Fallback to Main Font Files (Standard Behavior)
-            if (font.woff2_url) return { url: font.woff2_url, format: 'woff2' };
-            if (font.woff_url) return { url: font.woff_url, format: 'woff' };
-            if (font.ttf_url) return { url: font.ttf_url, format: 'truetype' };
-            if (font.otf_url) return { url: font.otf_url, format: 'opentype' };
-
-            // 3. Fallback to ANY variant if main is missing (Last Resort)
-            if (font.font_variants && font.font_variants.length > 0) {
-                const anyVariant = font.font_variants[0];
-                if (anyVariant.woff2_url) return { url: anyVariant.woff2_url, format: 'woff2' };
-                if (anyVariant.woff_url) return { url: anyVariant.woff_url, format: 'woff' };
-                if (anyVariant.ttf_url) return { url: anyVariant.ttf_url, format: 'truetype' };
-                if (anyVariant.otf_url) return { url: anyVariant.otf_url, format: 'opentype' };
-            }
-
-            return null;
-        };
-
-        const fontSource = getFontSource();
         if (!fontSource) return;
 
+        let isMounted = true;
         const { url, format } = fontSource;
         const fontFamily = `font-${font.id}`;
         const source = `url(${url}) format('${format}')`;
         const fontFace = new FontFace(fontFamily, source);
 
         fontFace.load().then((loadedFace) => {
+            if (!isMounted) return;
             document.fonts.add(loadedFace);
             loadedFontsCache.add(font.id);
             setIsFontLoaded(true);
         }).catch((err) => {
+            if (!isMounted) return;
             console.error(`Failed to load font ${font.name}:`, err);
         });
-    }, [font]);
+
+        return () => { isMounted = false; };
+    }, [font.id, fontSource, font.name]);
 
     if (!font) return null;
 
@@ -257,7 +262,6 @@ function FontCard({ font, viewMode = 'font', onClick, disableLink = false, isExp
         <motion.div
             initial={{ opacity: 1, scale: 1, y: 0 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            whileTap={{ scale: 0.98 }}
             transition={{ duration: 0.3 }}
             className="group relative -mb-2 sm:mb-0 bg-[rgb(var(--color-foreground)/0.05)] rounded-4xl border border-[rgb(var(--color-foreground)/0.15)] transition-colors overflow-hidden flex flex-col"
             onClick={handleCardClick}

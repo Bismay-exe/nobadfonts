@@ -1,3 +1,4 @@
+import { useCallback, useMemo } from 'react';
 import { X, Type, Palette, Layers } from 'lucide-react';
 import type { Font } from '../../types/font';
 
@@ -31,11 +32,11 @@ export default function CustomizeSidebar({
 }: CustomizeSidebarProps) {
     if (!isOpen) return null;
 
-    const variants = font?.font_variants || [];
-
-    const handleStyleChange = (key: keyof StyleState, value: number | string) => {
+    const variants = useMemo(() => font?.font_variants || [], [font?.font_variants]);
+ 
+    const handleStyleChange = useCallback((key: keyof StyleState, value: number | string) => {
         onStyleChange({ ...currentStyle, [key]: value });
-    };
+    }, [currentStyle, onStyleChange]);
 
     return (
         <>

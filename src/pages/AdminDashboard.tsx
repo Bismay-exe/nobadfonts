@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { Navigate, Link } from 'react-router-dom';
@@ -7,7 +7,9 @@ import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { Toast } from '@capacitor/toast';
 import { motion } from 'framer-motion';
 import type { Database } from '../types/database.types';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+
+import { useAnalytics } from '../hooks/useAnalytics';
+import AnalyticsSection from '../components/admin/AnalyticsSection';
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
 type FontRow = Database['public']['Tables']['fonts']['Row'];
@@ -25,13 +27,14 @@ export default function AdminDashboard() {
     // State for Files/Storage
     const [allFonts, setAllFonts] = useState<FontRow[]>([]);
 
-    // State for Analytics
-    const [downloadStats, setDownloadStats] = useState<{ date: string, count: number }[]>([]);
-    const [topDownloadedFonts, setTopDownloadedFonts] = useState<{ name: string, count: number }[]>([]);
-
-    // State for Favorites Analytics
-    const [favoritesStats, setFavoritesStats] = useState<{ date: string, count: number }[]>([]);
-    const [topFavoritedFonts, setTopFavoritedFonts] = useState<{ name: string, count: number }[]>([]);
+    // Use the custom hook for analytics
+    const { 
+        downloadStats, 
+        topDownloadedFonts, 
+        favoritesStats, 
+        topFavoritedFonts, 
+        loading: analyticsLoading 
+    } = useAnalytics(activeTab, profile);
 
     // Search States
     const [searchUsers, setSearchUsers] = useState('');
@@ -49,12 +52,10 @@ export default function AdminDashboard() {
             fetchAllUsers();
         } else if (activeTab === 'files' || activeTab === 'curation') {
             fetchFonts();
-        } else if (activeTab === 'analytics') {
-            fetchAnalytics();
         }
     }, [activeTab, profile]);
 
-    const fetchRequests = async () => {
+    const fetchRequests = useCallback(async () => {
         setLoading(true);
         const { data, error } = await supabase
             .from('profiles')
@@ -67,9 +68,9 @@ export default function AdminDashboard() {
             setPendingRequests(data || []);
         }
         setLoading(false);
-    };
+    }, []);
 
-    const fetchAllUsers = async () => {
+    const fetchAllUsers = useCallback(async () => {
         setLoading(true);
         const { data, error } = await supabase
             .from('profiles')
@@ -82,9 +83,9 @@ export default function AdminDashboard() {
             setAllUsers(data || []);
         }
         setLoading(false);
-    };
+    }, []);
 
-    const fetchFonts = async () => {
+    const fetchFonts = useCallback(async () => {
         setLoading(true);
         const { data, error } = await supabase
             .from('fonts')
@@ -100,138 +101,11 @@ export default function AdminDashboard() {
             setAllFonts(data || []);
         }
         setLoading(false);
-    };
+    }, []);
 
-    const fetchAnalytics = async () => {
-        setLoading(true);
-        const thirtyDaysAgo = new Date();
-        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-        const thirtyDaysAgoIso = thirtyDaysAgo.toISOString();
 
-        // Fetch downloads
-        const { data: downloads, error: downloadsError } = await supabase
-            .from('downloads')
-            .select('font_id, downloaded_at')
-            .gte('downloaded_at', thirtyDaysAgoIso);
-
-        // Fetch favorites
-        const { data: favorites, error: favoritesError } = await supabase
-            .from('favorites')
-            .select('font_id, created_at')
-            .gte('created_at', thirtyDaysAgoIso);
-
-        if (downloadsError) console.error('Error fetching downloads analytics:', downloadsError);
-        if (favoritesError) console.error('Error fetching favorites analytics:', favoritesError);
-
-        // --- Process Downloads ---
-        if (downloads) {
-            const dateMap = new Map<string, number>();
-            // Initialize last 30 days with 0
-            for (let i = 0; i < 30; i++) {
-                const d = new Date();
-                d.setDate(d.getDate() - i);
-                const dateStr = d.toISOString().split('T')[0];
-                dateMap.set(dateStr, 0);
-            }
-
-            downloads.forEach(d => {
-                if (!d.downloaded_at) return;
-                const dateStr = d.downloaded_at.split('T')[0];
-                dateMap.set(dateStr, (dateMap.get(dateStr) || 0) + 1);
-            });
-
-            const chartData = Array.from(dateMap.entries())
-                .map(([date, count]) => ({ date, count }))
-                .sort((a, b) => a.date.localeCompare(b.date));
-
-            setDownloadStats(chartData);
-
-            // Top Downloaded Fonts
-            const fontCounts = new Map<string, number>();
-            downloads.forEach(d => {
-                fontCounts.set(d.font_id, (fontCounts.get(d.font_id) || 0) + 1);
-            });
-
-            const topIds = Array.from(fontCounts.entries())
-                .sort((a, b) => b[1] - a[1])
-                .slice(0, 10);
-
-            if (topIds.length > 0) {
-                // We will fetch names later in a batch if needed, or individually here
-                // Note: To optimize, we could combine IDs from downloads and favorites
-                const { data: fontNames } = await supabase
-                    .from('fonts')
-                    .select('id, name')
-                    .in('id', topIds.map(t => t[0]));
-
-                if (fontNames) {
-                    const topFontsData = topIds.map(([id, count]) => {
-                        const font = fontNames.find(f => f.id === id);
-                        return { name: font?.name || 'Unknown Font', count };
-                    });
-                    setTopDownloadedFonts(topFontsData);
-                }
-            } else {
-                setTopDownloadedFonts([]);
-            }
-        }
-
-        // --- Process Favorites ---
-        if (favorites) {
-            const dateMap = new Map<string, number>();
-            // Initialize last 30 days with 0
-            for (let i = 0; i < 30; i++) {
-                const d = new Date();
-                d.setDate(d.getDate() - i);
-                const dateStr = d.toISOString().split('T')[0];
-                dateMap.set(dateStr, 0);
-            }
-
-            favorites.forEach(f => {
-                if (!f.created_at) return;
-                const dateStr = f.created_at.split('T')[0];
-                dateMap.set(dateStr, (dateMap.get(dateStr) || 0) + 1);
-            });
-
-            const chartData = Array.from(dateMap.entries())
-                .map(([date, count]) => ({ date, count }))
-                .sort((a, b) => a.date.localeCompare(b.date));
-
-            setFavoritesStats(chartData);
-
-            // Top Favorited Fonts
-            const fontCounts = new Map<string, number>();
-            favorites.forEach(f => {
-                fontCounts.set(f.font_id, (fontCounts.get(f.font_id) || 0) + 1);
-            });
-
-            const topIds = Array.from(fontCounts.entries())
-                .sort((a, b) => b[1] - a[1])
-                .slice(0, 10);
-
-            if (topIds.length > 0) {
-                const { data: fontNames } = await supabase
-                    .from('fonts')
-                    .select('id, name')
-                    .in('id', topIds.map(t => t[0]));
-
-                if (fontNames) {
-                    const topFontsData = topIds.map(([id, count]) => {
-                        const font = fontNames.find(f => f.id === id);
-                        return { name: font?.name || 'Unknown Font', count };
-                    });
-                    setTopFavoritedFonts(topFontsData);
-                }
-            } else {
-                setTopFavoritedFonts([]);
-            }
-        }
-
-        setLoading(false);
-    };
-
-    const handleRequestAction = async (userId: string, action: 'approve' | 'reject') => {
+    const handleRequestAction = useCallback(async (userId: string, action: 'approve' | 'reject') => {
         try {
             const updates: any = {
                 membership_status: action === 'approve' ? 'approved' : 'rejected'
@@ -252,9 +126,9 @@ export default function AdminDashboard() {
             console.error(`Error ${action}ing user:`, error);
             await Toast.show({ text: `Failed to ${action} user.`, duration: 'short' });
         }
-    };
+    }, [fetchRequests]);
 
-    const handleRoleChange = async (userId: string, newRole: 'user' | 'member' | 'admin') => {
+    const handleRoleChange = useCallback(async (userId: string, newRole: 'user' | 'member' | 'admin') => {
         const targetUser = allUsers.find(u => u.id === userId);
 
         // Security Check: Demoting an Admin
@@ -297,9 +171,9 @@ export default function AdminDashboard() {
             console.error('Error updating role:', error);
             await Toast.show({ text: 'Failed to update role.', duration: 'short' });
         }
-    };
+    }, [allUsers, user?.id]);
 
-    const handleToggleCuration = async (fontId: string, field: 'is_featured' | 'is_trending' | 'is_editors_pick') => {
+    const handleToggleCuration = useCallback(async (fontId: string, field: 'is_featured' | 'is_trending' | 'is_editors_pick') => {
         const font = allFonts.find(f => f.id === fontId);
         if (!font) return;
 
@@ -321,19 +195,19 @@ export default function AdminDashboard() {
             setAllFonts(prev => prev.map(f => f.id === fontId ? { ...f, [field]: !newValue } : f));
             await Toast.show({ text: 'Failed to update status.', duration: 'short' });
         }
-    };
+    }, [allFonts]);
 
-    const formatBytes = (bytes: number | null) => {
+    const formatBytes = useCallback((bytes: number | null) => {
         if (!bytes) return 'Unknown';
         if (bytes === 0) return '0 B';
         const k = 1024;
         const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
         const i = Math.floor(Math.log(bytes) / Math.log(k));
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-    };
+    }, []);
 
     // Calculate Storage Stats
-    const totalStorageSize = allFonts.reduce((acc, font: any) => {
+    const totalStorageSize = useMemo(() => allFonts.reduce((acc, font: any) => {
         const fontTotal = (font.file_size_woff2 || 0) +
             (font.file_size_ttf || 0) +
             (font.file_size_otf || 0) +
@@ -348,15 +222,16 @@ export default function AdminDashboard() {
         }, 0) || 0;
 
         return acc + fontTotal + variantsTotal;
-    }, 0);
+    }, 0), [allFonts]);
+
     const totalFonts = allFonts.length;
-    // Format Counts
-    const formatCounts = {
+
+    const formatCounts = useMemo(() => ({
         woff2: allFonts.filter(f => f.woff2_url).length,
         woff: allFonts.filter(f => f.woff_url).length,
         ttf: allFonts.filter(f => f.ttf_url).length,
         otf: allFonts.filter(f => f.otf_url).length,
-    };
+    }), [allFonts]);
 
 
     if (authLoading) return <div>Loading...</div>;
@@ -800,137 +675,27 @@ export default function AdminDashboard() {
                                     Analytics (Last 30 Days)
                                 </h2>
 
-                                {/* Downloads Section */}
-                                <div className="mb-12">
-                                    <h3 className="text-xl font-bold flex items-center gap-2 mb-6 text-[rgb(var(--color-foreground))]">
-                                        <div className="w-3 h-8 bg-[rgb(var(--color-foreground))] rounded-full"></div>
-                                        Downloads Overview
-                                    </h3>
-                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                                        {/* Chart */}
-                                        <div className="flex flex-col justify-between bg-[rgb(var(--color-card))] p-6 rounded-4xl border-2 border-[rgb(var(--color-border))] shadow-[4px_4px_0px_0px_rgba(var(--color-border),1)]">
-                                            <h3 className="font-bold text-lg mb-6 text-[rgb(var(--color-foreground))]">Downloads Trend</h3>
-                                            <div className="h-64 w-full -translate-x-5 md:-translate-x-8">
-                                                <ResponsiveContainer width="100%" height="100%">
-                                                    <LineChart data={downloadStats}>
-                                                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                                                        <XAxis
-                                                            dataKey="date"
-                                                            tickFormatter={(str) => {
-                                                                const date = new Date(str);
-                                                                return `${date.getMonth() + 1}/${date.getDate()}`;
-                                                            }}
-                                                            tick={{ fontSize: 12, fill: 'rgb(var(--color-muted-foreground))' }}
-                                                            interval={4}
-                                                        />
-                                                        <YAxis allowDecimals={false} tick={{ fontSize: 12, fill: 'rgb(var(--color-muted-foreground))' }} />
-                                                        <Tooltip
-                                                            contentStyle={{ borderRadius: '12px', border: '2px solid rgb(var(--color-border))', fontWeight: 'bold', backgroundColor: 'rgb(var(--color-card))' }}
-                                                        />
-                                                        <Line
-                                                            type="monotone"
-                                                            dataKey="count"
-                                                            stroke="rgb(var(--color-foreground))"
-                                                            strokeWidth={3}
-                                                            dot={{ r: 4, fill: 'rgb(var(--color-foreground))' }}
-                                                            activeDot={{ r: 6, fill: 'rgb(var(--color-accent))' }}
-                                                        />
-                                                    </LineChart>
-                                                </ResponsiveContainer>
-                                            </div>
-                                        </div>
-
-                                        {/* Top Fonts */}
-                                        <div className="bg-[rgb(var(--color-card))] p-6 rounded-4xl border-2 border-[rgb(var(--color-border))] shadow-[4px_4px_0px_0px_rgba(var(--color-border),1)]">
-                                            <h3 className="font-bold text-lg mb-6 text-[rgb(var(--color-foreground))]">Top Downloaded Fonts</h3>
-                                            <div className='overflow-y-auto h-65'>
-                                                {topDownloadedFonts.length > 0 ? (
-                                                    <div className="space-y-3">
-                                                        {topDownloadedFonts.map((font, idx) => (
-                                                            <div key={idx} className="flex justify-between items-center p-3 bg-[rgb(var(--color-foreground)/0.03)] rounded-xl border border-[rgb(var(--color-border))]">
-                                                                <div className="flex items-center gap-3">
-                                                                    <span className="w-6 h-6 flex items-center justify-center bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] rounded-full text-xs font-bold">
-                                                                        {idx + 1}
-                                                                    </span>
-                                                                    <span className="font-bold text-[rgb(var(--color-foreground))]">{font.name}</span>
-                                                                </div>
-                                                                <span className="font-mono font-bold text-[rgb(var(--color-highlight))]">{font.count}</span>
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                ) : (
-                                                    <div className="text-center text-[rgb(var(--color-muted-foreground))] py-8">No data available</div>
-                                                )}
-                                            </div>
-                                        </div>
+                                {analyticsLoading && !downloadStats.length ? (
+                                    <div className="flex items-center justify-center py-20">
+                                        <div className="animate-spin rounded-full h-12 w-12 border-4 border-[rgb(var(--color-foreground)/0.1)] border-t-[rgb(var(--color-foreground))]"></div>
                                     </div>
-                                </div>
-
-                                {/* Favorites Section */}
-                                <div>
-                                    <h3 className="text-xl font-bold flex items-center gap-2 mb-6 text-[rgb(var(--color-foreground))]">
-                                        <div className="w-3 h-8 bg-[rgb(var(--color-accent))] rounded-full"></div>
-                                        Favorites Overview
-                                    </h3>
-                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                                        {/* Chart */}
-                                        <div className="flex flex-col justify-between bg-[rgb(var(--color-card))] p-6 rounded-4xl border-2 border-[rgb(var(--color-border))] shadow-[4px_4px_0px_0px_rgba(var(--color-border),1)]">
-                                            <h3 className="font-bold text-lg mb-6 text-[rgb(var(--color-accent))]">Favorites Trend</h3>
-                                            <div className="h-64 w-full -translate-x-5 md:-translate-x-8">
-                                                <ResponsiveContainer width="100%" height="100%">
-                                                    <LineChart data={favoritesStats}>
-                                                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                                                        <XAxis
-                                                            dataKey="date"
-                                                            tickFormatter={(str) => {
-                                                                const date = new Date(str);
-                                                                return `${date.getMonth() + 1}/${date.getDate()}`;
-                                                            }}
-                                                            tick={{ fontSize: 12, fill: 'rgb(var(--color-muted-foreground))' }}
-                                                            interval={4}
-                                                        />
-                                                        <YAxis allowDecimals={false} tick={{ fontSize: 12, fill: 'rgb(var(--color-muted-foreground))' }} />
-                                                        <Tooltip
-                                                            contentStyle={{ borderRadius: '12px', border: '2px solid rgb(var(--color-border))', fontWeight: 'bold', borderColor: 'rgb(var(--color-accent))', backgroundColor: 'rgb(var(--color-card))' }}
-                                                        />
-                                                        <Line
-                                                            type="monotone"
-                                                            dataKey="count"
-                                                            stroke="rgb(var(--color-accent))"
-                                                            strokeWidth={3}
-                                                            dot={{ r: 4, fill: 'rgb(var(--color-accent))' }}
-                                                            activeDot={{ r: 6, fill: 'rgb(var(--color-foreground))' }}
-                                                        />
-                                                    </LineChart>
-                                                </ResponsiveContainer>
-                                            </div>
-                                        </div>
-
-                                        {/* Top Fonts */}
-                                        <div className="bg-[rgb(var(--color-card))] p-6 rounded-4xl border-2 border-[rgb(var(--color-border))] shadow-[4px_4px_0px_0px_rgba(var(--color-border),1)]">
-                                            <h3 className="font-bold text-lg mb-6 text-[rgb(var(--color-accent))]">Top Favorited Fonts</h3>
-                                            <div className='overflow-y-auto h-80'>
-                                                {topFavoritedFonts.length > 0 ? (
-                                                    <div className="space-y-3">
-                                                        {topFavoritedFonts.map((font, idx) => (
-                                                            <div key={idx} className="flex justify-between items-center p-3 bg-[rgb(var(--color-accent)/0.05)] rounded-xl border border-[rgb(var(--color-accent)/0.1)]">
-                                                                <div className="flex items-center gap-3">
-                                                                    <span className="w-6 h-6 flex items-center justify-center bg-[rgb(var(--color-accent))] text-[rgb(var(--color-background))] rounded-full text-xs font-bold">
-                                                                        {idx + 1}
-                                                                    </span>
-                                                                    <span className="font-bold text-[rgb(var(--color-foreground))]">{font.name}</span>
-                                                                </div>
-                                                                <span className="font-mono font-bold text-[rgb(var(--color-accent))]">{font.count}</span>
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                ) : (
-                                                    <div className="text-center text-[rgb(var(--color-muted-foreground))] py-8">No data available</div>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                ) : (
+                                    <>
+                                        <AnalyticsSection 
+                                            title="Downloads Overview"
+                                            type="downloads"
+                                            data={downloadStats}
+                                            topFonts={topDownloadedFonts}
+                                        />
+                                        <AnalyticsSection 
+                                            title="Favorites Overview"
+                                            type="favorites"
+                                            data={favoritesStats}
+                                            topFonts={topFavoritedFonts}
+                                            accentColor
+                                        />
+                                    </>
+                                )}
                             </div>
                         )}
                     </>

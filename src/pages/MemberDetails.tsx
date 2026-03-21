@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo, useRef } from 'react';
+import { useEffect, useState, useMemo, useRef, useCallback } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
@@ -17,6 +17,7 @@ const MasonryCard = ({ data }: { data: any }) => (
     <FontCard
         font={data}
         viewMode={data.viewMode}
+        customText={data.customText}
         isExpanded={data.isExpanded}
         onToggle={data.onToggle}
     />
@@ -40,6 +41,29 @@ export default function MemberDetails() {
     const [bulkToggleVersion, setBulkToggleVersion] = useState(0);
     const [isBulkToggling, setIsBulkToggling] = useState(false);
     const bulkToggleTimeoutRef = useRef<any>(null);
+
+    const navigate = useNavigate();
+
+    const handleFiltersChange = useCallback((f: FontFilterParams) => setFilters(f), []);
+    const handleViewModeChange = useCallback((v: 'font' | 'image') => setViewMode(v), []);
+    const handleCustomTextChange = useCallback((t: string) => setCustomText(t), []);
+
+    const handleToggleAll = useCallback(() => {
+        setGlobalExpanded(prev => !prev);
+        setBulkToggleVersion(v => v + 1);
+        setIsBulkToggling(true);
+        if (bulkToggleTimeoutRef.current) clearTimeout(bulkToggleTimeoutRef.current);
+        bulkToggleTimeoutRef.current = setTimeout(() => setIsBulkToggling(false), 450);
+        setExpandedFontId(null);
+    }, []);
+
+    const goBack = useCallback(() => {
+        if (window.history.length > 1) {
+            navigate(-1);
+        } else {
+            navigate('/members');
+        }
+    }, [navigate]);
 
     useEffect(() => {
         if (!id) return;
@@ -72,7 +96,7 @@ export default function MemberDetails() {
             // We need the profile ID first, which we now have in profileData.id
             const { data: fontsData, error: fontsError } = await supabase
                 .from('fonts')
-                .select('*')
+                .select('*, font_variants(*)')
                 .eq('uploaded_by', profileData.id)
                 .eq('is_published', true);
 
@@ -84,8 +108,6 @@ export default function MemberDetails() {
 
         fetchData();
     }, [id]);
-
-    const navigate = useNavigate();
 
     const columns =
         width > 1280 ? 4 :
@@ -128,14 +150,6 @@ export default function MemberDetails() {
                 return { ...f, viewMode, customText, ...cardProps, bulkToggleVersion };
             })
     , [filteredFonts, viewMode, customText, expandedFontId, globalExpanded, bulkToggleVersion]);
-
-    const goBack = () => {
-        if (window.history.length > 1) {
-            navigate(-1);
-        } else {
-            navigate('/members');
-        }
-    };
 
     // Role Check
     if (!currentUserProfile || (currentUserProfile.role !== 'member' && currentUserProfile.role !== 'admin')) {
@@ -272,21 +286,14 @@ export default function MemberDetails() {
             <aside className="w-full shrink-0 transition-all duration-300 ease-in-out">
                 <Filters
                     filters={filters}
-                    onChange={setFilters}
+                    onChange={handleFiltersChange}
                     viewMode={viewMode}
-                    onViewModeChange={setViewMode}
+                    onViewModeChange={handleViewModeChange}
                     showExpandToggle={true}
                     allExpanded={globalExpanded}
-                    onToggleAll={() => {
-                        setGlobalExpanded(!globalExpanded);
-                        setBulkToggleVersion(v => v + 1);
-                        setIsBulkToggling(true);
-                        if (bulkToggleTimeoutRef.current) clearTimeout(bulkToggleTimeoutRef.current);
-                        bulkToggleTimeoutRef.current = setTimeout(() => setIsBulkToggling(false), 450);
-                        setExpandedFontId(null);
-                    }}
+                    onToggleAll={handleToggleAll}
                     customText={customText}
-                    onCustomTextChange={setCustomText}
+                    onCustomTextChange={handleCustomTextChange}
                 />
             </aside>
 

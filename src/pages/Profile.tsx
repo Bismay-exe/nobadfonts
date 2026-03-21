@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
@@ -21,7 +21,7 @@ export default function Profile() {
     const [downloads, setDownloads] = useState<Font[]>([]);
     const [dataLoading, setDataLoading] = useState(false);
 
-    const handleRequestAccess = async () => {
+    const handleRequestAccess = useCallback(async () => {
         if (!user) return;
         setRequestLoading(true);
         try {
@@ -38,7 +38,7 @@ export default function Profile() {
         } finally {
             setRequestLoading(false);
         }
-    };
+    }, [user, refreshProfile]);
 
     useEffect(() => {
         if (!user) return;
@@ -49,7 +49,7 @@ export default function Profile() {
                 if (activeTab === 'favorites') {
                     const { data, error } = await supabase
                         .from('favorites')
-                        .select('font_id, fonts (*)')
+                        .select('font_id, fonts (*, font_variants(*))')
                         .eq('user_id', user.id);
 
                     if (error) throw error;
@@ -59,7 +59,7 @@ export default function Profile() {
                 } else if (activeTab === 'downloads') {
                     const { data, error } = await supabase
                         .from('downloads')
-                        .select('font_id, fonts (*)')
+                        .select('font_id, fonts (*, font_variants(*))')
                         .eq('user_id', user.id)
                         .order('downloaded_at', { ascending: false });
 
@@ -78,14 +78,17 @@ export default function Profile() {
         fetchData();
     }, [user, activeTab]);
 
+    const handleEditClick = useCallback(() => {
+        setIsEditing(prev => {
+            const next = !prev;
+            if (next) setActiveTab('settings');
+            else setActiveTab('favorites');
+            return next;
+        });
+    }, []);
+
     if (loading) return <div>Loading...</div>;
     if (!user) return <Navigate to="/auth" replace />;
-
-    const handleEditClick = () => {
-        setIsEditing(!isEditing);
-        if (!isEditing) setActiveTab('settings');
-        else setActiveTab('favorites');
-    };
 
     return (
         <div className="mx-auto">

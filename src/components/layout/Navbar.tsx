@@ -2,7 +2,7 @@
 
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { cn } from '../../lib/utils';
 import { Type, Combine, Terminal, Users, Upload, User, Shield, Plus, Sun, Moon, Coffee, Sparkles, Cherry, Gem, Leaf, Flame, Cloud, SunDim, Waves, Anchor, Building, Joystick, ShoppingBag, Droplets } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -27,14 +27,14 @@ export default function Navbar() {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    const navLinks = [
+    const navLinks = useMemo(() => [
         { name: 'Fonts', path: '/fonts', icon: Type },
         { name: 'Pairing', path: '/pairing', icon: Combine },
         { name: 'CLI', path: '/cli', icon: Terminal, badge: 'NEW' },
         ...(profile?.role === 'member' || profile?.role === 'admin'
             ? [{ name: 'Members', path: '/members', icon: Users }]
             : []),
-    ];
+    ], [profile?.role]);
 
     return (
         <>

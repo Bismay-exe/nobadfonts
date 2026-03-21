@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useFonts } from '../hooks/useFonts';
 import { supabase } from '../lib/supabase';
 import type { Font } from '../types/font';
@@ -181,7 +181,7 @@ export default function FontPairing() {
     const [defaultsLoaded, setDefaultsLoaded] = useState(false);
 
     // Helper to resolve font source
-    const getSource = (f: Font, vName: string | null) => {
+    const getSource = useCallback((f: Font, vName: string | null) => {
         // 1. Try specific variant if requested
         if (vName && f.font_variants) {
             const variant = f.font_variants.find(v => v.variant_name === vName);
@@ -192,6 +192,8 @@ export default function FontPairing() {
                 if (variant.otf_url) return { url: variant.otf_url, format: 'opentype' };
             }
         }
+
+        const isValidUrl = (url?: string | null) => url && url.length > 5;
 
         // 2. Try main font object
         if (isValidUrl(f.woff2_url)) return { url: f.woff2_url, format: 'woff2' };
@@ -210,13 +212,10 @@ export default function FontPairing() {
             }
         }
         return null;
-    };
+    }, []);
 
-    const isValidUrl = (url?: string | null) => {
-        return url && url.length > 5; // Basic check
-    }
 
-    const loadFontToDoc = async (font: Font | null, variant: string | null, prefix: string) => {
+    const loadFontToDoc = useCallback(async (font: Font | null, variant: string | null, prefix: string) => {
         if (!font) return;
         const src = getSource(font, variant);
         if (!src) return;
@@ -235,7 +234,7 @@ export default function FontPairing() {
         } catch (err) {
             console.error(`Failed to load ${family}`, err);
         }
-    };
+    }, [getSource]);
 
     // Auto-resize on block changes (text, styles, added/removed blocks)
     useEffect(() => {
@@ -255,7 +254,7 @@ export default function FontPairing() {
         blocks.forEach(block => {
             loadFontToDoc(block.font, block.variant, block.id);
         });
-    }, [blocks.map(b => `${b.id}-${b.font?.id}-${b.variant}`).join(',')]);
+    }, [blocks, loadFontToDoc]);
 
 
     // Setup initial fonts once loaded

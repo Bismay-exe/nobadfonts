@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { X, Download, Link as LinkIcon, Twitter, Facebook, MessageCircle, Linkedin, Pin as PinIcon, MessageSquare } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Toast } from '@capacitor/toast';
@@ -17,22 +18,22 @@ const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, imageSrc, font
     const encodedUrl = encodeURIComponent(currentUrl);
     const encodedText = encodeURIComponent(`Check out ${fontName} on Fontique!`);
 
-    const handleDownload = async () => {
+    const handleDownload = useCallback(async () => {
         await Haptics.impact({ style: ImpactStyle.Medium });
         const link = document.createElement('a');
         link.download = `fontique-${fontName.toLowerCase().replace(/\s+/g, '-')}-card.png`;
         link.href = imageSrc;
         link.click();
-    };
+    }, [fontName, imageSrc]);
 
-    const handleCopyLink = async () => {
+    const handleCopyLink = useCallback(async () => {
         await Haptics.impact({ style: ImpactStyle.Light });
         navigator.clipboard.writeText(currentUrl);
         await Toast.show({
             text: 'Link copied to clipboard!',
             duration: 'short'
         });
-    };
+    }, [currentUrl]);
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">

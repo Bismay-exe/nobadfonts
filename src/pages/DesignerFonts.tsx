@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo, useRef } from 'react';
+import { useEffect, useState, useMemo, useRef, useCallback } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { useViewMode } from '../hooks/useViewMode';
 import { useWindowSize } from '../hooks/useWindowSize';
@@ -109,7 +109,7 @@ export default function DesignerFonts() {
     }, [fonts, filters]);
 
     // Derived State for FontCard
-    const getCardProps = (fontId: string) => {
+    const getCardProps = useCallback((fontId: string) => {
         if (globalExpanded) {
             return {
                 isExpanded: true,
@@ -121,7 +121,7 @@ export default function DesignerFonts() {
                 onToggle: () => setExpandedFontId(expandedFontId === fontId ? null : fontId)
             };
         }
-    };
+    }, [globalExpanded, expandedFontId]);
 
     const { width } = useWindowSize();
 
@@ -141,6 +141,15 @@ export default function DesignerFonts() {
                 }
             })
     }, [filteredFonts, viewMode, customText, expandedFontId, globalExpanded, bulkToggleVersion]);
+
+    const handleToggleAll = useCallback(() => {
+        setGlobalExpanded(!globalExpanded);
+        setBulkToggleVersion(v => v + 1);
+        setIsBulkToggling(true);
+        if (bulkToggleTimeoutRef.current) clearTimeout(bulkToggleTimeoutRef.current);
+        bulkToggleTimeoutRef.current = setTimeout(() => setIsBulkToggling(false), 450);
+        setExpandedFontId(null);
+    }, [globalExpanded]);
 
     const columns =
         width > 1280 ? 4 :
@@ -188,14 +197,7 @@ export default function DesignerFonts() {
                         onViewModeChange={setViewMode}
                         showExpandToggle={true}
                         allExpanded={globalExpanded}
-                        onToggleAll={() => {
-                            setGlobalExpanded(!globalExpanded);
-                            setBulkToggleVersion(v => v + 1);
-                            setIsBulkToggling(true);
-                            if (bulkToggleTimeoutRef.current) clearTimeout(bulkToggleTimeoutRef.current);
-                            bulkToggleTimeoutRef.current = setTimeout(() => setIsBulkToggling(false), 450);
-                            setExpandedFontId(null);
-                        }}
+                        onToggleAll={handleToggleAll}
                         customText={customText}
                         onCustomTextChange={setCustomText}
                     />

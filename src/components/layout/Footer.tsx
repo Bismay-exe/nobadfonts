@@ -1,6 +1,6 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, memo } from 'react';
 
-const Footer: React.FC = () => {
+const Footer: React.FC = memo(() => {
     const currentYear = new Date().getFullYear();
     const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -121,7 +121,7 @@ const Footer: React.FC = () => {
             </div>
         </footer>
     );
-};
+});
 
 export default Footer;
 

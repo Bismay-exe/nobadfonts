@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { Eye, Download, Heart, TrendingUp, BarChart3, ArrowUpRight } from 'lucide-react';
@@ -33,11 +33,11 @@ export default function AnalyticsDashboard() {
         fetchStats();
     }, [user]);
 
-    const totals = stats.reduce((acc, curr) => ({
+    const totals = useMemo(() => stats.reduce((acc, curr) => ({
         views: acc.views + (curr.views || 0),
         downloads: acc.downloads + (curr.downloads || 0),
         favorites: acc.favorites + (curr.favorites_count || 0)
-    }), { views: 0, downloads: 0, favorites: 0 });
+    }), { views: 0, downloads: 0, favorites: 0 }), [stats]);
 
     if (loading) return <div className="p-8 text-center text-[rgb(var(--color-muted-foreground))]">Loading stats...</div>;
 

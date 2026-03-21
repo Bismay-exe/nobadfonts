@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -16,6 +16,96 @@ import {
     SelectTrigger,
     SelectValue,
 } from "../components/ui/select";
+
+const VARIANT_NAMES = [
+    "Thin", "Extra Light", "Light", "Regular", "Medium", "Semi Bold", "Bold", "Extra Bold", "Black",
+    "Thin Italic", "Extra Light Italic", "Light Italic", "Regular Italic",
+    "Medium Italic", "Semi Bold Italic", "Bold Italic", "Extra Bold Italic", "Black Italic"
+];
+
+const CATEGORIES = [
+    {
+        group: 'Classification',
+        items: [
+            { id: 'sans', label: 'Sans' },
+            { id: 'serif', label: 'Serif' },
+            { id: 'slab-serif', label: 'Slab Serif' },
+            { id: 'display', label: 'Display' },
+            { id: 'monospace', label: 'Monospace' },
+            { id: 'script', label: 'Script' },
+            { id: 'calligraphy', label: 'Calligraphy' },
+            { id: 'brush', label: 'Brush' },
+            { id: 'handwritten', label: 'Handwritten' },
+            { id: 'signature', label: 'Signature' }
+        ],
+    },
+    {
+        group: 'Style',
+        items: [
+            { id: 'modern', label: 'Modern' },
+            { id: 'classic', label: 'Classic' },
+            { id: 'minimal', label: 'Minimal' },
+            { id: 'bold', label: 'Bold' },
+            { id: 'elegant', label: 'Elegant' },
+            { id: 'luxury', label: 'Luxury' },
+            { id: 'playful', label: 'Playful' },
+            { id: 'experimental', label: 'Experimental' },
+            { id: 'brutalist', label: 'Brutalist' },
+            { id: 'geometric', label: 'Geometric' },
+            { id: 'organic', label: 'Organic' },
+        ],
+    },
+    {
+        group: 'Use Case',
+        items: [
+            { id: 'branding', label: 'Branding' },
+            { id: 'logo', label: 'Logo' },
+            { id: 'headline', label: 'Headline' },
+            { id: 'poster', label: 'Poster' },
+            { id: 'corporate', label: 'Corporate' },
+            { id: 'tech', label: 'Tech / UI' },
+            { id: "social-media", label: "Social Media" }
+        ],
+    },
+    {
+        group: 'Weight & Shape',
+        items: [
+            { id: "hairline", label: "Hairline" },
+            { id: 'light', label: 'Light' },
+            { id: "normal-width", label: "Normal Width" },
+            { id: 'heavy', label: 'Heavy' },
+            { id: 'tall', label: 'Tall' },
+            { id: 'condensed', label: 'Condensed' },
+            { id: 'wide', label: 'Wide' },
+            { id: "extended", label: "Extended" },
+        ],
+    },
+    {
+        group: "Construction & Features",
+        items: [
+            { id: "inktrap", label: "Ink Trap" },
+            { id: "rounded", label: "Rounded" },
+            { id: "square", label: "Square" },
+            { id: "stencil", label: "Stencil" },
+            { id: "outline", label: "Outline" },
+            { id: "inline", label: "Inline" },
+            { id: "pixel", label: "Pixel / Bitmap" },
+            { id: "messy", label: "Messy" }
+        ]
+    },
+    {
+        group: 'Era & Vibe',
+        items: [
+            { id: 'casual', label: 'Casual' },
+            { id: 'retro', label: 'Retro' },
+            { id: 'vintage', label: 'Vintage' },
+            { id: 'cyberpunk', label: 'Cyberpunk' },
+            { id: 'futuristic', label: 'Futuristic' },
+            { id: 'gothic', label: 'Gothic' },
+            { id: 'y2k', label: 'Y2K' }
+        ],
+    },
+];
 
 const Upload = () => {
     const { user, profile } = useAuth();
@@ -50,122 +140,21 @@ const Upload = () => {
         files: { ttf: null, otf: null, woff: null, woff2: null }
     }]);
 
-    const VARIANT_NAMES = [
-        "Thin", "Extra Light", "Light", "Regular", "Medium", "Semi Bold", "Bold", "Extra Bold", "Black",
-        "Thin Italic", "Extra Light Italic", "Light Italic", "Regular Italic",
-        "Medium Italic", "Semi Bold Italic", "Bold Italic", "Extra Bold Italic", "Black Italic"
-    ];
+    const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+    }, []);
 
-    const CATEGORIES = [
-        {
-            group: 'Classification',
-            items: [
-                { id: 'sans', label: 'Sans' },
-                { id: 'serif', label: 'Serif' },
-                { id: 'slab-serif', label: 'Slab Serif' },
-                { id: 'display', label: 'Display' },
-                { id: 'monospace', label: 'Monospace' },
-                { id: 'script', label: 'Script' },
-                { id: 'calligraphy', label: 'Calligraphy' },
-                { id: 'brush', label: 'Brush' },
-                { id: 'handwritten', label: 'Handwritten' },
-                { id: 'signature', label: 'Signature' }
-            ],
-        },
-
-        {
-            group: 'Style',
-            items: [
-                { id: 'modern', label: 'Modern' },
-                { id: 'classic', label: 'Classic' },
-                { id: 'minimal', label: 'Minimal' },
-                { id: 'bold', label: 'Bold' },
-                { id: 'elegant', label: 'Elegant' },
-                { id: 'luxury', label: 'Luxury' },
-                { id: 'playful', label: 'Playful' },
-                { id: 'experimental', label: 'Experimental' },
-                { id: 'brutalist', label: 'Brutalist' },
-                { id: 'geometric', label: 'Geometric' },
-                { id: 'organic', label: 'Organic' },
-            ],
-        },
-
-        {
-            group: 'Use Case',
-            items: [
-                { id: 'branding', label: 'Branding' },
-                { id: 'logo', label: 'Logo' },
-                { id: 'headline', label: 'Headline' },
-                { id: 'poster', label: 'Poster' },
-                { id: 'corporate', label: 'Corporate' },
-                { id: 'tech', label: 'Tech / UI' },
-                { id: "social-media", label: "Social Media" }
-            ],
-        },
-
-        {
-            group: 'Weight & Shape',
-            items: [
-                { id: "hairline", label: "Hairline" },
-                { id: 'light', label: 'Light' },
-                { id: "normal-width", label: "Normal Width" },
-                { id: 'heavy', label: 'Heavy' },
-                { id: 'tall', label: 'Tall' },
-                { id: 'condensed', label: 'Condensed' },
-                { id: 'wide', label: 'Wide' },
-                { id: "extended", label: "Extended" },
-            ],
-        },
-
-        {
-            group: "Construction & Features",
-            items: [
-                { id: "inktrap", label: "Ink Trap" },
-                { id: "rounded", label: "Rounded" },
-                { id: "square", label: "Square" },
-                { id: "stencil", label: "Stencil" },
-                { id: "outline", label: "Outline" },
-                { id: "inline", label: "Inline" },
-                { id: "pixel", label: "Pixel / Bitmap" },
-                { id: "messy", label: "Messy" }
-            ]
-        },
-
-        {
-            group: 'Era & Vibe',
-            items: [
-                { id: 'casual', label: 'Casual' },
-                { id: 'retro', label: 'Retro' },
-                { id: 'vintage', label: 'Vintage' },
-                { id: 'cyberpunk', label: 'Cyberpunk' },
-                { id: 'futuristic', label: 'Futuristic' },
-                { id: 'gothic', label: 'Gothic' },
-                { id: 'y2k', label: 'Y2K' }
-            ],
-        },
-    ];
-
-
-
-
-
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
-
-    const handleTagChange = (tagId: string) => {
+    const handleTagChange = useCallback((tagId: string) => {
         setFormData(prev => {
             const newTags = prev.tags.includes(tagId)
                 ? prev.tags.filter(t => t !== tagId)
                 : [...prev.tags, tagId];
             return { ...prev, tags: newTags };
         });
-    };
+    }, []);
 
-
-
-    const handleBannerFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleBannerFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
             const newfiles = Array.from(e.target.files).map(file => ({
                 id: Math.random().toString(36).substring(7),
@@ -174,9 +163,9 @@ const Upload = () => {
             }));
             setBannerItems(prev => [...prev, ...newfiles]);
         }
-    };
+    }, []);
 
-    const addBannerUrl = () => {
+    const addBannerUrl = useCallback(() => {
         if (!urlInput) return;
         setBannerItems(prev => [...prev, {
             id: Math.random().toString(36).substring(7),
@@ -185,16 +174,16 @@ const Upload = () => {
         }]);
         setUrlInput('');
         setShowUrlInput(false);
-    };
+    }, [urlInput]);
 
-    const removeBannerItem = (id: string) => {
+    const removeBannerItem = useCallback((id: string) => {
         setBannerItems(prev => prev.filter(item => item.id !== id));
-    };
+    }, []);
 
     // Variant Helpers
-    const addVariant = () => {
-        if (variants.length >= VARIANT_NAMES.length + 10) return; // Cap total variants to reasonable number
+    const addVariant = useCallback(() => {
         setVariants(prev => {
+            if (prev.length >= VARIANT_NAMES.length + 10) return prev;
             const usedNames = prev.map(v => v.name);
             const firstAvailableName = VARIANT_NAMES.find(name => !usedNames.includes(name)) || 'Regular';
 
@@ -207,9 +196,9 @@ const Upload = () => {
                 }
             ]
         });
-    };
+    }, []);
 
-    const addCustomVariant = () => {
+    const addCustomVariant = useCallback(() => {
         setVariants(prev => [
             ...prev,
             {
@@ -219,9 +208,9 @@ const Upload = () => {
                 files: { ttf: null, otf: null, woff: null, woff2: null }
             }
         ]);
-    };
+    }, []);
 
-    const addVariableFont = () => {
+    const addVariableFont = useCallback(() => {
         setVariants(prev => [
             ...prev,
             {
@@ -231,29 +220,26 @@ const Upload = () => {
                 files: { ttf: null, otf: null, woff: null, woff2: null }
             }
         ]);
-    };
+    }, []);
 
-    const removeVariant = (id: string) => {
-        // Prevent removing the last variant if we want to enforce at least one, 
-        // but maybe allow removing and then validating on submit is better UX 
-        // or just re-add one if empty? Let's allow empty and validate on submit.
+    const removeVariant = useCallback((id: string) => {
         setVariants(prev => prev.filter(v => v.id !== id));
-    };
+    }, []);
 
-    const updateVariantName = (id: string, name: string) => {
+    const updateVariantName = useCallback((id: string, name: string) => {
         setVariants(prev => prev.map(v => v.id === id ? { ...v, name } : v));
-    };
+    }, []);
 
-    const updateVariantFile = (id: string, format: keyof FontVariant['files'], file: File) => {
+    const updateVariantFile = useCallback((id: string, format: keyof FontVariant['files'], file: File) => {
         setVariants(prev => prev.map(v => v.id === id ? {
             ...v,
             files: { ...v.files, [format]: file }
         } : v));
-    };
+    }, []);
 
     const { queueWoff2Conversion } = useUpload();
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = useCallback(async (e: React.FormEvent) => {
         e.preventDefault();
         if (!user) return await Toast.show({ text: 'You must be logged in to upload', duration: 'short' });
         if (formData.tags.length === 0) return await Toast.show({ text: 'Please select at least one category.', duration: 'short' });
@@ -433,7 +419,7 @@ const Upload = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [user, formData, variants, navigate, queueWoff2Conversion, bannerItems]);
 
     // Role Check
     if (!profile || (profile.role !== 'member' && profile.role !== 'admin')) {

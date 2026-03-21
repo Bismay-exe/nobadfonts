@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { Smartphone, Monitor, Image as ImageIcon, Menu, Battery, Wifi, Signal, ChevronDown, MoreHorizontal, Music, Heart, Shuffle, SkipBack, Play, SkipForward, Repeat, CreditCard, ArrowDown, ArrowUp, TrendingUp, Bell, ArrowUpRight, Star, ShoppingBag, ArrowLeft, ArrowRight, Search, MapPin, Grid, Settings, Tv, Lightbulb, Flame, Wind, Lock, HomeIcon, ChevronRight, CloudRain, Zap, Plus, Sun, Cloud, Droplets, Eye, RotateCw, Shield, CheckCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
@@ -12,13 +12,13 @@ type Tab = 'poster' | 'app' | 'hero';
 export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
     const [activeTab, setActiveTab] = useState<Tab>('poster');
 
-    const getLongShadow = (color: string, length = 60) => {
+    const getLongShadow = useCallback((color: string, length = 60) => {
         let shadow = '';
         for (let i = 1; i <= length; i++) {
             shadow += `-${i}px ${i}px 0px ${color}${i === length ? '' : ','}`;
         }
         return shadow;
-    };
+    }, []);
 
     return (
         <div className="flex flex-col h-full">

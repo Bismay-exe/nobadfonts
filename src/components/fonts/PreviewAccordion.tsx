@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, memo } from 'react';
 
 const AUTO_CYCLE_INTERVAL = 4000;
 
-export function PreviewAccordion({ images, vertical = false }: { images: string[]; vertical?: boolean }) {
+export const PreviewAccordion = memo(function PreviewAccordion({ images, vertical = false }: { images: string[]; vertical?: boolean }) {
     const [activeIndex, setActiveIndex] = useState(0);
     const [paused, setPaused] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -160,4 +160,4 @@ export function PreviewAccordion({ images, vertical = false }: { images: string[
             ))}
         </div>
     );
-}
+});

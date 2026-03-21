@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { PreviewAccordion } from '../components/fonts/PreviewAccordion';
@@ -6,6 +6,27 @@ import { useAuth } from '../contexts/AuthContext';
 import { Toast } from '@capacitor/toast';
 import { Capacitor } from '@capacitor/core';
 import { Browser } from '@capacitor/browser';
+
+const AUTH_IMAGES = [
+    "https://st.1001fonts.net/img/illustrations/m/o/moldin-demo-font-10-large.avif",
+    "https://st.1001fonts.net/img/illustrations/q/u/qurova-demo-font-13-large.avif",
+    "https://st.1001fonts.net/img/illustrations/g/r/groovy-alphabet-font-4-large.avif",
+    "https://st.1001fonts.net/img/illustrations/t/r/transcity-font-4-large.avif",
+    "https://st.1001fonts.net/img/illustrations/b/i/bizantheum-font-3-large.avif",
+    "https://st.1001fonts.net/img/illustrations/g/o/golden-girdle-font-9-large.avif",
+    "https://st.1001fonts.net/img/illustrations/d/u/duhit-font-5-large.avif",
+    "https://st.1001fonts.net/img/illustrations/b/l/blush-asliring-font-6-large.avif",
+    "https://st.1001fonts.net/img/illustrations/b/l/blush-asliring-font-4-large.avif",
+    "https://st.1001fonts.net/img/illustrations/m/o/moliga-demo-font-2-large.avif",
+    "https://st.1001fonts.net/img/illustrations/z/a/zaslia-font-7-large.avif",
+    "https://st.1001fonts.net/img/illustrations/t/h/the-jacatra-font-4-large.avif",
+    "https://st.1001fonts.net/img/illustrations/m/o/mosseta-font-11-large.avif",
+    "https://st.1001fonts.net/img/illustrations/m/o/moot-jungle-free-version-font-3-large.avif",
+    "https://st.1001fonts.net/img/illustrations/t/h/the-munday-free-version-font-6-large.avif",
+    "https://st.1001fonts.net/img/illustrations/m/o/moldin-demo-font-3-large.avif",
+    "https://st.1001fonts.net/img/illustrations/v/a/varelle-demo-font-8-large.avif",
+    "https://st.1001fonts.net/img/illustrations/b/l/blush-asliring-font-10-large.avif",
+];
 
 export default function Auth() {
     const { user, loading: authLoading } = useAuth();
@@ -25,7 +46,7 @@ export default function Auth() {
         }
     }, [user, authLoading, navigate]);
 
-    const handleAuth = async (e: React.FormEvent) => {
+    const handleAuth = useCallback(async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         setError(null);
@@ -62,9 +83,9 @@ export default function Auth() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [isLogin, email, password, fullName, navigate]);
 
-    const handleVerifyOtp = async (e: React.FormEvent) => {
+    const handleVerifyOtp = useCallback(async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         setError(null);
@@ -83,9 +104,9 @@ export default function Auth() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [email, otp, navigate]);
 
-    const handleSocialLogin = async (provider: 'google' | 'github') => {
+    const handleSocialLogin = useCallback(async (provider: 'google' | 'github') => {
         try {
             const isNative = Capacitor.isNativePlatform();
             const redirectTo = isNative ? 'nobadfonts://auth' : `${window.location.origin}/profile`;
@@ -106,9 +127,9 @@ export default function Auth() {
         } catch (err: any) {
             setError(err.message);
         }
-    };
+    }, []);
 
-    const handleResendOtp = async () => {
+    const handleResendOtp = useCallback(async () => {
         setLoading(true);
         setError(null);
         try {
@@ -126,7 +147,7 @@ export default function Auth() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [email]);
 
     return (
         <div className="fixed h-screen w-screen top-0 left-0 p-2 flex bg-[rgb(var(--color-background))] z-100">
@@ -296,26 +317,7 @@ export default function Auth() {
             <div className="hidden md:flex w-full h-full bg-[rgb(var(--color-background))] border-10 border-[rgb(var(--color-foreground))] rounded-[3rem] overflow-hidden shadow-[8px_8px_0px_0px_rgba(var(--color-foreground),1)]">
                 <PreviewAccordion
                     vertical={true}
-                    images={[
-                        "https://st.1001fonts.net/img/illustrations/m/o/moldin-demo-font-10-large.avif",
-                        "https://st.1001fonts.net/img/illustrations/q/u/qurova-demo-font-13-large.avif",
-                        "https://st.1001fonts.net/img/illustrations/g/r/groovy-alphabet-font-4-large.avif",
-                        "https://st.1001fonts.net/img/illustrations/t/r/transcity-font-4-large.avif",
-                        "https://st.1001fonts.net/img/illustrations/b/i/bizantheum-font-3-large.avif",
-                        "https://st.1001fonts.net/img/illustrations/g/o/golden-girdle-font-9-large.avif",
-                        "https://st.1001fonts.net/img/illustrations/d/u/duhit-font-5-large.avif",
-                        "https://st.1001fonts.net/img/illustrations/b/l/blush-asliring-font-6-large.avif",
-                        "https://st.1001fonts.net/img/illustrations/b/l/blush-asliring-font-4-large.avif",
-                        "https://st.1001fonts.net/img/illustrations/m/o/moliga-demo-font-2-large.avif",
-                        "https://st.1001fonts.net/img/illustrations/z/a/zaslia-font-7-large.avif",
-                        "https://st.1001fonts.net/img/illustrations/t/h/the-jacatra-font-4-large.avif",
-                        "https://st.1001fonts.net/img/illustrations/m/o/mosseta-font-11-large.avif",
-                        "https://st.1001fonts.net/img/illustrations/m/o/moot-jungle-free-version-font-3-large.avif",
-                        "https://st.1001fonts.net/img/illustrations/t/h/the-munday-free-version-font-6-large.avif",
-                        "https://st.1001fonts.net/img/illustrations/m/o/moldin-demo-font-3-large.avif",
-                        "https://st.1001fonts.net/img/illustrations/v/a/varelle-demo-font-8-large.avif",
-                        "https://st.1001fonts.net/img/illustrations/b/l/blush-asliring-font-10-large.avif",
-                    ]}
+                    images={AUTH_IMAGES}
                 />
             </div>
         </div>

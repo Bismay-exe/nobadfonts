@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Download, X, ArrowRight } from 'lucide-react';
 import { useUpdate } from '../../contexts/UpdateContext';
@@ -9,9 +10,9 @@ export const UpdateModal = () => {
   
   const { latestBuild, currentBuild, releaseNotes } = updateInfo;
 
-  const handleUpdate = async () => {
+  const handleUpdate = useCallback(async () => {
     await startDownload();
-  };
+  }, [startDownload]);
 
   return (
     <AnimatePresence>

@@ -3,7 +3,7 @@ import { useSearchParams, useLocation } from 'react-router-dom';
 import { scrollPositions } from '../components/layout/ScrollRestoration';
 import { useViewMode } from '../hooks/useViewMode';
 import { useWindowSize } from '../hooks/useWindowSize';
-import Filters from '../components/fonts/Filters';
+import { Filters } from '../components/fonts/Filters';
 import FontCard from '../components/fonts/FontCard';
 import EmptyState from '../components/shared/EmptyState';
 import { useFonts } from '../hooks/useFonts';
@@ -89,7 +89,7 @@ export default function FontsCatalog() {
     }, [(location as any).key]);
 
     // Derived State for FontCard
-    const getCardProps = (fontId: string) => {
+    const getCardProps = useCallback((fontId: string) => {
         if (globalExpanded) {
             // Global Expand ON: All expanded, no toggle
             return {
@@ -103,7 +103,7 @@ export default function FontsCatalog() {
                 onToggle: undefined
             };
         }
-    };
+    }, [expandedFontId, globalExpanded]);
 
     const { width } = useWindowSize();
 
@@ -122,7 +122,7 @@ export default function FontsCatalog() {
                     bulkToggleVersion
                 }
             })
-    }, [fonts, viewMode, customText, expandedFontId, globalExpanded])
+    }, [fonts, viewMode, customText, getCardProps, bulkToggleVersion])
 
     const columns =
         width > 1280 ? 4 :

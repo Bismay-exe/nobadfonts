@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState, useMemo, useCallback } from 'react';
 import type { User, Session } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 import { Capacitor } from '@capacitor/core';
@@ -51,7 +51,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return () => subscription.unsubscribe();
     }, []);
 
-    async function fetchProfile(userId: string) {
+    const fetchProfile = useCallback(async (userId: string) => {
         try {
             const { data, error } = await supabase
                 .from('profiles')
@@ -69,9 +69,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         } finally {
             setLoading(false);
         }
-    }
+    }, []);
 
-    const signInWithGoogle = async () => {
+    const signInWithGoogle = useCallback(async () => {
         const isNative = Capacitor.isNativePlatform();
         const redirectTo = isNative ? 'nobadfonts://auth' : window.location.origin;
 
@@ -88,21 +88,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (isNative && data?.url) {
             await Browser.open({ url: data.url, windowName: '_self' });
         }
-    };
+    }, []);
 
-    const signOut = async () => {
+    const signOut = useCallback(async () => {
         const { error } = await supabase.auth.signOut();
         if (error) throw error;
-    };
+    }, []);
 
-    const refreshProfile = async () => {
+    const refreshProfile = useCallback(async () => {
         if (user) {
             await fetchProfile(user.id);
         }
-    };
+    }, [user, fetchProfile]);
+
+    const value = useMemo(() => ({
+        session,
+        user,
+        profile,
+        loading,
+        signInWithGoogle,
+        signOut,
+        refreshProfile
+    }), [session, user, profile, loading, signInWithGoogle, signOut, refreshProfile]);
 
     return (
-        <AuthContext.Provider value={{ session, user, profile, loading, signInWithGoogle, signOut, refreshProfile }}>
+        <AuthContext.Provider value={value}>
             {children}
         </AuthContext.Provider>
     );

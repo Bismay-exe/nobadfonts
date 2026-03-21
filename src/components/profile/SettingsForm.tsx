@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -19,7 +19,7 @@ export default function SettingsForm({ onCancel }: { onCancel: () => void }) {
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = useCallback(async (e: React.FormEvent) => {
         e.preventDefault();
         if (!user) return;
 
@@ -75,7 +75,7 @@ export default function SettingsForm({ onCancel }: { onCancel: () => void }) {
         } finally {
             setLoading(false);
         }
-    };
+    }, [user, fullName, username, bio, website, behance, twitter, instagram, linkedin, paypalMe, refreshProfile, onCancel]);
 
     return (
         <div className="bg-[rgb(var(--color-card)/0.05)] rounded-xl md:rounded-4xl shadow-sm border border-[rgb(var(--color-border)/0.5)] p-2 md:p-4 lg:p-8 mx-auto">

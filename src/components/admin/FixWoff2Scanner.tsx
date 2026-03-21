@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { supabase } from '../../lib/supabase';
 import { runWoff2Compress } from '../../utils/woff2';
 import { RefreshCw } from 'lucide-react';
@@ -10,7 +10,7 @@ export const FixWoff2Scanner = () => {
     const [logs, setLogs] = useState<string[]>([]);
     const [stats, setStats] = useState({ fixed: 0, generated: 0, errors: 0 });
 
-    const addLog = (msg: string) => setLogs(prev => [msg, ...prev].slice(0, 50));
+    const addLog = useCallback((msg: string) => setLogs(prev => [msg, ...prev].slice(0, 50)), []);
 
     const scanAndFix = async () => {
         setLoading(true);

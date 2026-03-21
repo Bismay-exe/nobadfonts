@@ -19,7 +19,7 @@ const UploadProgressPopup = () => {
     if (!isVisible && tasks.length === 0) return null;
 
     return (
-        <div className="fixed top-4 right-4 z-50 flex flex-col gap-2 max-w-sm w-full">
+        <div className="hidden md:flex fixed top-[calc(7.9rem+env(safe-area-inset-top))] md:top-[calc(9.5rem+env(safe-area-inset-top))] right-0 px-4 z-50 flex-col gap-2 max-w-sm w-full">
             {tasks.map(task => (
                 <div key={task.id} className="bg-[rgb(var(--color-card)/0.8)] backdrop-blur-md border border-[rgb(var(--color-border))] p-4 rounded-3xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.3)] animate-in slide-in-from-right fade-in duration-300">
                     <div className="flex justify-between items-start mb-2">

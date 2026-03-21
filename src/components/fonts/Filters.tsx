@@ -1,6 +1,6 @@
 import { Search, Type, Image, SlidersHorizontal, ArrowUpDown, Maximize2, Minimize2, Pencil, X } from 'lucide-react';
 import type { FontFilterParams } from '../../types/font';
-import { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 
@@ -114,7 +114,43 @@ const SORT_OPTIONS = [
     { id: 'alpha', label: 'A-Z' },
 ];
 
-export default function Filters({ filters, onChange, viewMode, onViewModeChange, showExpandToggle, allExpanded, onToggleAll, customText, onCustomTextChange }: FiltersProps) {
+export const Filters = React.memo(({ filters, onChange, viewMode, onViewModeChange, showExpandToggle, allExpanded, onToggleAll, customText, onCustomTextChange }: FiltersProps) => {
+    const [localQuery, setLocalQuery] = useState(filters.query || '');
+    const [localCustomText, setLocalCustomText] = useState(customText || '');
+    
+    // Sync local state with props if they change externally (e.g. from URL or clear)
+    useEffect(() => {
+        setLocalQuery(filters.query || '');
+    }, [filters.query]);
+
+    useEffect(() => {
+        setLocalCustomText(customText || '');
+    }, [customText]);
+
+    const debounceTimerRef = useRef<any>(null);
+
+    const debouncedOnChange = (key: keyof FontFilterParams, value: any) => {
+        if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+        debounceTimerRef.current = setTimeout(() => {
+            onChange({ ...filters, [key]: value });
+        }, 300);
+    };
+
+    const handleQueryChange = (value: string) => {
+        setLocalQuery(value);
+        debouncedOnChange('query', value);
+    };
+
+    const handleCustomTextChange = (value: string) => {
+        setLocalCustomText(value);
+        if (onCustomTextChange) {
+            if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+            debounceTimerRef.current = setTimeout(() => {
+                onCustomTextChange(value);
+            }, 300);
+        }
+    };
+
     const handleChange = (key: keyof FontFilterParams, value: any) => {
         onChange({ ...filters, [key]: value });
     };
@@ -181,8 +217,8 @@ export default function Filters({ filters, onChange, viewMode, onViewModeChange,
                 <input
                     type="text"
                     placeholder="Search fonts..."
-                    value={filters.query || ''}
-                    onChange={(e) => handleChange('query', e.target.value)}
+                    value={localQuery}
+                    onChange={(e) => handleQueryChange(e.target.value)}
                     className="hidden lg:block flex-1 w-0 min-w-40 lg:min-w-64 bg-transparent border-none outline-none text-[rgb(var(--color-background))] font-medium placeholder:text-[rgb(var(--color-background)/0.5)] px-2 lg:px-4 text-sm lg:text-base"
                 />
 
@@ -321,12 +357,12 @@ export default function Filters({ filters, onChange, viewMode, onViewModeChange,
                             ref={searchInputRef}
                             type="text"
                             placeholder="Search fonts..."
-                            value={filters.query || ''}
-                            onChange={(e) => handleChange('query', e.target.value)}
+                            value={localQuery}
+                            onChange={(e) => handleQueryChange(e.target.value)}
                             className="bg-transparent border-none outline-none text-[rgb(var(--color-background))] font-bold placeholder:text-[rgb(var(--color-background)/0.4)] w-full"
                         />
-                        {filters.query && (
-                            <button onClick={() => handleChange('query', '')} className="text-[rgb(var(--color-background)/0.6)]">
+                        {localQuery && (
+                            <button onClick={() => handleQueryChange('')} className="text-[rgb(var(--color-background)/0.6)]">
                                 <X size={16} />
                             </button>
                         )}
@@ -345,13 +381,13 @@ export default function Filters({ filters, onChange, viewMode, onViewModeChange,
                             ref={customTextInputRef}
                             type="text"
                             placeholder="Type something..."
-                            value={customText || ''}
-                            onChange={(e) => onCustomTextChange(e.target.value)}
+                            value={localCustomText}
+                            onChange={(e) => handleCustomTextChange(e.target.value)}
                             className="bg-transparent border-none outline-none text-[rgb(var(--color-background))] font-bold placeholder:text-[rgb(var(--color-background)/0.4)] w-full"
                         />
-                        {customText && (
+                        {localCustomText && (
                             <button
-                                onClick={() => onCustomTextChange('')}
+                                onClick={() => handleCustomTextChange('')}
                                 className="text-[rgb(var(--color-background)/0.6)] hover:text-[rgb(var(--color-background))]"
                             >
                                 <X size={16} />
@@ -427,4 +463,6 @@ export default function Filters({ filters, onChange, viewMode, onViewModeChange,
             )}
         </div>
     );
-}
+});
+
+export default Filters;

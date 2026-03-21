@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import { Settings, LogOut, Globe, Twitter, Instagram, Linkedin, Coffee, Palette } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -7,7 +7,7 @@ interface ProfileHeaderProps {
     isEditing: boolean;
 }
 
-export default function ProfileHeader({ onEditClick, isEditing }: ProfileHeaderProps) {
+export default memo(function ProfileHeader({ onEditClick, isEditing }: ProfileHeaderProps) {
     const { user, profile, signOut } = useAuth();
 
     const [isExpanded, setIsExpanded] = useState(false);
@@ -107,4 +107,4 @@ export default function ProfileHeader({ onEditClick, isEditing }: ProfileHeaderP
             </div>
         </div>
     );
-}
+});

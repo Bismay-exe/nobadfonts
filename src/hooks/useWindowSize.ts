@@ -7,11 +7,16 @@ export function useWindowSize() {
     });
 
     useEffect(() => {
+        let timeoutId: ReturnType<typeof setTimeout>;
+        
         function handleResize() {
-            setWindowSize({
-                width: window.innerWidth,
-                height: window.innerHeight,
-            });
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => {
+                setWindowSize({
+                    width: window.innerWidth,
+                    height: window.innerHeight,
+                });
+            }, 150);
         }
 
         window.addEventListener('resize', handleResize);

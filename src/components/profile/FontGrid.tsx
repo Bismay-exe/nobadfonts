@@ -1,4 +1,4 @@
-import { useMemo, useState, useRef } from 'react';
+import { useMemo, useState, useRef, useCallback } from 'react';
 import { Masonry } from 'masonic';
 import FontCard from '../fonts/FontCard';
 import Filters from '../fonts/Filters';
@@ -31,6 +31,15 @@ export default function FontGrid({ fonts, emptyMessage = "No fonts found.", load
     const [bulkToggleVersion, setBulkToggleVersion] = useState(0);
     const [isBulkToggling, setIsBulkToggling] = useState(false);
     const bulkToggleTimeoutRef = useRef<any>(null);
+
+    const handleToggleAll = useCallback(() => {
+        setGlobalExpanded(prev => !prev);
+        setBulkToggleVersion(v => v + 1);
+        setIsBulkToggling(true);
+        if (bulkToggleTimeoutRef.current) clearTimeout(bulkToggleTimeoutRef.current);
+        bulkToggleTimeoutRef.current = setTimeout(() => setIsBulkToggling(false), 450);
+        setExpandedFontId(null);
+    }, []);
 
     const columns =
         width > 1280 ? 4 :
@@ -96,14 +105,7 @@ export default function FontGrid({ fonts, emptyMessage = "No fonts found.", load
                     onViewModeChange={setViewMode}
                     showExpandToggle={true}
                     allExpanded={globalExpanded}
-                    onToggleAll={() => {
-                        setGlobalExpanded(!globalExpanded);
-                        setBulkToggleVersion(v => v + 1);
-                        setIsBulkToggling(true);
-                        if (bulkToggleTimeoutRef.current) clearTimeout(bulkToggleTimeoutRef.current);
-                        bulkToggleTimeoutRef.current = setTimeout(() => setIsBulkToggling(false), 450);
-                        setExpandedFontId(null);
-                    }}
+                    onToggleAll={handleToggleAll}
                     customText={customText}
                     onCustomTextChange={setCustomText}
                 />

@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { SearchX } from 'lucide-react';
 
 interface EmptyStateProps {
@@ -5,7 +6,7 @@ interface EmptyStateProps {
     description?: string;
 }
 
-export default function EmptyState({ title = "No fonts found", description = "We couldn't find any fonts matching your search criteria. Try adjusting your filters or search term." }: EmptyStateProps) {
+const EmptyState = memo(({ title = "No fonts found", description = "We couldn't find any fonts matching your search criteria. Try adjusting your filters or search term." }: EmptyStateProps) => {
     return (
         <div className="flex flex-col items-center justify-center py-20 text-center bg-[rgb(var(--color-muted)/0.05)] rounded-xl border border-dashed border-[rgb(var(--color-border))]">
             <div className="bg-[rgb(var(--color-card))] p-4 rounded-full shadow-sm mb-4">
@@ -17,4 +18,6 @@ export default function EmptyState({ title = "No fonts found", description = "We
             </p>
         </div>
     );
-}
+});
+
+export default EmptyState;

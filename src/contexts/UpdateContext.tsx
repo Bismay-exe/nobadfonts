@@ -67,27 +67,27 @@ export const UpdateProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
   }, [updateInfo, isDownloading]);
 
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
+  const openModal = useCallback(() => setIsModalOpen(true), []);
+  const closeModal = useCallback(() => setIsModalOpen(false), []);
 
   useEffect(() => {
     checkUpdate();
   }, [checkUpdate]);
 
+  const value = React.useMemo(() => ({
+    hasUpdate,
+    updateInfo,
+    isModalOpen,
+    isDownloading,
+    progress,
+    openModal,
+    closeModal,
+    startDownload,
+    checkUpdate
+  }), [hasUpdate, updateInfo, isModalOpen, isDownloading, progress, openModal, closeModal, startDownload, checkUpdate]);
+
   return (
-    <UpdateContext.Provider
-      value={{
-        hasUpdate,
-        updateInfo,
-        isModalOpen,
-        isDownloading,
-        progress,
-        openModal,
-        closeModal,
-        startDownload,
-        checkUpdate
-      }}
-    >
+    <UpdateContext.Provider value={value}>
       {children}
     </UpdateContext.Provider>
   );

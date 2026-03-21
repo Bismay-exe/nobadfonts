@@ -1,9 +1,10 @@
+import { memo } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import { AnimatePresence, motion } from 'framer-motion';
 
-export default function Layout() {
+const Layout = memo(function Layout() {
     const location = useLocation();
     return (
         <div className="app-container flex flex-col min-h-screen px-4 md:px-8 bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))] antialiased selection:bg-[rgb(var(--color-foreground))] selection:text-[rgb(var(--color-background))] overflow-x-hidden">
@@ -29,4 +30,6 @@ export default function Layout() {
             <Footer />
         </div>
     );
-}
+});
+
+export default Layout;

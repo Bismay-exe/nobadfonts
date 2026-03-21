@@ -90,63 +90,6 @@ export default function Members() {
         fetchData();
     }, []);
 
-    const MemberCard = ({ member, rank }: { member: Profile, rank?: number }) => (
-        <Link to={`/members/${member.username || member.id}`} className="block group">
-            <div className="relative flex flex-col items-center transition-all duration-300">
-                {/* Rank Badge for Top 3 */}
-                {rank && (
-                    <div className={`
-                        absolute -top-2 -right-2 w-8 h-8 rounded-full border-2 border-[rgb(var(--color-foreground))] flex items-center justify-center font-black text-xs z-20 shadow-lg
-                        ${rank === 1 ? 'bg-[#FFD700] text-black scale-110' : ''}
-                        ${rank === 2 ? 'bg-[#C0C0C0] text-black' : ''}
-                        ${rank === 3 ? 'bg-[#CD7F32] text-white' : ''}
-                    `}>
-                        #{rank}
-                    </div>
-                )}
-
-                <div className="w-24 h-24 md:w-28 md:h-28 mb-3 relative">
-                    <div className={`
-                        w-full h-full rounded-full border-4 border-[rgb(var(--color-foreground))] overflow-hidden transition-all duration-300
-                        group-hover:shadow-[0_0_20px_rgba(var(--color-foreground),0.1)] group-hover:scale-105
-                        ${rank === 1 ? 'border-[rgb(var(--color-highlight))]' : ''}
-                    `}>
-                        {member.avatar_url ? (
-                            <img src={member.avatar_url} alt={member.full_name} className="w-full h-full object-cover" />
-                        ) : (
-                            <div className="w-full h-full flex items-center justify-center font-black text-3xl text-[rgb(var(--color-muted-foreground))] uppercase bg-[rgb(var(--color-foreground)/0.05)]">
-                                {member.full_name.charAt(0)}
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Crown for #1 */}
-                    {rank === 1 && (
-                        <div className="absolute -top-8 left-1/2 -translate-x-1/2 text-4xl animate-bounce pointer-events-none">
-                            👑
-                        </div>
-                    )}
-                </div>
-
-                <div className="text-center">
-                    <h2 className="text-lg font-bold text-[rgb(var(--color-foreground))] group-hover:text-[rgb(var(--color-primary))] transition-colors line-clamp-1">
-                        {member.full_name}
-                    </h2>
-                    <p className="text-[rgb(var(--color-muted-foreground))] font-bold text-[10px] uppercase tracking-wider">
-                        {member.font_count} Uploads
-                    </p>
-                    {/* Role Indicator */}
-                    <div className={cn(
-                        "mt-2 inline-flex items-center px-3 py-0.5 rounded-full text-[10px] font-black uppercase border-2 border-[rgb(var(--color-foreground))] shadow-[2px_2px_0px_0px_rgba(var(--color-foreground),1)]",
-                        member.role === 'admin' ? 'bg-[rgb(var(--color-accent))] text-[rgb(var(--color-background))]' : 'bg-[rgb(var(--color-highlight))] text-[rgb(var(--color-background))]'
-                    )}>
-                        {member.role}
-                    </div>
-                </div>
-            </div>
-        </Link>
-    );
-
     // Role Check
     if (!profile || (profile.role !== 'member' && profile.role !== 'admin')) {
         return (
@@ -272,3 +215,60 @@ export default function Members() {
         </div>
     );
 }
+
+const MemberCard = ({ member, rank }: { member: Profile, rank?: number }) => (
+    <Link to={`/members/${member.username || member.id}`} className="block group">
+        <div className="relative flex flex-col items-center transition-all duration-300">
+            {/* Rank Badge for Top 3 */}
+            {rank && (
+                <div className={`
+                    absolute -top-2 -right-2 w-8 h-8 rounded-full border-2 border-[rgb(var(--color-foreground))] flex items-center justify-center font-black text-xs z-20 shadow-lg
+                    ${rank === 1 ? 'bg-[#FFD700] text-black scale-110' : ''}
+                    ${rank === 2 ? 'bg-[#C0C0C0] text-black' : ''}
+                    ${rank === 3 ? 'bg-[#CD7F32] text-white' : ''}
+                `}>
+                    #{rank}
+                </div>
+            )}
+
+            <div className="w-24 h-24 md:w-28 md:h-28 mb-3 relative">
+                <div className={`
+                    w-full h-full rounded-full border-4 border-[rgb(var(--color-foreground))] overflow-hidden transition-all duration-300
+                    group-hover:shadow-[0_0_20px_rgba(var(--color-foreground),0.1)] group-hover:scale-105
+                    ${rank === 1 ? 'border-[rgb(var(--color-highlight))]' : ''}
+                `}>
+                    {member.avatar_url ? (
+                        <img src={member.avatar_url} alt={member.full_name} className="w-full h-full object-cover" />
+                    ) : (
+                        <div className="w-full h-full flex items-center justify-center font-black text-3xl text-[rgb(var(--color-muted-foreground))] uppercase bg-[rgb(var(--color-foreground)/0.05)]">
+                            {member.full_name.charAt(0)}
+                        </div>
+                    )}
+                </div>
+
+                {/* Crown for #1 */}
+                {rank === 1 && (
+                    <div className="absolute -top-8 left-1/2 -translate-x-1/2 text-4xl animate-bounce pointer-events-none">
+                        👑
+                    </div>
+                )}
+            </div>
+
+            <div className="text-center">
+                <h2 className="text-lg font-bold text-[rgb(var(--color-foreground))] group-hover:text-[rgb(var(--color-primary))] transition-colors line-clamp-1">
+                    {member.full_name}
+                </h2>
+                <p className="text-[rgb(var(--color-muted-foreground))] font-bold text-[10px] uppercase tracking-wider">
+                    {member.font_count} Uploads
+                </p>
+                {/* Role Indicator */}
+                <div className={cn(
+                    "mt-2 inline-flex items-center px-3 py-0.5 rounded-full text-[10px] font-black uppercase border-2 border-[rgb(var(--color-foreground))] shadow-[2px_2px_0px_0px_rgba(var(--color-foreground),1)]",
+                    member.role === 'admin' ? 'bg-[rgb(var(--color-accent))] text-[rgb(var(--color-background))]' : 'bg-[rgb(var(--color-highlight))] text-[rgb(var(--color-background))]'
+                )}>
+                    {member.role}
+                </div>
+            </div>
+        </div>
+    </Link>
+);
