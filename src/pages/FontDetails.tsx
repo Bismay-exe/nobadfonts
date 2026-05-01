@@ -379,21 +379,19 @@ export default function FontDetails() {
             >
                 <div className="flex items-center pt-[env(safe-area-inset-top)] md:pt-0">
                     <div className="max-w-480 w-full mx-auto flex items-center justify-between">
-                        {/* Logo */}
-                        <Link
-                            to="/"
-                            onClick={async () => {
+                        <button
+                            onClick={async (e) => {
+                                e.preventDefault();
                                 await Haptics.impact({ style: ImpactStyle.Light });
+                                navigate(-1);
                             }}
-                            className="flex items-center gap-2 group"
+                            className="flex items-center gap-2 group bg-transparent border-none p-0 cursor-pointer"
                         >
                             <ArrowLeft className='h-6 w-6' strokeWidth={2.5} />
-                            <span className=
-                                "text-[rgb(var(--color-foreground))] font-bold"
-                            >
+                            <span className="text-[rgb(var(--color-foreground))] font-bold">
                                 Back
                             </span>
-                        </Link>
+                        </button>
 
                         {/* Right Side Actions */}
                         <div className="flex items-center gap-3">
