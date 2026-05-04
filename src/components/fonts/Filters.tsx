@@ -24,7 +24,7 @@ const CATEGORIES = [
             { id: 'serif', label: 'Serif' },
             { id: 'slab-serif', label: 'Slab Serif' },
             { id: 'display', label: 'Display' },
-            { id: 'monospace', label: 'Monospace' },
+            { id: 'monospace', label: 'Mono' },
             { id: 'script', label: 'Script' },
             { id: 'calligraphy', label: 'Calligraphy' },
             { id: 'brush', label: 'Brush' },
@@ -32,7 +32,6 @@ const CATEGORIES = [
             { id: 'signature', label: 'Signature' }
         ],
     },
-
     {
         group: 'Style',
         items: [
@@ -41,14 +40,20 @@ const CATEGORIES = [
             { id: 'minimal', label: 'Minimal' },
             { id: 'bold', label: 'Bold' },
             { id: 'elegant', label: 'Elegant' },
+            { id: 'luxury', label: 'Luxury' },
             { id: 'playful', label: 'Playful' },
+            { id: 'comic', label: 'Comic' },
+            { id: 'graffiti', label: 'Graffiti' },
             { id: 'experimental', label: 'Experimental' },
             { id: 'brutalist', label: 'Brutalist' },
+            { id: 'industrial', label: 'Industrial' },
+            { id: 'editorial', label: 'Editorial' },
             { id: 'geometric', label: 'Geometric' },
             { id: 'organic', label: 'Organic' },
+            { id: 'techno', label: 'Techno' },
+            { id: 'sci-fi', label: 'Sci-Fi' }
         ],
     },
-
     {
         group: 'Use Case',
         items: [
@@ -56,16 +61,17 @@ const CATEGORIES = [
             { id: 'logo', label: 'Logo' },
             { id: 'headline', label: 'Headline' },
             { id: 'poster', label: 'Poster' },
+            { id: 'editorial-use', label: 'Editorial' },
             { id: 'corporate', label: 'Corporate' },
             { id: 'tech', label: 'Tech / UI' },
             { id: "social-media", label: "Social Media" }
         ],
     },
-
     {
         group: 'Weight & Shape',
         items: [
             { id: "hairline", label: "Hairline" },
+            { id: 'thin', label: 'Thin' },
             { id: 'light', label: 'Light' },
             { id: "normal-width", label: "Normal Width" },
             { id: 'heavy', label: 'Heavy' },
@@ -75,13 +81,13 @@ const CATEGORIES = [
             { id: "extended", label: "Extended" },
         ],
     },
-
     {
         group: "Construction & Features",
         items: [
             { id: "inktrap", label: "Ink Trap" },
             { id: "rounded", label: "Rounded" },
             { id: "square", label: "Square" },
+            { id: 'sharp', label: 'Sharp' },
             { id: "stencil", label: "Stencil" },
             { id: "outline", label: "Outline" },
             { id: "inline", label: "Inline" },
@@ -89,7 +95,6 @@ const CATEGORIES = [
             { id: "messy", label: "Messy" }
         ]
     },
-
     {
         group: 'Era & Vibe',
         items: [

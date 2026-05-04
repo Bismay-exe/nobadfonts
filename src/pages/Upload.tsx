@@ -32,7 +32,7 @@ const CATEGORIES = [
             { id: 'serif', label: 'Serif' },
             { id: 'slab-serif', label: 'Slab Serif' },
             { id: 'display', label: 'Display' },
-            { id: 'monospace', label: 'Monospace' },
+            { id: 'monospace', label: 'Mono' },
             { id: 'script', label: 'Script' },
             { id: 'calligraphy', label: 'Calligraphy' },
             { id: 'brush', label: 'Brush' },
@@ -50,10 +50,16 @@ const CATEGORIES = [
             { id: 'elegant', label: 'Elegant' },
             { id: 'luxury', label: 'Luxury' },
             { id: 'playful', label: 'Playful' },
+            { id: 'comic', label: 'Comic' },
+            { id: 'graffiti', label: 'Graffiti' },
             { id: 'experimental', label: 'Experimental' },
             { id: 'brutalist', label: 'Brutalist' },
+            { id: 'industrial', label: 'Industrial' },
+            { id: 'editorial', label: 'Editorial' },
             { id: 'geometric', label: 'Geometric' },
             { id: 'organic', label: 'Organic' },
+            { id: 'techno', label: 'Techno' },
+            { id: 'sci-fi', label: 'Sci-Fi' }
         ],
     },
     {
@@ -63,6 +69,7 @@ const CATEGORIES = [
             { id: 'logo', label: 'Logo' },
             { id: 'headline', label: 'Headline' },
             { id: 'poster', label: 'Poster' },
+            { id: 'editorial-use', label: 'Editorial' },
             { id: 'corporate', label: 'Corporate' },
             { id: 'tech', label: 'Tech / UI' },
             { id: "social-media", label: "Social Media" }
@@ -72,6 +79,7 @@ const CATEGORIES = [
         group: 'Weight & Shape',
         items: [
             { id: "hairline", label: "Hairline" },
+            { id: 'thin', label: 'Thin' },
             { id: 'light', label: 'Light' },
             { id: "normal-width", label: "Normal Width" },
             { id: 'heavy', label: 'Heavy' },
@@ -87,6 +95,7 @@ const CATEGORIES = [
             { id: "inktrap", label: "Ink Trap" },
             { id: "rounded", label: "Rounded" },
             { id: "square", label: "Square" },
+            { id: 'sharp', label: 'Sharp' },
             { id: "stencil", label: "Stencil" },
             { id: "outline", label: "Outline" },
             { id: "inline", label: "Inline" },
@@ -499,37 +508,37 @@ const Upload = () => {
                                 <div className="flex justify-between items-start mb-4">
                                     <div>
                                         {variant.isCustom ? (
-                                                <input
-                                                    type="text"
-                                                    value={variant.name}
-                                                    onChange={(e) => updateVariantName(variant.id, e.target.value)}
-                                                    className="bg-[rgb(var(--color-background))] border-2 border-[rgb(var(--color-border))] rounded-lg px-2 py-1 focus:outline-none focus:border-[rgb(var(--color-foreground))]"
-                                                    placeholder="e.g. Demi Bold"
-                                                    autoFocus
-                                                />
-                                            ) : (
-                                                <Select
-                                                    value={variant.name}
-                                                    onValueChange={(value: string) => updateVariantName(variant.id, value)}
-                                                >
-                                                    <SelectTrigger className="border-2 border-[rgb(var(--color-border))] rounded-lg px-4 py-2 font-bold bg-[rgb(var(--color-background))] h-auto focus:border-[rgb(var(--color-foreground))]">
-                                                        <SelectValue placeholder="Select variant" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        {VARIANT_NAMES.filter(name => name === variant.name || !variants.some(v => v.name === name)).map(name => (
-                                                            <SelectItem key={name} value={name}>{name}</SelectItem>
-                                                        ))}
-                                                    </SelectContent>
-                                                </Select>
-                                            )}
-                                        </div>
-                                        <button
-                                            type="button"
-                                            onClick={() => removeVariant(variant.id)}
-                                            className="text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-destructive))] p-1"
-                                        >
-                                            <X size={20} />
-                                        </button>
+                                            <input
+                                                type="text"
+                                                value={variant.name}
+                                                onChange={(e) => updateVariantName(variant.id, e.target.value)}
+                                                className="bg-[rgb(var(--color-background))] border-2 border-[rgb(var(--color-border))] rounded-lg px-2 py-1 focus:outline-none focus:border-[rgb(var(--color-foreground))]"
+                                                placeholder="e.g. Demi Bold"
+                                                autoFocus
+                                            />
+                                        ) : (
+                                            <Select
+                                                value={variant.name}
+                                                onValueChange={(value: string) => updateVariantName(variant.id, value)}
+                                            >
+                                                <SelectTrigger className="border-2 border-[rgb(var(--color-border))] rounded-lg px-4 py-2 font-bold bg-[rgb(var(--color-background))] h-auto focus:border-[rgb(var(--color-foreground))]">
+                                                    <SelectValue placeholder="Select variant" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    {VARIANT_NAMES.filter(name => name === variant.name || !variants.some(v => v.name === name)).map(name => (
+                                                        <SelectItem key={name} value={name}>{name}</SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                        )}
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => removeVariant(variant.id)}
+                                        className="text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-destructive))] p-1"
+                                    >
+                                        <X size={20} />
+                                    </button>
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
