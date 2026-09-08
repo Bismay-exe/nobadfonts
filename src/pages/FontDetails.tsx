@@ -146,6 +146,7 @@ export default function FontDetails() {
             loadFont(`font-${font.id}`, mainSource.url, mainSource.format).then(success => {
                 if (success) setIsFontLoaded(true);
             });
+            loadFont(`custom-font-${font.slug}`, mainSource.url, mainSource.format);
         }
 
         // Load variant fonts
@@ -287,7 +288,8 @@ export default function FontDetails() {
         setShareLoading(true);
 
         try {
-            // Wait a moment for fonts/styles to be ready in the hidden element
+            // Wait for all fonts and styles to be ready
+            await document.fonts.ready;
             await new Promise(resolve => setTimeout(resolve, 100));
 
             const dataUrl = await toPng(shareRef.current, {
