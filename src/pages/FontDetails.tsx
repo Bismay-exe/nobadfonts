@@ -294,7 +294,7 @@ export default function FontDetails() {
                 quality: 1.0,
                 pixelRatio: 2,
                 width: 1200,
-                height: 630,
+                height: 800,
             });
 
             setShareImageSrc(dataUrl);
