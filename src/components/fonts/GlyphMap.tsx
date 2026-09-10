@@ -350,19 +350,19 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
 
 
     return (
-        <div className="w-full bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))] rounded-4xl border border-[rgb(var(--color-border))]">
+        <div className="w-full bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))] rounded-4xl zborder border-[rgb(var(--color-border))]">
 
             <div className="lg:flex items-start relative">
                 {/* Left: sticky ONLY inside this section */}
                 <div
                     ref={containerRef}
                     className="
-                        max-h-[50vh] md:min-h-screen
+                        max-h-[50vh] md:max-h-auto md:min-h-[90vh]
                         lg:w-1/2
                         lg:sticky
-                        lg:top-0
+                        lg:top-[5vh]
                         self-start
-                        border-r border-[rgb(var(--color-border)/0.5)]
+                        border border-[rgb(var(--color-border)/0.5)]
                     "
                 >
                     {/* Toolbar */}
@@ -485,7 +485,7 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
                 </div>
 
                 {/* Right: must be taller than viewport */}
-                <div className="lg:w-1/2 p-8 pb-32">
+                <div className="lg:w-1/2 p-8 pb-32 md:border border-[rgb(var(--color-border)/0.5)]">
 
                     {setMode === 'basic' ? (
                         <CategoryView
@@ -521,7 +521,7 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
                                             key={char}
                                             onClick={() => setSelectedChar(char)}
                                             aria-label={`Inspect glyph ${char}`}
-                                            className={`aspect-square flex items-center justify-center bg-[rgb(var(--color-background))] hover:bg-[rgb(var(--color-muted)/0.05)] transition-colors ${selectedChar === char ? 'ring-1 ring-[rgb(var(--color-foreground))] z-10' : ''}`}
+                                            className={`aspect-square flex items-center justify-center bg-[rgb(var(--color-background))] hover:bg-[rgb(var(--color-muted)/0.05)] border border-transparent hover:border-[rgb(var(--color-foreground))] transition-colors duration-100 ${selectedChar === char ? 'ring-1 ring-[rgb(var(--color-foreground))] z-10' : ''}`}
                                         >
                                             <span style={{ fontFamily: `"${fontFamily}"` }} className="text-2xl">{char}</span>
                                         </button>
@@ -565,7 +565,7 @@ function CategoryView({ fontFamily, basicUppercase, basicLowercase, basicNumeral
                             key={char}
                             onClick={() => setSelectedChar(char)}
                             aria-label={`Inspect glyph ${char}`}
-                            className={`aspect-square flex items-center justify-center bg-[rgb(var(--color-background))] hover:bg-[rgb(var(--color-muted)/0.05)] transition-colors ${selectedChar === char ? 'ring-1 ring-[rgb(var(--color-foreground))] z-10' : ''}`}
+                            className={`aspect-square flex items-center justify-center bg-[rgb(var(--color-background))] hover:bg-[rgb(var(--color-muted)/0.05)] border border-transparent hover:border-[rgb(var(--color-foreground))] transition-colors duration-100 ${selectedChar === char ? 'ring-1 ring-[rgb(var(--color-foreground))] z-10' : ''}`}
                         >
                             <span style={{ fontFamily: `"${fontFamily}"` }} className="text-2xl">{char}</span>
                         </button>
@@ -582,7 +582,7 @@ function CategoryView({ fontFamily, basicUppercase, basicLowercase, basicNumeral
                             key={char}
                             onClick={() => setSelectedChar(char)}
                             aria-label={`Inspect glyph ${char}`}
-                            className={`aspect-square flex items-center justify-center bg-[rgb(var(--color-background))] hover:bg-[rgb(var(--color-muted)/0.05)] transition-colors ${selectedChar === char ? 'ring-1 ring-[rgb(var(--color-foreground))] z-10' : ''}`}
+                            className={`aspect-square flex items-center justify-center bg-[rgb(var(--color-background))] hover:bg-[rgb(var(--color-muted)/0.05)] border border-transparent hover:border-[rgb(var(--color-foreground))] transition-colors duration-100 ${selectedChar === char ? 'ring-1 ring-[rgb(var(--color-foreground))] z-10' : ''}`}
                         >
                             <span style={{ fontFamily: `"${fontFamily}"` }} className="text-2xl">{char}</span>
                         </button>
@@ -599,7 +599,7 @@ function CategoryView({ fontFamily, basicUppercase, basicLowercase, basicNumeral
                             key={char}
                             onClick={() => setSelectedChar(char)}
                             aria-label={`Inspect glyph ${char}`}
-                            className={`aspect-square flex items-center justify-center bg-[rgb(var(--color-background))] hover:bg-[rgb(var(--color-muted)/0.05)] transition-colors ${selectedChar === char ? 'ring-1 ring-[rgb(var(--color-foreground))] z-10' : ''}`}
+                            className={`aspect-square flex items-center justify-center bg-[rgb(var(--color-background))] hover:bg-[rgb(var(--color-muted)/0.05)] border border-transparent hover:border-[rgb(var(--color-foreground))] transition-colors duration-100 ${selectedChar === char ? 'ring-1 ring-[rgb(var(--color-foreground))] z-10' : ''}`}
                         >
                             <span style={{ fontFamily: `"${fontFamily}"` }} className="text-2xl">{char}</span>
                         </button>
