@@ -15,12 +15,14 @@ const __dirname = path.dirname(__filename);
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY;
 
-if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-    console.error('Error: VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY must be set in .env');
-    process.exit(1);
+const supabase = (SUPABASE_URL && SUPABASE_ANON_KEY)
+    ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+    : null;
+
+if (!supabase) {
+    console.warn('[sitemap-generator] VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY not detected. Building static sitemap fallback.');
 }
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const DOMAIN = 'https://nobadfonts.in';
 
 async function generateSitemap() {
@@ -60,48 +62,48 @@ async function generateSitemap() {
     </url>`;
     });
 
-    // 2. Dynamic Fonts
-    const { data: fonts, error: fontsError } = await supabase
-        .from('fonts')
-        .select('id, slug, updated_at')
-        .eq('is_published', true);
+    // 2. Dynamic Fonts & Designers (if Supabase is available)
+    if (supabase) {
+        const { data: fonts, error: fontsError } = await supabase
+            .from('fonts')
+            .select('id, slug, updated_at')
+            .eq('is_published', true);
 
-    if (fontsError) {
-        console.error('Error fetching fonts:', fontsError);
-    } else {
-        fonts?.forEach(font => {
-            // Prefer slug if available, otherwise ID (update FontDetails to support slug if needed, but assuming ID for now based on routes)
-            // The route is /fonts/:id currently.
-            xml += `
+        if (fontsError) {
+            console.error('Error fetching fonts:', fontsError);
+        } else {
+            fonts?.forEach(font => {
+                xml += `
     <url>
         <loc>${DOMAIN}/fonts/${font.slug || font.id}</loc>
         <lastmod>${new Date(font.updated_at).toISOString()}</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>`;
-        });
-        console.log(`Added ${fonts?.length || 0} fonts.`);
-    }
+            });
+            console.log(`Added ${fonts?.length || 0} fonts.`);
+        }
 
-    // 3. Dynamic Designers (Group by designer)
-    const { data: designers, error: designersError } = await supabase
-        .from('fonts')
-        .select('designer')
-        .eq('is_published', true);
+        // 3. Dynamic Designers (Group by designer)
+        const { data: designers, error: designersError } = await supabase
+            .from('fonts')
+            .select('designer')
+            .eq('is_published', true);
 
-    if (designersError) {
-        console.error('Error fetching designers:', designersError);
-    } else {
-        const uniqueDesigners = [...new Set(designers?.map(f => f.designer).filter(Boolean))];
-        uniqueDesigners.forEach(designer => {
-            xml += `
+        if (designersError) {
+            console.error('Error fetching designers:', designersError);
+        } else {
+            const uniqueDesigners = [...new Set(designers?.map(f => f.designer).filter(Boolean))];
+            uniqueDesigners.forEach(designer => {
+                xml += `
     <url>
         <loc>${DOMAIN}/designers/${encodeURIComponent(designer)}</loc>
         <changefreq>weekly</changefreq>
         <priority>0.7</priority>
     </url>`;
-        });
-        console.log(`Added ${uniqueDesigners.length} designers.`);
+            });
+            console.log(`Added ${uniqueDesigners.length} designers.`);
+        }
     }
 
     xml += `

@@ -10,12 +10,12 @@ import { BrowserRouter } from 'react-router-dom';
 
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
-        <AuthProvider>
-            <ErrorBoundary>
+        <ErrorBoundary>
+            <AuthProvider>
                 <BrowserRouter>
                     <App />
                 </BrowserRouter>
-            </ErrorBoundary>
-        </AuthProvider>
+            </AuthProvider>
+        </ErrorBoundary>
     </StrictMode>
 );

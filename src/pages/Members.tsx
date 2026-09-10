@@ -172,7 +172,7 @@ export default function Members() {
                                                 <Link to={`/members/${member.username || member.id}`} className="w-12 h-12 relative">
                                                     <div className="w-14 h-14 bg-[rgb(var(--color-foreground)/0.05)] rounded-full border-2 border-[rgb(var(--color-foreground))] overflow-hidden shrink-0">
                                                         {member.avatar_url ? (
-                                                            <img src={member.avatar_url} alt={member.full_name} className="w-full h-full object-cover" />
+                                                            <img src={member.avatar_url} alt={member.full_name} loading="lazy" decoding="async" className="w-full h-full object-cover" />
                                                         ) : (
                                                             <div className="w-full h-full flex items-center justify-center font-black text-[rgb(var(--color-muted-foreground))]">
                                                                 {member.full_name.charAt(0)}
@@ -244,7 +244,7 @@ const MemberCard = ({ member, rank }: { member: Profile, rank?: number }) => (
                     ${rank === 1 ? 'border-[rgb(var(--color-highlight))]' : ''}
                 `}>
                     {member.avatar_url ? (
-                        <img src={member.avatar_url} alt={member.full_name} className="w-full h-full object-cover" />
+                        <img src={member.avatar_url} alt={member.full_name} loading="lazy" decoding="async" className="w-full h-full object-cover" />
                     ) : (
                         <div className="w-full h-full flex items-center justify-center font-black text-3xl text-[rgb(var(--color-muted-foreground))] uppercase bg-[rgb(var(--color-foreground)/0.05)]">
                             {member.full_name.charAt(0)}

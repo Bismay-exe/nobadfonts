@@ -143,6 +143,8 @@ export const PreviewAccordion = memo(function PreviewAccordion({ images, vertica
                     <img
                         src={img}
                         alt={`Typography specimen preview image ${index + 1}`}
+                        loading="lazy"
+                        decoding="async"
                         className={`absolute inset-0 object-cover ${images.length === 1 ? 'w-full h-full relative' : 'w-full h-full'}`}
                         draggable={false}
                     />

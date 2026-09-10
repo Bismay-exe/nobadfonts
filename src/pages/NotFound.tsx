@@ -45,7 +45,7 @@ export default function NotFound() {
                             transition={{ duration: 0.5, ease: 'easeOut' }}
                             className="relative select-none"
                         >
-                            <span className="text-[28vw] md:text-[180px] font-black tracking-tighter leading-none text-transparent bg-clip-text bg-gradient-to-b from-[rgb(var(--color-foreground))] to-[rgb(var(--color-foreground)/0.15)] drop-shadow-[0_10px_30px_rgba(0,0,0,0.1)]">
+                            <span className="text-[28vw] md:text-[180px] font-black tracking-tighter leading-none text-transparent bg-clip-text bg-linear-to-b from-[rgb(var(--color-foreground))] to-[rgb(var(--color-foreground)/0.15)] drop-shadow-[0_10px_30px_rgba(0,0,0,0.1)]">
                                 404
                             </span>
                             <div className="absolute inset-0 flex items-center justify-center">

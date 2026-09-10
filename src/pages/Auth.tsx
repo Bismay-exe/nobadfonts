@@ -283,7 +283,7 @@ export default function Auth() {
                                 </div>
 
                                 {/* Anti-spam Honeypot field (hidden from real users) */}
-                                <div className="opacity-0 absolute -left-[9999px] -top-[9999px] pointer-events-none" aria-hidden="true" tabIndex={-1}>
+                                <div className="opacity-0 absolute -left-2499.75 -top-2499.75 pointer-events-none" aria-hidden="true" tabIndex={-1}>
                                     <input
                                         type="text"
                                         name="website_url"

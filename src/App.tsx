@@ -97,7 +97,6 @@ function AppContent() {
           <Route path="/" element={<Layout />}>
             <Route index element={<Home />} />
             <Route path="fonts" element={<FontsCatalog />} />
-            <Route path="fonts/:id" element={<FontDetails />} />
             <Route path="pairing" element={<FontPairing />} />
             <Route path="upload" element={<Upload />} />
             <Route path="profile" element={<Profile />} />

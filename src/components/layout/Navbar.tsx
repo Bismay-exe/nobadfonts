@@ -241,7 +241,7 @@ export default function Navbar() {
 
             {/* Mobile Bottom Dock */}
             <div className="md:hidden fixed bottom-0 left-1/2 -translate-x-1/2 z-100">
-                <nav className="flex items-center justify-evenly w-screen px-2 py-2.5 bg-[rgb(var(--color-background)/0.6)] backdrop-blur-3xl border-t border-[rgb(var(--color-border)/0.3)]">
+                <nav className="flex items-center justify-evenly w-screen px-2 pt-2.5 pb-[calc(0.625rem+env(safe-area-inset-bottom))] bg-[rgb(var(--color-background)/0.6)] backdrop-blur-3xl border-t border-[rgb(var(--color-border)/0.3)]">
                     {mobileNavLinks.map((link) => {
                         const Icon = link.icon;
                         const isActive = activeTab === link.path;
@@ -249,6 +249,7 @@ export default function Navbar() {
                         return (
                             <motion.button
                                 key={link.path}
+                                aria-label={link.name}
                                 layout // Smoothly adjusts the surrounding buttons when width changes
                                 onClick={async (e) => {
                                     e.preventDefault();

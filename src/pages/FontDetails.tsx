@@ -1,7 +1,6 @@
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { Download, Heart, Share2, Image as ImageIcon, Edit2, Loader2, Layout, Type, Trash2, FileType, User, Terminal, Sun, Moon, Coffee, Sparkles, Cherry, Gem, Leaf, Flame, Cloud, SunDim, Waves, Anchor, Building, Joystick, ShoppingBag, Droplets, ArrowLeft } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
-import { toPng } from 'html-to-image';
 import SocialShareCard from '../components/fonts/SocialShareCard';
 import ShareModal from '../components/fonts/ShareModal';
 import { useAuth } from '../contexts/AuthContext';
@@ -294,6 +293,7 @@ export default function FontDetails() {
             await document.fonts.ready;
             await new Promise(resolve => setTimeout(resolve, 100));
 
+            const { toPng } = await import('html-to-image');
             const dataUrl = await toPng(shareRef.current, {
                 quality: 1.0,
                 pixelRatio: 2,
@@ -491,6 +491,7 @@ export default function FontDetails() {
                                 await Haptics.impact({ style: ImpactStyle.Light });
                                 navigate(-1);
                             }}
+                            aria-label="Go back to previous page"
                             className="flex items-center gap-2 group bg-transparent border-none p-0 cursor-pointer"
                         >
                             <ArrowLeft className='h-6 w-6' strokeWidth={2.5} />
@@ -509,6 +510,7 @@ export default function FontDetails() {
                                     await Haptics.impact({ style: ImpactStyle.Light });
                                     toggleTheme();
                                 }}
+                                aria-label={`Switch theme, current theme is ${theme}`}
                                 className="h-10 w-10 flex items-center justify-center rounded-full bg-[rgb(var(--color-foreground)/0.05)] border border-[rgb(var(--color-border)/0.2)] text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.1)] transition-all cursor-pointer group"
                                 title={`Switch Theme (Current: ${theme.charAt(0).toUpperCase() + theme.slice(1)})`}
                             >
@@ -573,6 +575,7 @@ export default function FontDetails() {
                         <button
                             onClick={handleShare}
                             disabled={shareLoading}
+                            aria-label={`Share ${font.name} font family`}
                             className="p-2.5 rounded-full bg-[rgb(var(--color-foreground)/0.05)] border border-[rgb(var(--color-foreground)/0.1)] text-[rgb(var(--color-foreground))] hover:opacity-80 transition-all active:scale-95"
                         >
                             {shareLoading ? <Loader2 className="animate-spin" size={20} /> : <Share2 size={20} />}
@@ -580,6 +583,7 @@ export default function FontDetails() {
                         <button
                             onClick={handleDownloadZip}
                             disabled={isDownloadingZip}
+                            aria-label={`Download ${font.name} font ZIP package`}
                             className="px-4 md:px-6 py-2.5 md:py-2.5 bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] rounded-full font-bold hover:opacity-80 transition-all flex items-center gap-2 disabled:opacity-75 cursor-pointer"
                         >
                             {isDownloadingZip ? <Loader2 size={18} className="animate-spin" /> : <Download size={18} />}
@@ -611,6 +615,7 @@ export default function FontDetails() {
                             <motion.button
                                 whileTap={{ scale: 0.9 }}
                                 onClick={handleFavorite}
+                                aria-label={isFavorited ? `Remove ${font.name} from favorites` : `Add ${font.name} to favorites`}
                                 className={cn(
                                     "flex items-center gap-2 px-4 md:px-6 py-3 rounded-full border transition-all duration-300",
                                     isFavorited
@@ -627,6 +632,7 @@ export default function FontDetails() {
                                 whileTap={{ scale: 0.9 }}
                                 onClick={handleShare}
                                 disabled={shareLoading}
+                                aria-label={`Share ${font.name} font family`}
                                 className="flex items-center gap-2 px-4 md:px-6 py-3 rounded-full border bg-[rgb(var(--color-foreground)/0.05)] border-[rgb(var(--color-foreground)/0.1)] text-[rgb(var(--color-foreground))] hover:opacity-80 transition-all duration-300"
                             >
                                 {shareLoading ? <Loader2 className="animate-spin" size={20} /> : <Share2 size={20} />}
@@ -638,6 +644,7 @@ export default function FontDetails() {
                                 whileTap={{ scale: 0.95 }}
                                 onClick={handleDownloadZip}
                                 disabled={isDownloadingZip}
+                                aria-label={`Download ${font.name} font ZIP package`}
                                 className="flex items-center gap-2.5 px-6 md:px-8 py-3 bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] rounded-full font-bold hover:opacity-85 transition-all shadow-[0_0_25px_rgba(var(--color-foreground),0.2)] disabled:opacity-75 cursor-pointer"
                             >
                                 {isDownloadingZip ? (
@@ -763,6 +770,7 @@ export default function FontDetails() {
                             value={variantPreviewText}
                             onChange={(e) => setVariantPreviewText(e.target.value)}
                             placeholder="Type something to preview..."
+                            aria-label="Type specimen preview text"
                             className="w-full md:w-1/2 text-xl bg-transparent border-b border-[rgb(var(--color-foreground)/0.2)] focus:border-[rgb(var(--color-foreground)/0.4)] outline-none px-2 py-2 transition-colors placeholder:text-[rgb(var(--color-muted-foreground))] text-[rgb(var(--color-foreground)/0.85)]"
                         />
                         <div className="flex items-center gap-4 w-full md:w-auto bg-[rgb(var(--color-background)/0.5)] px-6 py-3 rounded-full border border-[rgb(var(--color-foreground)/0.1)] shadow-inner">
@@ -773,6 +781,7 @@ export default function FontDetails() {
                                 max="150"
                                 value={variantPreviewSize}
                                 onChange={(e) => setVariantPreviewSize(Number(e.target.value))}
+                                aria-label="Adjust font preview size in pixels"
                                 className="w-full md:w-48 accent-[rgb(var(--color-foreground))] cursor-pointer"
                             />
                             <span className="font-mono font-bold text-sm w-12 text-right text-[rgb(var(--color-foreground)/0.8)]">{variantPreviewSize}px</span>

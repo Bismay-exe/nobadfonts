@@ -101,20 +101,20 @@ const Footer: React.FC = memo(() => {
                 {/* Absolute Bottom Footer: Socials & Copyright */}
                 <div className="flex flex-col md:flex-row justify-between items-center gap-6 pt-8 border-t border-[rgb(var(--color-border))]">
 
-                    <div className="flex items-center gap-2 text-xs text-zinc-500">
+                    <div className="flex items-center gap-2 text-xs text-[rgb(var(--color-muted-foreground))]">
                         <span>&copy; {currentYear} nobadfonts.in. All rights reserved.</span>
                     </div>
 
                     <div className="flex items-center gap-6 text-sm">
-                        <a href="https://twitter.com" target="_blank" rel="noreferrer" className="hover:text-[rgb(var(--color-foreground))] transition-colors flex items-center gap-1 group">
+                        <a href="https://x.com/Bismay_exe" target="_blank" rel="noopener noreferrer" aria-label="Follow NoBadFonts on Twitter (opens in new window)" className="hover:text-[rgb(var(--color-foreground))] transition-colors flex items-center gap-1 group">
                             Twitter
                             <svg className="w-3 h-3 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
                         </a>
-                        <a href="https://github.com" target="_blank" rel="noreferrer" className="hover:text-[rgb(var(--color-foreground))] transition-colors flex items-center gap-1 group">
+                        <a href="https://github.com/Bismay-exe" target="_blank" rel="noopener noreferrer" aria-label="Visit NoBadFonts on GitHub (opens in new window)" className="hover:text-[rgb(var(--color-foreground))] transition-colors flex items-center gap-1 group">
                             GitHub
                             <svg className="w-3 h-3 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
                         </a>
-                        <a href="https://instagram.com" target="_blank" rel="noreferrer" className="hover:text-[rgb(var(--color-foreground))] transition-colors flex items-center gap-1 group">
+                        <a href="https://www.instagram.com/bismay.exe" target="_blank" rel="noopener noreferrer" aria-label="Follow NoBadFonts on Instagram (opens in new window)" className="hover:text-[rgb(var(--color-foreground))] transition-colors flex items-center gap-1 group">
                             Instagram
                             <svg className="w-3 h-3 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
                         </a>

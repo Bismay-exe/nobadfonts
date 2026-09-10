@@ -17,8 +17,16 @@ const Layout = memo(function Layout() {
             {/* Global background noise or effects can go here */}
             <div className="fixed inset-0 xbg-[url('/noise.png')] opacity-[0.03] pointer-events-none mix-blend-overlay z-[60]" />
 
+            {/* Accessibility: Skip to main content bypass link */}
+            <a
+                href="#main-content"
+                className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-100 focus:px-5 focus:py-2.5 focus:bg-[rgb(var(--color-foreground))] focus:text-[rgb(var(--color-background))] focus:rounded-2xl focus:shadow-2xl focus:font-bold focus:outline-none"
+            >
+                Skip to content
+            </a>
+
             <Navbar />
-            <main className="grow pt-24 pb-34 max-w-480 mx-auto w-full">
+            <main id="main-content" tabIndex={-1} className="grow pt-24 pb-34 max-w-480 mx-auto w-full focus:outline-none">
                 <AnimatePresence mode="wait">
                     <motion.div
                         key={location.pathname}

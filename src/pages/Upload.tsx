@@ -864,7 +864,7 @@ const Upload = () => {
 
                 <div className='p-4 -mt-4 space-y-4'>
                     {/* Invisible Honeypot to trap automated bots */}
-                    <div className="opacity-0 absolute -left-[9999px] h-0 w-0 overflow-hidden" aria-hidden="true">
+                    <div className="opacity-0 absolute -left-2499.75 h-0 w-0 overflow-hidden" aria-hidden="true">
                         <input
                             type="text"
                             name="website_url"

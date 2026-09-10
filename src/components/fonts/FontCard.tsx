@@ -281,6 +281,8 @@ function FontCard({ font, viewMode = 'font', onClick, disableLink = false, isExp
                                 <img
                                     src={font.preview_image_url || font.gallery_images?.[0]}
                                     alt={`${font.name} font preview specimen`}
+                                    loading="lazy"
+                                    decoding="async"
                                     className="w-full h-full object-cover rounded-3xl shadow-[0_0_10px_0_rgba(0,0,0,0.3)]"
                                 />
                             </div>
@@ -314,6 +316,7 @@ function FontCard({ font, viewMode = 'font', onClick, disableLink = false, isExp
                                         {!hideLike ? (
                                             <button
                                                 onClick={toggleFavorite}
+                                                aria-label={isFavorited ? `Remove ${font.name} from favorites` : `Add ${font.name} to favorites`}
                                                 className="flex items-center gap-2 text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))] transition-colors group/like"
                                             >
                                                 <Heart
@@ -328,6 +331,7 @@ function FontCard({ font, viewMode = 'font', onClick, disableLink = false, isExp
                                         <Link
                                             to={`/fonts/${font.slug || font.id}`}
                                             onClick={(e) => e.stopPropagation()}
+                                            aria-label={`View ${font.name} font details and specimen`}
                                             className="bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] text-xs px-4 py-2 rounded-full font-bold font-bricolage-grotesque hover:opacity-80 transition-colors"
                                         >
                                             View Details
@@ -380,6 +384,7 @@ function FontCard({ font, viewMode = 'font', onClick, disableLink = false, isExp
                     {!hideLike && (
                         <button
                             onClick={toggleFavorite}
+                            aria-label={isFavorited ? `Remove ${font.name} from favorites` : `Add ${font.name} to favorites`}
                             className={`flex items-center gap-1 text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))] transition-colors group/like ${isExpanded ? 'pointer-events-none' : 'pointer-events-auto'}`}
                         >
                             <Heart
@@ -393,6 +398,7 @@ function FontCard({ font, viewMode = 'font', onClick, disableLink = false, isExp
                     {/* View Font Button */}
                     <Link
                         to={`/fonts/${font.slug || font.id}`}
+                        aria-label={`View ${font.name} font details and specimen`}
                         onClick={(e) => {
                             if (!isExpanded) {
                                 e.stopPropagation();

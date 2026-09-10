@@ -520,6 +520,7 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
                                         <button
                                             key={char}
                                             onClick={() => setSelectedChar(char)}
+                                            aria-label={`Inspect glyph ${char}`}
                                             className={`aspect-square flex items-center justify-center bg-[rgb(var(--color-background))] hover:bg-[rgb(var(--color-muted)/0.05)] transition-colors ${selectedChar === char ? 'ring-1 ring-[rgb(var(--color-foreground))] z-10' : ''}`}
                                         >
                                             <span style={{ fontFamily: `"${fontFamily}"` }} className="text-2xl">{char}</span>
@@ -563,6 +564,7 @@ function CategoryView({ fontFamily, basicUppercase, basicLowercase, basicNumeral
                         <button
                             key={char}
                             onClick={() => setSelectedChar(char)}
+                            aria-label={`Inspect glyph ${char}`}
                             className={`aspect-square flex items-center justify-center bg-[rgb(var(--color-background))] hover:bg-[rgb(var(--color-muted)/0.05)] transition-colors ${selectedChar === char ? 'ring-1 ring-[rgb(var(--color-foreground))] z-10' : ''}`}
                         >
                             <span style={{ fontFamily: `"${fontFamily}"` }} className="text-2xl">{char}</span>
@@ -579,6 +581,7 @@ function CategoryView({ fontFamily, basicUppercase, basicLowercase, basicNumeral
                         <button
                             key={char}
                             onClick={() => setSelectedChar(char)}
+                            aria-label={`Inspect glyph ${char}`}
                             className={`aspect-square flex items-center justify-center bg-[rgb(var(--color-background))] hover:bg-[rgb(var(--color-muted)/0.05)] transition-colors ${selectedChar === char ? 'ring-1 ring-[rgb(var(--color-foreground))] z-10' : ''}`}
                         >
                             <span style={{ fontFamily: `"${fontFamily}"` }} className="text-2xl">{char}</span>
@@ -595,6 +598,7 @@ function CategoryView({ fontFamily, basicUppercase, basicLowercase, basicNumeral
                         <button
                             key={char}
                             onClick={() => setSelectedChar(char)}
+                            aria-label={`Inspect glyph ${char}`}
                             className={`aspect-square flex items-center justify-center bg-[rgb(var(--color-background))] hover:bg-[rgb(var(--color-muted)/0.05)] transition-colors ${selectedChar === char ? 'ring-1 ring-[rgb(var(--color-foreground))] z-10' : ''}`}
                         >
                             <span style={{ fontFamily: `"${fontFamily}"` }} className="text-2xl">{char}</span>

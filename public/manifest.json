@@ -1,0 +1,26 @@
+{
+  "name": "NoBadFonts",
+  "short_name": "NoBadFonts",
+  "description": "Curated Typography for Modern Interfaces. Free and open-source fonts.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0a0a0a",
+  "theme_color": "#0a0a0a",
+  "categories": ["design", "productivity", "utilities"],
+  "icons": [
+    {
+      "src": "/logo/logo.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo/logo-white.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

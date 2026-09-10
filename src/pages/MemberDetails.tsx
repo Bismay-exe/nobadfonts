@@ -206,7 +206,7 @@ export default function MemberDetails() {
                 </button>
                 <div className="w-48 h-48 bg-[rgb(var(--color-muted))] rounded-full border-2 border-[rgb(var(--color-border))] overflow-hidden shrink-0 z-10">
                     {profile.avatar_url ? (
-                        <img src={profile.avatar_url} alt={profile.full_name} className="w-full h-full object-cover" />
+                        <img src={profile.avatar_url} alt={profile.full_name} loading="lazy" decoding="async" className="w-full h-full object-cover" />
                     ) : (
                         <div className="w-full h-full flex items-center justify-center font-black text-4xl text-[rgb(var(--color-muted-foreground)/0.4)] uppercase">
                             {profile.full_name.charAt(0)}
