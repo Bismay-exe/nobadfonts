@@ -6,6 +6,8 @@ import { useAuth } from '../contexts/AuthContext';
 import { Toast } from '@capacitor/toast';
 import { Capacitor } from '@capacitor/core';
 import { Browser } from '@capacitor/browser';
+import TurnstileWidget from '../components/shared/TurnstileWidget';
+import SEO from '../components/shared/SEO';
 
 const AUTH_IMAGES = [
     "https://st.1001fonts.net/img/illustrations/m/o/moldin-demo-font-10-large.avif",
@@ -38,6 +40,8 @@ export default function Auth() {
     const [isVerifying, setIsVerifying] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [honeypot, setHoneypot] = useState('');
+    const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -48,6 +52,19 @@ export default function Auth() {
 
     const handleAuth = useCallback(async (e: React.FormEvent) => {
         e.preventDefault();
+
+        // Honeypot check
+        if (honeypot) {
+            console.warn('Bot submission trapped via honeypot.');
+            return;
+        }
+
+        // Turnstile check
+        if (import.meta.env.VITE_TURNSTILE_SITE_KEY && !turnstileToken) {
+            setError('Please complete the bot verification.');
+            return;
+        }
+
         setLoading(true);
         setError(null);
 
@@ -83,7 +100,7 @@ export default function Auth() {
         } finally {
             setLoading(false);
         }
-    }, [isLogin, email, password, fullName, navigate]);
+    }, [isLogin, email, password, fullName, navigate, honeypot, turnstileToken]);
 
     const handleVerifyOtp = useCallback(async (e: React.FormEvent) => {
         e.preventDefault();
@@ -151,6 +168,7 @@ export default function Auth() {
 
     return (
         <div className="fixed top-0 left-0 h-screen w-screen flex justify-center bg-[rgb(var(--color-background))] z-100">
+            <SEO title="Sign In / Register | NoBadFonts" noindex url="/auth" />
             <div className='max-w-480 w-full flex gap-4 md:gap-8 p-4 md:p-8'>
                 {/* Form Side */}
                 <div className="w-full md:h-full p-4 md:p-16 flex flex-col justify-center gap-5 relative">
@@ -262,6 +280,23 @@ export default function Auth() {
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                     />
+                                </div>
+
+                                {/* Anti-spam Honeypot field (hidden from real users) */}
+                                <div className="opacity-0 absolute -left-[9999px] -top-[9999px] pointer-events-none" aria-hidden="true" tabIndex={-1}>
+                                    <input
+                                        type="text"
+                                        name="website_url"
+                                        autoComplete="off"
+                                        tabIndex={-1}
+                                        value={honeypot}
+                                        onChange={(e) => setHoneypot(e.target.value)}
+                                    />
+                                </div>
+
+                                {/* Cloudflare Turnstile Bot Protection */}
+                                <div className="pt-2 flex justify-center">
+                                    <TurnstileWidget onVerify={setTurnstileToken} />
                                 </div>
 
                                 <button

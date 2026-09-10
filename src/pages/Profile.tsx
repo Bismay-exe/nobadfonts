@@ -10,6 +10,7 @@ import FontGrid from '../components/profile/FontGrid';
 import SettingsForm from '../components/profile/SettingsForm';
 import AnalyticsDashboard from '../components/profile/AnalyticsDashboard';
 import type { Font } from '../types/font';
+import SEO from '../components/shared/SEO';
 
 export default function Profile() {
     const { user, profile, loading, refreshProfile } = useAuth();
@@ -92,6 +93,7 @@ export default function Profile() {
 
     return (
         <div className="mx-auto">
+            <SEO title="User Profile | NoBadFonts" noindex url="/profile" />
             <ProfileHeader isEditing={isEditing} onEditClick={handleEditClick} />
 
             {/* Membership Status Section */}

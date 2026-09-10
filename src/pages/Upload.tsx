@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Upload as UploadIcon, X, Image as ImageIcon, Link as LinkIcon } from 'lucide-react';
 import { useUpload } from '../contexts/UploadContext';
 import { FixWoff2Scanner } from '../components/admin/FixWoff2Scanner';
@@ -17,6 +17,39 @@ import {
     SelectValue,
 } from "../components/ui/select";
 import { CustomLock } from '../components/ui/CustomIcons';
+import { validateFontFile, validateImageFile } from '../utils/fontValidator';
+import TurnstileWidget from '../components/shared/TurnstileWidget';
+
+export const LICENSE_OPTIONS = [
+    {
+        id: 'SIL Open Font License (OFL 1.1)',
+        name: 'SIL Open Font License (OFL 1.1)',
+        badge: 'OFL',
+        commercialUse: true,
+        description: '100% Free for personal and commercial projects. Open source.'
+    },
+    {
+        id: '100% Free / Public Domain (CC0)',
+        name: '100% Free / Public Domain (CC0)',
+        badge: '100% Free',
+        commercialUse: true,
+        description: 'Dedicated to the public domain. Free for all commercial and personal uses.'
+    },
+    {
+        id: 'Free for Personal Use Only',
+        name: 'Free for Personal Use Only',
+        badge: 'Personal Only',
+        commercialUse: false,
+        description: 'Free for personal hobby/non-profit projects. Commercial use prohibited without license.'
+    },
+    {
+        id: 'Freeware / Demo / Donationware',
+        name: 'Freeware / Demo / Donationware',
+        badge: 'Demo',
+        commercialUse: false,
+        description: 'Trial or demo version. Full commercial release requires separate purchase.'
+    }
+];
 
 const VARIANT_NAMES = [
     "Thin", "Extra Light", "Light", "Regular", "Medium", "Semi Bold", "Bold", "Extra Bold", "Black",
@@ -124,8 +157,13 @@ const Upload = () => {
     const [formData, setFormData] = useState({
         name: '',
         designer: '',
+        licenseType: 'SIL Open Font License (OFL 1.1)',
         tags: [] as string[],
     });
+
+    // Anti-spam & Bot Protection
+    const [honeypot, setHoneypot] = useState('');
+    const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
     // Banner state
     const [bannerItems, setBannerItems] = useState<{ id: string, type: 'file' | 'url', content: File | string }[]>([]);
@@ -164,14 +202,27 @@ const Upload = () => {
         });
     }, []);
 
-    const handleBannerFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleBannerFileChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
-            const newfiles = Array.from(e.target.files).map(file => ({
-                id: Math.random().toString(36).substring(7),
-                type: 'file' as const,
-                content: file
-            }));
-            setBannerItems(prev => [...prev, ...newfiles]);
+            const files = Array.from(e.target.files);
+            const validFiles: { id: string; type: 'file'; content: File }[] = [];
+
+            for (const file of files) {
+                const validation = await validateImageFile(file);
+                if (!validation.valid) {
+                    await Toast.show({ text: `${file.name}: ${validation.error}`, duration: 'long' });
+                    continue;
+                }
+                validFiles.push({
+                    id: Math.random().toString(36).substring(7),
+                    type: 'file' as const,
+                    content: file
+                });
+            }
+
+            if (validFiles.length > 0) {
+                setBannerItems(prev => [...prev, ...validFiles]);
+            }
         }
     }, []);
 
@@ -240,7 +291,25 @@ const Upload = () => {
         setVariants(prev => prev.map(v => v.id === id ? { ...v, name } : v));
     }, []);
 
-    const updateVariantFile = useCallback((id: string, format: keyof FontVariant['files'], file: File) => {
+    const updateVariantFile = useCallback(async (id: string, format: keyof FontVariant['files'], file: File | null) => {
+        if (!file) {
+            setVariants(prev => prev.map(v => v.id === id ? {
+                ...v,
+                files: { ...v.files, [format]: null }
+            } : v));
+            return;
+        }
+
+        // Validate font extension and binary signature (and parse tables for TTF/OTF)
+        const validation = await validateFontFile(file, format);
+        if (!validation.valid) {
+            await Toast.show({
+                text: `${file.name}: ${validation.error || 'Invalid font file.'}`,
+                duration: 'long'
+            });
+            return;
+        }
+
         setVariants(prev => prev.map(v => v.id === id ? {
             ...v,
             files: { ...v.files, [format]: file }
@@ -251,7 +320,19 @@ const Upload = () => {
 
     const handleSubmit = useCallback(async (e: React.FormEvent) => {
         e.preventDefault();
+        // Honeypot check (bots fill hidden inputs)
+        if (honeypot) {
+            console.warn('Bot trapped via honeypot.');
+            return;
+        }
+
+        if (import.meta.env.VITE_TURNSTILE_SITE_KEY && !turnstileToken) {
+            return await Toast.show({ text: 'Please complete the bot security check.', duration: 'short' });
+        }
+
         if (!user) return await Toast.show({ text: 'You must be logged in to upload', duration: 'short' });
+        if (!formData.name.trim()) return await Toast.show({ text: 'Please enter a font name.', duration: 'short' });
+        if (!formData.licenseType) return await Toast.show({ text: 'Please select a mandatory license type.', duration: 'short' });
         if (formData.tags.length === 0) return await Toast.show({ text: 'Please select at least one category.', duration: 'short' });
 
         // Validate variants
@@ -315,6 +396,9 @@ const Upload = () => {
             const previewImageUrl = galleryUrls.length > 0 ? galleryUrls[0] : null;
             const previewImageSize = gallerySizes.length > 0 ? gallerySizes[0] : null;
 
+            const selectedLicense = LICENSE_OPTIONS.find(l => l.id === formData.licenseType);
+            const isCommercial = selectedLicense ? selectedLicense.commercialUse : false;
+
             // Insert Record
             const { error: dbError } = await supabase
                 .from('fonts')
@@ -324,7 +408,8 @@ const Upload = () => {
                         designer: formData.designer || 'Unknown',
                         category: formData.tags[0], // Legacy support, use first tag
                         tags: formData.tags,
-                        license_type: 'Unknown',
+                        license_type: formData.licenseType,
+                        commercial_use: isCommercial,
                         slug: slug,
                         is_published: true,
                         user_id: user.id,
@@ -429,7 +514,7 @@ const Upload = () => {
         } finally {
             setLoading(false);
         }
-    }, [user, formData, variants, navigate, queueWoff2Conversion, bannerItems]);
+    }, [user, formData, variants, navigate, queueWoff2Conversion, bannerItems, honeypot, turnstileToken]);
 
     // Role Check
     if (!profile || (profile.role !== 'member' && profile.role !== 'admin')) {
@@ -455,7 +540,12 @@ const Upload = () => {
 
     return (
         <div className="mx-auto max-w-5xl">
-            <SEO title="Upload Font" />
+            <SEO
+                title="Upload & Publish Typography | NoBadFonts"
+                description="Upload and distribute your open-source typeface on NoBadFonts. Multi-format packaging, glyph validation, and license compliance."
+                url="/upload"
+                noindex
+            />
 
             <div className="flex items-center justify-center">
                 <div className="mt-6 mb-8 text-center">
@@ -491,6 +581,42 @@ const Upload = () => {
                             className="w-full border-2 border-[rgb(var(--color-border))] bg-[rgb(var(--color-background))] p-3 rounded-2xl font-bold focus:outline-none focus:border-[rgb(var(--color-foreground))]"
                             placeholder="Leave blank if unknown"
                         />
+                    </div>
+
+                    <div>
+                        <div className="flex items-center justify-between mb-2">
+                            <label className="block font-bold uppercase">
+                                License Type <span className="text-sm text-[rgb(var(--color-destructive))] font-normal normal-case ml-1">*Required</span>
+                            </label>
+                            <Link to="/legal/terms" target="_blank" className="text-xs text-[rgb(var(--color-muted-foreground))] hover:underline flex items-center gap-1">
+                                Licensing Guide ↗
+                            </Link>
+                        </div>
+                        <Select
+                            value={formData.licenseType}
+                            onValueChange={(val) => setFormData(prev => ({ ...prev, licenseType: val }))}
+                        >
+                            <SelectTrigger className="w-full border-2 border-[rgb(var(--color-border))] bg-[rgb(var(--color-background))] p-3 rounded-2xl font-bold h-auto focus:border-[rgb(var(--color-foreground))]">
+                                <SelectValue placeholder="Select a license category" />
+                            </SelectTrigger>
+                            <SelectContent className="bg-[rgb(var(--color-background))] border-2 border-[rgb(var(--color-border))] rounded-2xl shadow-xl max-h-80">
+                                {LICENSE_OPTIONS.map((license) => (
+                                    <SelectItem key={license.id} value={license.id} className="cursor-pointer py-3 rounded-xl focus:bg-[rgb(var(--color-foreground)/0.05)]">
+                                        <div className="flex flex-col gap-0.5 text-left">
+                                            <div className="flex items-center gap-2">
+                                                <span className="font-bold text-sm text-[rgb(var(--color-foreground))]">{license.name}</span>
+                                                <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full uppercase ${license.commercialUse ? 'bg-[rgb(var(--color-highlight)/0.2)] text-[rgb(var(--color-foreground))]' : 'bg-[rgb(var(--color-muted))] text-[rgb(var(--color-muted-foreground))]'}`}>
+                                                    {license.badge}
+                                                </span>
+                                            </div>
+                                            <span className="text-xs text-[rgb(var(--color-muted-foreground))] font-normal">
+                                                {license.description}
+                                            </span>
+                                        </div>
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
                     </div>
                 </div>
 
@@ -632,7 +758,7 @@ const Upload = () => {
                                 ) : (
                                     <img
                                         src={item.content as string}
-                                        alt="Preview"
+                                        alt="Uploaded banner specimen preview"
                                         className="w-full h-full object-cover"
                                     />
                                 )}
@@ -736,7 +862,22 @@ const Upload = () => {
 
                 <div className='h-px mx-4 md:mx-8 bg-[rgb(var(--color-foreground)/0.1)]' />
 
-                <div className='p-4 -mt-4'>
+                <div className='p-4 -mt-4 space-y-4'>
+                    {/* Invisible Honeypot to trap automated bots */}
+                    <div className="opacity-0 absolute -left-[9999px] h-0 w-0 overflow-hidden" aria-hidden="true">
+                        <input
+                            type="text"
+                            name="website_url"
+                            tabIndex={-1}
+                            autoComplete="off"
+                            value={honeypot}
+                            onChange={(e) => setHoneypot(e.target.value)}
+                        />
+                    </div>
+
+                    {/* Bot Protection Widget */}
+                    <TurnstileWidget onVerify={setTurnstileToken} />
+
                     <motion.button
                         whileTap={{ scale: 0.98 }}
                         type="submit"

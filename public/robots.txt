@@ -1,4 +1,7 @@
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /profile
+Disallow: /auth
 
 Sitemap: https://nobadfonts.in/sitemap.xml

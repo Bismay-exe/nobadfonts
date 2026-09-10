@@ -6,6 +6,7 @@ import type { Database } from '../types/database.types';
 import { ArrowUpRight } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { CustomLock } from '../components/ui/CustomIcons';
+import SEO from '../components/shared/SEO';
 
 type Profile = Database['public']['Tables']['profiles']['Row'] & {
     font_count?: number;
@@ -95,6 +96,7 @@ export default function Members() {
     if (!profile || (profile.role !== 'member' && profile.role !== 'admin')) {
         return (
             <div className="flex flex-col items-center justify-center w-full md:h-[86vh] max-w-480 bg-[rgb(var(--color-background))] rounded-4xl text-center space-y-6 z-90">
+                <SEO title="Access Restricted" noindex url="/members" />
                 <div className="bg-[rgb(var(--color-destructive)/0.9)] p-10 rounded-full mt-40 md:mt-0">
                     <div className="text-6xl">
                         <CustomLock className='h-24 w-24' />
@@ -121,6 +123,11 @@ export default function Members() {
 
     return (
         <div className="mx-auto">
+            <SEO
+                title="Members & Typeface Designers Directory"
+                description="Explore creators, designers, and contributors on NoBadFonts. Discover unique typography portfolios and font releases."
+                url="/members"
+            />
             <div className='p-2 md:p-6 border-b border-[rgb(var(--color-border))]'>
 
                 {/* Top 3 Section */}

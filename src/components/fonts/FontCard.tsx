@@ -280,7 +280,7 @@ function FontCard({ font, viewMode = 'font', onClick, disableLink = false, isExp
                             ${isExpanded ? 'p-3' : 'p-0'}`}>
                                 <img
                                     src={font.preview_image_url || font.gallery_images?.[0]}
-                                    alt={font.name}
+                                    alt={`${font.name} font preview specimen`}
                                     className="w-full h-full object-cover rounded-3xl shadow-[0_0_10px_0_rgba(0,0,0,0.3)]"
                                 />
                             </div>

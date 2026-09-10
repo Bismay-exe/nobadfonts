@@ -22,7 +22,7 @@ export default memo(function ProfileHeader({ onEditClick, isEditing }: ProfileHe
             <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
                 {/* Avatar */}
                 <div className="w-48 h-48 rounded-full flex items-center justify-center text-3xl font-bold text-[rgb(var(--color-foreground)/0.8)] overflow-hidden shrink-0">
-                    <img src='/profile/profile.png' alt="User" className="w-full h-full object-cover" />
+                    <img src='/profile/profile.png' alt={profile?.full_name ? `${profile.full_name}'s avatar` : "User profile avatar"} className="w-full h-full object-cover" />
                 </div>
 
                 {/* Info */}

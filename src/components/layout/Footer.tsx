@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, memo } from 'react';
+import { Link } from 'react-router-dom';
 
 const Footer: React.FC = memo(() => {
     const currentYear = new Date().getFullYear();
@@ -57,38 +58,41 @@ const Footer: React.FC = memo(() => {
 
                         {/* Column 1: The Archive */}
                         <div className="flex flex-col space-y-4">
-                            <h3 className="text-[rgb(var(--color-foreground))] text-xs font-semibold tracking-wider uppercase mb-2">The Archive</h3>
-                            <a href="/fonts/variable" className="text-sm hover:text-[rgb(var(--color-foreground))] transition-colors">Variable</a>
+                            <h3 className="text-[rgb(var(--color-foreground))] text-sm font-bold tracking-wider zuppercase mb-4">The Archive</h3>
+                            <Link to="/fonts" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors">All Fonts</Link>
+                            <Link to="/fonts?categories=sans" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors">Sans-Serif</Link>
+                            <Link to="/fonts?categories=serif" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors">Serif</Link>
+                            <Link to="/fonts?categories=display" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors">Display</Link>
+                            <Link to="/fonts?categories=monospace" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors">Monospace</Link>
+                            <Link to="/fonts?query=variable" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors">Variable Fonts</Link>
                         </div>
 
                         {/* Column 2: Platform & Tools */}
                         <div className="flex flex-col space-y-4">
-                            <h3 className="text-[rgb(var(--color-foreground))] text-xs font-semibold tracking-wider uppercase mb-2">Platform</h3>
-                            <a href="/submit" className="text-sm hover:text-white transition-colors">Submit a Font</a>
-                            <a href="/type-tester" className="text-sm hover:text-white transition-colors">Type Tester</a>
-                            <a href="/guide/installation" className="text-sm hover:text-white transition-colors">Installation Guide</a>
-                            <a href="/about" className="text-sm hover:text-white transition-colors">About Us</a>
-                            <a href="/contact" className="text-sm hover:text-white transition-colors">Contact</a>
+                            <h3 className="text-[rgb(var(--color-foreground))] text-sm font-bold tracking-wider zuppercase mb-4">Platform</h3>
+                            <Link to="/upload" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors">Submit a Font</Link>
+                            <Link to="/fonts" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors">Type Tester</Link>
+                            <Link to="/pairing" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors">Font Pairing</Link>
+                            <Link to="/cli" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors">CLI Tool</Link>
+                            <Link to="/members" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors">Community</Link>
                         </div>
 
                         {/* Column 3: Font Licensing (For the downloaded files) */}
                         <div className="flex flex-col space-y-4">
-                            <h3 className="text-[rgb(var(--color-foreground))] text-xs font-semibold tracking-wider uppercase mb-2">Font Licenses</h3>
-                            <a href="/license/overview" className="text-sm hover:text-white transition-colors text-zinc-300">License Overview</a>
-                            <a href="/license/sil-ofl" className="text-sm hover:text-white transition-colors">SIL Open Font (OFL)</a>
-                            <a href="/license/commercial-use" className="text-sm hover:text-white transition-colors">Commercial Use Guide</a>
-                            <a href="/license/personal-use" className="text-sm hover:text-white transition-colors">Personal Use Guide</a>
-                            <a href="/license/webfont" className="text-sm hover:text-white transition-colors">Webfont & App Usage</a>
+                            <h3 className="text-[rgb(var(--color-foreground))] text-sm font-bold tracking-wider zuppercase mb-4">Font Licenses</h3>
+                            <Link to="/legal/terms" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors">License Overview</Link>
+                            <Link to="/legal/terms" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors">SIL Open Font (OFL)</Link>
+                            <Link to="/legal/terms" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors">Commercial Use Guide</Link>
+                            <Link to="/legal/terms" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors">Personal Use Guide</Link>
                         </div>
 
                         {/* Column 4: Site Policies (For using your website) */}
                         <div className="flex flex-col space-y-4">
-                            <h3 className="text-[rgb(var(--color-foreground))] text-xs font-semibold tracking-wider uppercase mb-2">Site Policies</h3>
-                            <a href="/legal/terms" className="text-sm hover:text-white transition-colors">Terms of Service</a>
-                            <a href="/legal/privacy" className="text-sm hover:text-white transition-colors">Privacy Policy</a>
-                            <a href="/legal/cookies" className="text-sm hover:text-white transition-colors">Cookie Policy</a>
-                            <a href="/legal/dmca" className="text-sm hover:text-white transition-colors text-zinc-300">DMCA / Takedown</a>
-                            <a href="/legal/guidelines" className="text-sm hover:text-white transition-colors">Community Guidelines</a>
+                            <h3 className="text-[rgb(var(--color-foreground))] text-sm font-bold tracking-wider zuppercase mb-4">Site Policies</h3>
+                            <Link to="/legal/terms" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors">Terms of Service</Link>
+                            <Link to="/legal/privacy" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors">Privacy Policy</Link>
+                            <Link to="/legal/cookies" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors">Cookie Policy</Link>
+                            <Link to="/legal/dmca" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors">DMCA / Takedown</Link>
                         </div>
 
                     </div>

@@ -22,6 +22,8 @@ import { Toast } from '@capacitor/toast';
 import GalleryEditor from '../components/fonts/GalleryEditor';
 import FileManager from '../components/fonts/FileManager';
 import VariantList from '../components/fonts/VariantList';
+import LicenseInfo from '../components/fonts/LicenseInfo';
+import { createFontZipPackage, triggerBlobDownload } from '../utils/zipBuilder';
 
 export default function FontDetails() {
 
@@ -338,6 +340,49 @@ export default function FontDetails() {
         }
     };
 
+    const [isDownloadingZip, setIsDownloadingZip] = useState(false);
+    const [zipStatusText, setZipStatusText] = useState('');
+
+    const handleDownloadZip = async (e?: React.MouseEvent) => {
+        if (e) e.preventDefault();
+        if (!font || isDownloadingZip) return;
+        await Haptics.impact({ style: ImpactStyle.Medium });
+        setIsDownloadingZip(true);
+        setZipStatusText('Preparing...');
+
+        try {
+            // Record download if user is logged in
+            if (user) {
+                await supabase.from('downloads').insert({
+                    font_id: font.id,
+                    user_id: user.id
+                }).then(({ error }) => {
+                    if (error) console.error("Failed to track download", error);
+                });
+            }
+
+            const zipBlob = await createFontZipPackage(font, (status) => {
+                setZipStatusText(status);
+            });
+
+            const safeName = font.slug || font.name.replace(/[^a-zA-Z0-9_-]/g, '_');
+            triggerBlobDownload(zipBlob, `${safeName}.zip`);
+
+            await Toast.show({ text: 'ZIP package downloaded!', duration: 'short' });
+        } catch (err) {
+            console.error('ZIP package generation failed:', err);
+            await Toast.show({ text: 'Packaging failed. Downloading primary font file.', duration: 'short' });
+            if (font.woff2_url || font.ttf_url || font.otf_url) {
+                const fallbackUrl = font.woff2_url || font.ttf_url || font.otf_url || '';
+                const ext = font.woff2_url ? 'woff2' : (font.ttf_url ? 'ttf' : 'otf');
+                downloadFont(fallbackUrl, `${font.name}.${ext}`);
+            }
+        } finally {
+            setIsDownloadingZip(false);
+            setZipStatusText('');
+        }
+    };
+
     // Scroll Detection
     const [isScrolled, setIsScrolled] = useState(false);
     useEffect(() => {
@@ -361,14 +406,73 @@ export default function FontDetails() {
     // Mobile (Col): Width = 18 * unit (for 3:2 expanded), Height_total = (11 + N) * unit -> AR = 18/(11+N)
     const mobileAr = 18 / (11 + imageCount);
 
+    const fontSlug = font.slug || id;
+    const fontCanonicalUrl = `/fonts/${fontSlug}`;
+    const fontSchema = [
+        {
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+                {
+                    '@type': 'ListItem',
+                    position: 1,
+                    name: 'Home',
+                    item: 'https://nobadfonts.in'
+                },
+                {
+                    '@type': 'ListItem',
+                    position: 2,
+                    name: 'Fonts',
+                    item: 'https://nobadfonts.in/fonts'
+                },
+                {
+                    '@type': 'ListItem',
+                    position: 3,
+                    name: font.name,
+                    item: `https://nobadfonts.in${fontCanonicalUrl}`
+                }
+            ]
+        },
+        {
+            '@type': 'CreativeWork',
+            '@id': `https://nobadfonts.in${fontCanonicalUrl}#font`,
+            name: font.name,
+            headline: `${font.name} font family by ${font.designer}`,
+            description: `Download ${font.name}, a ${font.tags ? font.tags.join(', ') : 'modern'} font by ${font.designer}. Available now in WOFF2, TTF, and OTF on NoBadFonts.`,
+            creator: {
+                '@type': 'Person',
+                name: font.designer
+            },
+            publisher: {
+                '@type': 'Organization',
+                name: 'NoBadFonts',
+                url: 'https://nobadfonts.in'
+            },
+            license: font.license_type || 'SIL Open Font License (OFL 1.1)',
+            image: font.preview_image_url || 'https://nobadfonts.in/banner/banner.png',
+            genre: font.category || 'Typography',
+            keywords: font.tags?.join(', ') || 'free fonts, typography, webfonts',
+            fileFormat: ['font/woff2', 'font/ttf', 'font/otf'],
+            offers: {
+                '@type': 'Offer',
+                price: '0',
+                priceCurrency: 'USD',
+                availability: 'https://schema.org/InStock',
+                category: font.commercial_use ? 'Commercial & Personal Use' : 'Personal Use Only'
+            }
+        }
+    ];
+
     return (
         <div className="min-h-screen bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))] relative selection:bg-[rgb(var(--color-highlight))] selection:text-[rgb(var(--color-background))]">
             <SEO
                 title={`${font.name} by ${font.designer}`}
-                description={`Download ${font.name}, a ${font.tags ? font.tags.join(', ') : 'unique'} font${font.designer ? ` by ${font.designer}` : ''}. Available now on NoBadFonts.`}
+                description={`Download ${font.name}, a ${font.tags ? font.tags.join(', ') : 'unique'} font${font.designer ? ` by ${font.designer}` : ''}. Free ZIP package includes WOFF2, TTF/OTF, LICENSE.txt, and README.txt on NoBadFonts.`}
                 image={font.preview_image_url || undefined}
-                url={`/fonts/${id}`}
+                imageAlt={`${font.name} typography preview specimen by ${font.designer}`}
+                url={fontCanonicalUrl}
                 keywords={font.tags || []}
+                author={font.designer}
+                schema={fontSchema}
             />
 
             <nav
@@ -436,7 +540,7 @@ export default function FontDetails() {
                                     }}
                                     className="h-10 w-10 rounded-full bg-[rgb(var(--color-foreground)/0.1)] border border-[rgb(var(--color-border)/0.2)] flex items-center justify-center text-[rgb(var(--color-foreground))] overflow-hidden hover:bg-[rgb(var(--color-foreground)/0.2)] hover:scale-105 transition-transform">
                                     {profile?.avatar_url ? (
-                                        <img src={profile.avatar_url} alt="Profile" className="h-full w-full object-cover" />
+                                        <img src={profile.avatar_url} alt={profile?.full_name ? `${profile.full_name}'s avatar` : "User profile avatar"} className="h-full w-full object-cover" />
                                     ) : (
                                         <User size={18} />
                                     )}
@@ -473,14 +577,14 @@ export default function FontDetails() {
                         >
                             {shareLoading ? <Loader2 className="animate-spin" size={20} /> : <Share2 size={20} />}
                         </button>
-                        <a
-                            href={font.woff2_url || "#"}
-                            onClick={() => downloadFont(font.woff2_url || "", `${font.name}.woff2`)}
-                            className="px-4 md:px-6 py-2.5 md:py-2.5 bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] rounded-full font-bold hover:opacity-80 transition-colors flex items-center gap-2"
+                        <button
+                            onClick={handleDownloadZip}
+                            disabled={isDownloadingZip}
+                            className="px-4 md:px-6 py-2.5 md:py-2.5 bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] rounded-full font-bold hover:opacity-80 transition-all flex items-center gap-2 disabled:opacity-75 cursor-pointer"
                         >
-                            <Download size={18} />
-                            <span className="hidden md:inline">Download</span>
-                        </a>
+                            {isDownloadingZip ? <Loader2 size={18} className="animate-spin" /> : <Download size={18} />}
+                            <span className="hidden md:inline">{isDownloadingZip ? 'Packaging ZIP...' : 'Download ZIP'}</span>
+                        </button>
                     </div>
                 </div>
             </motion.div>
@@ -529,16 +633,25 @@ export default function FontDetails() {
                                 <span className="font-bold hidden md:inline">Share</span>
                             </motion.button>
 
-                            {/* Download Button */}
-                            <motion.a
-                                whileTap={{ scale: 0.9 }}
-                                href={font.woff2_url || "#"}
-                                onClick={() => downloadFont(font.woff2_url || "", `${font.name}.woff2`)}
-                                className="flex items-center gap-2 px-4 md:px-8 py-3 bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] rounded-full font-bold hover:opacity-80 transition-colors shadow-[0_0_20px_rgba(var(--color-foreground),0.2)]"
+                            {/* Download Family (.ZIP) Button */}
+                            <motion.button
+                                whileTap={{ scale: 0.95 }}
+                                onClick={handleDownloadZip}
+                                disabled={isDownloadingZip}
+                                className="flex items-center gap-2.5 px-6 md:px-8 py-3 bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] rounded-full font-bold hover:opacity-85 transition-all shadow-[0_0_25px_rgba(var(--color-foreground),0.2)] disabled:opacity-75 cursor-pointer"
                             >
-                                <Download size={20} />
-                                <span className="font-bold  md:inline">Download Font</span>
-                            </motion.a>
+                                {isDownloadingZip ? (
+                                    <>
+                                        <Loader2 size={20} className="animate-spin" />
+                                        <span className="font-bold">{zipStatusText || 'Packaging ZIP...'}</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Download size={20} />
+                                        <span className="font-bold">Download Family (.ZIP)</span>
+                                    </>
+                                )}
+                            </motion.button>
                         </div>
                     </div>
                 </div>
@@ -833,7 +946,7 @@ font-style: ${style};
                         </section>
 
                         <div className="space-y-6">
-                            <div className="bg-[rgb(var(--color-card,var(--color-muted)))] border border-[rgb(var(--color-foreground)/0.05)] rounded-[2.5rem] p-8 h-full">
+                            <div className="bg-[rgb(var(--color-card,var(--color-muted)))] border border-[rgb(var(--color-foreground)/0.05)] rounded-[2.5rem] p-8">
                                 <h3 className="font-bold text-2xl mb-6 text-[rgb(var(--color-foreground))] uppercase tracking-wider">Font Stats</h3>
                                 <div className="space-y-4">
                                     <div className="flex justify-between items-center bg-[rgb(var(--color-foreground)/0.05)] p-4 rounded-xl">
@@ -846,6 +959,8 @@ font-style: ${style};
                                     </div>
                                 </div>
                             </div>
+
+                            <LicenseInfo font={font} />
                         </div>
                     </div>
                 </div>

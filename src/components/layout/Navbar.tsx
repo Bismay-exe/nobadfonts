@@ -74,7 +74,7 @@ export default function Navbar() {
                             className="flex items-center gap-2 group"
                         >
                             <div className="w-10 h-10 bg-[rgb(var(--color-foreground)/0.1)] rounded-xl group-hover:bg-[rgb(var(--color-foreground)/0.2)] transition-colors backdrop-blur-sm border border-[rgb(var(--color-foreground)/0.05)]">
-                                <img src={Logo} alt="" className='rounded-xl object-cover' />
+                                <img src={Logo} alt="NoBadFonts Logo" className='rounded-xl object-cover' />
                             </div>
                             <span className={cn(
                                 "font-advine text-3xl transition-opacity duration-300 hidden sm:block",
@@ -220,7 +220,7 @@ export default function Navbar() {
                                         }}
                                         className="h-10 w-10 rounded-full bg-[rgb(var(--color-foreground)/0.1)] border border-[rgb(var(--color-border)/0.2)] flex items-center justify-center text-[rgb(var(--color-foreground))] overflow-hidden hover:bg-[rgb(var(--color-foreground)/0.2)] hover:scale-105 transition-transform">
                                         {profile?.avatar_url ? (
-                                            <img src={profile.avatar_url} alt="Profile" className="h-full w-full object-cover" />
+                                            <img src={profile.avatar_url} alt={profile?.full_name ? `${profile.full_name}'s avatar` : "User profile avatar"} className="h-full w-full object-cover" />
                                         ) : (
                                             <User size={18} />
                                         )}

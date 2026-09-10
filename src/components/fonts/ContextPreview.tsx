@@ -557,7 +557,7 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                                     </div>
 
                                     {/* Simulated Product Image */}
-                                    <img src="https://media.istockphoto.com/id/1912499984/photo/comfortable-olive-green-armchair-with-wooden-legs-isolated-on-white-background.jpg?s=612x612&w=0&k=20&c=gSTPHLk0GRDrHilO0e4gMP8w1NuV-wr7e3L2yIE_Y6Q=" alt="" className="w-48 h-48 z-10" />
+                                    <img src="https://media.istockphoto.com/id/1912499984/photo/comfortable-olive-green-armchair-with-wooden-legs-isolated-on-white-background.jpg?s=612x612&w=0&k=20&c=gSTPHLk0GRDrHilO0e4gMP8w1NuV-wr7e3L2yIE_Y6Q=" alt="Sample modern armchair preview" className="w-48 h-48 z-10" />
                                     <div className="w-48 h-48 bg-orange-200 rounded-full blur-3xl absolute opacity-10"></div>
                                 </div>
                                 {/* Product Details Sheet (Bottom Half) */}
@@ -740,7 +740,7 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                                         <h2 style={{ fontFamily }} className="text-2xl font-bold">Alex's Place</h2>
                                     </div>
                                     <div className="w-10 h-10 rounded-full bg-[rgb(var(--color-muted)/0.2)] overflow-hidden border-2 border-[rgb(var(--color-border))]">
-                                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4YreOWfDX3kK-QLAbAL4ufCPc84ol2MA8Xg&s" alt="User" className="w-full h-full object-cover" />
+                                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4YreOWfDX3kK-QLAbAL4ufCPc84ol2MA8Xg&s" alt="UI sample user avatar" className="w-full h-full object-cover" />
                                     </div>
                                 </div>
                                 {/* Room Selector */}

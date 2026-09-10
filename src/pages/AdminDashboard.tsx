@@ -10,6 +10,7 @@ import type { Database } from '../types/database.types';
 
 import { useAnalytics } from '../hooks/useAnalytics';
 import AnalyticsSection from '../components/admin/AnalyticsSection';
+import SEO from '../components/shared/SEO';
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
 type FontRow = Database['public']['Tables']['fonts']['Row'];
@@ -239,6 +240,7 @@ export default function AdminDashboard() {
 
     return (
         <div className="mx-auto bg-transparent rounded-4xl">
+            <SEO title="Admin Dashboard | NoBadFonts" noindex url="/admin" />
             <div className="bg-[rgb(var(--color-foreground))] rounded-4xl p-8 border-y border-[rgb(var(--color-border))]">
                 <h1 className="text-4xl text-center md:text-left font-black uppercase text-[rgb(var(--color-background))]">Admin Dashboard</h1>
             </div>

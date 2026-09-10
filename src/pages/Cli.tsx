@@ -3,6 +3,7 @@ import { Terminal, Check, Download, Zap, FileJson } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CustomClipboard } from '../components/ui/CustomIcons';
+import SEO from '../components/shared/SEO';
 
 export default function Cli() {
     const [copied, setCopied] = useState(false);
@@ -16,6 +17,25 @@ export default function Cli() {
 
     return (
         <div className="mx-auto md:py-20">
+            <SEO
+                title="NoBadFonts CLI — Developer Command Line Typography Tool"
+                description="Install webfonts directly into your React, Next.js, and Vite projects with a single command. Automated WOFF2 optimization and CSS font-face configuration."
+                url="/cli"
+                keywords={['nobadfonts-cli', 'font cli', 'webfont installer', 'developer typography']}
+                schema={{
+                    '@type': 'SoftwareApplication',
+                    name: 'nobadfonts-cli',
+                    applicationCategory: 'DeveloperApplication',
+                    operatingSystem: 'Windows, macOS, Linux',
+                    url: 'https://nobadfonts.in/cli',
+                    description: 'Command line interface to add fonts directly into web projects.',
+                    offers: {
+                        '@type': 'Offer',
+                        price: '0',
+                        priceCurrency: 'USD'
+                    }
+                }}
+            />
 
             {/* Hero */}
             <div className="flex flex-col justify-center items-center px-0 mb-20 text-center">

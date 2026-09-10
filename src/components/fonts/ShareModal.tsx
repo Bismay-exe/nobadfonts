@@ -60,7 +60,7 @@ const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, imageSrc, font
                 <div className="relative rounded-2xl overflow-hidden border-2 border-[rgb(var(--color-border))] bg-[rgb(var(--color-muted)/0.05)] aspect-1200/800 group">
                     <img
                         src={imageSrc}
-                        alt="Share Card"
+                        alt={`${fontName} Social Share Card Preview`}
                         className="w-full h-full object-cover"
                     />
                 </div>

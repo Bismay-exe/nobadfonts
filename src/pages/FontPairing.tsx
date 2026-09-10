@@ -395,7 +395,25 @@ export default function FontPairing() {
                     color: rgb(var(--color-background));
                 }
             `}</style>
-            <SEO title="Font Pairing Playground" />
+            <SEO
+                title="Font Pairing Playground — Typography Combination Generator"
+                description="Test, mix, and preview typography pairings in real-time. Discover modern serif, sans, display, and monospace font combinations for web design and branding."
+                url="/pairing"
+                keywords={['font pairing', 'font combinations', 'typography pairing tool', 'web font tester', 'font pairings']}
+                schema={{
+                    '@type': 'WebApplication',
+                    name: 'NoBadFonts Font Pairing Playground',
+                    url: 'https://nobadfonts.in/pairing',
+                    applicationCategory: 'DesignApplication',
+                    operatingSystem: 'All',
+                    description: 'Interactive real-time typography combination and font pairing generator.',
+                    offers: {
+                        '@type': 'Offer',
+                        price: '0',
+                        priceCurrency: 'USD'
+                    }
+                }}
+            />
 
             {/* Fullpage Modal: Picker */}
             <FontPicker

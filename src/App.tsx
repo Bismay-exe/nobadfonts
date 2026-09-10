@@ -28,6 +28,12 @@ const FontPairing = React.lazy(() => import('./pages/FontPairing'));
 const Cli = React.lazy(() => import('./pages/Cli'));
 const DesignerFonts = React.lazy(() => import('./pages/DesignerFonts'));
 const Home = React.lazy(() => import('./pages/Home'));
+const TermsOfService = React.lazy(() => import('./pages/legal/TermsOfService'));
+const PrivacyPolicy = React.lazy(() => import('./pages/legal/PrivacyPolicy'));
+const DmcaPolicy = React.lazy(() => import('./pages/legal/DmcaPolicy'));
+const CookiePolicy = React.lazy(() => import('./pages/legal/SiteCookies'));
+const NotFound = React.lazy(() => import('./pages/NotFound'));
+import CookieConsent from './components/layout/CookieConsent';
 
 function AppContent() {
   const location = useLocation();
@@ -100,10 +106,16 @@ function AppContent() {
             <Route path="designers/:designerName" element={<DesignerFonts />} />
             <Route path="admin" element={<AdminDashboard />} />
             <Route path="cli" element={<Cli />} />
+            <Route path="legal/terms" element={<TermsOfService />} />
+            <Route path="legal/privacy" element={<PrivacyPolicy />} />
+            <Route path="legal/dmca" element={<DmcaPolicy />} />
+            <Route path="legal/cookies" element={<CookiePolicy />} />
+            <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
       </Suspense>
       <UpdateModal />
+      <CookieConsent />
     </>
   );
 }

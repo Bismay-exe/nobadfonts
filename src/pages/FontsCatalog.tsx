@@ -130,12 +130,39 @@ export default function FontsCatalog() {
                 width > 640 ? 2 :
                     1;
 
+    const activeCategories = filters.categories && filters.categories.length > 0 ? filters.categories : [];
+    const dynamicTitle = activeCategories.length > 0
+        ? `${activeCategories.map(c => c.charAt(0).toUpperCase() + c.slice(1)).join(', ')} Fonts Archive`
+        : filters.query
+            ? `Fonts matching "${filters.query}"`
+            : "Free Fonts Catalog — Curated Typography";
+
+    const dynamicDescription = activeCategories.length > 0
+        ? `Explore curated free ${activeCategories.join(', ')} fonts. Download open-source typefaces in WOFF2, TTF, and OTF formats on NoBadFonts.`
+        : filters.query
+            ? `Search results for "${filters.query}" on NoBadFonts. Free typography, instant testing, and zero-dependency ZIP packages.`
+            : "Explore our curated collection of 100% free and open-source fonts for modern interfaces. Filter by style, classification, and vibe.";
+
+    const catalogSchema = {
+        '@type': 'CollectionPage',
+        name: dynamicTitle,
+        description: dynamicDescription,
+        url: 'https://nobadfonts.in/fonts',
+        isPartOf: {
+            '@type': 'WebSite',
+            name: 'NoBadFonts',
+            url: 'https://nobadfonts.in'
+        }
+    };
+
     return (
         <div className="min-h-screen w-full">
             <SEO
-                title="Browse Fonts"
-                description="Explore our curated collection of high-quality fonts for modern interfaces. Filter by style, category, and more."
-                url="/fonts"
+                title={dynamicTitle}
+                description={dynamicDescription}
+                url={location.pathname + location.search}
+                keywords={['free fonts', 'font catalog', 'typography', ...activeCategories]}
+                schema={catalogSchema}
             />
 
             <div className="relative pt-0 md:pt-6 w-full">

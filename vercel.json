@@ -1,5 +1,35 @@
 {
+  "redirects": [
+    {
+      "source": "/font/:path*",
+      "destination": "/fonts/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/catalog",
+      "destination": "/fonts",
+      "permanent": true
+    },
+    {
+      "source": "/browse",
+      "destination": "/fonts",
+      "permanent": true
+    },
+    {
+      "source": "/font-pairing",
+      "destination": "/pairing",
+      "permanent": true
+    }
+  ],
   "rewrites": [
+    {
+      "source": "/docs",
+      "destination": "https://bismay-exe-nobadfonts-11.mintlify.dev/docs"
+    },
+    {
+      "source": "/docs/:match*",
+      "destination": "https://bismay-exe-nobadfonts-11.mintlify.dev/docs/:match*"
+    },
     {
       "source": "/css/:family",
       "destination": "https://wcegdxhvgwbeskaidlxr.supabase.co/functions/v1/serve-css?family=:family"
@@ -9,16 +39,12 @@
       "destination": "https://wcegdxhvgwbeskaidlxr.supabase.co/storage/v1/object/public/fonts/:path*"
     },
     {
+      "source": "/sitemap.xml",
+      "destination": "/api/sitemap"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
-    },
-    {
-      "source": "/docs",
-      "destination": "https://bismay-exe-nobadfonts-11.mintlify.dev/docs"
-    },
-    {
-      "source": "/docs/:match*",
-      "destination": "https://bismay-exe-nobadfonts-11.mintlify.dev/docs/:match*"
     }
   ],
   "headers": [

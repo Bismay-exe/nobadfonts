@@ -177,7 +177,7 @@ export default function GalleryEditor({ font, user, initialImages, initialSizes,
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-6">
                 {galleryState.map((item, index) => (
                     <div key={item.id} className="relative group aspect-square bg-black rounded-xl border border-white/10 overflow-hidden">
-                        <img src={item.url} alt="" className="w-full h-full object-cover" />
+                        <img src={item.url} alt={`Gallery specimen preview ${index + 1}`} className="w-full h-full object-cover" />
 
                         <div className="absolute inset-0 bg-[rgb(var(--color-background)/0.8)] opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2">
                             <div className="flex gap-2">

@@ -92,7 +92,7 @@ const SocialShareCard = forwardRef<HTMLDivElement, SocialShareCardProps>(({ font
 
                 </div>
                 <div className="w-12 h-12 bg-[rgb(var(--color-muted))] rounded-xl overflow-hidden flex items-center justify-center">
-                    <img src="/logo/logo.png" alt="" className='w-full h-full object-contain' />
+                    <img src="/logo/logo.png" alt="NoBadFonts Logo" className='w-full h-full object-contain' />
                 </div>
             </div>
 

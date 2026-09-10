@@ -27,26 +27,36 @@ async function generateSitemap() {
     console.log('Generating sitemap...');
 
     const staticRoutes = [
-        '',
-        '/fonts',
-        '/pairing',
-        '/auth',
-        '/upload',
-        '/profile',
-        '/members',
-        '/cli'
+        { path: '', priority: '1.0', changefreq: 'daily' },
+        { path: '/fonts', priority: '0.9', changefreq: 'daily' },
+        { path: '/pairing', priority: '0.8', changefreq: 'weekly' },
+        { path: '/members', priority: '0.7', changefreq: 'weekly' },
+        { path: '/cli', priority: '0.7', changefreq: 'monthly' },
+        // Legal & Compliance Routes
+        { path: '/legal/terms', priority: '0.5', changefreq: 'yearly' },
+        { path: '/legal/privacy', priority: '0.5', changefreq: 'yearly' },
+        { path: '/legal/dmca', priority: '0.5', changefreq: 'yearly' },
+        { path: '/legal/cookies', priority: '0.5', changefreq: 'yearly' },
+        // Popular Category Landing Paths
+        { path: '/fonts?categories=sans', priority: '0.8', changefreq: 'daily' },
+        { path: '/fonts?categories=serif', priority: '0.8', changefreq: 'daily' },
+        { path: '/fonts?categories=slab-serif', priority: '0.7', changefreq: 'weekly' },
+        { path: '/fonts?categories=display', priority: '0.8', changefreq: 'daily' },
+        { path: '/fonts?categories=monospace', priority: '0.7', changefreq: 'weekly' },
+        { path: '/fonts?categories=script', priority: '0.7', changefreq: 'weekly' }
     ];
 
     let xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`;
 
-    // 1. Static Routes
+    // 1. Static & Category Routes
     staticRoutes.forEach(route => {
+        const urlLoc = `${DOMAIN}${route.path}`.replace(/&/g, '&amp;');
         xml += `
     <url>
-        <loc>${DOMAIN}${route}</loc>
-        <changefreq>daily</changefreq>
-        <priority>${route === '' ? '1.0' : '0.8'}</priority>
+        <loc>${urlLoc}</loc>
+        <changefreq>${route.changefreq}</changefreq>
+        <priority>${route.priority}</priority>
     </url>`;
     });
 
