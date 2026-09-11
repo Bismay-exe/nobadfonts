@@ -1,5 +1,5 @@
 import { useNavigate, useParams, Link } from 'react-router-dom';
-import { Download, Heart, Share2, Image as ImageIcon, Edit2, Loader2, Layout, Type, Trash2, FileType, User, Terminal, Sun, Moon, Coffee, Sparkles, Cherry, Gem, Leaf, Flame, Cloud, SunDim, Waves, Anchor, Building, Joystick, ShoppingBag, Droplets, ArrowLeft } from 'lucide-react';
+import { Download, Heart, Share2, Image as ImageIcon, Edit2, Loader2, Layout, Type, Trash2, FileType, User, Sun, Moon, ArrowLeft } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import SocialShareCard from '../components/fonts/SocialShareCard';
 import ShareModal from '../components/fonts/ShareModal';
@@ -517,21 +517,6 @@ export default function FontDetails() {
                                 <div className="transition-transform duration-300 group-hover:rotate-12 group-active:scale-90">
                                     {theme === 'light' && <Sun size={18} />}
                                     {theme === 'dark' && <Moon size={18} />}
-                                    {theme === 'sepia' && <Coffee size={18} />}
-                                    {theme === 'vibrant' && <Sparkles size={18} />}
-                                    {theme === 'candy' && <Cherry size={18} />}
-                                    {theme === 'soft-blue' && <Cloud size={18} />}
-                                    {theme === 'luxury' && <Gem size={18} />}
-                                    {theme === 'terminal' && <Terminal size={18} />}
-                                    {theme === 'nature' && <Leaf size={18} />}
-                                    {theme === 'neo-red' && <Flame size={18} />}
-                                    {theme === 'neo-blue' && <Droplets size={18} />}
-                                    {theme === 'neo-yellow' && <SunDim size={18} />}
-                                    {theme === 'uv' && <Waves size={18} />}
-                                    {theme === 'rust' && <Anchor size={18} />}
-                                    {theme === 'concrete' && <Building size={18} />}
-                                    {theme === 'rgb-clash' && <Joystick size={18} />}
-                                    {theme === 'ikea-chaos' && <ShoppingBag size={18} />}
                                 </div>
                             </motion.button>
 
@@ -666,7 +651,7 @@ export default function FontDetails() {
                 {/* Gallery / Hero Display */}
                 <div className="relative w-full overflow-hidden border border-none rounded-4xl shadow-2xl group" style={{ '--mobile-ar': mobileAr, '--desktop-ar': desktopAr } as React.CSSProperties}>
                     {galleryImages.length > 0 ? (
-                        <div className={galleryImages.length > 1 ? `relative w-full aspect-(--mobile-ar) md:aspect-21/7` : `relative w-full`}>
+                        <div className={galleryImages.length > 1 ? `relative h-full w-full aspect-(--mobile-ar) md:aspect-21/7` : `relative h-full w-full`}>
                             <PreviewAccordion images={galleryImages} />
                         </div>
                     ) : (

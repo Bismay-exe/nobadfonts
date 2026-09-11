@@ -4,7 +4,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useState, useEffect, useMemo } from 'react';
 import { cn } from '../../lib/utils';
-import { Type, Combine, Terminal, Users, User, Shield, Plus, Sun, Moon, Coffee, Sparkles, Cherry, Gem, Leaf, Flame, Cloud, SunDim, Waves, Anchor, Building, Joystick, ShoppingBag, Droplets } from 'lucide-react';
+import { Type, Combine, Terminal, Users, User, Shield, Plus, Sun, Moon, Building } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../../contexts/ThemeContext';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
@@ -177,21 +177,7 @@ export default function Navbar() {
                                 <div className="transition-transform duration-300 group-hover:rotate-12 group-active:scale-90">
                                     {theme === 'light' && <Sun size={18} />}
                                     {theme === 'dark' && <Moon size={18} />}
-                                    {theme === 'sepia' && <Coffee size={18} />}
-                                    {theme === 'vibrant' && <Sparkles size={18} />}
-                                    {theme === 'candy' && <Cherry size={18} />}
-                                    {theme === 'soft-blue' && <Cloud size={18} />}
-                                    {theme === 'luxury' && <Gem size={18} />}
-                                    {theme === 'terminal' && <Terminal size={18} />}
-                                    {theme === 'nature' && <Leaf size={18} />}
-                                    {theme === 'neo-red' && <Flame size={18} />}
-                                    {theme === 'neo-blue' && <Droplets size={18} />}
-                                    {theme === 'neo-yellow' && <SunDim size={18} />}
-                                    {theme === 'uv' && <Waves size={18} />}
-                                    {theme === 'rust' && <Anchor size={18} />}
                                     {theme === 'concrete' && <Building size={18} />}
-                                    {theme === 'rgb-clash' && <Joystick size={18} />}
-                                    {theme === 'ikea-chaos' && <ShoppingBag size={18} />}
                                 </div>
                             </motion.button>
 

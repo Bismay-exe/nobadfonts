@@ -226,6 +226,12 @@
         <priority>0.9</priority>
     </url>
     <url>
+        <loc>https://nobadfonts.in/fonts/bitend</loc>
+        <lastmod>2026-05-04T05:08:42.038Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
         <loc>https://nobadfonts.in/fonts/3x3-mono</loc>
         <lastmod>2026-02-12T13:00:02.850Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -670,14 +676,14 @@
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://nobadfonts.in/fonts/thunder</loc>
-        <lastmod>2026-02-10T12:30:27.339Z</lastmod>
+        <loc>https://nobadfonts.in/fonts/noctra-drip</loc>
+        <lastmod>2026-05-01T15:49:40.592Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://nobadfonts.in/fonts/noctra-drip</loc>
-        <lastmod>2026-05-01T15:49:40.592Z</lastmod>
+        <loc>https://nobadfonts.in/fonts/thunder</loc>
+        <lastmod>2026-02-10T12:30:27.339Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
@@ -756,12 +762,6 @@
     <url>
         <loc>https://nobadfonts.in/fonts/bestie-seventy</loc>
         <lastmod>2026-05-01T19:17:40.213Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.9</priority>
-    </url>
-    <url>
-        <loc>https://nobadfonts.in/fonts/bitend</loc>
-        <lastmod>2026-05-04T05:08:42.038Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
@@ -896,6 +896,11 @@
     </url>
     <url>
         <loc>https://nobadfonts.in/designers/Galdino%20Otten</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://nobadfonts.in/designers/Lettertype%20Studio</loc>
         <changefreq>weekly</changefreq>
         <priority>0.7</priority>
     </url>
@@ -1075,12 +1080,12 @@
         <priority>0.7</priority>
     </url>
     <url>
-        <loc>https://nobadfonts.in/designers/Rajesh%20Rajput</loc>
+        <loc>https://nobadfonts.in/designers/Cikareotype%20Studio</loc>
         <changefreq>weekly</changefreq>
         <priority>0.7</priority>
     </url>
     <url>
-        <loc>https://nobadfonts.in/designers/Cikareotype%20Studio</loc>
+        <loc>https://nobadfonts.in/designers/Rajesh%20Rajput</loc>
         <changefreq>weekly</changefreq>
         <priority>0.7</priority>
     </url>
@@ -1126,11 +1131,6 @@
     </url>
     <url>
         <loc>https://nobadfonts.in/designers/BONJOURTYPE</loc>
-        <changefreq>weekly</changefreq>
-        <priority>0.7</priority>
-    </url>
-    <url>
-        <loc>https://nobadfonts.in/designers/Lettertype%20Studio</loc>
         <changefreq>weekly</changefreq>
         <priority>0.7</priority>
     </url>

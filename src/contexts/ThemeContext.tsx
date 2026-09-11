@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 
-type Theme = 'light' | 'dark' | 'sepia' | 'vibrant' | 'candy' | 'soft-blue' | 'luxury' | 'terminal' | 'nature' | 'neo-red' | 'neo-blue' | 'neo-yellow' | 'uv' | 'rust' | 'concrete' | 'rgb-clash' | 'ikea-chaos';
+type Theme = 'light' | 'dark' | 'concrete';
 
-const THEMES: Theme[] = ['light', 'dark', 'sepia', 'vibrant', 'candy', 'soft-blue', 'luxury', 'terminal', 'nature', 'neo-red', 'neo-blue', 'neo-yellow', 'uv', 'rust', 'concrete', 'rgb-clash', 'ikea-chaos'];
+const THEMES: Theme[] = ['light', 'dark', 'concrete'];
 
 interface ThemeContextType {
   theme: Theme;
