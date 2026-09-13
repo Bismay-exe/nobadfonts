@@ -43,6 +43,28 @@
       "destination": "/api/sitemap"
     },
     {
+      "source": "/fonts/:slug((?!.*\\.[a-zA-Z0-9]+$).*)",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*(bot|crawler|spider|facebook|whatsapp|twitter|slack|discord|telegram|linkedin|applebot|pinterest|meta|embedly|quora|yahoo|duckduckgo|yandex|bing|google|Bot|Crawler|Spider|Facebook|WhatsApp|Twitter|Slack|Discord|Telegram|LinkedIn|Applebot|Pinterest).*"
+        }
+      ],
+      "destination": "/api/og-meta?slug=:slug"
+    },
+    {
+      "source": "/font/:slug((?!.*\\.[a-zA-Z0-9]+$).*)",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*(bot|crawler|spider|facebook|whatsapp|twitter|slack|discord|telegram|linkedin|applebot|pinterest|meta|embedly|quora|yahoo|duckduckgo|yandex|bing|google|Bot|Crawler|Spider|Facebook|WhatsApp|Twitter|Slack|Discord|Telegram|LinkedIn|Applebot|Pinterest).*"
+        }
+      ],
+      "destination": "/api/og-meta?slug=:slug"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
