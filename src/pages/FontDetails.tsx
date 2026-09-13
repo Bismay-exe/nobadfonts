@@ -23,6 +23,7 @@ import FileManager from '../components/fonts/FileManager';
 import VariantList from '../components/fonts/VariantList';
 import LicenseInfo from '../components/fonts/LicenseInfo';
 import { createFontZipPackage, triggerBlobDownload } from '../utils/zipBuilder';
+import AdminOgImageManager from '../components/fonts/AdminOgImageManager';
 
 export default function FontDetails() {
 
@@ -30,14 +31,21 @@ export default function FontDetails() {
     const { user, profile } = useAuth();
     const { theme, toggleTheme } = useTheme();
     const navigate = useNavigate();
-    const { font, loading, error, isFavorited, setIsFavorited } = useFont(id);
+    const { font, setFont, loading, error, isFavorited, setIsFavorited } = useFont(id);
     const [isFontLoaded, setIsFontLoaded] = useState(false);
 
     // Social Share State
     const [shareLoading, setShareLoading] = useState(false);
     const [showShareModal, setShowShareModal] = useState(false);
     const [shareImageSrc, setShareImageSrc] = useState<string | null>(null);
+    const [activeOgVariantId, setActiveOgVariantId] = useState<string | null>(font?.og_image_variant_id || null);
     const shareRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (font?.og_image_variant_id) {
+            setActiveOgVariantId(font.og_image_variant_id);
+        }
+    }, [font?.og_image_variant_id]);
 
     const [variantPreviewText, setVariantPreviewText] = useState('');
     const [variantPreviewSize, setVariantPreviewSize] = useState(48);
@@ -461,13 +469,17 @@ export default function FontDetails() {
             }
         }
     ];
+    const ogImage =
+        font.og_image_url ||
+        (font.gallery_images && font.gallery_images.length > 0 ? font.gallery_images[0] : null) ||
+        'https://nobadfonts.in/banner/banner.png';
 
     return (
         <div className="min-h-screen bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))] relative selection:bg-[rgb(var(--color-highlight))] selection:text-[rgb(var(--color-background))]">
             <SEO
                 title={`${font.name} by ${font.designer}`}
                 description={`Download ${font.name}, a ${font.tags ? font.tags.join(', ') : 'unique'} font${font.designer ? ` by ${font.designer}` : ''}. Free ZIP package includes WOFF2, TTF/OTF, LICENSE.txt, and README.txt on NoBadFonts.`}
-                image={font.preview_image_url || undefined}
+                image={ogImage}
                 imageAlt={`${font.name} typography preview specimen by ${font.designer}`}
                 url={fontCanonicalUrl}
                 keywords={font.tags || []}
@@ -731,7 +743,12 @@ export default function FontDetails() {
 
                 {/* Hidden Share Card for Generation */}
                 <div className="absolute -left-2499.75 -top-2499.75">
-                    <SocialShareCard ref={shareRef} font={font} />
+                    <SocialShareCard
+                        ref={shareRef}
+                        font={font}
+                        aspectRatio="share"
+                        selectedVariantId={activeOgVariantId || font.og_image_variant_id}
+                    />
                 </div>
 
                 <ShareModal
@@ -749,6 +766,23 @@ export default function FontDetails() {
                         <h2 className="text-2xl font-bold uppercase tracking-widest text-[rgb(var(--color-muted-foreground))]">Variant Previews</h2>
                         <div className="h-px bg-[rgb(var(--color-foreground)/0.1)] flex-1"></div>
                     </div>
+
+                    {/* Admin OG Social Card Manager (Exclusively for Admins) */}
+                    {profile?.role === 'admin' && (
+                        <AdminOgImageManager
+                            font={font}
+                            onVariantChange={(variantId) => {
+                                setActiveOgVariantId(variantId);
+                            }}
+                            onFontUpdated={(updatedFields) => {
+                                setFont(prev => prev ? { ...prev, ...updatedFields } : null);
+                                if (updatedFields.og_image_variant_id) {
+                                    setActiveOgVariantId(updatedFields.og_image_variant_id);
+                                }
+                            }}
+                        />
+                    )}
+
                     <div className="flex flex-col md:flex-row items-center justify-between gap-6 p-6 rounded-4xl border border-[rgb(var(--color-foreground)/0.1)] bg-[rgb(var(--color-foreground)/0.05)]" >
                         <input
                             type="text"

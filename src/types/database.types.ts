@@ -160,6 +160,11 @@ export type Database = {
           file_size_image_preview: number | null
           gallery_image_sizes: number[] | null
           uploaded_by: string
+          og_image_url: string | null
+          og_image_variant_id: string | null
+          og_image_variant_count: number | null
+          og_image_variant_signature: string | null
+          og_image_generated_at: string | null
         }
         Insert: {
           category: string
@@ -190,7 +195,12 @@ export type Database = {
           weights?: number[] | null
           woff2_url: string
           zip_url: string
-          gallery_images: string[] | null
+          gallery_images?: string[] | null
+          og_image_url?: string | null
+          og_image_variant_id?: string | null
+          og_image_variant_count?: number | null
+          og_image_variant_signature?: string | null
+          og_image_generated_at?: string | null
         }
         Update: {
           category?: string
@@ -222,6 +232,11 @@ export type Database = {
           woff2_url?: string
           zip_url?: string
           gallery_images?: string[] | null
+          og_image_url?: string | null
+          og_image_variant_id?: string | null
+          og_image_variant_count?: number | null
+          og_image_variant_signature?: string | null
+          og_image_generated_at?: string | null
         }
         Relationships: []
       }

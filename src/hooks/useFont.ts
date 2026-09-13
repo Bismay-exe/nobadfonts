@@ -59,5 +59,5 @@ export function useFont(id: string | undefined) {
     fetchFontAndFavoriteStatus();
   }, [id]);
 
-  return { font, loading, error, isFavorited, setIsFavorited };
+  return { font, setFont, loading, error, isFavorited, setIsFavorited };
 }
