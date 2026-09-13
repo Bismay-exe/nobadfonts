@@ -252,6 +252,25 @@ export default function FontDetails() {
                     if (path) filePaths.push(path);
                 });
             }
+            if (font.og_image_url) {
+                const path = getPathFromUrl(font.og_image_url);
+                if (path) filePaths.push(path);
+            }
+
+            // Also check for any files inside og-images/{font.id} folder
+            try {
+                const { data: ogFiles } = await supabase.storage.from('fonts').list(`og-images/${font.id}`);
+                if (ogFiles && Array.isArray(ogFiles)) {
+                    ogFiles.forEach(f => {
+                        if (f.name) {
+                            const p = `og-images/${font.id}/${f.name}`;
+                            if (!filePaths.includes(p)) filePaths.push(p);
+                        }
+                    });
+                }
+            } catch (err) {
+                console.warn("Could not list og-images for font deletion cleanup:", err);
+            }
 
             // Variant files
             if (font.font_variants && Array.isArray(font.font_variants)) {

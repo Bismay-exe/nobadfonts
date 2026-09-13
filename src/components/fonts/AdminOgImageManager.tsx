@@ -15,7 +15,8 @@ import {
     ChevronDown,
     Layers,
     Clock,
-    Check
+    Check,
+    Trash2
 } from 'lucide-react';
 
 interface AdminOgImageManagerProps {
@@ -34,6 +35,28 @@ type GenerationStatus =
     | 'saving'
     | 'success'
     | 'error';
+
+// Helpers to extract storage path and filename from Supabase URL
+const getPathFromUrl = (url: string) => {
+    try {
+        const urlObj = new URL(url);
+        const pathParts = urlObj.pathname.split('/public/fonts/');
+        if (pathParts.length > 1) return decodeURIComponent(pathParts[1]);
+        return null;
+    } catch {
+        return null;
+    }
+};
+
+const getFileNameFromUrl = (url: string) => {
+    try {
+        const urlObj = new URL(url);
+        const segments = urlObj.pathname.split('/');
+        return segments[segments.length - 1] || null;
+    } catch {
+        return null;
+    }
+};
 
 export default function AdminOgImageManager({ font, onFontUpdated, onVariantChange }: AdminOgImageManagerProps) {
     const variants = useMemo(() => font.font_variants || [], [font.font_variants]);
@@ -61,8 +84,33 @@ export default function AdminOgImageManager({ font, onFontUpdated, onVariantChan
     const [statusMessage, setStatusMessage] = useState<string>('');
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [activeFontFamily, setActiveFontFamily] = useState<string | undefined>(undefined);
+    const [orphanedCount, setOrphanedCount] = useState<number>(0);
+    const [isDeleting, setIsDeleting] = useState<boolean>(false);
 
     const hiddenCardRef = useRef<HTMLDivElement>(null);
+
+    // Scan for obsolete files in storage folder
+    const checkOrphanedFiles = async () => {
+        try {
+            const { data: files, error } = await supabase.storage
+                .from('fonts')
+                .list(`og-images/${font.id}`);
+
+            if (!error && files && files.length > 0) {
+                const currentFileName = font.og_image_url ? getFileNameFromUrl(font.og_image_url) : null;
+                const obsoleteFiles = files.filter(f => f.name && f.name !== currentFileName && f.name !== '.emptyFolderPlaceholder');
+                setOrphanedCount(obsoleteFiles.length);
+            } else {
+                setOrphanedCount(0);
+            }
+        } catch {
+            setOrphanedCount(0);
+        }
+    };
+
+    useEffect(() => {
+        checkOrphanedFiles();
+    }, [font.id, font.og_image_url]);
 
     // Currently chosen variant object
     const selectedVariant = useMemo(() => {
@@ -97,6 +145,114 @@ export default function AdminOgImageManager({ font, onFontUpdated, onVariantChan
 
         return null;
     }, [font.og_image_url, font.og_image_variant_count, font.og_image_variant_id, currentVariantsCount, currentOgVariant]);
+
+    // ── PURGE OBSOLETE / ORPHANED OG FILES ──────────────────────────────────
+    const handlePurgeOrphaned = async () => {
+        if (!window.confirm(`Delete ${orphanedCount} older OG image file(s) from Supabase storage? The current active card will be preserved.`)) {
+            return;
+        }
+
+        try {
+            const { data: files } = await supabase.storage
+                .from('fonts')
+                .list(`og-images/${font.id}`);
+
+            if (!files || files.length === 0) {
+                setOrphanedCount(0);
+                return;
+            }
+
+            const currentFileName = font.og_image_url ? getFileNameFromUrl(font.og_image_url) : null;
+            const obsoleteFiles = files
+                .filter(f => f.name && f.name !== currentFileName && f.name !== '.emptyFolderPlaceholder')
+                .map(f => `og-images/${font.id}/${f.name}`);
+
+            if (obsoleteFiles.length > 0) {
+                const { error: removeError } = await supabase.storage.from('fonts').remove(obsoleteFiles);
+                if (removeError) throw removeError;
+                setOrphanedCount(0);
+                await Toast.show({
+                    text: `Freed storage! Deleted ${obsoleteFiles.length} obsolete OG file(s).`,
+                    duration: 'short'
+                });
+            }
+        } catch (err: any) {
+            console.error('Purge error:', err);
+            await Toast.show({ text: 'Purge failed: ' + (err.message || 'Unknown error'), duration: 'long' });
+        }
+    };
+
+    // ── DELETE CUSTOM OG IMAGE ENTIRELY ─────────────────────────────────────
+    const handleDeleteOgImage = async () => {
+        if (!window.confirm('Delete this custom OG card? Social crawlers will fall back to your gallery image or site banner.')) {
+            return;
+        }
+
+        setIsDeleting(true);
+        setStatusMessage('Deleting custom OG card from storage...');
+        try {
+            const pathsToDelete: string[] = [];
+            if (font.og_image_url) {
+                const oldPath = getPathFromUrl(font.og_image_url);
+                if (oldPath) pathsToDelete.push(oldPath);
+            }
+
+            const { data: files } = await supabase.storage
+                .from('fonts')
+                .list(`og-images/${font.id}`);
+
+            if (files && Array.isArray(files)) {
+                for (const file of files) {
+                    if (file.name && file.name !== '.emptyFolderPlaceholder') {
+                        const itemPath = `og-images/${font.id}/${file.name}`;
+                        if (!pathsToDelete.includes(itemPath)) {
+                            pathsToDelete.push(itemPath);
+                        }
+                    }
+                }
+            }
+
+            if (pathsToDelete.length > 0) {
+                const { error: removeError } = await supabase.storage.from('fonts').remove(pathsToDelete);
+                if (removeError) {
+                    console.warn('Storage delete warning:', removeError);
+                }
+            }
+
+            const resetPayload = {
+                og_image_url: null,
+                og_image_variant_id: null,
+                og_image_variant_count: null,
+                og_image_variant_signature: null,
+                og_image_generated_at: null
+            };
+
+            const { error: dbError } = await supabase
+                .from('fonts')
+                .update(resetPayload)
+                .eq('id', font.id);
+
+            if (dbError) throw dbError;
+
+            onFontUpdated(resetPayload);
+            setOrphanedCount(0);
+            setStatus('idle');
+            setStatusMessage('');
+
+            await Toast.show({
+                text: 'Custom OG card deleted. Fallback active.',
+                duration: 'short'
+            });
+        } catch (err: any) {
+            console.error('Failed to delete OG card:', err);
+            await Toast.show({
+                text: 'Failed to delete OG image: ' + (err.message || 'Unknown error'),
+                duration: 'long'
+            });
+        } finally {
+            setIsDeleting(false);
+        }
+    };
 
     // ── GENERATE & COMMIT PIPELINE ──────────────────────────────────────────
     const handleGenerateOgImage = async () => {
@@ -166,7 +322,8 @@ export default function AdminOgImageManager({ font, onFontUpdated, onVariantChan
             // 6. Upload to Supabase Storage
             setStatus('uploading');
             setStatusMessage('Uploading to Supabase Storage...');
-            const storagePath = `og-images/${font.id}/og-${selectedVariant.id}-${Date.now()}.png`;
+            const newFileName = `og-${selectedVariant.id}-${Date.now()}.png`;
+            const storagePath = `og-images/${font.id}/${newFileName}`;
 
             const { error: uploadError } = await supabase.storage
                 .from('fonts')
@@ -206,7 +363,44 @@ export default function AdminOgImageManager({ font, onFontUpdated, onVariantChan
                 throw new Error(`Failed to save OG URL to database: ${dbError.message}`);
             }
 
-            // 8. Success: sync local state
+            // 8. Auto-clean: Delete previous obsolete OG files in Supabase Storage
+            try {
+                const pathsToDelete: string[] = [];
+
+                // Check previous og_image_url
+                if (font.og_image_url) {
+                    const oldPath = getPathFromUrl(font.og_image_url);
+                    if (oldPath && oldPath !== storagePath) {
+                        pathsToDelete.push(oldPath);
+                    }
+                }
+
+                // List all files in og-images/{font.id}
+                const { data: existingFiles } = await supabase.storage
+                    .from('fonts')
+                    .list(`og-images/${font.id}`);
+
+                if (existingFiles && Array.isArray(existingFiles)) {
+                    for (const file of existingFiles) {
+                        if (file.name && file.name !== newFileName && file.name !== '.emptyFolderPlaceholder') {
+                            const itemPath = `og-images/${font.id}/${file.name}`;
+                            if (!pathsToDelete.includes(itemPath)) {
+                                pathsToDelete.push(itemPath);
+                            }
+                        }
+                    }
+                }
+
+                if (pathsToDelete.length > 0) {
+                    console.log(`Auto-deleting ${pathsToDelete.length} obsolete OG image(s):`, pathsToDelete);
+                    await supabase.storage.from('fonts').remove(pathsToDelete);
+                }
+                setOrphanedCount(0);
+            } catch (cleanupErr) {
+                console.warn('Storage cleanup warning:', cleanupErr);
+            }
+
+            // 9. Success: sync local state
             setStatus('success');
             setStatusMessage('✓ OG image generated and saved successfully!');
 
@@ -240,7 +434,7 @@ export default function AdminOgImageManager({ font, onFontUpdated, onVariantChan
         }
     };
 
-    const isWorking = status !== 'idle' && status !== 'success' && status !== 'error';
+    const isWorking = (status !== 'idle' && status !== 'success' && status !== 'error') || isDeleting;
 
     return (
         <div className="rounded-3xl border-2 border-dashed border-[rgb(var(--color-primary)/0.4)] bg-[rgb(var(--color-foreground)/0.02)] p-6 md:p-8 space-y-6 mb-8">
@@ -383,7 +577,7 @@ export default function AdminOgImageManager({ font, onFontUpdated, onVariantChan
                         </div>
                     )}
 
-                    {/* Action Button */}
+                    {/* Action Buttons */}
                     <div className="flex flex-wrap items-center gap-3">
                         <button
                             onClick={handleGenerateOgImage}
@@ -403,8 +597,32 @@ export default function AdminOgImageManager({ font, onFontUpdated, onVariantChan
                             )}
                         </button>
 
+                        {font.og_image_url && (
+                            <button
+                                onClick={handleDeleteOgImage}
+                                disabled={isWorking}
+                                className="inline-flex items-center gap-2 px-4 py-3.5 rounded-2xl border border-red-500/30 bg-red-500/10 text-red-500 hover:bg-red-500/20 font-bold text-xs uppercase tracking-wider transition-all cursor-pointer disabled:opacity-50"
+                                title="Delete custom OG card from Supabase Storage and revert to fallback"
+                            >
+                                <Trash2 className="w-4 h-4" />
+                                Delete OG
+                            </button>
+                        )}
+
+                        {orphanedCount > 0 && (
+                            <button
+                                onClick={handlePurgeOrphaned}
+                                disabled={isWorking}
+                                className="inline-flex items-center gap-1.5 px-4 py-3.5 rounded-2xl border border-amber-500/40 bg-amber-500/10 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 font-bold text-xs uppercase tracking-wider transition-all cursor-pointer disabled:opacity-50"
+                                title={`Delete ${orphanedCount} obsolete OG files from Supabase Storage`}
+                            >
+                                <Trash2 className="w-4 h-4" />
+                                Purge {orphanedCount} Old Version{orphanedCount > 1 ? 's' : ''}
+                            </button>
+                        )}
+
                         <span className="text-xs font-mono text-[rgb(var(--color-muted-foreground))]">
-                            Renders 1200×630 with true metadata chips
+                            Auto-cleans obsolete images on upload
                         </span>
                     </div>
 
