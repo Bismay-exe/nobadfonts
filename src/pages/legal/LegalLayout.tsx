@@ -84,7 +84,7 @@ export default function LegalLayout({ title, description, lastUpdated, children 
                         <p className="text-sm text-[rgb(var(--color-muted-foreground))]">Our legal and support team reviews all requests within 24–48 hours.</p>
                     </div>
                     <a
-                        href="mailto:legal@nobadfonts.in"
+                        href="mailto:nobadfonts@gmail.com"
                         className="px-5 py-2.5 rounded-full font-bold text-sm bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] hover:opacity-90 transition-opacity whitespace-nowrap"
                     >
                         Contact Legal Team
