@@ -16,6 +16,7 @@ body {
   /* Light Theme (Default) */
   --color-background: 255 255 255;
   --color-foreground: 9 9 11;
+  --color-secondary: 47 47 47;
   --color-card: 244 244 245;
   --color-card-foreground: 9 9 11;
   --color-muted: 244 244 245;
@@ -23,7 +24,8 @@ body {
   --color-border: 228 228 231;
   --color-primary: 255 0 0;
   --color-highlight: 189 245 34;
-  --color-accent: 255 144 232; /* Pink */
+  --color-accent: 255 144 232;
+  /* Pink */
   --color-purple: 126 59 237;
   --color-destructive: 239 68 68;
   --color-success: 189 245 34;
@@ -38,6 +40,7 @@ body {
 [data-theme="dark"] {
   --color-background: 8 8 8;
   --color-foreground: 250 250 250;
+  --color-secondary: 209 209 209;
   --color-card: 10 10 10;
   --color-card-foreground: 250 250 250;
   --color-muted: 39 39 42;
@@ -118,20 +121,45 @@ body {
   --animate-shimmer: shimmer 2s linear infinite;
 
   @keyframes accordion-down {
-    from { height: 0; }
-    to { height: var(--radix-accordion-content-height); }
+    from {
+      height: 0;
+    }
+
+    to {
+      height: var(--radix-accordion-content-height);
+    }
   }
+
   @keyframes accordion-up {
-    from { height: var(--radix-accordion-content-height); }
-    to { height: 0; }
+    from {
+      height: var(--radix-accordion-content-height);
+    }
+
+    to {
+      height: 0;
+    }
   }
+
   @keyframes spotlight {
-    0% { opacity: 0; transform: translate(-72%, -62%) scale(0.5); }
-    100% { opacity: 1; transform: translate(-50%,-40%) scale(1); }
+    0% {
+      opacity: 0;
+      transform: translate(-72%, -62%) scale(0.5);
+    }
+
+    100% {
+      opacity: 1;
+      transform: translate(-50%, -40%) scale(1);
+    }
   }
+
   @keyframes shimmer {
-    from { background-position: 0 0; }
-    to { background-position: -200% 0; }
+    from {
+      background-position: 0 0;
+    }
+
+    to {
+      background-position: -200% 0;
+    }
   }
 }
 
@@ -159,22 +187,22 @@ body {
     backdrop-filter: blur(20px);
     border: 1px solid rgb(var(--color-foreground) / 0.1);
   }
-  
+
   .glass-card {
     background-color: rgb(var(--color-card) / 0.3);
     backdrop-filter: blur(12px);
     border: 1px solid rgb(var(--color-foreground) / 0.05);
     box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
   }
-  
+
   .text-gradient {
     @apply bg-clip-text text-transparent;
     background-image: linear-gradient(to bottom right, rgb(var(--color-foreground)), rgb(var(--color-foreground)), rgb(var(--color-muted-foreground)));
   }
-  
+
   .text-gradient-gold {
-     @apply bg-clip-text text-transparent;
-     background-image: linear-gradient(to bottom, rgb(var(--color-gold-1)), rgb(var(--color-gold-2)));
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(to bottom, rgb(var(--color-gold-1)), rgb(var(--color-gold-2)));
   }
 }
 
@@ -374,13 +402,13 @@ body,
 
 /* Enable smooth positioning transitions inside Masonic grid for bulk expand/collapse */
 .masonic-grid.is-bulk-toggling [role="gridcell"],
-.masonic-grid.is-bulk-toggling > div > div {
-  transition: transform 0.3s cubic-bezier(0.2, 0, 0, 1), 
-              top 0.3s cubic-bezier(0.2, 0, 0, 1), 
-              left 0.3s cubic-bezier(0.2, 0, 0, 1) !important;
+.masonic-grid.is-bulk-toggling>div>div {
+  transition: transform 0.3s cubic-bezier(0.2, 0, 0, 1),
+    top 0.3s cubic-bezier(0.2, 0, 0, 1),
+    left 0.3s cubic-bezier(0.2, 0, 0, 1) !important;
   will-change: transform, top, left, height;
   backface-visibility: hidden;
-  transform: translateZ(0); 
+  transform: translateZ(0);
 }
 
 .app-container {
@@ -401,6 +429,7 @@ body,
 
 /* Accessibility: Respect users who request reduced motion */
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {

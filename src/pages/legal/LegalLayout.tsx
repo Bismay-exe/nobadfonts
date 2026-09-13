@@ -1,95 +1,105 @@
 import { NavLink, Link } from 'react-router-dom';
 import SEO from '../../components/shared/SEO';
-import { ShieldCheck, FileText, Scale, Cookie, ArrowLeft } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 
 interface LegalLayoutProps {
     title: string;
     description: string;
     lastUpdated: string;
+    kicker?: string;
     children: React.ReactNode;
 }
 
 const LEGAL_TABS = [
-    { name: 'Terms of Service', path: '/legal/terms', icon: Scale },
-    { name: 'Privacy Policy', path: '/legal/privacy', icon: ShieldCheck },
-    { name: 'DMCA Takedown', path: '/legal/dmca', icon: FileText },
-    { name: 'Cookie Policy', path: '/legal/cookies', icon: Cookie },
+    { name: 'Terms of Service', path: '/legal/terms' },
+    { name: 'Privacy Policy', path: '/legal/privacy' },
+    { name: 'DMCA Takedown', path: '/legal/dmca' },
+    { name: 'Cookie Policy', path: '/legal/cookies' },
 ];
 
-export default function LegalLayout({ title, description, lastUpdated, children }: LegalLayoutProps) {
+export const LEGAL_STYLES = {
+    h2: "text-lg md:text-3xl font-medium text-[rgb(var(--color-foreground))] tracking-tight",
+    p: "text-[15px] leading-relaxed text-[rgb(var(--color-foreground)/0.8)]",
+    strong: "font-medium text-[rgb(var(--color-foreground))]",
+    a: "text-[rgb(var(--color-orange))] hover:underline underline-offset-4 font-medium transition-colors",
+    code: "text-xs bg-[rgb(var(--color-foreground)/0.06)] px-1.5 py-0.5 rounded font-mono text-[rgb(var(--color-foreground))]",
+};
+
+export function LegalH2({ children, className = '' }: { children: React.ReactNode; className?: string }) {
+    return <h2 className={`${LEGAL_STYLES.h2} ${className}`}>{children}</h2>;
+}
+
+export function LegalP({ children, className = '' }: { children: React.ReactNode; className?: string }) {
+    return <p className={`${LEGAL_STYLES.p} ${className}`}>{children}</p>;
+}
+
+export default function LegalLayout({
+    title,
+    description,
+    lastUpdated,
+    children
+}: LegalLayoutProps) {
     return (
-        <div className="min-h-screen bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))] py-8 md:py-16 px-4 md:px-8">
+        <div className="min-h-screen bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))] py-6 sm:py-15 md:py-20 px-0 sm:px-4 md:px-8">
             <SEO title={`${title} | Legal`} description={description} />
 
-            <div className="max-w-4xl mx-auto">
+            <div className="max-w-3xl mx-auto">
                 {/* Back Link */}
-                <div className="mb-8">
+                {/* <div className="mb-10">
                     <Link
                         to="/"
-                        className="inline-flex items-center gap-2 text-sm text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))] transition-colors group"
+                        className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))] transition-colors group"
                     >
-                        <ArrowLeft size={16} className="transition-transform group-hover:-translate-x-1" />
+                        <ArrowLeft size={13} className="transition-transform group-hover:-translate-x-1" />
                         Back to Archive
                     </Link>
+                </div> */}
+
+                <div className="mb-10">
+                    <p className='font-inter-tight text-[22px] text-[rgb(var(--color-secondary)/0.8)]'>Legal</p>
                 </div>
 
                 {/* Header */}
-                <div className="border-b border-[rgb(var(--color-border))] pb-8 mb-8">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono uppercase tracking-widest bg-[rgb(var(--color-foreground)/0.05)] border border-[rgb(var(--color-foreground)/0.1)] text-[rgb(var(--color-muted-foreground))] mb-4">
-                        Legal & Compliance
-                    </div>
-                    <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-4">
+                <header className="mb-14 md:mb-24">
+                    <h1 className="text-3xl md:text-5xl font-medium font-inter-tight text-[rgb(var(--color-foreground))] mb-3">
                         {title}
                     </h1>
-                    <p className="text-lg text-[rgb(var(--color-muted-foreground))] max-w-2xl leading-relaxed mb-4">
+                    <p className="text-[22px] font-light md:text-[22px] font-inter-tight text-[rgb(var(--color-secondary))] leading-relaxed mb-3">
                         {description}
                     </p>
-                    <p className="text-xs font-mono text-[rgb(var(--color-muted-foreground)/0.7)] uppercase tracking-wider">
-                        Last Updated: {lastUpdated}
+                    <p className="text-md font-mono text-[rgb(var(--color-secondary)/0.6)]">
+                        Last updated {lastUpdated}
                     </p>
-                </div>
+                </header>
 
-                {/* Policy Tabs */}
-                <div className="flex flex-wrap gap-2 mb-12 p-1.5 bg-[rgb(var(--color-card))] rounded-2xl border border-[rgb(var(--color-border))]">
-                    {LEGAL_TABS.map((tab) => {
-                        const Icon = tab.icon;
-                        return (
-                            <NavLink
-                                key={tab.path}
-                                to={tab.path}
-                                className={({ isActive }) =>
-                                    `flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                                        isActive
-                                            ? 'bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] shadow-sm'
-                                            : 'text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.05)]'
-                                    }`
-                                }
-                            >
-                                <Icon size={16} />
-                                {tab.name}
-                            </NavLink>
-                        );
-                    })}
-                </div>
+                {/* Policy Navigation Pills */}
+                <nav className="flex flex-wrap gap-2 pb-6 mb-10 border-b border-[rgb(var(--color-foreground)/0.08)]">
+                    {LEGAL_TABS.map((tab) => (
+                        <NavLink
+                            key={tab.path}
+                            to={tab.path}
+                            className={({ isActive }) =>
+                                `px-3.5 py-1.5 rounded-full text-xs transition-all ${isActive
+                                    ? 'bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] font-medium shadow-sm'
+                                    : 'text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))] bg-[rgb(var(--color-foreground)/0.04)] hover:bg-[rgb(var(--color-foreground)/0.08)]'
+                                }`
+                            }
+                        >
+                            {tab.name}
+                        </NavLink>
+                    ))}
+                </nav>
 
-                {/* Content Container */}
-                <article className="prose prose-zinc dark:prose-invert max-w-none space-y-8 text-[rgb(var(--color-foreground)/0.9)] leading-relaxed">
+                {/* Main Content Body: Centralized typography classes for h2, p, strong, code, and links */}
+                <main className="space-y-20 text-[22px] font-light leading-[1.75] text-[rgb(var(--color-secondary)/0.7)]
+                    [&_h2]:text-3xl [&_h2]:md:text-4xl [&_h2]:font-inter-tight [&_h2]:font-normal [&_h2]:text-[rgb(var(--color-foreground))]
+                    [&_p]:leading-normal [&_p]:md:leading-relaxed [&_p]:font-inter-tight
+                    [&_strong]:font-light [&_strong]:text-[rgb(var(--color-foreground))]
+                    [&_code]:text-[22px] [&_code]:bg-[rgb(var(--color-foreground)/0.06)] [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:font-mono [&_code]:text-[rgb(var(--color-foreground)/0.9)]
+                    [&_a]:text-[rgb(var(--color-orange))] [&_a]:hover:underline [&_a]:underline-offset-4 [&_a]:font-medium [&_a]:transition-colors"
+                >
                     {children}
-                </article>
-
-                {/* Contact Box */}
-                <div className="mt-16 p-6 md:p-8 rounded-3xl bg-[rgb(var(--color-card))] border border-[rgb(var(--color-border))] flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                    <div>
-                        <h3 className="font-bold text-lg mb-1 text-[rgb(var(--color-foreground))]">Have legal questions or takedown inquiries?</h3>
-                        <p className="text-sm text-[rgb(var(--color-muted-foreground))]">Our legal and support team reviews all requests within 24–48 hours.</p>
-                    </div>
-                    <a
-                        href="mailto:nobadfonts@gmail.com"
-                        className="px-5 py-2.5 rounded-full font-bold text-sm bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] hover:opacity-90 transition-opacity whitespace-nowrap"
-                    >
-                        Contact Legal Team
-                    </a>
-                </div>
+                </main>
             </div>
         </div>
     );

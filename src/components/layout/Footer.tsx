@@ -1,3 +1,4 @@
+import { ArrowRight } from 'lucide-react';
 import React, { useEffect, useRef, memo } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -12,17 +13,17 @@ const Footer: React.FC = memo(() => {
     }, []);
 
     return (
-        <footer className="hidden sm:block bg-[rgb(var(--color-background))] text-[rgb(var(--color-muted-foreground))] pb-20 font-sans selection:bg-[rgb(var(--color-foreground))] selection:text-[rgb(var(--color-background))]">
-            <div className="max-w-480 mx-auto px-3">
+        <footer className="hidden sm:block bg-[rgb(var(--color-background))] text-[rgb(var(--color-muted-foreground))] font-sans selection:bg-[rgb(var(--color-foreground))] selection:text-[rgb(var(--color-background))] relative z-0">
+            <div className="max-w-480 mx-auto pb-10 z-10">
 
-                <div className=''>
+                {/* <div className=''>
                     <div className='hidden h-20rem w-20rem relative'>
                         <video ref={videoRef} autoPlay loop muted playsInline src="/videos/logo.webm"></video>
                     </div>
-                </div>
+                </div> */}
 
                 {/* Main Content Grid */}
-                <div className="flex flex-col lg:flex-row justify-between gap-16 lg:gap-24 mt-4 mb-24">
+                <div className="flex flex-col lg:flex-row justify-between gap-16 lg:gap-24 mt-4 mb-8">
 
                     {/* Left Column: Brand & Newsletter */}
                     <div className="w-full lg:max-w-xl flex flex-col">
@@ -37,7 +38,8 @@ const Footer: React.FC = memo(() => {
                             <input
                                 type="email"
                                 placeholder="Join the newsletter"
-                                className="w-full bg-transparent border-b border-[rgb(var(--color-border))] py-2 pr-8 text-sm text-[rgb(var(--color-foreground))] placeholder-[rgb(var(--color-muted-foreground)/0.6)] focus:outline-none focus:border-[rgb(var(--color-foreground))] transition-colors rounded-none"
+                                className="w-full bg-transparent border-0 border-b border-[rgb(var(--color-border))] py-2 pr-8 text-sm text-[rgb(var(--color-foreground))] placeholder-[rgb(var(--color-muted-foreground)/0.6)] outline-none! focus:outline-none! focus-visible:outline-none! ring-0! focus:ring-0! focus-visible:ring-0! shadow-none! focus:shadow-none! focus:border-[rgb(var(--color-foreground))] transition-colors rounded-none appearance-none"
+                                style={{ outline: 'none', boxShadow: 'none' }}
                                 required
                             />
                             <button
@@ -45,10 +47,7 @@ const Footer: React.FC = memo(() => {
                                 className="absolute right-0 text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))] transition-colors"
                                 aria-label="Subscribe"
                             >
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                                    <polyline points="12 5 19 12 12 19"></polyline>
-                                </svg>
+                                <ArrowRight size={18} />
                             </button>
                         </form>
                     </div>
@@ -98,16 +97,21 @@ const Footer: React.FC = memo(() => {
                     </div>
                 </div>
 
+                <div className="pointer-events-none  h-full bottom-0 w-full flex justify-center">
+                    
+                    <h1 className="bg-linear-to-b from-[rgb(var(--color-foreground))] to-[rgb(var(--color-foreground)/0.05)] bg-clip-text text-transparent font-inter-tight font-medium tracking-tighter text-[16vw] leading-none z-0 md:-ml-5 pr-2">NOBADFONTS</h1>
+                </div>
+
                 {/* Absolute Bottom Footer: Socials & Copyright */}
-                <div className="flex flex-col md:flex-row justify-between items-center gap-6 pt-8 border-t border-[rgb(var(--color-border))]">
+                <div className="flex flex-col md:flex-row justify-between items-center gap-6 zpt-8 zborder-t border-[rgb(var(--color-border))]">
 
                     <div className="flex items-center gap-2 text-xs text-[rgb(var(--color-muted-foreground))]">
                         <span>&copy; {currentYear} nobadfonts.in. All rights reserved.</span>
                     </div>
 
                     <div className="flex items-center gap-6 text-sm">
-                        <a href="https://x.com/Bismay_exe" target="_blank" rel="noopener noreferrer" aria-label="Follow NoBadFonts on Twitter (opens in new window)" className="hover:text-[rgb(var(--color-foreground))] transition-colors flex items-center gap-1 group">
-                            Twitter
+                        <a href="https://x.com/NoBadFonts" target="_blank" rel="noopener noreferrer" aria-label="Follow NoBadFonts on X(formerly Twitter) (opens in new window)" className="hover:text-[rgb(var(--color-foreground))] transition-colors flex items-center gap-1 group">
+                            X (Twitter)
                             <svg className="w-3 h-3 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
                         </a>
                         <a href="https://github.com/Bismay-exe" target="_blank" rel="noopener noreferrer" aria-label="Visit NoBadFonts on GitHub (opens in new window)" className="hover:text-[rgb(var(--color-foreground))] transition-colors flex items-center gap-1 group">
@@ -121,8 +125,11 @@ const Footer: React.FC = memo(() => {
                     </div>
 
                 </div>
-
             </div>
+
+            {/* <div className="pointer-events-none  h-full bottom-0 w-full flex justify-center">
+                <h1 className="bg-linear-to-b from-[rgb(var(--color-foreground))] to-[rgb(var(--color-foreground)/0.05)] bg-clip-text text-transparent font-inter-tight font-medium tracking-tighter text-[16vw] leading-none z-0 z-mb-30">NOBADFONTS</h1>
+            </div> */}
         </footer>
     );
 });
