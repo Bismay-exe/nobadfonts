@@ -16,7 +16,7 @@ const SocialShareCard = forwardRef<HTMLDivElement, SocialShareCardProps>(({
     selectedVariantId,
     fontFamilyOverride,
     // activeVariantName,
-    variantCount
+    // variantCount
 }, ref) => {
     const [, setFontLoaded] = useState(false);
     const isOg = aspectRatio === 'og';
@@ -109,14 +109,14 @@ const SocialShareCard = forwardRef<HTMLDivElement, SocialShareCardProps>(({
     }, [effectiveFamily, fontSource]);
 
     // 3. Strict Real Metadata (No fabricated values)
-    const totalStyles = variantCount ?? (font.font_variants && font.font_variants.length > 0 ? font.font_variants.length : 1);
-    const stylesLabel = `${totalStyles} ${totalStyles === 1 ? 'STYLE' : 'STYLES'}`;
+    // const totalStyles = variantCount ?? (font.font_variants && font.font_variants.length > 0 ? font.font_variants.length : 1);
+    // const stylesLabel = `${totalStyles} ${totalStyles === 1 ? 'Style' : 'Styles'}`;
 
-    const licenseLabel = font.commercial_use === true
-        ? 'DEMO'
-        : font.license_type
-            ? font.license_type.toUpperCase()
-            : null;
+    // const licenseLabel = font.commercial_use === true
+    //     ? 'DEMO'
+    //     : font.license_type
+    //         ? font.license_type.toUpperCase()
+    //         : null;
 
     // const categoryLabel = font.category
     //     ? font.category.toUpperCase()
@@ -159,16 +159,16 @@ const SocialShareCard = forwardRef<HTMLDivElement, SocialShareCardProps>(({
                     >
                         The quick brown fox jumps <br />over the lazy dog. <br />1234567890
                     </p>
-                    {/* <div className='flex gap-2'>
-                        {variantLabel && (
+                    <div className='flex gap-2'>
+                        {/* {variantLabel && (
                             <div className={`mt-2.5 items-center gap-1.5 ${isOg ? 'zpx-3.5 py-1.5 text-lg hidden' : 'px-4 py-2 text-xl'} rounded-full zbg-[#492FA7] font-inter font-medium tracking-wider text-white z-10`}>
                                 SPECIMEN ● {variantLabel}
                             </div>
-                        )}
-                        <span className={`mt-2.5 items-center gap-1.5 ${isOg ? 'zpx-3.5 py-1.5 text-lg hidden' : 'px-4 py-2 text-xl'} rounded-full zbg-[#492FA7] font-inter font-medium tracking-wider text-white`}>
-                            {stylesLabel}
-                        </span>
-                    </div> */}
+                        )} */}
+                        {/* <span className={`mt-2.5 items-center gap-1.5 ${isOg ? 'zpx-3.5 py-1.5 text-lg hidden' : 'px-4 py-2 text-xl'} rounded-full zbg-[#492FA7] font-inter font-medium tracking-wider text-white capitalize`}>
+                            ● {stylesLabel}
+                        </span> */}
+                    </div>
                 </div>
 
                 {/* Logo & Brand Tag */}
@@ -186,18 +186,19 @@ const SocialShareCard = forwardRef<HTMLDivElement, SocialShareCardProps>(({
                     style={{ fontFamily: fontStack }}
                 >
                     <h1
-                        className={`${titleFontSizeClass} font-normal text-center align-middle leading-none text-white mix-blend-screen px-4`}
+                        className={`${titleFontSizeClass} font-normal text-center text-align-middle leading-none text-white mix-blend-screen px-4`}
                         style={{ fontFamily: fontStack }}
                     >
-                        <span className={`${isOg ? 'px-3.5 py-1.5 text-lg' : 'zpx-4 zpy-2 text-xl'} absolute -bottom-6 mr-8 rounded-full zbg-[#492FA7] font-inter font-medium tracking-wider text-white`}>
-                            ● {stylesLabel}
-                        </span> 
+                        
                         {font.name}
-                        {licenseLabel && (
+                        {/* {licenseLabel && (
                             <span className={`${isOg ? 'px-3.5 py-1.5 text-lg' : 'px-4 py-2 text-xl'} absolute -ml-4 rotate-18 rounded-full bg-[#492FA7] font-inter font-medium tracking-wider text-white`}>
                                 {licenseLabel}
                             </span>
-                        )}
+                        )} */}
+                        {/* <br /> <span className={`${isOg ? 'px-3.5 py-1.5 text-lg' : 'zpx-4 zpy-2 text-xl'} leading-none mr-8 rounded-full zbg-[#492FA7] font-inter font-medium tracking-wider text-white`}>
+                            ● {stylesLabel}
+                        </span>  */}
                     </h1>
                     {/* <span className={`${isOg ? 'px-3.5 py-1.5 text-lg' : 'px-4 py-2 text-xl'} absolute -bottom-10 left-0 rounded-full bg-[#492FA7] font-inter font-medium tracking-wider text-white`}>
                         {stylesLabel}

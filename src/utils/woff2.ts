@@ -70,3 +70,60 @@ export const runWoff2Compress = async (buffer: Uint8Array): Promise<Uint8Array> 
         document.body.appendChild(script);
     });
 };
+
+export const runWoff2Decompress = async (buffer: Uint8Array): Promise<Uint8Array> => {
+    return new Promise((resolve, reject) => {
+        const decompress = () => {
+            try {
+                const Module = (window as any).Module;
+                if (!Module || !Module.decompress) {
+                    reject(new Error("Module.decompress not found after load"));
+                    return;
+                }
+                const result = Module.decompress(buffer);
+                if (!result) reject(new Error("WOFF2 decompression failed"));
+                else resolve(result);
+            } catch (e) {
+                reject(e);
+            }
+        };
+
+        const Module = (window as any).Module;
+        if (Module && (Module.decompress || Module.calledRun || Module.runtimeInitialized)) {
+            decompress();
+            return;
+        }
+
+        if (document.querySelector('script[src="/wawoff2.js"]')) {
+            const checkModule = () => {
+                const M = (window as any).Module;
+                if (M && (M.decompress || M.calledRun || M.runtimeInitialized)) {
+                    decompress();
+                } else {
+                    setTimeout(checkModule, 100);
+                }
+            };
+            checkModule();
+            return;
+        }
+
+        const script = document.createElement('script');
+        script.src = '/wawoff2.js';
+        script.async = true;
+
+        script.onload = () => {
+            const checkModule = () => {
+                const M = (window as any).Module;
+                if (M && (M.decompress || M.calledRun || M.runtimeInitialized)) {
+                    decompress();
+                } else {
+                    setTimeout(checkModule, 100);
+                }
+            };
+            checkModule();
+        };
+
+        script.onerror = () => reject(new Error("Failed to load wawoff2.js"));
+        document.body.appendChild(script);
+    });
+};
