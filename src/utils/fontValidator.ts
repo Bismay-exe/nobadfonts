@@ -8,6 +8,8 @@ export interface ValidationResult {
     familyName?: string;
 }
 
+export type FontMetadata = Record<string, string>;
+
 const MAX_FONT_SIZE_BYTES = 30 * 1024 * 1024; // 30 MB
 const MAX_IMAGE_SIZE_BYTES = 8 * 1024 * 1024;  // 8 MB
 
@@ -38,6 +40,48 @@ function checkFontMagicBytes(header: Uint8Array): { valid: boolean; detected?: F
     }
 
     return { valid: false };
+}
+
+/**
+ * Extracts the provenance-related OpenType name records used by server-side
+ * research. Metadata is a search hint only; it is never treated as proof.
+ */
+export async function extractFontMetadata(file: File): Promise<FontMetadata> {
+    const extension = file.name.split('.').pop()?.toLowerCase();
+    if (extension !== 'ttf' && extension !== 'otf' && extension !== 'woff') return {};
+
+    try {
+        const opentype = await import('opentype.js');
+        const parsedFont = opentype.parse(await file.arrayBuffer());
+        const names = parsedFont.names || {};
+        const fields: Record<string, unknown> = {
+            family: names.fontFamily,
+            full_name: names.fullName,
+            designer: names.designer,
+            manufacturer: names.manufacturer,
+            manufacturer_url: names.manufacturerURL,
+            designer_url: names.designerURL,
+            copyright: names.copyright,
+            trademark: names.trademark,
+            version: names.version,
+            description: names.description,
+            license: names.license,
+            license_url: names.licenseURL,
+        };
+
+        return Object.fromEntries(
+            Object.entries(fields).flatMap(([key, value]) => {
+                const localized = value && typeof value === 'object'
+                    ? (value as Record<string, unknown>).en || Object.values(value as Record<string, unknown>)[0]
+                    : value;
+                const text = typeof localized === 'string' ? localized.trim().slice(0, 2_000) : '';
+                return text ? [[key, text]] : [];
+            })
+        );
+    } catch (error) {
+        console.warn('Could not extract OpenType metadata:', error);
+        return {};
+    }
 }
 
 /**

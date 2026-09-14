@@ -29,7 +29,7 @@ export default memo(function ProfileHeader({ onEditClick, isEditing }: ProfileHe
                 <div className="grow text-center md:text-left">
                     <div className="flex flex-col md:flex-row items-center md:justify-between gap-4 mb-2">
                         <div>
-                            <h1 className="text-2xl md:text-4xl font-bold text-[rgb(var(--color-foreground)/0.85)]">{profile?.full_name || 'Fontique User'}</h1>
+                            <h1 className="text-2xl md:text-4xl font-bold text-[rgb(var(--color-foreground)/0.85)]">{profile?.full_name || 'User'}</h1>
                             {profile?.username && (
                                 <p className="text-[rgb(var(--color-muted-foreground))] font-mono text-sm">@{profile.username}</p>
                             )}

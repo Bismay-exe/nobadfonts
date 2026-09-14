@@ -17,7 +17,7 @@ import {
     SelectValue,
 } from "../components/ui/select";
 import { CustomLock } from '../components/ui/CustomIcons';
-import { validateFontFile, validateImageFile } from '../utils/fontValidator';
+import { extractFontMetadata, validateFontFile, validateImageFile } from '../utils/fontValidator';
 import TurnstileWidget from '../components/shared/TurnstileWidget';
 
 export const LICENSE_OPTIONS = [
@@ -399,6 +399,21 @@ const Upload = () => {
             const selectedLicense = LICENSE_OPTIONS.find(l => l.id === formData.licenseType);
             const isCommercial = selectedLicense ? selectedLicense.commercialUse : false;
 
+            // Compute SHA-256 hash of primary font file for deduplication
+            let fontFileHash: string | null = null;
+            const primaryFile = variants[0]?.files.ttf || variants[0]?.files.otf || variants[0]?.files.woff2 || variants[0]?.files.woff;
+            const fontMetadata = primaryFile ? await extractFontMetadata(primaryFile) : {};
+            if (primaryFile) {
+                try {
+                    const buffer = await primaryFile.arrayBuffer();
+                    const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+                    fontFileHash = Array.from(new Uint8Array(hashBuffer))
+                        .map(b => b.toString(16).padStart(2, '0')).join('');
+                } catch (hashErr) {
+                    console.warn('Failed to compute font file hash:', hashErr);
+                }
+            }
+
             // Insert Record
             const { error: dbError } = await supabase
                 .from('fonts')
@@ -413,12 +428,14 @@ const Upload = () => {
                         slug: slug,
                         is_published: true,
                         user_id: user.id,
+                        font_file_hash: fontFileHash,
+                        research_status: 'unresearched',
 
                         preview_image_url: previewImageUrl,
                         file_size_image_preview: previewImageSize,
                         gallery_images: galleryUrls,
                         gallery_image_sizes: gallerySizes,
-                        uploaded_by: user.id
+                        uploaded_by: user.id,
                     }
                 ]);
 
@@ -435,6 +452,17 @@ const Upload = () => {
                 .single();
 
             if (insertError || !insertedFont) throw new Error('Failed to retrieve new font ID');
+
+            // Preserve embedded OpenType records before research starts. The Edge
+            // Function uses these only as web-search clues, never as verification.
+            if (Object.keys(fontMetadata).length > 0) {
+                const { error: metadataError } = await supabase.from('font_research').upsert({
+                    font_id: insertedFont.id,
+                    font_metadata_extracted: fontMetadata,
+                    research_status: 'unresearched',
+                }, { onConflict: 'font_id' });
+                if (metadataError) console.warn('Failed to store font metadata:', metadataError);
+            }
 
             // Upload and Insert Variants (Original Files)
             const variantsToConvert: { id: string; name: string; files: { ttf: File | null; otf: File | null } }[] = [];
@@ -504,6 +532,8 @@ const Upload = () => {
             if (variantsToConvert.length > 0) {
                 queueWoff2Conversion(insertedFont.id, slug, variantsToConvert);
             }
+
+            // AI research is manual only (triggered via Admin Dashboard or Font Details page)
 
             // Redirect immediately
             navigate(`/fonts/${slug}`);

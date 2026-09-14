@@ -24,6 +24,8 @@ import VariantList from '../components/fonts/VariantList';
 import LicenseInfo from '../components/fonts/LicenseInfo';
 import { createFontZipPackage, triggerBlobDownload } from '../utils/zipBuilder';
 import AdminOgImageManager from '../components/fonts/AdminOgImageManager';
+import FontResearchPanel from '../components/admin/FontResearchPanel';
+import type { Database } from '../types/database.types';
 
 export default function FontDetails() {
 
@@ -62,6 +64,12 @@ export default function FontDetails() {
     // Similar Fonts State
     const [similarFonts, setSimilarFonts] = useState<Font[]>([]);
 
+    // AI Research State
+    type FontResearchRow = Database['public']['Tables']['font_research']['Row'];
+    type FontSourceRow = Database['public']['Tables']['font_sources']['Row'];
+    const [fontResearch, setFontResearch] = useState<FontResearchRow | null>(null);
+    const [fontSources, setFontSources] = useState<FontSourceRow[]>([]);
+
 
 
     useEffect(() => {
@@ -95,6 +103,27 @@ export default function FontDetails() {
             }
         };
         fetchSimilar();
+
+        // Fetch AI research data
+        const fetchResearch = async () => {
+            const { data: research } = await supabase
+                .from('font_research')
+                .select('*')
+                .eq('font_id', font.id)
+                .maybeSingle();
+
+            if (research) {
+                setFontResearch(research);
+                // Fetch sources
+                const { data: sources } = await supabase
+                    .from('font_sources')
+                    .select('*')
+                    .eq('research_id', research.id)
+                    .order('source_tier', { ascending: true });
+                setFontSources(sources || []);
+            }
+        };
+        fetchResearch();
     }, [font]);
 
     // Removed redundant state and handlers - now in components/fonts/GalleryEditor.tsx and FileManager.tsx
@@ -851,9 +880,21 @@ export default function FontDetails() {
                                     {generateHeaderTagline(font)}
                                 </h3>
 
+                                {/* Official website link from AI research */}
+                                {fontResearch?.official_website && (
+                                    <a
+                                        href={fontResearch.official_website}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-2 mb-4 px-4 py-2 rounded-full bg-[rgb(var(--color-foreground)/0.05)] hover:bg-[rgb(var(--color-foreground)/0.1)] border border-[rgb(var(--color-border))] text-sm font-bold text-[rgb(var(--color-foreground))] transition-colors"
+                                    >
+                                        Visit Official Site ↗
+                                    </a>
+                                )}
+
                                 <div className="prose prose-lg prose-invert max-w-none text-[rgb(var(--color-foreground)/0.7)]">
                                     <p className="whitespace-pre-line leading-relaxed text-lg">
-                                        {generateDescription(font)}
+                                        {fontResearch?.ai_description || generateDescription(font)}
                                     </p>
 
                                     {/* Footer Tagline */}
@@ -870,6 +911,40 @@ export default function FontDetails() {
                         </div>
                     </div>
                 </div>
+
+                {/* 3.5 ADMIN: AI RESEARCH PANEL */}
+                {profile?.role === 'admin' && font && (
+                    <div className="space-y-8">
+                        <div className="flex items-center gap-4">
+                            <div className="h-px bg-[rgb(var(--color-foreground)/0.1)] flex-1"></div>
+                            <h2 className="text-2xl font-bold uppercase tracking-widest text-[rgb(var(--color-muted-foreground))]">AI Research</h2>
+                            <div className="h-px bg-[rgb(var(--color-foreground)/0.1)] flex-1"></div>
+                        </div>
+                        <FontResearchPanel
+                            fontId={font.id}
+                            fontName={font.name}
+                            research={fontResearch}
+                            sources={fontSources}
+                            onResearchComplete={async () => {
+                                // Refresh research data
+                                const { data: research } = await supabase
+                                    .from('font_research')
+                                    .select('*')
+                                    .eq('font_id', font.id)
+                                    .maybeSingle();
+                                if (research) {
+                                    setFontResearch(research);
+                                    const { data: sources } = await supabase
+                                        .from('font_sources')
+                                        .select('*')
+                                        .eq('research_id', research.id)
+                                        .order('source_tier', { ascending: true });
+                                    setFontSources(sources || []);
+                                }
+                            }}
+                        />
+                    </div>
+                )}
 
                 {/* 4. INTERACTIVE TESTER */}
                 <div className="space-y-8">
@@ -1007,7 +1082,7 @@ font-style: ${style};
                                 </div>
                             </div>
 
-                            <LicenseInfo font={font} />
+                            <LicenseInfo font={font} research={fontResearch} />
                         </div>
                     </div>
                 </div>

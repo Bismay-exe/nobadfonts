@@ -16,12 +16,12 @@ const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, imageSrc, font
 
     const currentUrl = window.location.href;
     const encodedUrl = encodeURIComponent(currentUrl);
-    const encodedText = encodeURIComponent(`Check out ${fontName} on Fontique!`);
+    const encodedText = encodeURIComponent(`Check out ${fontName} on NoBadFonts!`);
 
     const handleDownload = useCallback(async () => {
         await Haptics.impact({ style: ImpactStyle.Medium });
         const link = document.createElement('a');
-        link.download = `fontique-${fontName.toLowerCase().replace(/\s+/g, '-')}-card.png`;
+        link.download = `nobadfonts-${fontName.toLowerCase().replace(/\s+/g, '-')}-card.png`;
         link.href = imageSrc;
         link.click();
     }, [fontName, imageSrc]);

@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback, useMemo } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { Navigate, Link } from 'react-router-dom';
-import { Search } from 'lucide-react';
+import { Search, XCircle } from 'lucide-react';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { Toast } from '@capacitor/toast';
 import { motion } from 'framer-motion';
@@ -10,14 +10,19 @@ import type { Database } from '../types/database.types';
 
 import { useAnalytics } from '../hooks/useAnalytics';
 import AnalyticsSection from '../components/admin/AnalyticsSection';
+import FontResearchPanel from '../components/admin/FontResearchPanel';
 import SEO from '../components/shared/SEO';
+
+type FontResearchRow = Database['public']['Tables']['font_research']['Row'];
+type FontSourceRow = Database['public']['Tables']['font_sources']['Row'];
+type ResearchJobRow = Database['public']['Tables']['research_jobs']['Row'];
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
 type FontRow = Database['public']['Tables']['fonts']['Row'];
 
 export default function AdminDashboard() {
     const { user, profile, loading: authLoading } = useAuth();
-    const [activeTab, setActiveTab] = useState<'requests' | 'users' | 'files' | 'curation' | 'analytics'>('requests');
+    const [activeTab, setActiveTab] = useState<'requests' | 'users' | 'files' | 'curation' | 'analytics' | 'research'>('requests');
 
     // State for Requests
     const [pendingRequests, setPendingRequests] = useState<Profile[]>([]);
@@ -41,6 +46,14 @@ export default function AdminDashboard() {
     const [searchUsers, setSearchUsers] = useState('');
     const [searchFiles, setSearchFiles] = useState('');
     const [searchCuration, setSearchCuration] = useState('');
+    const [searchResearch, setSearchResearch] = useState('');
+    const [researchFilter, setResearchFilter] = useState<'all' | 'unresearched' | 'verified' | 'needs_review' | 'failed'>('all');
+
+    // AI Research State
+    const [researchFonts, setResearchFonts] = useState<(FontRow & { research?: FontResearchRow | null; sources?: FontSourceRow[] })[]>([]);
+    const [researchJobs, setResearchJobs] = useState<ResearchJobRow[]>([]);
+    const [expandedResearchId, setExpandedResearchId] = useState<string | null>(null);
+    const [activeResearchingFontId, setActiveResearchingFontId] = useState<string | null>(null);
 
     const [loading, setLoading] = useState(true);
 
@@ -53,6 +66,8 @@ export default function AdminDashboard() {
             fetchAllUsers();
         } else if (activeTab === 'files' || activeTab === 'curation') {
             fetchFonts();
+        } else if (activeTab === 'research') {
+            fetchResearchData();
         }
     }, [activeTab, profile]);
 
@@ -198,6 +213,105 @@ export default function AdminDashboard() {
         }
     }, [allFonts]);
 
+    // ─── AI Research Data Fetching ───────────────────────────────────
+    const fetchResearchData = useCallback(async () => {
+        setLoading(true);
+        try {
+            // Fetch all fonts with their research data
+            const { data: fonts } = await supabase
+                .from('fonts')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (fonts) {
+                // Fetch research for all fonts
+                const { data: researchData } = await supabase
+                    .from('font_research')
+                    .select('*');
+
+                const { data: sourcesData } = await supabase
+                    .from('font_sources')
+                    .select('*');
+
+                const enrichedFonts = fonts.map(f => ({
+                    ...f,
+                    research: researchData?.find(r => r.font_id === f.id) || null,
+                    sources: sourcesData?.filter(s => {
+                        const research = researchData?.find(r => r.font_id === f.id);
+                        return research ? s.research_id === research.id : false;
+                    }) || [],
+                }));
+
+                setResearchFonts(enrichedFonts);
+            }
+
+            // Fetch recent jobs
+            const { data: jobs } = await supabase
+                .from('research_jobs')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .limit(50);
+
+            setResearchJobs(jobs || []);
+        } catch (err) {
+            console.error('Error fetching research data:', err);
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
+    const handleClearStuckJobs = useCallback(async () => {
+        try {
+            const { error } = await supabase
+                .from('research_jobs')
+                .update({
+                    status: 'cancelled',
+                    completed_at: new Date().toISOString(),
+                    error: 'Cleared manually by admin',
+                })
+                .in('status', ['queued', 'processing']);
+
+            if (error) throw error;
+            await Toast.show({ text: 'Active and stuck jobs cleared successfully.', duration: 'short' });
+            fetchResearchData();
+        } catch (err: any) {
+            console.error('Failed to clear stuck jobs:', err);
+            await Toast.show({ text: `Failed to clear jobs: ${err.message}`, duration: 'short' });
+        }
+    }, [fetchResearchData]);
+
+    // Filtered research fonts
+    const filteredResearchFonts = useMemo(() => {
+        let fonts = researchFonts;
+        if (researchFilter !== 'all') {
+            fonts = fonts.filter(f => {
+                const status = f.research?.research_status || 'unresearched';
+                if (researchFilter === 'unresearched') {
+                    return !f.research || status === 'unresearched' || status === 'pending';
+                }
+                return status === researchFilter;
+            });
+        }
+        if (searchResearch.trim()) {
+            const q = searchResearch.toLowerCase();
+            fonts = fonts.filter(f =>
+                f.name.toLowerCase().includes(q) ||
+                f.designer.toLowerCase().includes(q)
+            );
+        }
+        return fonts;
+    }, [researchFonts, researchFilter, searchResearch]);
+
+    // Research stats
+    const researchStats = useMemo(() => ({
+        total: researchFonts.length,
+        unresearched: researchFonts.filter(f => !f.research || f.research.research_status === 'pending' || f.research.research_status === 'unresearched').length,
+        verified: researchFonts.filter(f => f.research?.research_status === 'verified').length,
+        needsReview: researchFonts.filter(f => f.research?.research_status === 'needs_review').length,
+        failed: researchFonts.filter(f => f.research?.research_status === 'failed').length,
+        activeJobs: researchJobs.filter(j => j.status === 'queued' || j.status === 'processing').length,
+    }), [researchFonts, researchJobs]);
+
     const formatBytes = useCallback((bytes: number | null) => {
         if (!bytes) return 'Unknown';
         if (bytes === 0) return '0 B';
@@ -241,12 +355,10 @@ export default function AdminDashboard() {
     return (
         <div className="mx-auto bg-transparent rounded-4xl">
             <SEO title="Admin Dashboard | NoBadFonts" noindex url="/admin" />
-            <div className="bg-[rgb(var(--color-foreground))] rounded-4xl p-8 border-y border-[rgb(var(--color-border))]">
-                <h1 className="text-4xl text-center md:text-left font-black uppercase text-[rgb(var(--color-background))]">Admin Dashboard</h1>
-            </div>
+            <h1 className="text-4xl md:text-6xl text-center md:text-left font-inter-tight font-medium uppercase text-[rgb(var(--color-foreground))] pt-8 pb-4">Admin Dashboard</h1>
 
             {/* Tabs */}
-            <div className='bg-[rgb(var(--color-card))] rounded-4xl p-2 border-y border-[rgb(var(--color-border))] my-4 shadow-sm'>
+            <div className=''>
                 <div className="flex flex-wrap gap-4 px-1 py-4 justify-center md:justify-start">
                     <motion.button
                         whileTap={{ scale: 0.95 }}
@@ -254,7 +366,7 @@ export default function AdminDashboard() {
                             await Haptics.impact({ style: ImpactStyle.Light });
                             setActiveTab('requests');
                         }}
-                        className={`px-6 py-2 rounded-full font-bold border-2 border-[rgb(var(--color-foreground))] transition-all ${activeTab === 'requests' ? 'bg-[rgb(var(--color-highlight))] text-[rgb(var(--color-background))] shadow-[4px_4px_0px_0px_rgba(var(--color-foreground),1)]' : 'bg-[rgb(var(--color-card))] text-[rgb(var(--color-foreground))] hover:border-[rgb(var(--color-highlight))]'
+                        className={`px-6 py-2 rounded-full font-bold border-2 border-[rgb(var(--color-foreground)/0.15)] transition-all ${activeTab === 'requests' ? 'bg-[rgb(var(--color-highlight))] text-black shadow-[4px_4px_0px_0px_rgba(var(--color-foreground),1)]' : 'bg-[rgb(var(--color-card))] text-[rgb(var(--color-foreground))] hover:border-[rgb(var(--color-highlight))]'
                             }`}
                     >
                         Requests
@@ -268,7 +380,7 @@ export default function AdminDashboard() {
                             await Haptics.impact({ style: ImpactStyle.Light });
                             setActiveTab('users');
                         }}
-                        className={`px-6 py-2 rounded-full font-bold border-2 border-[rgb(var(--color-foreground))] transition-all ${activeTab === 'users' ? 'bg-[rgb(var(--color-accent))] text-[rgb(var(--color-background))] shadow-[4px_4px_0px_0px_rgba(var(--color-foreground),1)]' : 'bg-[rgb(var(--color-card))] text-[rgb(var(--color-foreground))] hover:border-[rgb(var(--color-accent))]'
+                        className={`px-6 py-2 rounded-full font-bold border-2 border-[rgb(var(--color-foreground)/0.15)] transition-all ${activeTab === 'users' ? 'bg-[rgb(var(--color-accent))] text-black shadow-[4px_4px_0px_0px_rgba(var(--color-foreground),1)]' : 'bg-[rgb(var(--color-card))] text-[rgb(var(--color-foreground))] hover:border-[rgb(var(--color-accent))]'
                             }`}
                     >
                         User Management
@@ -279,7 +391,7 @@ export default function AdminDashboard() {
                             await Haptics.impact({ style: ImpactStyle.Light });
                             setActiveTab('files');
                         }}
-                        className={`px-6 py-2 rounded-full font-bold border-2 border-[rgb(var(--color-foreground))] transition-all ${activeTab === 'files' ? 'bg-[rgb(var(--color-success,var(--color-highlight)))] text-[rgb(var(--color-background))] shadow-[4px_4px_0px_0px_rgba(var(--color-foreground),1)]' : 'bg-[rgb(var(--color-card))] text-[rgb(var(--color-foreground))] hover:border-[rgb(var(--color-success,var(--color-highlight)))]'
+                        className={`px-6 py-2 rounded-full font-bold border-2 border-[rgb(var(--color-foreground)/0.15)] transition-all ${activeTab === 'files' ? 'bg-[rgb(var(--color-success,var(--color-highlight)))] text-black shadow-[4px_4px_0px_0px_rgba(var(--color-foreground),1)]' : 'bg-[rgb(var(--color-card))] text-[rgb(var(--color-foreground))] hover:border-[rgb(var(--color-success,var(--color-highlight)))]'
                             }`}
                     >
                         Storage & Files
@@ -290,7 +402,7 @@ export default function AdminDashboard() {
                             await Haptics.impact({ style: ImpactStyle.Light });
                             setActiveTab('curation');
                         }}
-                        className={`px-6 py-2 rounded-full font-bold border-2 border-[rgb(var(--color-foreground))] transition-all ${activeTab === 'curation' ? 'bg-[rgb(var(--color-warning))] text-[rgb(var(--color-background))] shadow-[4px_4px_0px_0px_rgba(var(--color-foreground),1)]' : 'bg-[rgb(var(--color-card))] text-[rgb(var(--color-foreground))] hover:border-[rgb(var(--color-warning))]'
+                        className={`px-6 py-2 rounded-full font-bold border-2 border-[rgb(var(--color-foreground)/0.15)] transition-all ${activeTab === 'curation' ? 'bg-[rgb(var(--color-warning))] text-black shadow-[4px_4px_0px_0px_rgba(var(--color-foreground),1)]' : 'bg-[rgb(var(--color-card))] text-[rgb(var(--color-foreground))] hover:border-[rgb(var(--color-warning))]'
                             }`}
                     >
                         Site Curation
@@ -301,18 +413,29 @@ export default function AdminDashboard() {
                             await Haptics.impact({ style: ImpactStyle.Light });
                             setActiveTab('analytics');
                         }}
-                        className={`px-6 py-2 rounded-full font-bold border-2 border-[rgb(var(--color-foreground))] transition-all ${activeTab === 'analytics' ? 'bg-[rgb(var(--color-accent))] text-[rgb(var(--color-background))] shadow-[4px_4px_0px_0px_rgba(var(--color-foreground),1)]' : 'bg-[rgb(var(--color-card))] text-[rgb(var(--color-foreground))] hover:border-[rgb(var(--color-accent))]'
+                        className={`px-6 py-2 rounded-full font-bold border-2 border-[rgb(var(--color-foreground)/0.15)] transition-all ${activeTab === 'analytics' ? 'bg-[rgb(var(--color-accent))] text-black shadow-[4px_4px_0px_0px_rgba(var(--color-foreground),1)]' : 'bg-[rgb(var(--color-card))] text-[rgb(var(--color-foreground))] hover:border-[rgb(var(--color-accent))]'
                             }`}
                     >
                         Analytics
                     </motion.button>
+                    <motion.button
+                        whileTap={{ scale: 0.95 }}
+                        onClick={async () => {
+                            await Haptics.impact({ style: ImpactStyle.Light });
+                            setActiveTab('research');
+                        }}
+                        className={`px-6 py-2 rounded-full font-bold border-2 border-[rgb(var(--color-foreground)/0.15)] transition-all ${activeTab === 'research' ? 'bg-[rgb(var(--color-highlight))] text-black shadow-[4px_4px_0px_0px_rgba(var(--color-foreground),1)]' : 'bg-[rgb(var(--color-card))] text-[rgb(var(--color-foreground))] hover:border-[rgb(var(--color-highlight))]'
+                            }`}
+                    >
+                        AI Research
+                    </motion.button>
                 </div>
             </div>
 
-            <div className="bg-[rgb(var(--color-card))] border-2 border-[rgb(var(--color-foreground))] rounded-4xl px-4 md:px-8 pt-8 md:pt-8 pb-4 md:pb-8 min-h-[50vh]">
+            <div className="bg-[rgb(var(--color-card))] border-2 border-[rgb(var(--color-foreground)/0.15)] rounded-4xl px-4 md:px-8 pt-8 md:pt-8 pb-4 md:pb-8 min-h-[50vh]">
                 {loading ? (
                     <div className="flex justify-center p-8">
-                        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[rgb(var(--color-foreground))]"></div>
+                        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[rgb(var(--color-foreground)/0.15)]"></div>
                     </div>
                 ) : (
                     <>
@@ -697,6 +820,154 @@ export default function AdminDashboard() {
                                             accentColor
                                         />
                                     </>
+                                )}
+                            </div>
+                        )}
+
+                        {activeTab === 'research' && (
+                            <div>
+                                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                                    <div className="flex items-center gap-3">
+                                        <h2 className="text-2xl font-bold flex items-center gap-3">
+                                            AI Font Research
+                                        </h2>
+                                        <span className="text-xs font-mono text-[rgb(var(--color-muted-foreground))] uppercase tracking-wider bg-[rgb(var(--color-foreground)/0.05)] px-2.5 py-1 rounded-full border border-[rgb(var(--color-foreground)/0.08)]">
+                                            Manual · 1 at a time
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        {activeResearchingFontId ? (
+                                            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-[rgb(var(--color-accent)/0.1)] border border-[rgb(var(--color-accent)/0.25)] text-xs font-bold text-[rgb(var(--color-foreground))]">
+                                                <div className="h-2 w-2 rounded-full bg-[rgb(var(--color-accent))] animate-pulse" />
+                                                <span>Research in progress (1 at a time)...</span>
+                                            </div>
+                                        ) : researchStats.activeJobs > 0 ? (
+                                            <button
+                                                onClick={handleClearStuckJobs}
+                                                className="px-4 py-2 text-xs font-bold rounded-full bg-[rgb(var(--color-destructive)/0.1)] hover:bg-[rgb(var(--color-destructive)/0.2)] text-[rgb(var(--color-destructive))] border border-[rgb(var(--color-destructive)/0.3)] transition-colors cursor-pointer flex items-center gap-1.5"
+                                            >
+                                                <XCircle size={14} /> Clear Stuck Jobs ({researchStats.activeJobs})
+                                            </button>
+                                        ) : null}
+                                    </div>
+                                </div>
+
+                                {/* Stats Row */}
+                                <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
+                                    {[
+                                        { label: 'Total', value: researchStats.total, color: 'var(--color-foreground)' },
+                                        { label: 'Unresearched', value: researchStats.unresearched, color: 'var(--color-muted-foreground)' },
+                                        { label: 'Verified', value: researchStats.verified, color: 'var(--color-highlight)' },
+                                        { label: 'Review', value: researchStats.needsReview, color: 'var(--color-warning)' },
+                                        { label: 'Failed', value: researchStats.failed, color: 'var(--color-destructive)' },
+                                    ].map(s => (
+                                        <div key={s.label} className="p-3 rounded-2xl bg-[rgb(var(--color-foreground)/0.03)] border border-[rgb(var(--color-foreground)/0.05)] text-center">
+                                            <p className="text-2xl font-black" style={{ color: `rgb(${s.color})` }}>{s.value}</p>
+                                            <p className="text-xs text-[rgb(var(--color-muted-foreground))] font-mono uppercase">{s.label}</p>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {/* Active Jobs Indicator */}
+                                {researchStats.activeJobs > 0 && (
+                                    <div className="mb-4 p-3 rounded-xl bg-[rgb(var(--color-accent)/0.1)] border border-[rgb(var(--color-accent)/0.2)] flex items-center justify-between gap-2">
+                                        <div className="flex items-center gap-2">
+                                            <div className="h-2 w-2 rounded-full bg-[rgb(var(--color-accent))] animate-pulse" />
+                                            <span className="text-xs font-bold text-[rgb(var(--color-foreground))]">
+                                                {researchStats.activeJobs} job{researchStats.activeJobs !== 1 ? 's' : ''} active in background
+                                            </span>
+                                        </div>
+                                        <button
+                                            onClick={handleClearStuckJobs}
+                                            className="px-3 py-1 text-xs font-bold rounded-lg bg-[rgb(var(--color-foreground)/0.08)] hover:bg-[rgb(var(--color-foreground)/0.15)] text-[rgb(var(--color-foreground))] transition-colors cursor-pointer"
+                                        >
+                                            Clear Stuck Jobs
+                                        </button>
+                                    </div>
+                                )}
+
+                                {/* Filters + Search */}
+                                <div className="flex flex-col md:flex-row gap-3 mb-6">
+                                    <div className="relative flex-1">
+                                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[rgb(var(--color-muted-foreground))]" size={16} />
+                                        <input
+                                            type="text"
+                                            placeholder="Search fonts..."
+                                            value={searchResearch}
+                                            onChange={(e) => setSearchResearch(e.target.value)}
+                                            className="w-full pl-10 pr-4 py-2 bg-[rgb(var(--color-background))] border-2 border-[rgb(var(--color-foreground)/0.1)] rounded-full text-sm focus:outline-none focus:border-[rgb(var(--color-foreground)/0.15)]"
+                                        />
+                                    </div>
+                                    <div className="flex gap-2 flex-wrap">
+                                        {(['all', 'unresearched', 'verified', 'needs_review', 'failed'] as const).map(filter => (
+                                            <button
+                                                key={filter}
+                                                onClick={() => setResearchFilter(filter)}
+                                                className={`px-3 py-1.5 text-xs font-bold rounded-full border transition-all cursor-pointer ${
+                                                    researchFilter === filter
+                                                        ? 'bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] border-[rgb(var(--color-foreground)/0.15)]'
+                                                        : 'bg-transparent text-[rgb(var(--color-foreground))] border-[rgb(var(--color-foreground)/0.2)] hover:border-[rgb(var(--color-foreground)/0.5)]'
+                                                }`}
+                                            >
+                                                {filter === 'needs_review' ? 'Needs Review' : filter === 'unresearched' ? 'Unresearched' : filter.charAt(0).toUpperCase() + filter.slice(1)}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Font List */}
+                                {filteredResearchFonts.length === 0 ? (
+                                    <div className="text-center py-12 text-[rgb(var(--color-muted-foreground))] font-bold border-2 border-dashed border-[rgb(var(--color-foreground)/0.1)] rounded-2xl">
+                                        No fonts match your filter
+                                    </div>
+                                ) : (
+                                    <div className="space-y-3">
+                                        {filteredResearchFonts.map(font => (
+                                            <div key={font.id} className="border border-[rgb(var(--color-foreground)/0.08)] rounded-2xl overflow-hidden">
+                                                {/* Row */}
+                                                <div
+                                                    className="flex items-center justify-between p-4 cursor-pointer hover:bg-[rgb(var(--color-foreground)/0.02)] transition-colors"
+                                                    onClick={() => setExpandedResearchId(expandedResearchId === font.id ? null : font.id)}
+                                                >
+                                                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                                                        <div className="flex-1 min-w-0">
+                                                            <p className="font-bold text-sm text-[rgb(var(--color-foreground))] truncate">{font.name}</p>
+                                                            <p className="text-xs text-[rgb(var(--color-muted-foreground))]">{font.designer}</p>
+                                                        </div>
+                                                    </div>
+                                                    <FontResearchPanel
+                                                        fontId={font.id}
+                                                        fontName={font.name}
+                                                        research={font.research || null}
+                                                        sources={font.sources || []}
+                                                        compact
+                                                        isAnyResearching={!!activeResearchingFontId}
+                                                        activeResearchingFontId={activeResearchingFontId}
+                                                        onResearchStart={(id) => setActiveResearchingFontId(id)}
+                                                        onResearchEnd={() => setActiveResearchingFontId(null)}
+                                                        onResearchComplete={fetchResearchData}
+                                                    />
+                                                </div>
+
+                                                {/* Expanded Panel */}
+                                                {expandedResearchId === font.id && (
+                                                    <div className="border-t border-[rgb(var(--color-foreground)/0.05)] p-4">
+                                                        <FontResearchPanel
+                                                            fontId={font.id}
+                                                            fontName={font.name}
+                                                            research={font.research || null}
+                                                            sources={font.sources || []}
+                                                            isAnyResearching={!!activeResearchingFontId}
+                                                            activeResearchingFontId={activeResearchingFontId}
+                                                            onResearchStart={(id) => setActiveResearchingFontId(id)}
+                                                            onResearchEnd={() => setActiveResearchingFontId(null)}
+                                                            onResearchComplete={fetchResearchData}
+                                                        />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
                                 )}
                             </div>
                         )}
