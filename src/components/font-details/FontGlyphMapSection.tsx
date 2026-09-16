@@ -1,4 +1,3 @@
-import { Layout } from 'lucide-react';
 import GlyphMap from '../fonts/GlyphMap';
 import type { Font } from '../../types/font';
 

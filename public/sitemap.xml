@@ -706,6 +706,12 @@
         <priority>0.9</priority>
     </url>
     <url>
+        <loc>https://nobadfonts.in/fonts/aalto</loc>
+        <lastmod>2026-09-15T11:51:39.445Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
         <loc>https://nobadfonts.in/fonts/tag-type</loc>
         <lastmod>2026-05-01T20:35:29.738Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -738,12 +744,6 @@
     <url>
         <loc>https://nobadfonts.in/fonts/hyper-squad</loc>
         <lastmod>2026-05-03T18:45:32.697Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.9</priority>
-    </url>
-    <url>
-        <loc>https://nobadfonts.in/fonts/aalto</loc>
-        <lastmod>2026-02-17T23:13:28.171Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
@@ -791,7 +791,13 @@
     </url>
     <url>
         <loc>https://nobadfonts.in/fonts/offbit</loc>
-        <lastmod>2026-09-14T23:38:13.411Z</lastmod>
+        <lastmod>2026-09-15T18:34:47.190Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://nobadfonts.in/fonts/youth</loc>
+        <lastmod>2026-09-15T13:06:21.269Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
@@ -1106,6 +1112,11 @@
         <priority>0.7</priority>
     </url>
     <url>
+        <loc>https://nobadfonts.in/designers/Hugo%20Alvar%20Henrik%20Aalto</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
         <loc>https://nobadfonts.in/designers/Andy%20Panchenko</loc>
         <changefreq>weekly</changefreq>
         <priority>0.7</priority>
@@ -1117,11 +1128,6 @@
     </url>
     <url>
         <loc>https://nobadfonts.in/designers/Figuree%20Studio</loc>
-        <changefreq>weekly</changefreq>
-        <priority>0.7</priority>
-    </url>
-    <url>
-        <loc>https://nobadfonts.in/designers/Hugo%20Alvar%20Henrik%20Aalto</loc>
         <changefreq>weekly</changefreq>
         <priority>0.7</priority>
     </url>
@@ -1157,6 +1163,11 @@
     </url>
     <url>
         <loc>https://nobadfonts.in/designers/Valerio%20Monopoli</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://nobadfonts.in/designers/Jan%20Nov%C3%A1k</loc>
         <changefreq>weekly</changefreq>
         <priority>0.7</priority>
     </url>
