@@ -27,6 +27,8 @@ import {
     FontEditorialDetails,
     FontJsonToolbar,
 } from '../components/font-details';
+import AdminOgImageManager from '../components/fonts/AdminOgImageManager';
+import ContextPreview from '../components/fonts/ContextPreview';
 
 export default function FontDetails() {
     const { id } = useParams();
@@ -419,13 +421,30 @@ export default function FontDetails() {
                 {/* Tags & Categories */}
                 <FontTags tags={font.tags} />
 
-                {/* Admin Controls */}
-                <FontAdminControls
-                    font={font}
-                    user={user}
-                    profile={profile}
-                    onEditFiles={() => setIsEditingFiles(true)}
-                />
+                {/* Admin Controls & OG Social Card Manager (Exclusively for Admins) */}
+                {profile?.role === 'admin' && (
+                    <>
+                        <FontAdminControls
+                            font={font}
+                            user={user}
+                            profile={profile}
+                            onEditFiles={() => setIsEditingFiles(true)}
+                        />
+
+                        <AdminOgImageManager
+                            font={font}
+                            onVariantChange={(variantId) => {
+                                setActiveOgVariantId(variantId);
+                            }}
+                            onFontUpdated={(updatedFields) => {
+                                setFont(prev => prev ? { ...prev, ...updatedFields } : null);
+                                if (updatedFields.og_image_variant_id) {
+                                    setActiveOgVariantId(updatedFields.og_image_variant_id);
+                                }
+                            }}
+                        />
+                    </>
+                )}
 
                 {/* Hidden Share Card for Image Generation */}
                 <div className="absolute -left-2499.75 -top-2499.75">
@@ -449,13 +468,6 @@ export default function FontDetails() {
                     font={font}
                     profile={profile}
                     downloadFont={downloadFont}
-                    onVariantOgChange={setActiveOgVariantId}
-                    onFontUpdated={(updatedFields) => {
-                        setFont(prev => prev ? { ...prev, ...updatedFields } : null);
-                        if (updatedFields.og_image_variant_id) {
-                            setActiveOgVariantId(updatedFields.og_image_variant_id);
-                        }
-                    }}
                 />
 
                 {/* 3. Editorial Details & Taxonomy */}
@@ -514,12 +526,10 @@ export default function FontDetails() {
 
                 {/* 4. Type Tester */}
                 <div className="space-y-8">
-                    <div className="flex items-center gap-4">
-                        <div className="h-px bg-[rgb(var(--color-foreground)/0.1)] flex-1"></div>
-                        <h2 className="text-2xl font-bold uppercase tracking-widest text-[rgb(var(--color-muted-foreground))]">
-                            Type Tester
+                    <div className="flex justify-center items-center gap-4 py-10">
+                        <h2 className="text-4xl sm:text-6xl md:text-8xl font-inter-tight font-medium zuppercase ztracking-widest text-[rgb(var(--color-foreground))]">
+                            Type tester
                         </h2>
-                        <div className="h-px bg-[rgb(var(--color-foreground)/0.1)] flex-1"></div>
                     </div>
                     <FontTester font={font} />
                 </div>
@@ -529,6 +539,19 @@ export default function FontDetails() {
 
                 {/* 6. Glyph Map */}
                 <FontGlyphMapSection font={font} isFontLoaded={isFontLoaded} />
+
+
+
+                <div className="space-y-8 mt-40">
+                    <div className="flex justify-center items-center gap-4 py-10">
+                        <h2 className="relative flex justify-end items-center text-4xl sm:text-6xl md:text-8xl font-inter-tight font-medium zuppercase ztracking-widest text-[rgb(var(--color-foreground))]">
+                            Real-World <br className='md:hidden' />Context <span className="absolute bottom-full sm:bottom-auto left-0 sm:left-auto text-sm sm:text-xl px-2.5 sm:px-3.5 py-0.5 sm:py-2.5 bg-[rgb(var(--color-accent))] text-black rounded-full">Experimental</span>
+                        </h2>
+                    </div>
+                    <div className="">
+                        <ContextPreview fontFamily={font.name} />
+                    </div>
+                </div>
 
                 {/* 7. Similar Fonts */}
                 <FontSimilarSection similarFonts={similarFonts} />

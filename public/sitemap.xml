@@ -394,12 +394,6 @@
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://nobadfonts.in/fonts/bring-tha-noize</loc>
-        <lastmod>2026-05-01T19:59:23.921Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.9</priority>
-    </url>
-    <url>
         <loc>https://nobadfonts.in/fonts/karuna</loc>
         <lastmod>2026-03-21T10:03:39.144Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -628,6 +622,12 @@
         <priority>0.9</priority>
     </url>
     <url>
+        <loc>https://nobadfonts.in/fonts/bring-tha-noize</loc>
+        <lastmod>2026-09-14T23:07:37.948Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
         <loc>https://nobadfonts.in/fonts/disko-phonic</loc>
         <lastmod>2026-02-16T16:06:56.641Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -791,7 +791,7 @@
     </url>
     <url>
         <loc>https://nobadfonts.in/fonts/offbit</loc>
-        <lastmod>2026-05-27T09:09:54.668Z</lastmod>
+        <lastmod>2026-09-14T23:38:13.411Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
@@ -971,11 +971,6 @@
         <priority>0.7</priority>
     </url>
     <url>
-        <loc>https://nobadfonts.in/designers/Pizzadude</loc>
-        <changefreq>weekly</changefreq>
-        <priority>0.7</priority>
-    </url>
-    <url>
         <loc>https://nobadfonts.in/designers/Say%20Studio</loc>
         <changefreq>weekly</changefreq>
         <priority>0.7</priority>
@@ -1052,6 +1047,11 @@
     </url>
     <url>
         <loc>https://nobadfonts.in/designers/Ermedia%20Studio</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://nobadfonts.in/designers/Jakob%20Fischer</loc>
         <changefreq>weekly</changefreq>
         <priority>0.7</priority>
     </url>
@@ -1156,7 +1156,7 @@
         <priority>0.7</priority>
     </url>
     <url>
-        <loc>https://nobadfonts.in/designers/Power%20Type</loc>
+        <loc>https://nobadfonts.in/designers/Valerio%20Monopoli</loc>
         <changefreq>weekly</changefreq>
         <priority>0.7</priority>
     </url>

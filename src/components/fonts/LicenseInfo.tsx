@@ -1,5 +1,6 @@
 import { CheckCircle2, XCircle, ShieldCheck, ExternalLink, Info, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { cleanUrl } from '../../utils/urlHelper';
 import type { Font } from '../../types/font';
 import type { Database } from '../../types/database.types';
 
@@ -125,9 +126,9 @@ export default function LicenseInfo({ font, research }: LicenseInfoProps) {
                 </span>
                 <div className="flex items-center gap-3">
                     {/* View License Link from AI research */}
-                    {research?.license_url && research.research_status !== 'pending' && (
+                    {cleanUrl(research?.license_url) && research?.research_status !== 'pending' && (
                         <a
-                            href={research.license_url}
+                            href={cleanUrl(research!.license_url)!}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-xs font-bold flex items-center gap-1 text-[rgb(var(--color-highlight))] hover:underline underline-offset-4"

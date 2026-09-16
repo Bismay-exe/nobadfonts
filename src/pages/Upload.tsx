@@ -23,6 +23,7 @@ import { CustomLock } from '../components/ui/CustomIcons';
 import { extractFontMetadata, validateFontFile, validateImageFile } from '../utils/fontValidator';
 import { extractRichFontMetadata } from '../utils/fontMetadataExtractor';
 import { JsonImportModal, type FontFormState } from '../components/fonts/JsonImportModal';
+import { cleanUrl } from '../utils/urlHelper';
 import TurnstileWidget from '../components/shared/TurnstileWidget';
 
 export const LICENSE_OPTIONS = [
@@ -922,7 +923,7 @@ const Upload = () => {
                 license: {
                     distribution_status: formState.distributionStatus,
                     license_type: formState.licenseType,
-                    license_url: formState.licenseUrl,
+                    license_url: cleanUrl(formState.licenseUrl),
                     commercial_use: formState.commercialUse,
                     personal_use: formState.personalUse,
                     modification_allowed: formState.modificationAllowed,
@@ -930,12 +931,12 @@ const Upload = () => {
                     license_evidence: formState.licenseEvidence,
                 },
                 official_links: {
-                    official_website: formState.officialWebsite,
-                    official_font_page: formState.officialFontPage,
-                    purchase_url: formState.purchaseUrl,
-                    free_download_url: formState.freeDownloadUrl,
-                    github_url: formState.githubUrl,
-                    google_fonts_url: formState.googleFontsUrl,
+                    official_website: cleanUrl(formState.officialWebsite),
+                    official_font_page: cleanUrl(formState.officialFontPage),
+                    purchase_url: cleanUrl(formState.purchaseUrl),
+                    free_download_url: cleanUrl(formState.freeDownloadUrl),
+                    github_url: cleanUrl(formState.githubUrl),
+                    google_fonts_url: cleanUrl(formState.googleFontsUrl),
                 },
                 technical: {
                     formats: dynamicFormats,
@@ -950,11 +951,11 @@ const Upload = () => {
             const { error: metadataError } = await supabase.from('font_research').upsert({
                 font_id: insertedFont.id,
                 foundry: formState.foundry || null,
-                official_website: formState.officialWebsite || null,
-                official_font_page: formState.officialFontPage || null,
-                purchase_url: formState.purchaseUrl || null,
-                free_download_url: formState.freeDownloadUrl || null,
-                license_url: formState.licenseUrl || null,
+                official_website: cleanUrl(formState.officialWebsite),
+                official_font_page: cleanUrl(formState.officialFontPage),
+                purchase_url: cleanUrl(formState.purchaseUrl),
+                free_download_url: cleanUrl(formState.freeDownloadUrl),
+                license_url: cleanUrl(formState.licenseUrl),
                 license_type_verified: formState.licenseType,
                 commercial_use_verified: formState.commercialUse,
                 personal_use_verified: formState.personalUse,

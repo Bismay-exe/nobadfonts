@@ -3,6 +3,7 @@ import { FileJson, Download } from 'lucide-react';
 import { Toast } from '@capacitor/toast';
 import { supabase } from '../../lib/supabase';
 import { JsonImportModal, type FontFormState } from '../fonts/JsonImportModal';
+import { cleanUrl } from '../../utils/urlHelper';
 import type { Font } from '../../types/font';
 import type { Database } from '../../types/database.types';
 
@@ -76,7 +77,7 @@ export function buildCanonicalFontMetadata(font: Font, research?: FontResearchRo
         license: {
             distribution_status: tax.license?.distribution_status || (font.commercial_use ? 'open_source' : 'free'),
             license_type: tax.license?.license_type || research?.license_type_verified || font.license_type || 'Personal Use Only',
-            license_url: tax.license?.license_url || research?.license_url || null,
+            license_url: cleanUrl(tax.license?.license_url || research?.license_url),
             commercial_use: tax.license?.commercial_use ?? (font.commercial_use ?? false),
             personal_use: tax.license?.personal_use ?? true,
             modification_allowed: tax.license?.modification_allowed ?? false,
@@ -84,12 +85,12 @@ export function buildCanonicalFontMetadata(font: Font, research?: FontResearchRo
             license_evidence: tax.license?.license_evidence || null,
         },
         official_links: {
-            official_website: tax.official_links?.official_website || research?.official_website || null,
-            official_font_page: tax.official_links?.official_font_page || research?.official_font_page || null,
-            purchase_url: tax.official_links?.purchase_url || research?.purchase_url || null,
-            free_download_url: tax.official_links?.free_download_url || research?.free_download_url || null,
-            github_url: tax.official_links?.github_url || null,
-            google_fonts_url: tax.official_links?.google_fonts_url || null,
+            official_website: cleanUrl(tax.official_links?.official_website || research?.official_website),
+            official_font_page: cleanUrl(tax.official_links?.official_font_page || research?.official_font_page),
+            purchase_url: cleanUrl(tax.official_links?.purchase_url || research?.purchase_url),
+            free_download_url: cleanUrl(tax.official_links?.free_download_url || research?.free_download_url),
+            github_url: cleanUrl(tax.official_links?.github_url),
+            google_fonts_url: cleanUrl(tax.official_links?.google_fonts_url),
         },
         technical: {
             formats: dynamicFormats,
@@ -212,7 +213,7 @@ export default function FontJsonToolbar({
                 license: {
                     distribution_status: data.distributionStatus ?? existingTax.license?.distribution_status ?? (font.commercial_use ? 'open_source' : 'free'),
                     license_type: data.licenseType ?? fontUpdates.license_type ?? existingTax.license?.license_type ?? font.license_type,
-                    license_url: data.licenseUrl ?? existingTax.license?.license_url ?? research?.license_url ?? null,
+                    license_url: cleanUrl(data.licenseUrl ?? existingTax.license?.license_url ?? research?.license_url),
                     commercial_use: data.commercialUse ?? (fontUpdates.commercial_use ?? (existingTax.license?.commercial_use ?? font.commercial_use)),
                     personal_use: data.personalUse ?? (existingTax.license?.personal_use ?? true),
                     modification_allowed: data.modificationAllowed ?? (existingTax.license?.modification_allowed ?? false),
@@ -220,12 +221,12 @@ export default function FontJsonToolbar({
                     license_evidence: data.licenseEvidence ?? existingTax.license?.license_evidence ?? null,
                 },
                 official_links: {
-                    official_website: data.officialWebsite ?? existingTax.official_links?.official_website ?? research?.official_website ?? null,
-                    official_font_page: data.officialFontPage ?? existingTax.official_links?.official_font_page ?? research?.official_font_page ?? null,
-                    purchase_url: data.purchaseUrl ?? existingTax.official_links?.purchase_url ?? research?.purchase_url ?? null,
-                    free_download_url: data.freeDownloadUrl ?? existingTax.official_links?.free_download_url ?? research?.free_download_url ?? null,
-                    github_url: data.githubUrl ?? existingTax.official_links?.github_url ?? null,
-                    google_fonts_url: data.googleFontsUrl ?? existingTax.official_links?.google_fonts_url ?? null,
+                    official_website: cleanUrl(data.officialWebsite ?? existingTax.official_links?.official_website ?? research?.official_website),
+                    official_font_page: cleanUrl(data.officialFontPage ?? existingTax.official_links?.official_font_page ?? research?.official_font_page),
+                    purchase_url: cleanUrl(data.purchaseUrl ?? existingTax.official_links?.purchase_url ?? research?.purchase_url),
+                    free_download_url: cleanUrl(data.freeDownloadUrl ?? existingTax.official_links?.free_download_url ?? research?.free_download_url),
+                    github_url: cleanUrl(data.githubUrl ?? existingTax.official_links?.github_url),
+                    google_fonts_url: cleanUrl(data.googleFontsUrl ?? existingTax.official_links?.google_fonts_url),
                 },
                 technical: {
                     formats: data.formats ?? existingTax.technical?.formats ?? ['OTF', 'TTF'],
@@ -241,11 +242,11 @@ export default function FontJsonToolbar({
             const researchPayload: any = {
                 font_id: font.id,
                 foundry: data.foundry || research?.foundry || null,
-                official_website: data.officialWebsite || research?.official_website || null,
-                official_font_page: data.officialFontPage || research?.official_font_page || null,
-                purchase_url: data.purchaseUrl || research?.purchase_url || null,
-                free_download_url: data.freeDownloadUrl || research?.free_download_url || null,
-                license_url: data.licenseUrl || research?.license_url || null,
+                official_website: cleanUrl(data.officialWebsite || research?.official_website),
+                official_font_page: cleanUrl(data.officialFontPage || research?.official_font_page),
+                purchase_url: cleanUrl(data.purchaseUrl || research?.purchase_url),
+                free_download_url: cleanUrl(data.freeDownloadUrl || research?.free_download_url),
+                license_url: cleanUrl(data.licenseUrl || research?.license_url),
                 license_type_verified: data.licenseType || research?.license_type_verified || font.license_type,
                 commercial_use_verified: data.commercialUse ?? (research?.commercial_use_verified ?? font.commercial_use),
                 personal_use_verified: data.personalUse ?? (research?.personal_use_verified ?? true),

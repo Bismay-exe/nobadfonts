@@ -20,15 +20,11 @@ export default function FontGlyphMapSection({ font, isFontLoaded }: FontGlyphMap
     })).filter(v => v.url !== '') || [];
 
     return (
-        <div className="space-y-8 pt-12 border-t border-[rgb(var(--color-foreground)/0.1)] mt-12">
-            <div className="flex justify-between items-center bg-[rgb(var(--color-muted)/0.05)] p-4 rounded-2xl border border-[rgb(var(--color-border))]">
-                <h2 className="text-2xl font-bold text-[rgb(var(--color-foreground))] tracking-tight flex items-center gap-3 px-4">
-                    <Layout className="text-[rgb(var(--color-accent))]" />
-                    Glyph Map
+        <div className="space-y-8 pt-12 mt-12">
+            <div className="flex justify-center items-center gap-4 py-10">
+                <h2 className="text-4xl sm:text-6xl md:text-8xl font-inter-tight font-medium zuppercase ztracking-widest text-[rgb(var(--color-foreground))]">
+                    256 Glyphs
                 </h2>
-                <span className="text-xs font-bold text-[rgb(var(--color-muted-foreground))] bg-[rgb(var(--color-background))] px-3 py-1 rounded-full border border-[rgb(var(--color-border))] uppercase tracking-widest">
-                    256 Characters
-                </span>
             </div>
 
             <GlyphMap

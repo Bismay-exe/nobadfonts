@@ -2,6 +2,7 @@
 
 import { useState, useRef, useMemo, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
+import { useAuth } from '../../contexts/AuthContext';
 import type { Font } from '../../types/font';
 import SocialShareCard from './SocialShareCard';
 import { Toast } from '@capacitor/toast';
@@ -59,6 +60,9 @@ const getFileNameFromUrl = (url: string) => {
 };
 
 export default function AdminOgImageManager({ font, onFontUpdated, onVariantChange }: AdminOgImageManagerProps) {
+    const { profile } = useAuth();
+    if (profile?.role !== 'admin') return null;
+
     const variants = useMemo(() => font.font_variants || [], [font.font_variants]);
     const currentVariantsCount = variants.length > 0 ? variants.length : 1;
 

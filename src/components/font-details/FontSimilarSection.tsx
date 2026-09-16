@@ -13,32 +13,32 @@ export default function FontSimilarSection({ similarFonts }: FontSimilarSectionP
     if (!similarFonts || similarFonts.length === 0) return null;
 
     return (
-        <div className="space-y-8 pt-12 border-t border-[rgb(var(--color-foreground)/0.1)] mt-12">
+        <div className="space-y-8 pt-12 mt-12">
             <div className="flex justify-between items-center gap-2">
-                <h2 className="text-3xl md:text-4xl font-bold text-[rgb(var(--color-foreground))] tracking-tight">
-                    You might also like
-                </h2>
+                <div className="flex justify-center items-center gap-4 py-10">
+                    <h2 className="text-4xl sm:text-6xl md:text-8xl font-inter-tight font-medium zuppercase ztracking-widest text-[rgb(var(--color-foreground))]">
+                        You might also like
+                    </h2>
+                </div>
 
                 <div className="flex items-center">
                     <div className="flex bg-[rgb(var(--color-foreground)/0.05)] backdrop-blur-md h-10 p-1 w-auto rounded-full border border-[rgb(var(--color-foreground)/0.1)]">
                         <button
                             onClick={() => setViewMode('font')}
-                            className={`p-1.5 aspect-square rounded-full transition-all cursor-pointer ${
-                                viewMode === 'font'
+                            className={`p-1.5 aspect-square rounded-full transition-all cursor-pointer ${viewMode === 'font'
                                     ? 'bg-[rgb(var(--color-highlight))] text-[rgb(var(--color-background))] shadow-[0_0_15px_rgba(var(--color-highlight),0.3)]'
                                     : 'text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))]'
-                            }`}
+                                }`}
                             title="Font View"
                         >
                             <Type size={16} />
                         </button>
                         <button
                             onClick={() => setViewMode('image')}
-                            className={`p-1.5 aspect-square rounded-full transition-all cursor-pointer ${
-                                viewMode === 'image'
+                            className={`p-1.5 aspect-square rounded-full transition-all cursor-pointer ${viewMode === 'image'
                                     ? 'bg-[rgb(var(--color-highlight))] text-[rgb(var(--color-background))] shadow-[0_0_15px_rgba(var(--color-highlight),0.3)]'
                                     : 'text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))]'
-                            }`}
+                                }`}
                             title="Image View"
                         >
                             <ImageIcon size={16} />

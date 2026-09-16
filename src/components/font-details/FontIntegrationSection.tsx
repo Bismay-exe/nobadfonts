@@ -64,56 +64,79 @@ export default function FontIntegrationSection({ font, research }: FontIntegrati
 
     return (
         <div className="space-y-8">
-            <div className="flex items-center gap-4">
-                <div className="h-px bg-[rgb(var(--color-foreground)/0.1)] flex-1"></div>
-                <h2 className="text-2xl font-bold uppercase tracking-widest text-[rgb(var(--color-muted-foreground))]">
-                    Integration
+            <div className="flex justify-center items-center gap-4 py-10">
+                <h2 className="text-4xl sm:text-6xl md:text-8xl font-inter-tight font-medium zuppercase ztracking-widest text-[rgb(var(--color-foreground))]">
+                    Integration & cli
                 </h2>
-                <div className="h-px bg-[rgb(var(--color-foreground)/0.1)] flex-1"></div>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid md:grid-cols-2 gap-6 font-inter-tight">
                 <section
                     id="embed-section"
                     className="bg-[rgb(var(--color-card,var(--color-muted)))] border border-[rgb(var(--color-foreground)/0.05)] rounded-[2.5rem] overflow-hidden scroll-mt-24 h-full"
                 >
-                    <div className="p-8 space-y-8">
+
+                    <div className="p-5 md:p-8 space-y-10 md:space-y-12">
+                        <h3 className="font-semibold text-3xl mb-6 md:mb-10 text-[rgb(var(--color-foreground))] uppercase">
+                            Using nobadfonts-cli
+                        </h3>
+                        <div>
+                            <h3 className="font-normal text-2xl pl-3 mb-5 text-[rgb(var(--color-foreground)/0.8)]">
+                                Automatic Web integration using cli command
+                            </h3>
+                            <div className="bg-[rgb(var(--color-foreground)/0.05)] rounded-2xl zborder border-[rgb(var(--color-foreground)/0.1)] text-[rgb(var(--color-foreground)/0.7)] text-sm font-mono p-5 overflow-x-auto whitespace-pre shadow-inner">
+                                {`npx nobadfonts-cli add ${font.slug}`}
+                            </div>
+                        </div>
+                        <div>
+                            <h3 className="font-normal text-2xl pl-3 mb-5 text-[rgb(var(--color-foreground)/0.8)]">
+                                Or Automatic Download + Integration using cli command
+                            </h3>
+                            <div className="bg-[rgb(var(--color-foreground)/0.05)] rounded-2xl zborder border-[rgb(var(--color-foreground)/0.1)] text-[rgb(var(--color-foreground)/0.7)] text-sm font-mono p-5 overflow-x-auto whitespace-pre shadow-inner">
+                                {`npx nobadfonts-cli download ${font.slug}`}
+                            </div>
+                        </div>
+                    </div>
+                    <div className="p-5 md:p-8 space-y-10 md:space-y-12">
+                        <h3 className="font-semibold text-3xl mb-6 md:mb-10 text-[rgb(var(--color-foreground))] uppercase">
+                            Manual integration
+                        </h3>
                         {/* Option 1: Head Link */}
                         <div>
-                            <h3 className="font-bold text-lg mb-3 text-[rgb(var(--color-foreground))]">
+                            <h3 className="font-normal text-2xl pl-3 mb-5 text-[rgb(var(--color-foreground)/0.8)]">
                                 1. Add to the head section of web page
                             </h3>
-                            <div className="bg-[rgb(var(--color-background)/0.5)] rounded-2xl border border-[rgb(var(--color-foreground)/0.1)] text-[rgb(var(--color-foreground)/0.7)] text-sm font-mono p-5 overflow-x-auto whitespace-pre shadow-inner">
+                            <div className="bg-[rgb(var(--color-foreground)/0.05)] rounded-2xl zborder border-[rgb(var(--color-foreground)/0.1)] text-[rgb(var(--color-foreground)/0.7)] text-sm font-mono p-5 overflow-x-auto whitespace-pre shadow-inner">
                                 {`<link href="${window.location.origin}/css/${font.slug}" rel="stylesheet">`}
                             </div>
                         </div>
 
                         {/* Option 2: Import */}
                         <div>
-                            <h3 className="font-bold text-lg mb-3 text-[rgb(var(--color-foreground))]">
+                            <h3 className="font-normal text-2xl pl-3 mb-5 text-[rgb(var(--color-foreground)/0.8)]">
                                 OR Using @import CSS directive
                             </h3>
-                            <div className="bg-[rgb(var(--color-background)/0.5)] rounded-2xl border border-[rgb(var(--color-foreground)/0.1)] text-[rgb(var(--color-foreground)/0.7)] text-sm font-mono p-5 overflow-x-auto whitespace-pre shadow-inner">
+                            <div className="bg-[rgb(var(--color-foreground)/0.05)] rounded-2xl zborder border-[rgb(var(--color-foreground)/0.1)] text-[rgb(var(--color-foreground)/0.7)] text-sm font-mono p-5 overflow-x-auto whitespace-pre shadow-inner">
                                 {`@import url(${window.location.origin}/css/${font.slug});`}
                             </div>
                         </div>
 
                         {/* Option 3: Font Face */}
                         <div>
-                            <h3 className="font-bold text-lg mb-3 text-[rgb(var(--color-foreground))]">
+                            <h3 className="font-normal text-2xl pl-3 mb-5 text-[rgb(var(--color-foreground)/0.8)]">
                                 OR Use font-face declaration
                             </h3>
-                            <div className="bg-[rgb(var(--color-background)/0.5)] rounded-2xl border border-[rgb(var(--color-foreground)/0.1)] text-[rgb(var(--color-highlight))] text-sm font-mono p-5 overflow-x-auto whitespace-pre shadow-inner">
+                            <div className="max-h-60 bg-[rgb(var(--color-foreground)/0.05)] rounded-2xl zborder border-[rgb(var(--color-foreground)/0.1)] text-[rgb(var(--color-highlight))] text-sm font-mono p-5 overflow-auto whitespace-pre shadow-inner">
                                 {fontFaceCSS}
                             </div>
                         </div>
 
                         {/* Section 2: CSS Rules */}
                         <div>
-                            <h3 className="font-bold text-lg mb-3 text-[rgb(var(--color-foreground))]">
+                            <h3 className="font-normal text-2xl pl-3 mb-5 text-[rgb(var(--color-foreground)/0.8)]">
                                 2. CSS rules to specify fonts
                             </h3>
-                            <div className="bg-[rgb(var(--color-background)/0.5)] rounded-2xl border border-[rgb(var(--color-foreground)/0.1)] text-[rgb(var(--color-highlight))] text-sm font-mono p-5 overflow-x-auto whitespace-pre shadow-inner">
+                            <div className="bg-[rgb(var(--color-foreground)/0.05)] rounded-2xl zborder border-[rgb(var(--color-foreground)/0.1)] text-[rgb(var(--color-highlight))] text-sm font-mono p-5 overflow-x-auto whitespace-pre shadow-inner">
                                 {`font-family: "${font.name}", sans-serif;`}
                             </div>
                         </div>
@@ -122,19 +145,19 @@ export default function FontIntegrationSection({ font, research }: FontIntegrati
 
                 <div className="space-y-6">
                     <div className="bg-[rgb(var(--color-card,var(--color-muted)))] border border-[rgb(var(--color-foreground)/0.05)] rounded-[2.5rem] p-8">
-                        <h3 className="font-bold text-2xl mb-6 text-[rgb(var(--color-foreground))] uppercase tracking-wider">
+                        <h3 className="font-semibold text-3xl mb-6 md:mb-10 text-[rgb(var(--color-foreground))] uppercase">
                             Font Stats
                         </h3>
                         <div className="space-y-4">
                             <div className="flex justify-between items-center bg-[rgb(var(--color-foreground)/0.05)] p-4 rounded-xl">
                                 <span className="text-[rgb(var(--color-muted-foreground))] font-medium">Downloads</span>
-                                <span className="font-bold text-[rgb(var(--color-foreground))] text-xl">
+                                <span className="font-normal text-[rgb(var(--color-foreground))] text-xl">
                                     {font.downloads?.toLocaleString()}
                                 </span>
                             </div>
                             <div className="flex justify-between items-center bg-[rgb(var(--color-foreground)/0.05)] p-4 rounded-xl">
                                 <span className="text-[rgb(var(--color-muted-foreground))] font-medium">Favorites</span>
-                                <span className="font-bold text-[rgb(var(--color-foreground))] text-xl capitalize">
+                                <span className="font-normal text-[rgb(var(--color-foreground))] text-xl capitalize">
                                     {font.favorites_count?.toLocaleString()}
                                 </span>
                             </div>

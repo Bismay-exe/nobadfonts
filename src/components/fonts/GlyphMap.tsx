@@ -136,9 +136,9 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
 
         const render = () => {
             const fg = rgb('--color-foreground');
-            const strokeColor = rgba('--color-muted-foreground', 0.5);
-            const guideColor = rgba('--color-muted-foreground', 0.2);
-            const labelColor = rgba('--color-muted-foreground', 0.4);
+            const strokeColor = rgb('--color-muted-foreground');
+            const guideColor = rgb('--color-border');
+            const labelColor = rgb('--color-muted-foreground');
             // Metrics and Setup
             const dpr = window.devicePixelRatio || 1;
             const rect = container.getBoundingClientRect();

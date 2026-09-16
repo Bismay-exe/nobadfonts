@@ -8,6 +8,8 @@ interface VariantListProps {
     profile: any;
     variantPreviewText: string;
     variantPreviewSize: number;
+    variantLineHeight?: number;
+    variantLetterSpacing?: number;
     downloadFont: (url: string, filename: string) => Promise<void>;
 }
 
@@ -16,6 +18,8 @@ export default function VariantList({
     profile, 
     variantPreviewText, 
     variantPreviewSize, 
+    variantLineHeight = 1.4,
+    variantLetterSpacing = 0,
     downloadFont 
 }: VariantListProps) {
     const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
@@ -190,7 +194,8 @@ export default function VariantList({
                         style={{
                             fontFamily: `'font-${font.id}-${variant.variant_name}'`,
                             fontSize: `${variantPreviewSize}px`,
-                            lineHeight: 1.2
+                            lineHeight: variantLineHeight !== undefined ? variantLineHeight : 1.2,
+                            letterSpacing: variantLetterSpacing !== undefined ? `${variantLetterSpacing}px` : undefined,
                         }}
                         className="wrap-break-word transition-all duration-200 w-full text-[rgb(var(--color-foreground))]"
                     >

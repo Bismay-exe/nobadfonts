@@ -2,6 +2,7 @@ import { Check, X, ExternalLink, Globe, ShoppingBag, Download, Cat } from 'lucid
 import type { Font } from '../../types/font';
 import type { Database } from '../../types/database.types';
 import { generateDescription } from '../../utils/fontDescriptionGenerator';
+import { cleanUrl, formatUrlForDisplay } from '../../utils/urlHelper';
 
 type FontResearchRow = Database['public']['Tables']['font_research']['Row'];
 
@@ -18,26 +19,26 @@ export default function FontEditorialDetails({ font, research }: FontEditorialDe
     const fontName = taxonomy?.identity?.name || font.name || 'Untitled Typeface';
     const designer = taxonomy?.creator?.designer || font.designer || 'Unknown Designer';
     const foundry = taxonomy?.creator?.foundry || research?.foundry || null;
-    const releaseYear = taxonomy?.identity?.release_year 
-        ? String(taxonomy.identity.release_year) 
+    const releaseYear = taxonomy?.identity?.release_year
+        ? String(taxonomy.identity.release_year)
         : (font.created_at ? new Date(font.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : null);
     const version = taxonomy?.identity?.version || extracted?.version || '1.000';
 
     // 1. Description
-    const descriptionText = taxonomy?.description?.description 
-        || research?.ai_description 
-        || font.description 
+    const descriptionText = taxonomy?.description?.description
+        || research?.ai_description
+        || font.description
         || generateDescription(font);
 
     // 2. History & Background
-    const defaultHistory = font.designer 
+    const defaultHistory = font.designer
         ? `Designed by ${font.designer}${foundry ? ` (${foundry})` : ''}${releaseYear ? ` and released in ${releaseYear}` : ''} as a high-character digital typeface asset.`
         : null;
 
     const historyText = taxonomy?.description?.history || defaultHistory;
 
     // 3. Design Characteristics
-    const defaultCharacteristics = font.category 
+    const defaultCharacteristics = font.category
         ? `Features distinct ${font.category.toLowerCase()} construction, optical weight distribution, tactile stroke nuance, and balanced metrics across ${font.glyph_count || 'standard'} character glyphs.`
         : null;
 
@@ -62,8 +63,8 @@ export default function FontEditorialDetails({ font, research }: FontEditorialDe
 
     // 5. Technical Details
     const category = taxonomy?.classification?.category || font.category || 'Display';
-    const style = taxonomy?.classification?.style 
-        || taxonomy?.classification?.subcategory 
+    const style = taxonomy?.classification?.style
+        || taxonomy?.classification?.subcategory
         || (font.tags?.[0] ? font.tags[0].charAt(0).toUpperCase() + font.tags[0].slice(1) : 'Regular');
 
     let formatsString = 'OTF · TTF';
@@ -121,76 +122,78 @@ export default function FontEditorialDetails({ font, research }: FontEditorialDe
     const isCommercialAllowed = taxonomy?.license?.commercial_use ?? (font.commercial_use ?? false);
     const isPersonalAllowed = taxonomy?.license?.personal_use ?? true;
     const isModificationAllowed = taxonomy?.license?.modification_allowed ?? (
-        licenseType.toLowerCase().includes('ofl') || 
-        licenseType.toLowerCase().includes('cc0') || 
+        licenseType.toLowerCase().includes('ofl') ||
+        licenseType.toLowerCase().includes('cc0') ||
         licenseType.toLowerCase().includes('100% free')
     );
     const isRedistributionAllowed = taxonomy?.license?.redistribution_allowed ?? (
-        licenseType.toLowerCase().includes('ofl') || 
+        licenseType.toLowerCase().includes('ofl') ||
         licenseType.toLowerCase().includes('cc0')
     );
 
-    const distributionStatus = taxonomy?.license?.distribution_status 
+    const distributionStatus = taxonomy?.license?.distribution_status
         ? taxonomy.license.distribution_status.replace(/_/g, ' ').toUpperCase()
         : (isCommercialAllowed ? 'FREE & OPEN SOURCE' : 'PERSONAL USE ONLY');
 
     const licenseEvidence = taxonomy?.license?.license_evidence || null;
-    const licenseUrl = taxonomy?.license?.license_url || research?.license_url || null;
+    const licenseUrl = cleanUrl(taxonomy?.license?.license_url || research?.license_url);
 
     // 9. Official Links
     const rawLinks = [
         {
             label: 'Official Website',
-            url: taxonomy?.official_links?.official_website || research?.official_website || null,
+            url: cleanUrl(taxonomy?.official_links?.official_website || research?.official_website),
             icon: Globe,
             desc: 'Creator or Foundry storefront'
         },
         {
             label: 'Official Font Page',
-            url: taxonomy?.official_links?.official_font_page || research?.official_font_page || null,
+            url: cleanUrl(taxonomy?.official_links?.official_font_page || research?.official_font_page),
             icon: ExternalLink,
             desc: 'Official release specimen page'
         },
         {
             label: 'Purchase License',
-            url: taxonomy?.official_links?.purchase_url || research?.purchase_url || null,
+            url: cleanUrl(taxonomy?.official_links?.purchase_url || research?.purchase_url),
             icon: ShoppingBag,
             desc: 'Commercial licenses and upgrades'
         },
         {
+            label: 'License Terms',
+            url: cleanUrl(licenseUrl),
+            icon: ExternalLink,
+            desc: 'Official licensing terms and usage permissions'
+        },
+        {
             label: 'Free Download',
-            url: taxonomy?.official_links?.free_download_url || research?.free_download_url || null,
+            url: cleanUrl(taxonomy?.official_links?.free_download_url || research?.free_download_url),
             icon: Download,
             desc: 'Authorized digital package'
         },
         {
             label: 'Source Repository',
-            url: taxonomy?.official_links?.github_url || null,
+            url: cleanUrl(taxonomy?.official_links?.github_url),
             icon: Cat,
             desc: 'Official code and build repository'
         },
         {
             label: 'Google Fonts Directory',
-            url: taxonomy?.official_links?.google_fonts_url || null,
+            url: cleanUrl(taxonomy?.official_links?.google_fonts_url),
             icon: ExternalLink,
             desc: 'Google Fonts distribution listing'
         }
     ];
 
-    const officialLinks = rawLinks.filter(l => l.url && typeof l.url === 'string' && l.url.trim().length > 0);
-
-    const formatUrlDisplay = (url: string) => {
-        try {
-            const parsed = new URL(url.startsWith('http') ? url : `https://${url}`);
-            return parsed.hostname + (parsed.pathname !== '/' ? parsed.pathname : '');
-        } catch {
-            return url.replace(/^https?:\/\//, '');
-        }
-    };
+    const officialLinks = rawLinks.filter(l => Boolean(l.url));
 
     return (
         <section className="w-full zmax-w-6xl mx-auto space-y-0 font-inter-tight text-[rgb(var(--color-foreground))]">
-            
+            <div className="flex justify-center items-center gap-4 py-10">
+                <h2 className="text-4xl sm:text-6xl md:text-8xl font-inter-tight font-medium zuppercase ztracking-widest text-[rgb(var(--color-foreground))]">
+                    Details
+                </h2>
+            </div>
+
             {/* Top Identity / Personality Intro */}
             <div className="md:border-b border-[rgb(var(--color-foreground)/0.08)] py-12 md:py-16">
                 <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-8 md:gap-0">
@@ -461,8 +464,8 @@ export default function FontEditorialDetails({ font, research }: FontEditorialDe
                         </div>
 
                         <p className="text-[22px] md:text-2xl font-light text-[rgb(var(--color-muted-foreground))]">
-                            {isCommercialAllowed 
-                                ? 'Authorized for personal and commercial projects under license terms.' 
+                            {isCommercialAllowed
+                                ? 'Authorized for personal and commercial projects under license terms.'
                                 : 'Personal use authorized. Commercial use requires a commercial tier or verified license.'}
                         </p>
 
@@ -554,36 +557,57 @@ export default function FontEditorialDetails({ font, research }: FontEditorialDe
             {/* OFFICIAL LINKS */}
             {officialLinks.length > 0 && (
                 <div className="py-12 md:py-16">
-                    <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-8 md:gap-0">
+                    <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-10 md:gap-0">
+                        {/* Section title */}
                         <div className="w-full md:w-1/3 shrink-0 md:sticky md:top-28">
                             <h3 className="text-3xl md:text-4xl font-normal text-[rgb(var(--color-foreground))]">
                                 Official Links
                             </h3>
                         </div>
+                        {/* Links */}
                         <div className="w-full md:w-1/2 zmax-w-3xl">
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="space-y-1">
                                 {officialLinks.map((link, idx) => {
-                                    // const IconComp = link.icon;
+                                    const cleanedUrl = cleanUrl(link.url) || link.url!;
                                     return (
                                         <a
                                             key={idx}
-                                            href={link.url!}
+                                            href={cleanedUrl}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="group p-4 rounded-xl border border-[rgb(var(--color-foreground)/0.1)] bg-[rgb(var(--color-foreground)/0.02)] hover:bg-[rgb(var(--color-foreground)/0.05)] hover:border-[rgb(var(--color-foreground)/0.25)] transition-all flex flex-col justify-between"
+                                            className="group block py-5 md:py-6 border-t border-[rgb(var(--color-foreground)/0.1)] first:border-none"
                                         >
-                                            <div className="flex items-center justify-between mb-2">
-                                                <span className="font-bold text-sm text-[rgb(var(--color-foreground))] group-hover:underline underline-offset-2">
-                                                    {link.label}
-                                                </span>
-                                                <ExternalLink size={14} className="text-[rgb(var(--color-muted-foreground))] group-hover:text-[rgb(var(--color-foreground))] transition-colors" />
-                                            </div>
-                                            <div>
-                                                <span className="block font-mono text-xs text-[rgb(var(--color-muted-foreground))] truncate">
-                                                    {formatUrlDisplay(link.url!)}
-                                                </span>
-                                                <span className="block text-[11px] text-[rgb(var(--color-muted-foreground)/0.7)] mt-1">
-                                                    {link.desc}
+                                            <div className="flex items-start justify-between gap-6">
+                                                <div className="min-w-0">
+                                                    {/* Label */}
+                                                    <div className="flex flex-wrap items-center gap-3">
+                                                        <span className="text-2xl md:text-3xl font-normal text-[rgb(var(--color-foreground))] transition-all duration-300 ease-in-out group-hover:text-[rgb(var(--color-foreground))] group-hover:translate-x-1">
+                                                            {link.label}
+                                                        </span>
+                                                        <span className="hidden md:block mt-2 ml-0 group-hover:ml-3 text-xs md:text-sm font-mono text-[rgb(var(--color-muted-foreground)/0.8)] truncate
+                                                        opacity-0 group-hover:opacity-100 transition-all duration-300 ease-in-out
+                                                        w-fit px-3.5 py-3.5 rounded-xl border border-[rgb(var(--color-foreground)/0.08)] bg-[rgb(var(--color-foreground)/0.02)]">
+                                                            {formatUrlForDisplay(link.url!)}
+                                                        </span>
+                                                    </div>
+
+                                                    {/* Description */}
+                                                    {link.desc && (
+                                                        <p className="mt-2 text-xl font-light leading-relaxed text-[rgb(var(--color-muted-foreground)/0.8)]">
+                                                            {link.desc}
+                                                        </p>
+                                                    )}
+
+                                                    {/* URL */}
+                                                    {/* <span className="mt-2 text-xs md:text-sm font-mono text-[rgb(var(--color-muted-foreground))] truncate
+                                                    w-fit inline-block px-3.5 py-3.5 rounded-xl border border-[rgb(var(--color-foreground)/0.08)] bg-[rgb(var(--color-foreground)/0.02)]">
+                                                        {formatUrlForDisplay(link.url!)}
+                                                    </span> */}
+                                                </div>
+
+                                                {/* Arrow */}
+                                                <span className="shrink-0 mt-1 text-xl text-[rgb(var(--color-muted-foreground)/0.5)] transition-all duration-300 group-hover:text-[rgb(var(--color-foreground))] group-hover:translate-x-1 group-hover:-translate-y-1">
+                                                    ↗
                                                 </span>
                                             </div>
                                         </a>

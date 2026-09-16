@@ -7,5 +7,5 @@ export { default as FontVariantSection } from './FontVariantSection';
 export { default as FontIntegrationSection } from './FontIntegrationSection';
 export { default as FontGlyphMapSection } from './FontGlyphMapSection';
 export { default as FontSimilarSection } from './FontSimilarSection';
-export { default as FontEditorialDetails } from '../fonts/FontEditorialDetails';
+export { default as FontEditorialDetails } from './FontEditorialDetails';
 export { default as FontJsonToolbar } from './FontJsonToolbar';

@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { AlignLeft, AlignCenter, AlignRight, LayoutTemplate, BoxSelect, ChevronDown } from 'lucide-react';
+import { AlignLeft, AlignCenter, AlignRight, BoxSelect, ChevronDown } from 'lucide-react';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
-import ContextPreview from './ContextPreview';
 import type { Font } from '../../types/font';
 
 interface FontTesterProps {
@@ -185,8 +184,6 @@ export default function FontTester({ font }: FontTesterProps) {
 
     return (
         <div className="overflow-hidden flex flex-col h-full shadow-lg">
-
-
             {/* Controls Toolbar */}
             <div className="p-2">
                 {/* Controls Content */}
@@ -208,7 +205,7 @@ export default function FontTester({ font }: FontTesterProps) {
                                         <ChevronDown size={14} className={`transition-transform ${variantDropdownOpen ? 'rotate-180' : ''}`} />
                                     </button>
 
-                                    <div className={`absolute left-0 top-full mt-2 w-48 bg-[rgb(var(--color-card)/0.05)] backdrop-blur-2xl border border-[rgb(var(--color-border))] divide-y divide-[rgb(var(--color-border)/0.5)] rounded-xl overflow-y-auto max-h-64 custom-scrollbar transition-all shadow-xl z-20 flex flex-col origin-top-left transform ${variantDropdownOpen ? 'opacity-100 visible scale-100 pointer-events-auto' : 'opacity-0 invisible scale-95 pointer-events-none'}`}>
+                                    <div className={`absolute left-0 top-full mt-2 w-48 bg-[rgb(var(--color-background)/0.8)] backdrop-blur-2xl border border-[rgb(var(--color-border))] divide-y divide-[rgb(var(--color-border)/0.5)] rounded-xl overflow-y-auto max-h-64 custom-scrollbar transition-all shadow-xl z-20 flex flex-col origin-top-left transform ${variantDropdownOpen ? 'opacity-100 visible scale-100 pointer-events-auto' : 'opacity-0 invisible scale-95 pointer-events-none'}`}>
                                         {sortedVariants.map(variant => (
                                             <button
                                                 key={variant.id}
@@ -260,7 +257,6 @@ export default function FontTester({ font }: FontTesterProps) {
                                 <input type="range" min="-10" max="50" value={letterSpacing} onChange={(e) => setLetterSpacing(Number(e.target.value))} className="w-full accent-[rgb(var(--color-foreground))] h-1 bg-[rgb(var(--color-muted)/0.1)] rounded-lg appearance-none cursor-pointer" />
                             </div>
                         </div>
-
                         <div className="flex items-end justify-between sm:justify-start gap-4">
                             <div className="flex gap-2">
                                 {/* OpenType Features Toggle */}
@@ -331,18 +327,6 @@ export default function FontTester({ font }: FontTesterProps) {
                     }}
                     spellCheck={false}
                 />
-            </div>
-
-            <div className="border-y border-[rgb(var(--color-border))]">
-                <div className="p-4 border-b border-[rgb(var(--color-border))]">
-                    <h3 className="font-bold text-lg flex items-center gap-2 text-[rgb(var(--color-foreground))]">
-                        <LayoutTemplate size={20} />
-                        Real-World Context
-                    </h3>
-                </div>
-                <div className="">
-                    <ContextPreview fontFamily={fontName} />
-                </div>
             </div>
         </div >
     );

@@ -38,7 +38,7 @@ export default function FontDetailsNav({
                 className={cn(
                     "fixed top-0 w-full left-1/2 -translate-x-1/2 z-50 border-[rgb(var(--color-border)/0.1)] transition-all duration-300",
                     isScrolled
-                        ? "max-w-full md:rounded-none bg-[rgb(var(--color-background))] md:bg-[rgb(var(--color-background)/0.5)] border-none backdrop-blur-3xl py-2 md:py-3 px-6 md:px-10"
+                        ? "max-w-full md:rounded-none bg-[rgb(var(--color-background))] border-none py-2 md:py-3 px-6 md:px-10"
                         : "md:top-4 max-w-full md:rounded-3xl bg-transparent border-none py-2 px-4"
                 )}
             >
@@ -110,9 +110,10 @@ export default function FontDetailsNav({
                 <motion.div
                     initial={{ y: -100 }}
                     animate={{ y: isScrolled ? 0 : -200 }}
-                    className="absolute top-[calc(3.5rem+env(safe-area-inset-top))] md:top-0 h-full left-0 md:left-33 right-0 md:right-37 w-full md:w-auto z-40 flex items-center justify-center px-6 md:px-0
-                    bg-[rgb(var(--color-background))] md:bg-transparent"
+                    className={`absolute top-[calc(3.5rem+env(safe-area-inset-top))] md:top-0 h-full left-0 md:left-33 right-0 md:right-37 w-full md:w-auto z-40 flex items-center justify-center px-6 md:px-0
+                    bg-[rgb(var(--color-background))] md:bg-transparent`}
                 >
+                    <div className="absolute top-0 h-px w-full bg-linear-to-r from-transparent via-[rgb(var(--color-foreground)/0.1)] to-transparent"></div>
                     <div className="max-w-480 w-full mx-auto flex items-center justify-between">
                         <div className="flex flex-wrap items-center gap-0">
                             <h2 className="text-xl font-bold text-[rgb(var(--color-foreground))] pr-2 leading-none">
