@@ -22,7 +22,7 @@ interface FontJsonToolbarProps {
  */
 export function buildCanonicalFontMetadata(font: Font, research?: FontResearchRow | null) {
     const extracted = (research?.font_metadata_extracted as any) || {};
-    const tax = extracted?.taxonomy || {};
+    const tax = (font as any).taxonomy || extracted?.taxonomy || {};
 
     // Extract formats from variants
     const dynamicFormats: string[] = tax.technical?.formats || [];
@@ -62,7 +62,7 @@ export function buildCanonicalFontMetadata(font: Font, research?: FontResearchRo
             publisher: tax.creator?.publisher || null,
         },
         classification: {
-            category: tax.classification?.category || font.category || 'Display',
+            category: (tax.classification?.category || font.category || 'display').toLowerCase(),
             subcategory: tax.classification?.subcategory || null,
             style: tax.classification?.style || (font.tags?.[0] || 'Regular'),
             tags: tax.classification?.tags || font.tags || [],

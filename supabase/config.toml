@@ -417,3 +417,6 @@ enabled = true
 
 [functions.research-font]
 verify_jwt = false
+
+[functions.mcp]
+verify_jwt = false

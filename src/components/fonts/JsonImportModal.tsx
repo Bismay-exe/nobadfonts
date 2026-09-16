@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, FileJson, Copy, Check, Upload as UploadIcon, AlertCircle, FileText } from 'lucide-react';
+import { X, FileJson, Copy, Check, Upload as UploadIcon, AlertCircle, FileText, Sparkles } from 'lucide-react';
 import { Toast } from '@capacitor/toast';
 import { cleanUrl } from '../../utils/urlHelper';
 
@@ -55,6 +55,24 @@ export interface FontFormState {
     weights?: string[];
     styles?: string[];
 }
+
+/**
+ * 58 Curated controlled tags from Upload.tsx:L120-L211 across all 6 taxonomy groups
+ */
+export const CONTROLLED_TAG_VOCABULARY = [
+    // Classification
+    'sans', 'serif', 'slab-serif', 'display', 'monospace', 'mono', 'script', 'calligraphy', 'brush', 'handwritten', 'signature',
+    // Style
+    'modern', 'classic', 'minimal', 'bold', 'elegant', 'luxury', 'playful', 'comic', 'graffiti', 'experimental', 'brutalist', 'industrial', 'editorial', 'geometric', 'organic', 'techno', 'sci-fi',
+    // Use Case
+    'branding', 'logo', 'headline', 'poster', 'editorial-use', 'corporate', 'tech', 'social-media',
+    // Weight & Shape
+    'hairline', 'thin', 'light', 'normal-width', 'heavy', 'tall', 'condensed', 'wide', 'extended',
+    // Construction & Features
+    'inktrap', 'rounded', 'square', 'sharp', 'stencil', 'outline', 'inline', 'pixel', 'messy',
+    // Era & Vibe
+    'casual', 'retro', 'vintage', 'cyberpunk', 'futuristic', 'gothic', 'y2k'
+] as const;
 
 export const JSON_SCHEMA_TEMPLATE = {
     identity: {
@@ -203,12 +221,21 @@ export function normalizeFontJson(raw: any): { parsedState: Partial<FontFormStat
 
     // 3. Classification
     const classObj = raw.classification || raw;
-    if (classObj.category) { state.category = toStr(classObj.category).toLowerCase(); count++; }
+    if (classObj.category) {
+        let cat = toStr(classObj.category).toLowerCase().trim();
+        if (cat === 'mono') cat = 'monospace';
+        if (cat === 'sans-serif') cat = 'sans';
+        if (cat === 'slab') cat = 'slab-serif';
+        if (cat === 'handwriting') cat = 'handwritten';
+        if (cat === 'calligraphy' || cat === 'brush' || cat === 'signature') cat = 'script';
+        state.category = cat;
+        count++;
+    }
     if (classObj.subcategory) { state.subcategory = toStr(classObj.subcategory); count++; }
     if (classObj.style) { state.style = toStr(classObj.style); count++; }
     if (classObj.tags) {
-        const tags = toArr(classObj.tags);
-        if (tags.length > 0) { state.tags = tags; count++; }
+        const tags = toArr(classObj.tags).map(t => t.toLowerCase().trim()).filter(Boolean);
+        if (tags.length > 0) { state.tags = Array.from(new Set(tags)); count++; }
     }
     if (classObj.mood) {
         const mood = toArr(classObj.mood);
@@ -354,6 +381,7 @@ export const JsonImportModal: React.FC<JsonImportModalProps> = ({
     const [tab, setTab] = useState<'upload' | 'paste'>('paste');
     const [jsonText, setJsonText] = useState(initialJson || '');
     const [copied, setCopied] = useState(false);
+    const [copiedPrompt, setCopiedPrompt] = useState(false);
     const [dragActive, setDragActive] = useState(false);
 
     // Sync initialJson whenever modal opens or initialJson changes
@@ -426,6 +454,40 @@ export const JsonImportModal: React.FC<JsonImportModalProps> = ({
         }
     }, []);
 
+    const copyAiPrompt = useCallback(async () => {
+        const baseJson = jsonText.trim() || JSON.stringify(CANONICAL_JSON_SAMPLE, null, 2);
+        const promptText = `You are a typography and font metadata expert for NoBadFonts.
+
+TASK:
+Modify the original font JSON data below with verified, accurate metadata for this font.
+
+CRITICAL CONSTRAINTS:
+1. Make changes directly inside the original JSON data provided below.
+2. DO NOT create new sections, flat keys, or fields outside the 7 canonical schema sections:
+   - identity (name, family_name, slug, version, release_year)
+   - creator (designer, foundry, publisher)
+   - classification (category, subcategory, style, tags, mood, recommended_uses)
+   - description (description, history, characteristics)
+   - license (distribution_status, license_type, license_url, commercial_use, personal_use, modification_allowed, redistribution_allowed, license_evidence)
+   - official_links (official_website, official_font_page, purchase_url, free_download_url, github_url, google_fonts_url)
+   - technical (formats, weights, styles, glyph_count, languages, opentype_features)
+3. category MUST strictly be one of: sans, serif, display, script, slab-serif, monospace, handwritten.
+4. tags MUST be lowercase strings chosen from the controlled tag taxonomy (e.g. modern, geometric, branding, headline, elegant, minimal, brutalist, retro, vintage, etc.).
+5. Return ONLY the updated JSON object inside \`\`\`json ... \`\`\` codeblock with no outer wrapper keys.
+
+ORIGINAL FONT JSON DATA TO EDIT:
+${baseJson}`;
+
+        try {
+            await navigator.clipboard.writeText(promptText);
+            setCopiedPrompt(true);
+            setTimeout(() => setCopiedPrompt(false), 2000);
+            await Toast.show({ text: 'AI prompt copied to clipboard with original JSON & strict schema rules!', duration: 'short' });
+        } catch {
+            await Toast.show({ text: 'Failed to copy prompt.', duration: 'short' });
+        }
+    }, [jsonText]);
+
     if (!isOpen) return null;
 
     return (
@@ -486,6 +548,16 @@ export const JsonImportModal: React.FC<JsonImportModalProps> = ({
                         </div>
 
                         <div className="flex items-center gap-2 pb-2">
+                            <button
+                                type="button"
+                                onClick={copyAiPrompt}
+                                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-medium rounded-xl bg-[rgb(var(--color-highlight)/0.15)] hover:bg-[rgb(var(--color-highlight)/0.25)] text-[rgb(var(--color-foreground))] border border-[rgb(var(--color-highlight)/0.3)] transition-colors cursor-pointer"
+                                title="Copy AI prompt with original font JSON and strict schema constraints for Claude / ChatGPT / Gemini"
+                            >
+                                {copiedPrompt ? <Check size={13} className="text-green-500" /> : <Sparkles size={13} className="text-[rgb(var(--color-highlight))]" />}
+                                <span>{copiedPrompt ? 'Prompt Copied!' : 'Copy AI Prompt'}</span>
+                            </button>
+
                             <button
                                 type="button"
                                 onClick={copySchemaFormat}
