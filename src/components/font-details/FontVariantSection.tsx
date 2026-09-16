@@ -71,7 +71,7 @@ export default function FontVariantSection({
                             value={variantPreviewSize}
                             onChange={(e) => setVariantPreviewSize(Number(e.target.value))}
                             aria-label="Adjust font preview size"
-                            className="w-full h-[2px] bg-[rgb(var(--color-foreground)/0.2)] appearance-none cursor-pointer accent-[#0070f3] [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3.5 [&::-webkit-slider-thumb]:h-3.5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#0070f3] [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:w-3.5 [&::-moz-range-thumb]:h-3.5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#0070f3] [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:cursor-pointer"
+                            className="w-full h-0.5 bg-[rgb(var(--color-foreground)/0.2)] appearance-none cursor-pointer accent-[#0070f3] [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3.5 [&::-webkit-slider-thumb]:h-3.5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#0070f3] [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:w-3.5 [&::-moz-range-thumb]:h-3.5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#0070f3] [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:cursor-pointer"
                         />
                     </div>
 
@@ -89,7 +89,7 @@ export default function FontVariantSection({
                             value={variantLineHeight}
                             onChange={(e) => setVariantLineHeight(Number(e.target.value))}
                             aria-label="Adjust font preview line height"
-                            className="w-full h-[2px] bg-[rgb(var(--color-foreground)/0.2)] appearance-none cursor-pointer accent-[#0070f3] [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3.5 [&::-webkit-slider-thumb]:h-3.5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#0070f3] [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:w-3.5 [&::-moz-range-thumb]:h-3.5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#0070f3] [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:cursor-pointer"
+                            className="w-full h-0.5 bg-[rgb(var(--color-foreground)/0.2)] appearance-none cursor-pointer accent-[#0070f3] [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3.5 [&::-webkit-slider-thumb]:h-3.5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#0070f3] [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:w-3.5 [&::-moz-range-thumb]:h-3.5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#0070f3] [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:cursor-pointer"
                         />
                     </div>
 
@@ -107,7 +107,7 @@ export default function FontVariantSection({
                             value={variantLetterSpacing}
                             onChange={(e) => setVariantLetterSpacing(Number(e.target.value))}
                             aria-label="Adjust font preview letter spacing"
-                            className="w-full h-[2px] bg-[rgb(var(--color-foreground)/0.2)] appearance-none cursor-pointer accent-[#0070f3] [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3.5 [&::-webkit-slider-thumb]:h-3.5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#0070f3] [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:w-3.5 [&::-moz-range-thumb]:h-3.5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#0070f3] [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:cursor-pointer"
+                            className="w-full h-0.5 bg-[rgb(var(--color-foreground)/0.2)] appearance-none cursor-pointer accent-[#0070f3] [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3.5 [&::-webkit-slider-thumb]:h-3.5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#0070f3] [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:w-3.5 [&::-moz-range-thumb]:h-3.5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#0070f3] [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:cursor-pointer"
                         />
                     </div>
                 </div>

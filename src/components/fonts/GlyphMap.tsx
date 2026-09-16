@@ -1,10 +1,48 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
+import { ChevronDown } from 'lucide-react';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
 
 interface GlyphMapProps {
     fontFamily: string;
     fontUrl: string;
     variants?: { name: string; url: string }[];
 }
+
+const FONT_WEIGHT_ORDER: Record<string, number> = {
+    'thin': 100,
+    'hairline': 100,
+    'extralight': 200,
+    'ultralight': 200,
+    'light': 300,
+    'regular': 400,
+    'normal': 400,
+    'book': 400,
+    'medium': 500,
+    'semibold': 600,
+    'demibold': 600,
+    'bold': 700,
+    'extrabold': 800,
+    'ultrabold': 800,
+    'black': 900,
+    'heavy': 900,
+    'extrablack': 950,
+    'ultrablack': 950
+};
+
+const getVariantWeightAndStyle = (name: string) => {
+    const lowercaseName = name.toLowerCase();
+    if (lowercaseName === 'regular') return { weight: 400, isItalic: false };
+
+    let weight = 400; // default
+    for (const [key, value] of Object.entries(FONT_WEIGHT_ORDER)) {
+        if (lowercaseName.includes(key) || lowercaseName.replace(/\s+/g, '').includes(key)) {
+            weight = value;
+            break;
+        }
+    }
+    const isItalic = lowercaseName.includes('italic') || lowercaseName.includes('oblique');
+    return { weight, isItalic };
+};
 
 type UnicodeRange = {
     name: string;
@@ -36,6 +74,43 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
 
     // Variant State
     const [activeVariant, setActiveVariant] = useState<{ name: string; url: string } | null>(null);
+    const [variantDropdownOpen, setVariantDropdownOpen] = useState(false);
+    const variantDropdownRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handleClickOutside = (e: MouseEvent) => {
+            if (variantDropdownRef.current && !variantDropdownRef.current.contains(e.target as Node)) {
+                setVariantDropdownOpen(false);
+            }
+        };
+        if (variantDropdownOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [variantDropdownOpen]);
+
+    const sortedVariants = useMemo(() => {
+        const list: { name: string; url: string }[] = [];
+        if (!variants.some(v => v.url === fontUrl)) {
+            list.push({ name: 'Regular', url: fontUrl });
+        }
+        list.push(...variants);
+
+        return list.sort((a, b) => {
+            const aProps = getVariantWeightAndStyle(a.name);
+            const bProps = getVariantWeightAndStyle(b.name);
+
+            if (aProps.weight !== bProps.weight) {
+                return aProps.weight - bProps.weight;
+            }
+            if (aProps.isItalic !== bProps.isItalic) {
+                return aProps.isItalic ? 1 : -1;
+            }
+            return a.name.localeCompare(b.name);
+        });
+    }, [variants, fontUrl]);
 
     // Sync activeVariant with fontUrl if it matches a variant on mount/update
     useEffect(() => {
@@ -337,16 +412,16 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
     }, [fontFamily, fontUrl, activeVariant, selectedChar, viewMode, fontObject, themeTrigger]);
 
     useEffect(() => {
-    const handleThemeChange = () => {
-        setThemeTrigger(t => t + 1);
-    };
+        const handleThemeChange = () => {
+            setThemeTrigger(t => t + 1);
+        };
 
-    window.addEventListener('theme-change', handleThemeChange);
+        window.addEventListener('theme-change', handleThemeChange);
 
-    return () => {
-        window.removeEventListener('theme-change', handleThemeChange);
-    };
-}, []);
+        return () => {
+            window.removeEventListener('theme-change', handleThemeChange);
+        };
+    }, []);
 
 
     return (
@@ -395,53 +470,54 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
                             {/* Variant Selector (if variants exist) */}
                             {variants.length > 0 && (
                                 <div className="border-r border-[rgb(var(--color-border)/0.5)] pr-8">
-                                    <select
-                                        value={activeVariant?.name || (variants.some(v => v.url === fontUrl) ? variants.find(v => v.url === fontUrl)?.name : 'Regular')}
-                                        onChange={(e) => {
-                                            const val = e.target.value;
-                                            const v = variants.find(v => v.name === val);
-                                            // Always prioritize the actual variant if it exists
-                                            if (v) {
-                                                setActiveVariant(v);
-                                            } else if (val === 'Regular') {
-                                                setActiveVariant(null);
-                                            }
-                                        }}
-                                        className="bg-[rgb(var(--color-muted)/0.1)] border border-[rgb(var(--color-border))] text-[rgb(var(--color-foreground))] text-sm px-4 py-2 rounded-lg focus:outline-none focus:border-[rgb(var(--color-foreground))] cursor-pointer"
-                                    >
-                                        {!variants.some(v => v.url === fontUrl) && <option value="Regular">Regular</option>}
-                                        {variants.slice().sort((a, b) => {
-                                            const getWeight = (name: string) => {
-                                                const n = name.toLowerCase();
-                                                if (n.includes('thin')) return 100;
-                                                if (n.includes('extra light') || n.includes('extralight')) return 200;
-                                                if (n.includes('light')) return 300;
-                                                if (n.includes('regular')) return 400;
-                                                if (n.includes('medium')) return 500;
-                                                if (n.includes('semi bold') || n.includes('semibold')) return 600;
-                                                if (n.includes('bold')) return 700;
-                                                if (n.includes('extra bold') || n.includes('extrabold')) return 800;
-                                                if (n.includes('black') || n.includes('heavy')) return 900;
-                                                return 400; // default
-                                            };
-                                            const weightA = getWeight(a.name);
-                                            const weightB = getWeight(b.name);
+                                    <div className="relative" ref={variantDropdownRef}>
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setVariantDropdownOpen(!variantDropdownOpen);
+                                                Haptics.impact({ style: ImpactStyle.Light });
+                                            }}
+                                            className="h-8 px-3 py-1 bg-[rgb(var(--color-muted)/0.1)] hover:bg-[rgb(var(--color-foreground)/0.9)] hover:text-[rgb(var(--color-background))] border border-[rgb(var(--color-border))] rounded-md text-xs font-medium whitespace-nowrap hover:border-[rgb(var(--color-foreground))] transition-colors flex items-center gap-2 cursor-pointer"
+                                        >
+                                            {activeVariant?.name || (variants.some(v => v.url === fontUrl) ? variants.find(v => v.url === fontUrl)?.name : 'Regular') || 'Select Variant'}
+                                            <ChevronDown size={14} className={`transition-transform ${variantDropdownOpen ? 'rotate-180' : ''}`} />
+                                        </button>
 
-                                            // Primary sort by weight (Descending)
-                                            if (weightA !== weightB) return weightB - weightA;
+                                        <div className={`absolute left-0 top-full mt-2 w-48 bg-[rgb(var(--color-background)/0.8)] backdrop-blur-2xl border border-[rgb(var(--color-border))] divide-y divide-[rgb(var(--color-border)/0.5)] rounded-xl overflow-y-auto max-h-64 custom-scrollbar transition-all shadow-xl z-30 flex flex-col origin-top-left transform ${variantDropdownOpen ? 'opacity-100 visible scale-100 pointer-events-auto' : 'opacity-0 invisible scale-95 pointer-events-none'}`}>
+                                            {sortedVariants.map(variant => {
+                                                const isSelected = activeVariant
+                                                    ? activeVariant.name === variant.name
+                                                    : (variant.name === 'Regular' || variant.url === fontUrl);
 
-                                            // Secondary sort: Non-italic before Italic
-                                            const isItalicA = a.name.toLowerCase().includes('italic');
-                                            const isItalicB = b.name.toLowerCase().includes('italic');
-                                            if (isItalicA !== isItalicB) return isItalicA ? 1 : -1;
-
-                                            return 0;
-                                        }).map(v => (
-                                            <option key={v.name} value={v.name}>{v.name}</option>
-                                        ))}
-                                    </select>
+                                                return (
+                                                    <button
+                                                        key={variant.name}
+                                                        type="button"
+                                                        onClick={() => {
+                                                            const v = variants.find(item => item.name === variant.name);
+                                                            if (v) {
+                                                                setActiveVariant(v);
+                                                            } else if (variant.name === 'Regular') {
+                                                                setActiveVariant(null);
+                                                            }
+                                                            setVariantDropdownOpen(false);
+                                                            Haptics.impact({ style: ImpactStyle.Light });
+                                                        }}
+                                                        className="px-4 py-3 text-xs font-bold text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-muted)/0.1)] transition-colors text-left flex justify-between items-center cursor-pointer"
+                                                    >
+                                                        <span>{variant.name}</span>
+                                                        {isSelected && (
+                                                            <span className="w-1.5 h-1.5 rounded-full bg-[rgb(var(--color-foreground))]"></span>
+                                                        )}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
                                 </div>
                             )}
+
+                            
 
                             {/* View Toggle */}
                             <div className="flex items-center gap-4 text-sm font-medium text-[rgb(var(--color-muted-foreground))]">

@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
@@ -12,13 +12,6 @@ import SEO from '../components/shared/SEO';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { Toast } from '@capacitor/toast';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "../components/ui/select";
 import { CustomLock } from '../components/ui/CustomIcons';
 import { extractFontMetadata, validateFontFile, validateImageFile } from '../utils/fontValidator';
 import { extractRichFontMetadata } from '../utils/fontMetadataExtractor';
@@ -62,6 +55,67 @@ const VARIANT_NAMES = [
     "Thin Italic", "Extra Light Italic", "Light Italic", "Regular Italic",
     "Medium Italic", "Semi Bold Italic", "Bold Italic", "Extra Bold Italic", "Black Italic"
 ];
+
+interface UploadVariantDropdownProps {
+    value: string;
+    onChange: (value: string) => void;
+    availableNames: string[];
+}
+
+function UploadVariantDropdown({ value, onChange, availableNames }: UploadVariantDropdownProps) {
+    const [isOpen, setIsOpen] = useState(false);
+    const dropdownRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handleClickOutside = (e: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+                setIsOpen(false);
+            }
+        };
+        if (isOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [isOpen]);
+
+    return (
+        <div className="relative" ref={dropdownRef}>
+            <button
+                type="button"
+                onClick={() => {
+                    setIsOpen(!isOpen);
+                    Haptics.impact({ style: ImpactStyle.Light });
+                }}
+                className="h-8 px-3 py-1 bg-[rgb(var(--color-muted)/0.1)] hover:bg-[rgb(var(--color-foreground)/0.9)] hover:text-[rgb(var(--color-background))] border border-[rgb(var(--color-border))] rounded-md text-xs font-medium whitespace-nowrap hover:border-[rgb(var(--color-foreground))] transition-colors flex items-center gap-2 cursor-pointer"
+            >
+                {value || 'Select Variant'}
+                <ChevronDown size={14} className={`transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+            </button>
+
+            <div className={`absolute left-0 top-full mt-2 w-48 bg-[rgb(var(--color-background)/0.8)] backdrop-blur-2xl border border-[rgb(var(--color-border))] divide-y divide-[rgb(var(--color-border)/0.5)] rounded-xl overflow-y-auto max-h-64 custom-scrollbar transition-all shadow-xl z-20 flex flex-col origin-top-left transform ${isOpen ? 'opacity-100 visible scale-100 pointer-events-auto' : 'opacity-0 invisible scale-95 pointer-events-none'}`}>
+                {availableNames.map(name => (
+                    <button
+                        key={name}
+                        type="button"
+                        onClick={() => {
+                            onChange(name);
+                            setIsOpen(false);
+                            Haptics.impact({ style: ImpactStyle.Light });
+                        }}
+                        className="px-4 py-3 text-xs font-bold text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-muted)/0.1)] transition-colors text-left flex justify-between items-center cursor-pointer"
+                    >
+                        <span>{name}</span>
+                        {value === name && (
+                            <span className="w-1.5 h-1.5 rounded-full bg-[rgb(var(--color-foreground))]"></span>
+                        )}
+                    </button>
+                ))}
+            </div>
+        </div>
+    );
+}
 
 const CATEGORIES = [
     {
@@ -1176,19 +1230,11 @@ const Upload = () => {
                                                 autoFocus
                                             />
                                         ) : (
-                                            <Select
+                                            <UploadVariantDropdown
                                                 value={variant.name}
-                                                onValueChange={(value: string) => updateVariantName(variant.id, value)}
-                                            >
-                                                <SelectTrigger className="border-2 border-[rgb(var(--color-border))] rounded-xl px-4 py-2 font-bold bg-[rgb(var(--color-card))] h-auto focus:border-[rgb(var(--color-foreground))] text-sm">
-                                                    <SelectValue placeholder="Select variant" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {VARIANT_NAMES.filter(name => name === variant.name || !variants.some(v => v.name === name)).map(name => (
-                                                        <SelectItem key={name} value={name}>{name}</SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
+                                                onChange={(value: string) => updateVariantName(variant.id, value)}
+                                                availableNames={VARIANT_NAMES.filter(name => name === variant.name || !variants.some(v => v.name === name))}
+                                            />
                                         )}
                                     </div>
                                     <button
