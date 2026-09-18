@@ -104,7 +104,7 @@ export default function AnalyticsDashboard() {
                                     : '0%';
 
                                 return (
-                                    <tr key={font.id} className="hover:bg-[rgb(var(--color-muted)/0.05)] transition-colors">
+                                    <tr key={font.id} className="hover:bg-[rgb(var(--color-muted)/0.05)] transition-colors duration-300 ease-in-out">
                                         <td className="px-6 py-4 font-bold flex items-center gap-2">
                                             {font.name}
                                             <a href={`/font/${font.slug}`} target="_blank" rel="noreferrer" className="text-[rgb(var(--color-muted-foreground)/0.3)] hover:text-[rgb(var(--color-foreground))]">

@@ -44,7 +44,7 @@ export default function FontPickerSidebar({ isOpen, onClose, onSelect, activeSec
                     </div>
                     <button
                         onClick={onClose}
-                        className="p-2 bg-[rgb(var(--color-background))] border-2 border-[rgb(var(--color-border))] rounded-full hover:bg-[rgb(var(--color-foreground))] hover:text-[rgb(var(--color-background))] transition-colors text-[rgb(var(--color-foreground))]"
+                        className="p-2 bg-[rgb(var(--color-background))] border-2 border-[rgb(var(--color-border))] rounded-full hover:bg-[rgb(var(--color-foreground))] hover:text-[rgb(var(--color-background))] transition-colors duration-300 ease-in-out text-[rgb(var(--color-foreground))]"
                     >
                         <X size={24} />
                     </button>

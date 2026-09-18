@@ -47,7 +47,7 @@ export const CookieConsent: React.FC = () => {
                             </div>
                             <button
                                 onClick={handleAcceptEssential}
-                                className="text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))] transition-colors p-1"
+                                className="text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out p-1"
                                 aria-label="Dismiss cookie notice"
                             >
                                 <X size={16} />
@@ -56,11 +56,11 @@ export const CookieConsent: React.FC = () => {
 
                         <p className="text-xs text-[rgb(var(--color-muted-foreground))] leading-relaxed">
                             We use cookies and local storage to keep you authenticated, remember your theme preferences, and maintain anonymous download metrics. Read our{' '}
-                            <Link to="/legal/cookies" className="underline hover:text-[rgb(var(--color-foreground))] transition-colors">
+                            <Link to="/legal/cookies" className="underline hover:text-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out">
                                 Cookie Policy
                             </Link>{' '}
                             and{' '}
-                            <Link to="/legal/privacy" className="underline hover:text-[rgb(var(--color-foreground))] transition-colors">
+                            <Link to="/legal/privacy" className="underline hover:text-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out">
                                 Privacy Policy
                             </Link>.
                         </p>
@@ -74,7 +74,7 @@ export const CookieConsent: React.FC = () => {
                             </button>
                             <button
                                 onClick={handleAcceptEssential}
-                                className="flex-1 py-2.5 px-4 rounded-xl text-xs font-bold bg-[rgb(var(--color-foreground)/0.05)] border border-[rgb(var(--color-border))] text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.1)] transition-colors active:scale-[0.98]"
+                                className="flex-1 py-2.5 px-4 rounded-xl text-xs font-bold bg-[rgb(var(--color-foreground)/0.05)] border border-[rgb(var(--color-border))] text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.1)] transition-colors duration-300 ease-in-out active:scale-[0.98]"
                             >
                                 Essential Only
                             </button>

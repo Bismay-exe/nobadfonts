@@ -151,7 +151,7 @@ export default function MemberDetails() {
                     : { isExpanded: expandedFontId === f.id, onToggle: () => setExpandedFontId(expandedFontId === f.id ? null : f.id) };
                 return { ...f, viewMode, customText, ...cardProps, bulkToggleVersion };
             })
-    , [filteredFonts, viewMode, customText, expandedFontId, globalExpanded, bulkToggleVersion]);
+        , [filteredFonts, viewMode, customText, expandedFontId, globalExpanded, bulkToggleVersion]);
 
     // Role Check
     if (!currentUserProfile || (currentUserProfile.role !== 'member' && currentUserProfile.role !== 'admin')) {
@@ -200,7 +200,7 @@ export default function MemberDetails() {
             />
             {/* Header Profile Section */}
             <div className="border-b border-[rgb(var(--color-border))] rounded-4xl md:px-8 pt-24 pb-8 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden">
-                <button onClick={goBack} className="absolute top-8 left-2 md:left-4 flex items-center text-sm font-bold text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))] mb-8 transition-colors">
+                <button onClick={goBack} className="absolute top-8 left-2 md:left-4 flex items-center text-sm font-bold text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))] mb-8 transition-colors duration-300 ease-in-out">
                     <ArrowLeft size={20} className="mr-2" />
                     Back to Members
                 </button>
@@ -231,27 +231,27 @@ export default function MemberDetails() {
                     {/* Social Links */}
                     <div className="flex flex-wrap gap-3 mt-4 justify-center md:justify-start">
                         {profile.website && (
-                            <a href={profile.website} target="_blank" rel="noopener noreferrer" className="p-2 bg-[rgb(var(--color-card))] rounded-full border border-[rgb(var(--color-border))] hover:border-[rgb(var(--color-foreground))] transition-colors text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))] hover:-translate-y-1 hover:shadow-md">
+                            <a href={profile.website} target="_blank" rel="noopener noreferrer" className="p-2 bg-[rgb(var(--color-card))] rounded-full border border-[rgb(var(--color-border))] hover:border-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))] hover:-translate-y-1 hover:shadow-md">
                                 <Globe size={20} />
                             </a>
                         )}
                         {profile.behance && (
-                            <a href={profile.behance} target="_blank" rel="noopener noreferrer" className="p-2 bg-[rgb(var(--color-card))] rounded-full border border-[rgb(var(--color-border))] hover:border-[rgb(var(--color-foreground))] transition-colors text-[rgb(var(--color-muted-foreground))] hover:text-[#1769ff] hover:-translate-y-1 hover:shadow-md">
+                            <a href={profile.behance} target="_blank" rel="noopener noreferrer" className="p-2 bg-[rgb(var(--color-card))] rounded-full border border-[rgb(var(--color-border))] hover:border-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out text-[rgb(var(--color-muted-foreground))] hover:text-[#1769ff] hover:-translate-y-1 hover:shadow-md">
                                 <Palette size={20} />
                             </a>
                         )}
                         {profile.twitter && (
-                            <a href={profile.twitter} target="_blank" rel="noopener noreferrer" className="p-2 bg-[rgb(var(--color-card))] rounded-full border border-[rgb(var(--color-border))] hover:border-[rgb(var(--color-foreground))] transition-colors text-[rgb(var(--color-muted-foreground))] hover:text-[#1DA1F2] hover:-translate-y-1 hover:shadow-md">
+                            <a href={profile.twitter} target="_blank" rel="noopener noreferrer" className="p-2 bg-[rgb(var(--color-card))] rounded-full border border-[rgb(var(--color-border))] hover:border-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out text-[rgb(var(--color-muted-foreground))] hover:text-[#1DA1F2] hover:-translate-y-1 hover:shadow-md">
                                 <Twitter size={20} />
                             </a>
                         )}
                         {profile.instagram && (
-                            <a href={profile.instagram} target="_blank" rel="noopener noreferrer" className="p-2 bg-[rgb(var(--color-card))] rounded-full border border-[rgb(var(--color-border))] hover:border-[rgb(var(--color-foreground))] transition-colors text-[rgb(var(--color-muted-foreground))] hover:text-[#E1306C] hover:-translate-y-1 hover:shadow-md">
+                            <a href={profile.instagram} target="_blank" rel="noopener noreferrer" className="p-2 bg-[rgb(var(--color-card))] rounded-full border border-[rgb(var(--color-border))] hover:border-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out text-[rgb(var(--color-muted-foreground))] hover:text-[#E1306C] hover:-translate-y-1 hover:shadow-md">
                                 <Instagram size={20} />
                             </a>
                         )}
                         {profile.linkedin && (
-                            <a href={profile.linkedin} target="_blank" rel="noopener noreferrer" className="p-2 bg-[rgb(var(--color-card))] rounded-full border border-[rgb(var(--color-border))] hover:border-[rgb(var(--color-foreground))] transition-colors text-[rgb(var(--color-muted-foreground))] hover:text-[#0077b5] hover:-translate-y-1 hover:shadow-md">
+                            <a href={profile.linkedin} target="_blank" rel="noopener noreferrer" className="p-2 bg-[rgb(var(--color-card))] rounded-full border border-[rgb(var(--color-border))] hover:border-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out text-[rgb(var(--color-muted-foreground))] hover:text-[#0077b5] hover:-translate-y-1 hover:shadow-md">
                                 <Linkedin size={20} />
                             </a>
                         )}

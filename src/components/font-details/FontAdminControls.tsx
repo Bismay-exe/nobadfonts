@@ -136,19 +136,19 @@ export default function FontAdminControls({
                         <button
                             onClick={handleDeleteFont}
                             disabled={isDeleting}
-                            className="flex items-center gap-2 px-3 md:px-4 py-2 bg-[rgb(var(--color-destructive)/0.1)] text-[rgb(var(--color-destructive))] border border-[rgb(var(--color-destructive)/0.2)] rounded-full font-bold text-sm hover:opacity-80 transition-colors disabled:opacity-50 cursor-pointer"
+                            className="flex items-center gap-2 px-3 md:px-4 py-2 bg-[rgb(var(--color-destructive)/0.1)] text-[rgb(var(--color-destructive))] border border-[rgb(var(--color-destructive)/0.2)] rounded-full font-bold text-sm hover:opacity-80 transition-colors duration-300 ease-in-out disabled:opacity-50 cursor-pointer"
                         >
                             <Trash2 size={16} /> <span className="hidden md:inline">{isDeleting ? 'Deleting...' : 'Delete Font'}</span>
                         </button>
                         <button
                             onClick={onEditFiles}
-                            className="flex items-center gap-2 px-4 py-2 bg-[rgb(var(--color-muted))] text-[rgb(var(--color-foreground))] border border-[rgb(var(--color-foreground)/0.1)] rounded-full font-bold text-sm hover:opacity-80 transition-colors cursor-pointer"
+                            className="flex items-center gap-2 px-4 py-2 bg-[rgb(var(--color-muted))] text-[rgb(var(--color-foreground))] border border-[rgb(var(--color-foreground)/0.1)] rounded-full font-bold text-sm hover:opacity-80 transition-colors duration-300 ease-in-out cursor-pointer"
                         >
                             <FileType size={16} /> Edit Files
                         </button>
                         <button
                             onClick={() => setIsEditingGallery(true)}
-                            className="flex items-center gap-2 px-4 py-2 bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] rounded-full font-bold text-sm hover:opacity-80 transition-colors cursor-pointer"
+                            className="flex items-center gap-2 px-4 py-2 bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] rounded-full font-bold text-sm hover:opacity-80 transition-colors duration-300 ease-in-out cursor-pointer"
                         >
                             <Edit2 size={16} /> Edit Gallery
                         </button>

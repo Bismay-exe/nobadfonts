@@ -40,7 +40,7 @@ const InlineCustomizeOptions = ({
                     <select
                         value={currentVariant || ''}
                         onChange={(e) => onVariantChange(e.target.value || null)}
-                        className="bg-transparent text-[rgb(var(--color-foreground))] text-xs focus:outline-none cursor-pointer appearance-none transition-colors border-none"
+                        className="bg-transparent text-[rgb(var(--color-foreground))] text-xs focus:outline-none cursor-pointer appearance-none transition-colors duration-300 ease-in-out border-none"
                         title="Font Variant"
                     >
                         <option value="" className="bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))]">Regular</option>
@@ -65,7 +65,7 @@ const InlineCustomizeOptions = ({
                     type="number"
                     value={currentStyle.size}
                     onChange={(e) => handleStyleChange('size', Number(e.target.value))}
-                    className="w-10 bg-transparent text-xs font-bold text-[rgb(var(--color-foreground))] focus:outline-none focus:bg-[rgb(var(--color-muted)/0.1)] rounded px-1 transition-colors [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none text-right"
+                    className="w-10 bg-transparent text-xs font-bold text-[rgb(var(--color-foreground))] focus:outline-none focus:bg-[rgb(var(--color-muted)/0.1)] rounded px-1 transition-colors duration-300 ease-in-out [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none text-right"
                 />
             </div>
 
@@ -85,7 +85,7 @@ const InlineCustomizeOptions = ({
                     step="0.1"
                     value={currentStyle.leading}
                     onChange={(e) => handleStyleChange('leading', Number(e.target.value))}
-                    className="w-10 bg-transparent text-xs font-bold text-[rgb(var(--color-foreground))] focus:outline-none focus:bg-[rgb(var(--color-muted)/0.1)] rounded px-1 transition-colors [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none text-right"
+                    className="w-10 bg-transparent text-xs font-bold text-[rgb(var(--color-foreground))] focus:outline-none focus:bg-[rgb(var(--color-muted)/0.1)] rounded px-1 transition-colors duration-300 ease-in-out [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none text-right"
                 />
             </div>
 
@@ -105,7 +105,7 @@ const InlineCustomizeOptions = ({
                     step="0.5"
                     value={currentStyle.tracking}
                     onChange={(e) => handleStyleChange('tracking', Number(e.target.value))}
-                    className="w-10 bg-transparent text-xs font-bold text-[rgb(var(--color-foreground))] focus:outline-none focus:bg-[rgb(var(--color-muted)/0.1)] rounded px-1 transition-colors [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none text-right"
+                    className="w-10 bg-transparent text-xs font-bold text-[rgb(var(--color-foreground))] focus:outline-none focus:bg-[rgb(var(--color-muted)/0.1)] rounded px-1 transition-colors duration-300 ease-in-out [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none text-right"
                 />
             </div>
 
@@ -455,23 +455,23 @@ export default function FontPairing() {
                             ))}
 
                             {/* Custom Color Picker */}
-                        <div className="relative w-8 h-8 group/picker">
-                            <input
-                                type="color"
-                                value={bgColor.startsWith('#') ? bgColor : '#ffffff'}
-                                onChange={(e) => setBgColor(e.target.value)}
-                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                                title="Choose Custom Color"
-                            />
-                            <div className={cn(
-                                "w-full h-full rounded-full border border-[rgb(var(--color-border))] flex items-center justify-center bg-linear-to-tr from-indigo-500 via-purple-500 to-pink-500 group-hover/picker:scale-110 transition-transform shadow-sm",
-                                bgColor.startsWith('#') && "ring-2 ring-[rgb(var(--color-foreground))] ring-offset-2 ring-offset-[rgb(var(--color-background))]"
-                            )}>
-                                <Plus size={14} className="text-white" />
+                            <div className="relative w-8 h-8 group/picker">
+                                <input
+                                    type="color"
+                                    value={bgColor.startsWith('#') ? bgColor : '#ffffff'}
+                                    onChange={(e) => setBgColor(e.target.value)}
+                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                    title="Choose Custom Color"
+                                />
+                                <div className={cn(
+                                    "w-full h-full rounded-full border border-[rgb(var(--color-border))] flex items-center justify-center bg-linear-to-tr from-indigo-500 via-purple-500 to-pink-500 group-hover/picker:scale-110 transition-transform shadow-sm",
+                                    bgColor.startsWith('#') && "ring-2 ring-[rgb(var(--color-foreground))] ring-offset-2 ring-offset-[rgb(var(--color-background))]"
+                                )}>
+                                    <Plus size={14} className="text-white" />
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
                 )}
             </div>
 
@@ -493,7 +493,7 @@ export default function FontPairing() {
             <div className="px-0 md:px-4 pb-20">
                 <motion.div
                     layout
-                    className="max-w-480 mx-auto rounded-2xl md:rounded-[3rem] p-4 md:p-16 relative transition-colors duration-500 shadow-2xl border border-[rgb(var(--color-border)/0.5)]"
+                    className="max-w-480 mx-auto rounded-2xl md:rounded-[3rem] p-4 md:p-16 relative transition-colors duration-300 ease-in-out duration-500 shadow-2xl border border-[rgb(var(--color-border)/0.5)]"
                     style={{ backgroundColor: bgColor }}
                 >
                     <div className="space-y-6 lg:space-y-12">
@@ -506,7 +506,7 @@ export default function FontPairing() {
                                     {/* Add Block Button (Sidebar) */}
                                     <button
                                         onClick={() => addBlock(block.id, block.type)}
-                                        className="mt-2 p-2 rounded-full bg-[rgb(var(--color-muted))] border border-[rgb(var(--color-border))] text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground))] hover:text-[rgb(var(--color-background))] transition-colors"
+                                        className="mt-2 p-2 rounded-full bg-[rgb(var(--color-muted))] border border-[rgb(var(--color-border))] text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground))] hover:text-[rgb(var(--color-background))] transition-colors duration-300 ease-in-out"
                                         title={`Add ${block.type} Block Below`}
                                     >
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="M12 5v14" /></svg>
@@ -516,7 +516,7 @@ export default function FontPairing() {
                                     {blocks.length > 1 && (
                                         <button
                                             onClick={() => removeBlock(block.id)}
-                                            className="mt-2 p-2 rounded-full bg-[rgb(var(--color-muted))] border border-[rgb(var(--color-border))] text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-destructive))] hover:text-[rgb(var(--color-background))] transition-colors"
+                                            className="mt-2 p-2 rounded-full bg-[rgb(var(--color-muted))] border border-[rgb(var(--color-border))] text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-destructive))] hover:text-[rgb(var(--color-background))] transition-colors duration-300 ease-in-out"
                                             title="Delete Block"
                                         >
                                             <Trash2 size={16} />
@@ -529,7 +529,7 @@ export default function FontPairing() {
                                     <div className="bg-[rgb(var(--color-background)/0.8)] backdrop-blur-md rounded-full border border-[rgb(var(--color-border))] p-1 flex items-center gap-1 shadow-2xl overflow-hidden md:overflow-visible">
                                         <button
                                             onClick={() => handleOpenPicker(block.id)}
-                                            className="px-4 py-2 rounded-full font-bold text-xs bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] hover:bg-[rgb(var(--color-muted-foreground))] transition-colors flex items-center gap-2 whitespace-nowrap"
+                                            className="px-4 py-2 rounded-full font-bold text-xs bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] hover:bg-[rgb(var(--color-muted-foreground))] transition-colors duration-300 ease-in-out flex items-center gap-2 whitespace-nowrap"
                                         >
                                             <Edit3 size={12} />
                                             <span>{block.font?.name || 'Select Font'}</span>
@@ -559,7 +559,7 @@ export default function FontPairing() {
                                         color: block.style.color,
                                         minHeight: block.type === 'Header' ? '80px' : '40px'
                                     }}
-                                    className="w-full bg-transparent border-none outline-none resize-none overflow-hidden placeholder-[rgb(var(--color-muted-foreground)/0.5)] hover:bg-[rgb(var(--color-foreground)/0.05)] rounded-2xl transition-colors p-2 -ml-2 select-text"
+                                    className="w-full bg-transparent border-none outline-none resize-none overflow-hidden placeholder-[rgb(var(--color-muted-foreground)/0.5)] hover:bg-[rgb(var(--color-foreground)/0.05)] rounded-2xl transition-colors duration-300 ease-in-out p-2 -ml-2 select-text"
                                     rows={block.type === 'Header' ? undefined : 1}
                                     spellCheck={false}
                                 />

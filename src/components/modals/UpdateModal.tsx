@@ -5,9 +5,9 @@ import { useUpdate } from '../../contexts/UpdateContext';
 
 export const UpdateModal = () => {
   const { isModalOpen, updateInfo, closeModal, isDownloading, progress, startDownload } = useUpdate();
-  
+
   if (!updateInfo) return null;
-  
+
   const { latestBuild, currentBuild, releaseNotes } = updateInfo;
 
   const handleUpdate = useCallback(async () => {
@@ -107,7 +107,7 @@ export const UpdateModal = () => {
                       </motion.button>
                       <button
                         onClick={closeModal}
-                        className="w-full py-3 text-[rgb(var(--color-background)/0.8)] hover:[rgb(var(--color-background))] text-sm font-medium transition-colors"
+                        className="w-full py-3 text-[rgb(var(--color-background)/0.8)] hover:[rgb(var(--color-background))] text-sm font-medium transition-colors duration-300 ease-in-out"
                       >
                         Maybe Later
                       </button>

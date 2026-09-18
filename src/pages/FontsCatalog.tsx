@@ -165,7 +165,7 @@ export default function FontsCatalog() {
                 schema={catalogSchema}
             />
 
-            <div className="relative pt-0 md:pt-6 w-full">
+            <div className="relative px-4 pt-0 md:pt-6 w-full">
                 {/* Header */}
                 <div className="mb-8 text-center">
                     <h1 className="text-4xl md:text-6xl font-bold tracking-tighter text-[rgb(var(--color-foreground)/0.85)] mb-4">Catalog</h1>
@@ -211,7 +211,7 @@ export default function FontsCatalog() {
                             }}
                         >
                             {[...Array(16)].map((_, i) => (
-                                <div key={i} className="bg-[rgb(var(--color-card)/0.6)] mb-4 sm:mb-6 rounded-4xl border border-[rgb(var(--color-foreground)/0.2)] h-64 animate-pulse" />
+                                <div key={i} className="bg-[rgb(var(--color-card)/0.6)] mb-4 sm:mb-6 rounded-4xl zborder border-[rgb(var(--color-foreground)/0.2)] h-64 animate-pulse" />
                             ))}
                         </div>
                     ) : fonts.length > 0 ? (
@@ -220,7 +220,7 @@ export default function FontsCatalog() {
                                 <Masonry
                                     items={items}
                                     columnCount={columns}
-                                    columnGutter={24}
+                                    columnGutter={16}
                                     render={MasonryCard}
                                 />
                             </div>

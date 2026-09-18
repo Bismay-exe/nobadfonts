@@ -91,11 +91,11 @@ export default function FontPicker({ isOpen, onClose, onSelect, activeSection }:
 
     // Recreate positioner and clear cache whenever the search results change
     const searchKey = useMemo(() => fonts.map(f => f.id).join(','), [fonts]);
-    const positioner = usePositioner({ 
-        width: actualWidth || 800, 
-        columnCount: columns, 
-        columnGutter: 24, 
-        rowGutter: 24 
+    const positioner = usePositioner({
+        width: actualWidth || 800,
+        columnCount: columns,
+        columnGutter: 24,
+        rowGutter: 24
     }, [columns, actualWidth, searchKey]);
     const resizeObserver = useResizeObserver(positioner);
 
@@ -164,7 +164,7 @@ export default function FontPicker({ isOpen, onClose, onSelect, activeSection }:
                             </div>
                             <button
                                 onClick={onClose}
-                                className="p-2 text-white hover:bg-white/10 rounded-full transition-colors flex items-center justify-center bg-white/5 cursor-pointer"
+                                className="p-2 text-white hover:bg-white/10 rounded-full transition-colors duration-300 ease-in-out flex items-center justify-center bg-white/5 cursor-pointer"
                             >
                                 <X size={24} />
                             </button>

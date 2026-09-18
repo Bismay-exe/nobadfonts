@@ -34,12 +34,12 @@ export default function AdminDashboard() {
     const [allFonts, setAllFonts] = useState<FontRow[]>([]);
 
     // Use the custom hook for analytics
-    const { 
-        downloadStats, 
-        topDownloadedFonts, 
-        favoritesStats, 
-        topFavoritedFonts, 
-        loading: analyticsLoading 
+    const {
+        downloadStats,
+        topDownloadedFonts,
+        favoritesStats,
+        topFavoritedFonts,
+        loading: analyticsLoading
     } = useAnalytics(activeTab, profile);
 
     // Search States
@@ -475,7 +475,7 @@ export default function AdminDashboard() {
                                                             await Haptics.impact({ style: ImpactStyle.Medium });
                                                             handleRequestAction(request.id, 'reject');
                                                         }}
-                                                        className="flex-1 md:flex-none px-6 py-2 bg-transparent text-[rgb(var(--color-destructive))] font-bold uppercase rounded-xl border-2 border-[rgb(var(--color-border))] hover:border-[rgb(var(--color-destructive))] hover:bg-[rgb(var(--color-destructive)/0.1)] transition-colors"
+                                                        className="flex-1 md:flex-none px-6 py-2 bg-transparent text-[rgb(var(--color-destructive))] font-bold uppercase rounded-xl border-2 border-[rgb(var(--color-border))] hover:border-[rgb(var(--color-destructive))] hover:bg-[rgb(var(--color-destructive)/0.1)] transition-colors duration-300 ease-in-out"
                                                     >
                                                         Reject
                                                     </motion.button>
@@ -485,7 +485,7 @@ export default function AdminDashboard() {
                                                             await Haptics.impact({ style: ImpactStyle.Medium });
                                                             handleRequestAction(request.id, 'approve');
                                                         }}
-                                                        className="flex-1 md:flex-none px-6 py-2 bg-[rgb(var(--color-highlight))] text-[rgb(var(--color-background))] font-bold uppercase rounded-xl border-2 border-[rgb(var(--color-border))] hover:opacity-80 transition-colors"
+                                                        className="flex-1 md:flex-none px-6 py-2 bg-[rgb(var(--color-highlight))] text-[rgb(var(--color-background))] font-bold uppercase rounded-xl border-2 border-[rgb(var(--color-border))] hover:opacity-80 transition-colors duration-300 ease-in-out"
                                                     >
                                                         Approve
                                                     </motion.button>
@@ -527,7 +527,7 @@ export default function AdminDashboard() {
                                                 u.full_name?.toLowerCase().includes(searchUsers.toLowerCase()) ||
                                                 u.email?.toLowerCase().includes(searchUsers.toLowerCase())
                                             ).map(u => (
-                                                <tr key={u.id} className="hover:bg-[rgb(var(--color-foreground)/0.03)] transition-colors">
+                                                <tr key={u.id} className="hover:bg-[rgb(var(--color-foreground)/0.03)] transition-colors duration-300 ease-in-out">
                                                     <td className="py-4 px-4">
                                                         <div className="flex items-center gap-3">
                                                             <div className="w-10 h-10 bg-[rgb(var(--color-foreground)/0.1)] rounded-full border border-[rgb(var(--color-border))] overflow-hidden shrink-0">
@@ -637,7 +637,7 @@ export default function AdminDashboard() {
                                             {allFonts.filter(f =>
                                                 f.name?.toLowerCase().includes(searchFiles.toLowerCase())
                                             ).map(font => (
-                                                <tr key={font.id} className="hover:bg-[rgb(var(--color-foreground)/0.03)] transition-colors">
+                                                <tr key={font.id} className="hover:bg-[rgb(var(--color-foreground)/0.03)] transition-colors duration-300 ease-in-out">
                                                     <td className="py-4 px-4">
                                                         <div className="flex items-center gap-3">
                                                             <div className="w-10 h-10 bg-[rgb(var(--color-foreground)/0.05)] rounded-lg border border-[rgb(var(--color-border))] overflow-hidden shrink-0">
@@ -729,7 +729,7 @@ export default function AdminDashboard() {
                                                 f.name?.toLowerCase().includes(searchCuration.toLowerCase()) ||
                                                 f.designer?.toLowerCase().includes(searchCuration.toLowerCase())
                                             ).map(font => (
-                                                <tr key={font.id} className="hover:bg-[rgb(var(--color-foreground)/0.03)] transition-colors">
+                                                <tr key={font.id} className="hover:bg-[rgb(var(--color-foreground)/0.03)] transition-colors duration-300 ease-in-out">
                                                     <td className="p-4 border-r-2 border-[rgb(var(--color-border)/0.5)]">
                                                         <div className="flex items-center gap-4">
                                                             <div className="w-12 h-12 bg-[rgb(var(--color-foreground)/0.1)] border-2 border-[rgb(var(--color-border))] rounded-lg overflow-hidden shrink-0">
@@ -747,7 +747,7 @@ export default function AdminDashboard() {
                                                     </td>
                                                     <td className="p-4 border-r-2 border-[rgb(var(--color-border)/0.5)]">
                                                         <div className="flex flex-col gap-2">
-                                                            <label className="flex items-center gap-2 cursor-pointer p-2 rounded hover:bg-[rgb(var(--color-foreground)/0.05)] transition-colors">
+                                                            <label className="flex items-center gap-2 cursor-pointer p-2 rounded hover:bg-[rgb(var(--color-foreground)/0.05)] transition-colors duration-300 ease-in-out">
                                                                 <input
                                                                     type="checkbox"
                                                                     checked={font.is_featured || false}
@@ -757,7 +757,7 @@ export default function AdminDashboard() {
                                                                 <span className={`text-sm font-bold ${font.is_featured ? 'text-[rgb(var(--color-foreground))]' : 'text-[rgb(var(--color-muted-foreground))]'}`}>Featured</span>
                                                             </label>
 
-                                                            <label className="flex items-center gap-2 cursor-pointer p-2 rounded hover:bg-[rgb(var(--color-foreground)/0.05)] transition-colors">
+                                                            <label className="flex items-center gap-2 cursor-pointer p-2 rounded hover:bg-[rgb(var(--color-foreground)/0.05)] transition-colors duration-300 ease-in-out">
                                                                 <input
                                                                     type="checkbox"
                                                                     checked={font.is_trending || false}
@@ -767,7 +767,7 @@ export default function AdminDashboard() {
                                                                 <span className={`text-sm font-bold ${font.is_trending ? 'text-[rgb(var(--color-foreground))]' : 'text-[rgb(var(--color-muted-foreground))]'}`}>Trending</span>
                                                             </label>
 
-                                                            <label className="flex items-center gap-2 cursor-pointer p-2 rounded hover:bg-[rgb(var(--color-foreground)/0.05)] transition-colors">
+                                                            <label className="flex items-center gap-2 cursor-pointer p-2 rounded hover:bg-[rgb(var(--color-foreground)/0.05)] transition-colors duration-300 ease-in-out">
                                                                 <input
                                                                     type="checkbox"
                                                                     checked={font.is_editors_pick || false}
@@ -806,13 +806,13 @@ export default function AdminDashboard() {
                                     </div>
                                 ) : (
                                     <>
-                                        <AnalyticsSection 
+                                        <AnalyticsSection
                                             title="Downloads Overview"
                                             type="downloads"
                                             data={downloadStats}
                                             topFonts={topDownloadedFonts}
                                         />
-                                        <AnalyticsSection 
+                                        <AnalyticsSection
                                             title="Favorites Overview"
                                             type="favorites"
                                             data={favoritesStats}
@@ -844,7 +844,7 @@ export default function AdminDashboard() {
                                         ) : researchStats.activeJobs > 0 ? (
                                             <button
                                                 onClick={handleClearStuckJobs}
-                                                className="px-4 py-2 text-xs font-bold rounded-full bg-[rgb(var(--color-destructive)/0.1)] hover:bg-[rgb(var(--color-destructive)/0.2)] text-[rgb(var(--color-destructive))] border border-[rgb(var(--color-destructive)/0.3)] transition-colors cursor-pointer flex items-center gap-1.5"
+                                                className="px-4 py-2 text-xs font-bold rounded-full bg-[rgb(var(--color-destructive)/0.1)] hover:bg-[rgb(var(--color-destructive)/0.2)] text-[rgb(var(--color-destructive))] border border-[rgb(var(--color-destructive)/0.3)] transition-colors duration-300 ease-in-out cursor-pointer flex items-center gap-1.5"
                                             >
                                                 <XCircle size={14} /> Clear Stuck Jobs ({researchStats.activeJobs})
                                             </button>
@@ -879,7 +879,7 @@ export default function AdminDashboard() {
                                         </div>
                                         <button
                                             onClick={handleClearStuckJobs}
-                                            className="px-3 py-1 text-xs font-bold rounded-lg bg-[rgb(var(--color-foreground)/0.08)] hover:bg-[rgb(var(--color-foreground)/0.15)] text-[rgb(var(--color-foreground))] transition-colors cursor-pointer"
+                                            className="px-3 py-1 text-xs font-bold rounded-lg bg-[rgb(var(--color-foreground)/0.08)] hover:bg-[rgb(var(--color-foreground)/0.15)] text-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out cursor-pointer"
                                         >
                                             Clear Stuck Jobs
                                         </button>
@@ -903,11 +903,10 @@ export default function AdminDashboard() {
                                             <button
                                                 key={filter}
                                                 onClick={() => setResearchFilter(filter)}
-                                                className={`px-3 py-1.5 text-xs font-bold rounded-full border transition-all cursor-pointer ${
-                                                    researchFilter === filter
+                                                className={`px-3 py-1.5 text-xs font-bold rounded-full border transition-all cursor-pointer ${researchFilter === filter
                                                         ? 'bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] border-[rgb(var(--color-foreground)/0.15)]'
                                                         : 'bg-transparent text-[rgb(var(--color-foreground))] border-[rgb(var(--color-foreground)/0.2)] hover:border-[rgb(var(--color-foreground)/0.5)]'
-                                                }`}
+                                                    }`}
                                             >
                                                 {filter === 'needs_review' ? 'Needs Review' : filter === 'unresearched' ? 'Unresearched' : filter.charAt(0).toUpperCase() + filter.slice(1)}
                                             </button>
@@ -926,7 +925,7 @@ export default function AdminDashboard() {
                                             <div key={font.id} className="border border-[rgb(var(--color-foreground)/0.08)] rounded-2xl overflow-hidden">
                                                 {/* Row */}
                                                 <div
-                                                    className="flex items-center justify-between p-4 cursor-pointer hover:bg-[rgb(var(--color-foreground)/0.02)] transition-colors"
+                                                    className="flex items-center justify-between p-4 cursor-pointer hover:bg-[rgb(var(--color-foreground)/0.02)] transition-colors duration-300 ease-in-out"
                                                     onClick={() => setExpandedResearchId(expandedResearchId === font.id ? null : font.id)}
                                                 >
                                                     <div className="flex items-center gap-3 flex-1 min-w-0">

@@ -192,14 +192,14 @@ export default function SettingsForm({ onCancel }: { onCancel: () => void }) {
                         type="button"
                         onClick={onCancel}
                         disabled={loading}
-                        className="px-6 py-2 text-[rgb(var(--color-muted-foreground))] hover:bg-[rgb(var(--color-muted)/0.05)] rounded-2xl transition-colors"
+                        className="px-6 py-2 text-[rgb(var(--color-muted-foreground))] hover:bg-[rgb(var(--color-muted)/0.05)] rounded-2xl transition-colors duration-300 ease-in-out"
                     >
                         Cancel
                     </button>
                     <button
                         type="submit"
                         disabled={loading}
-                        className="px-6 py-2 bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] rounded-2xl hover:opacity-90 transition-colors shadow-lg disabled:opacity-50"
+                        className="px-6 py-2 bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] rounded-2xl hover:opacity-90 transition-colors duration-300 ease-in-out shadow-lg disabled:opacity-50"
                     >
                         {loading ? 'Saving...' : 'Save Changes'}
                     </button>

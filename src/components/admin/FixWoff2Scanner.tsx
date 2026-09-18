@@ -177,7 +177,7 @@ export const FixWoff2Scanner = () => {
             {!loading ? (
                 <button
                     onClick={scanAndFix}
-                    className="bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] px-6 py-2 rounded-full font-bold text-sm hover:opacity-90 transition-colors"
+                    className="bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] px-6 py-2 rounded-full font-bold text-sm hover:opacity-90 transition-colors duration-300 ease-in-out"
                 >
                     Start Scan & Fix
                 </button>

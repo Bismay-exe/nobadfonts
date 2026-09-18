@@ -88,7 +88,7 @@ function UploadVariantDropdown({ value, onChange, availableNames }: UploadVarian
                     setIsOpen(!isOpen);
                     Haptics.impact({ style: ImpactStyle.Light });
                 }}
-                className="h-8 px-3 py-1 bg-[rgb(var(--color-muted)/0.1)] hover:bg-[rgb(var(--color-foreground)/0.9)] hover:text-[rgb(var(--color-background))] border border-[rgb(var(--color-border))] rounded-md text-xs font-medium whitespace-nowrap hover:border-[rgb(var(--color-foreground))] transition-colors flex items-center gap-2 cursor-pointer"
+                className="h-8 px-3 py-1 bg-[rgb(var(--color-muted)/0.1)] hover:bg-[rgb(var(--color-foreground)/0.9)] hover:text-[rgb(var(--color-background))] border border-[rgb(var(--color-border))] rounded-md text-xs font-medium whitespace-nowrap hover:border-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out flex items-center gap-2 cursor-pointer"
             >
                 {value || 'Select Variant'}
                 <ChevronDown size={14} className={`transition-transform ${isOpen ? 'rotate-180' : ''}`} />
@@ -104,7 +104,7 @@ function UploadVariantDropdown({ value, onChange, availableNames }: UploadVarian
                             setIsOpen(false);
                             Haptics.impact({ style: ImpactStyle.Light });
                         }}
-                        className="px-4 py-3 text-xs font-bold text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-muted)/0.1)] transition-colors text-left flex justify-between items-center cursor-pointer"
+                        className="px-4 py-3 text-xs font-bold text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-muted)/0.1)] transition-colors duration-300 ease-in-out text-left flex justify-between items-center cursor-pointer"
                     >
                         <span>{name}</span>
                         {value === name && (
@@ -651,8 +651,8 @@ const Upload = () => {
             if (!meta.designer) missingAttributes.push('Designer');
             if (!meta.suggested_license_type && !meta.detected_license_url) missingAttributes.push('License');
 
-            const missingNote = missingAttributes.length > 0 
-                ? ` (${missingAttributes.join(' & ')} not embedded in font file by author)` 
+            const missingNote = missingAttributes.length > 0
+                ? ` (${missingAttributes.join(' & ')} not embedded in font file by author)`
                 : '';
 
             setExtractionSummary(
@@ -1240,7 +1240,7 @@ const Upload = () => {
                                     <button
                                         type="button"
                                         onClick={() => removeVariant(variant.id)}
-                                        className="text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-destructive))] p-1 rounded-lg hover:bg-[rgb(var(--color-destructive)/0.1)] transition-colors"
+                                        className="text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-destructive))] p-1 rounded-lg hover:bg-[rgb(var(--color-destructive)/0.1)] transition-colors duration-300 ease-in-out"
                                     >
                                         <X size={18} />
                                     </button>
@@ -1272,7 +1272,7 @@ const Upload = () => {
                                                         }}
                                                         className="absolute inset-0 opacity-0 cursor-pointer z-10 w-full h-full"
                                                     />
-                                                    <div className="border-2 border-dashed border-[rgb(var(--color-border))] bg-[rgb(var(--color-card)/0.4)] rounded-xl p-2.5 text-center text-xs font-mono text-[rgb(var(--color-muted-foreground))] hover:border-[rgb(var(--color-foreground))] hover:text-[rgb(var(--color-foreground))] transition-colors flex items-center justify-center gap-1.5">
+                                                    <div className="border-2 border-dashed border-[rgb(var(--color-border))] bg-[rgb(var(--color-card)/0.4)] rounded-xl p-2.5 text-center text-xs font-mono text-[rgb(var(--color-muted-foreground))] hover:border-[rgb(var(--color-foreground))] hover:text-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out flex items-center justify-center gap-1.5">
                                                         <UploadIcon size={12} />
                                                         <span>.{format.toUpperCase()}</span>
                                                     </div>
@@ -1290,14 +1290,14 @@ const Upload = () => {
                             <button
                                 type="button"
                                 onClick={addVariableFont}
-                                className="px-3.5 py-1.5 rounded-full font-bold bg-[rgb(var(--color-foreground)/0.05)] hover:bg-[rgb(var(--color-foreground)/0.1)] text-[rgb(var(--color-foreground))] transition-colors cursor-pointer"
+                                className="px-3.5 py-1.5 rounded-full font-bold bg-[rgb(var(--color-foreground)/0.05)] hover:bg-[rgb(var(--color-foreground)/0.1)] text-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out cursor-pointer"
                             >
                                 + Variable Font
                             </button>
                             <button
                                 type="button"
                                 onClick={addCustomVariant}
-                                className="px-3.5 py-1.5 rounded-full font-bold bg-[rgb(var(--color-foreground)/0.05)] hover:bg-[rgb(var(--color-foreground)/0.1)] text-[rgb(var(--color-foreground))] transition-colors cursor-pointer"
+                                className="px-3.5 py-1.5 rounded-full font-bold bg-[rgb(var(--color-foreground)/0.05)] hover:bg-[rgb(var(--color-foreground)/0.1)] text-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out cursor-pointer"
                             >
                                 + Custom Variant
                             </button>
@@ -1305,7 +1305,7 @@ const Upload = () => {
                                 type="button"
                                 onClick={addVariant}
                                 disabled={variants.length >= VARIANT_NAMES.length + 10}
-                                className="px-3.5 py-1.5 rounded-full font-bold bg-[rgb(var(--color-foreground)/0.05)] hover:bg-[rgb(var(--color-foreground)/0.1)] text-[rgb(var(--color-foreground))] transition-colors cursor-pointer"
+                                className="px-3.5 py-1.5 rounded-full font-bold bg-[rgb(var(--color-foreground)/0.05)] hover:bg-[rgb(var(--color-foreground)/0.1)] text-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out cursor-pointer"
                             >
                                 + Std Variant
                             </button>
@@ -1389,11 +1389,10 @@ const Upload = () => {
                                     key={item.id}
                                     type="button"
                                     onClick={() => handleDistributionStatusChange(item.id as any)}
-                                    className={`p-3 rounded-2xl border-2 text-left transition-all cursor-pointer ${
-                                        formState.distributionStatus === item.id
+                                    className={`p-3 rounded-2xl border-2 text-left transition-all cursor-pointer ${formState.distributionStatus === item.id
                                             ? 'border-[rgb(var(--color-foreground))] bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] shadow-md'
                                             : 'border-[rgb(var(--color-border))] bg-[rgb(var(--color-background))] hover:border-[rgb(var(--color-foreground)/0.4)] text-[rgb(var(--color-foreground))]'
-                                    }`}
+                                        }`}
                                 >
                                     <div className="font-bold text-sm">{item.label}</div>
                                     <div className={`text-[10px] mt-0.5 ${formState.distributionStatus === item.id ? 'opacity-80' : 'text-[rgb(var(--color-muted-foreground))]'}`}>
@@ -1415,11 +1414,10 @@ const Upload = () => {
                                     key={lic.id}
                                     type="button"
                                     onClick={() => handleLicenseSelect(lic)}
-                                    className={`px-3.5 py-2 rounded-xl border-2 text-xs font-bold transition-all cursor-pointer ${
-                                        formState.licenseType === lic.id
+                                    className={`px-3.5 py-2 rounded-xl border-2 text-xs font-bold transition-all cursor-pointer ${formState.licenseType === lic.id
                                             ? 'bg-[rgb(var(--color-highlight))] text-black border-[rgb(var(--color-foreground))] shadow-sm'
                                             : 'bg-[rgb(var(--color-background))] border-[rgb(var(--color-border))] hover:border-[rgb(var(--color-foreground))] text-[rgb(var(--color-foreground))]'
-                                    }`}
+                                        }`}
                                 >
                                     {lic.label}
                                 </button>
@@ -1457,11 +1455,10 @@ const Upload = () => {
                                     key={perm.key}
                                     type="button"
                                     onClick={() => handleFieldChange(perm.key as keyof FontFormState, !perm.val)}
-                                    className={`flex items-center justify-between p-3 rounded-xl border-2 text-xs font-bold transition-all cursor-pointer ${
-                                        perm.val
+                                    className={`flex items-center justify-between p-3 rounded-xl border-2 text-xs font-bold transition-all cursor-pointer ${perm.val
                                             ? 'border-green-500/50 bg-green-500/10 text-green-700 dark:text-green-300'
                                             : 'border-[rgb(var(--color-border))] bg-[rgb(var(--color-background))] text-[rgb(var(--color-muted-foreground))]'
-                                    }`}
+                                        }`}
                                 >
                                     <span>{perm.label}</span>
                                     <span className={`text-[11px] px-1.5 py-0.5 rounded font-mono ${perm.val ? 'bg-green-500/20 text-green-700 dark:text-green-300' : 'bg-[rgb(var(--color-foreground)/0.08)]'}`}>
@@ -1790,7 +1787,7 @@ const Upload = () => {
                                 </button>
                             </div>
                         ))}
-                        <div className="relative flex justify-center items-center group aspect-video bg-[rgb(var(--color-muted)/0.05)] rounded-2xl overflow-hidden border-2 border-dashed border-[rgb(var(--color-border))] hover:border-[rgb(var(--color-foreground))] transition-colors">
+                        <div className="relative flex justify-center items-center group aspect-video bg-[rgb(var(--color-muted)/0.05)] rounded-2xl overflow-hidden border-2 border-dashed border-[rgb(var(--color-border))] hover:border-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out">
                             <input
                                 type="file"
                                 multiple
@@ -1838,7 +1835,7 @@ const Upload = () => {
                             <button
                                 type="button"
                                 onClick={() => setShowUrlInput(true)}
-                                className="flex items-center gap-2 px-4 py-2 rounded-full font-bold text-xs bg-[rgb(var(--color-foreground)/0.05)] hover:bg-[rgb(var(--color-foreground)/0.1)] text-[rgb(var(--color-foreground))] border border-[rgb(var(--color-foreground)/0.1)] transition-colors cursor-pointer"
+                                className="flex items-center gap-2 px-4 py-2 rounded-full font-bold text-xs bg-[rgb(var(--color-foreground)/0.05)] hover:bg-[rgb(var(--color-foreground)/0.1)] text-[rgb(var(--color-foreground))] border border-[rgb(var(--color-foreground)/0.1)] transition-colors duration-300 ease-in-out cursor-pointer"
                             >
                                 <LinkIcon size={14} /> Add Image URL
                             </button>

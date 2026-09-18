@@ -165,52 +165,52 @@ export default function FontPairingFilters({ filters, onChange, viewMode, onView
                         <Search className="absolute left-3 top-3 text-[rgb(var(--color-foreground))]" size={18} />
                     </div>
 
-                    
+
                 </div>
 
                 <div className='flex justify-between'>
                     <div>
                         {/* View Toggle */}
-                    {onViewModeChange && (
-                        <div className="flex bg-[rgb(var(--color-muted)/0.1)] h-11 p-1 w-auto rounded-full border border-[rgb(var(--color-border))]">
-                            <button
-                                onClick={() => onViewModeChange('font')}
-                                className={`p-2 aspect-square rounded-full transition-all ${viewMode === 'font'
-                                    ? 'bg-[rgb(var(--color-highlight))] text-[rgb(var(--color-background))] shadow-sma border border-[rgb(var(--color-border))]'
-                                    : 'text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))]'
-                                    }`}
-                                title="Font View"
-                            >
-                                <Type size={16} />
-                            </button>
-                            <button
-                                onClick={() => onViewModeChange('image')}
-                                className={`p-2 aspect-square rounded-full transition-all ${viewMode === 'image'
-                                    ? 'bg-[rgb(var(--color-accent))] text-[rgb(var(--color-background))] shadow-sm border border-[rgb(var(--color-border))]'
-                                    : 'text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))]'
-                                    }`}
-                                title="Image View"
-                            >
-                                <Image size={16} />
-                            </button>
-                        </div>
-                    )}
+                        {onViewModeChange && (
+                            <div className="flex bg-[rgb(var(--color-muted)/0.1)] h-11 p-1 w-auto rounded-full border border-[rgb(var(--color-border))]">
+                                <button
+                                    onClick={() => onViewModeChange('font')}
+                                    className={`p-2 aspect-square rounded-full transition-all ${viewMode === 'font'
+                                        ? 'bg-[rgb(var(--color-highlight))] text-[rgb(var(--color-background))] shadow-sma border border-[rgb(var(--color-border))]'
+                                        : 'text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))]'
+                                        }`}
+                                    title="Font View"
+                                >
+                                    <Type size={16} />
+                                </button>
+                                <button
+                                    onClick={() => onViewModeChange('image')}
+                                    className={`p-2 aspect-square rounded-full transition-all ${viewMode === 'image'
+                                        ? 'bg-[rgb(var(--color-accent))] text-[rgb(var(--color-background))] shadow-sm border border-[rgb(var(--color-border))]'
+                                        : 'text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))]'
+                                        }`}
+                                    title="Image View"
+                                >
+                                    <Image size={16} />
+                                </button>
+                            </div>
+                        )}
                     </div>
                     <div className='flex flex-col justify-end md:items-end gap-2 relative z-50'>
 
-                            <div className="flex items-center gap-3">
-                                <button
-                                    onClick={() => setIsSortOpen(!isSortOpen)}
-                                    className="w-full md:w-52 px-4 py-2 flex justify-between items-center border border-[rgb(var(--color-border))] bg-[rgb(var(--color-muted)/0.1)] rounded-full focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-accent))] transition-all font-bold"
-                                >
-                                    <span>{currentSortLabel}</span>
-                                    <span className={`transform transition-transform ${isSortOpen ? 'rotate-180' : ''}`}>▼</span>
-                                </button>
-                            </div>
+                        <div className="flex items-center gap-3">
+                            <button
+                                onClick={() => setIsSortOpen(!isSortOpen)}
+                                className="w-full md:w-52 px-4 py-2 flex justify-between items-center border border-[rgb(var(--color-border))] bg-[rgb(var(--color-muted)/0.1)] rounded-full focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-accent))] transition-all font-bold"
+                            >
+                                <span>{currentSortLabel}</span>
+                                <span className={`transform transition-transform ${isSortOpen ? 'rotate-180' : ''}`}>▼</span>
+                            </button>
+                        </div>
 
-                            {/* Dropdown Menu */}
-                            <div
-                                className={`
+                        {/* Dropdown Menu */}
+                        <div
+                            className={`
                                 w-full md:w-52
                                 overflow-hidden
                                 transition-all
@@ -218,29 +218,29 @@ export default function FontPairingFilters({ filters, onChange, viewMode, onView
                                 ease-linear
                                 ${isSortOpen ? 'max-h-100 opacity-100 translate-y-0' : 'max-h-0 opacity-100 -translate-y-10 scale-0 pointer-events-none'}
                             `}
-                            >
-                                <div className="overflow-hidden flex flex-col gap-1">
-                                    {SORT_OPTIONS.map(opt => (
-                                        <button
-                                            key={opt.id}
-                                            onClick={() => {
-                                                handleChange('sortBy', opt.id);
-                                                setIsSortOpen(false);
-                                            }}
-                                            className={`
-                                            text-left px-4 py-2 rounded-full border border-[rgb(var(--color-foreground))] font-bold transition-colors
+                        >
+                            <div className="overflow-hidden flex flex-col gap-1">
+                                {SORT_OPTIONS.map(opt => (
+                                    <button
+                                        key={opt.id}
+                                        onClick={() => {
+                                            handleChange('sortBy', opt.id);
+                                            setIsSortOpen(false);
+                                        }}
+                                        className={`
+                                            text-left px-4 py-2 rounded-full border border-[rgb(var(--color-foreground))] font-bold transition-colors duration-300 ease-in-out
                                             ${filters.sortBy === opt.id
-                                                    ? 'bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))]'
-                                                    : 'hover:bg-[rgb(var(--color-muted)/0.05)] text-[rgb(var(--color-muted-foreground))]'
-                                                }
+                                                ? 'bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))]'
+                                                : 'hover:bg-[rgb(var(--color-muted)/0.05)] text-[rgb(var(--color-muted-foreground))]'
+                                            }
                                         `}
-                                        >
-                                            {opt.label}
-                                        </button>
-                                    ))}
-                                </div>
+                                    >
+                                        {opt.label}
+                                    </button>
+                                ))}
                             </div>
-                        
+                        </div>
+
                     </div>
                 </div>
             </div>

@@ -8,7 +8,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 const Layout = memo(function Layout() {
     const location = useLocation();
     return (
-        <div className="app-container flex flex-col min-h-screen px-4 md:px-8 bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))] antialiased selection:bg-[rgb(var(--color-foreground))] selection:text-[rgb(var(--color-background))] overflow-x-hidden">
+        <div className="app-container flex flex-col min-h-screen px-2 md:px-0 bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))] antialiased selection:bg-[rgb(var(--color-foreground))] selection:text-[rgb(var(--color-background))] overflow-x-hidden">
 
             {/* Progressive Blur Effects */}
             {/* <ProgressiveBlur position="top" height="150px" zIndex={45} />

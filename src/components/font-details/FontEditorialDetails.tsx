@@ -279,7 +279,7 @@ export default function FontEditorialDetails({ font, research }: FontEditorialDe
                             {traits.map((trait, idx) => (
                                 <div
                                     key={idx}
-                                    className="py-3 px-4 flex justify-center items-center border border-[rgb(var(--color-foreground)/0.1)] rounded-lg text-center md:text-left bg-[rgb(var(--color-foreground)/0.02)] transition-colors duration-300 ease-in-out text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))]"
+                                    className="py-3 px-4 flex justify-center items-center border border-[rgb(var(--color-foreground)/0.1)] rounded-lg text-center md:text-left bg-[rgb(var(--color-foreground)/0.02)] transition-colors duration-300 ease-in-out duration-300 ease-in-out text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))]"
                                 >
                                     <span className="text-sm md:text-lg font-light tracking-wide">
                                         {trait}
@@ -398,7 +398,7 @@ export default function FontEditorialDetails({ font, research }: FontEditorialDe
                                 {tagsList.map((tag, idx) => (
                                     <span
                                         key={idx}
-                                        className="inline-flex items-center px-4 py-2 rounded-full border border-[rgb(var(--color-foreground)/0.10)] text-sm md:text-lg font-light tracking-wide text-[rgb(var(--color-muted-foreground))] bg-[rgb(var(--color-foreground)/0.03)] hover:bg-[rgb(var(--color-foreground)/0.07)] transition-colors"
+                                        className="inline-flex items-center px-4 py-2 rounded-full border border-[rgb(var(--color-foreground)/0.10)] text-sm md:text-lg font-light tracking-wide text-[rgb(var(--color-muted-foreground))] bg-[rgb(var(--color-foreground)/0.03)] hover:bg-[rgb(var(--color-foreground)/0.07)] transition-colors duration-300 ease-in-out"
                                     >
                                         #{tag.replace(/^#/, '')}
                                     </span>

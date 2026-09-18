@@ -36,7 +36,7 @@ export default function NotFound() {
             />
             <div className="min-h-[80vh] flex items-center justify-center px-4 py-16 selection:bg-[rgb(var(--color-foreground))] selection:text-[rgb(var(--color-background))]">
                 <div className="max-w-2xl w-full text-center space-y-10">
-                    
+
                     {/* Visual 404 Specimen */}
                     <div className="relative flex flex-col items-center justify-center">
                         <motion.div
@@ -85,7 +85,7 @@ export default function NotFound() {
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 placeholder="Search fonts, styles, or designers..."
-                                className="w-full bg-[rgb(var(--color-card))] border border-[rgb(var(--color-foreground)/0.1)] rounded-2xl py-3.5 pl-11 pr-24 text-sm text-[rgb(var(--color-foreground))] placeholder-[rgb(var(--color-muted-foreground)/0.7)] shadow-sm focus:outline-none focus:border-[rgb(var(--color-accent))] transition-colors"
+                                className="w-full bg-[rgb(var(--color-card))] border border-[rgb(var(--color-foreground)/0.1)] rounded-2xl py-3.5 pl-11 pr-24 text-sm text-[rgb(var(--color-foreground))] placeholder-[rgb(var(--color-muted-foreground)/0.7)] shadow-sm focus:outline-none focus:border-[rgb(var(--color-accent))] transition-colors duration-300 ease-in-out"
                             />
                             <button
                                 type="submit"

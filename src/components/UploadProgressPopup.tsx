@@ -60,14 +60,14 @@ const UploadProgressPopup = () => {
 
                     {task.status === 'completed' && (
                         <div className="flex justify-end mt-2">
-                            <button 
+                            <button
                                 onClick={() => {
                                     clearCompletedTasks();
                                     if (window.location.pathname.includes(task.slug || '')) {
                                         window.location.reload();
                                     }
                                 }}
-                                className="text-[10px] font-bold uppercase tracking-widest text-[rgb(var(--color-accent))] hover:text-[rgb(var(--color-highlight))] transition-colors"
+                                className="text-[10px] font-bold uppercase tracking-widest text-[rgb(var(--color-accent))] hover:text-[rgb(var(--color-highlight))] transition-colors duration-300 ease-in-out"
                             >
                                 View Font
                             </button>

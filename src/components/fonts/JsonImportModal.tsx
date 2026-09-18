@@ -247,8 +247,8 @@ export function normalizeFontJson(raw: any): { parsedState: Partial<FontFormStat
     }
 
     // 4. Description
-    const descObj = typeof raw.description === 'object' && raw.description !== null 
-        ? raw.description 
+    const descObj = typeof raw.description === 'object' && raw.description !== null
+        ? raw.description
         : (raw.description_details || raw || {});
 
     if (typeof raw.description === 'string' && raw.description.trim()) {
@@ -516,7 +516,7 @@ ${baseJson}`;
                         </div>
                         <button
                             onClick={onClose}
-                            className="p-2 rounded-full hover:bg-[rgb(var(--color-foreground)/0.1)] text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))] transition-colors"
+                            className="p-2 rounded-full hover:bg-[rgb(var(--color-foreground)/0.1)] text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out"
                         >
                             <X size={20} />
                         </button>
@@ -527,21 +527,19 @@ ${baseJson}`;
                         <div className="flex gap-2">
                             <button
                                 onClick={() => setTab('paste')}
-                                className={`flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-t-xl transition-colors border-b-2 ${
-                                    tab === 'paste'
+                                className={`flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-t-xl transition-colors duration-300 ease-in-out border-b-2 ${tab === 'paste'
                                         ? 'border-[rgb(var(--color-foreground))] text-[rgb(var(--color-foreground))] bg-[rgb(var(--color-card))]'
                                         : 'border-transparent text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))]'
-                                }`}
+                                    }`}
                             >
                                 <FileText size={14} /> Paste JSON
                             </button>
                             <button
                                 onClick={() => setTab('upload')}
-                                className={`flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-t-xl transition-colors border-b-2 ${
-                                    tab === 'upload'
+                                className={`flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-t-xl transition-colors duration-300 ease-in-out border-b-2 ${tab === 'upload'
                                         ? 'border-[rgb(var(--color-foreground))] text-[rgb(var(--color-foreground))] bg-[rgb(var(--color-card))]'
                                         : 'border-transparent text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))]'
-                                }`}
+                                    }`}
                             >
                                 <UploadIcon size={14} /> Drop / Upload File
                             </button>
@@ -551,7 +549,7 @@ ${baseJson}`;
                             <button
                                 type="button"
                                 onClick={copyAiPrompt}
-                                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-medium rounded-xl bg-[rgb(var(--color-highlight)/0.15)] hover:bg-[rgb(var(--color-highlight)/0.25)] text-[rgb(var(--color-foreground))] border border-[rgb(var(--color-highlight)/0.3)] transition-colors cursor-pointer"
+                                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-medium rounded-xl bg-[rgb(var(--color-highlight)/0.15)] hover:bg-[rgb(var(--color-highlight)/0.25)] text-[rgb(var(--color-foreground))] border border-[rgb(var(--color-highlight)/0.3)] transition-colors duration-300 ease-in-out cursor-pointer"
                                 title="Copy AI prompt with original font JSON and strict schema constraints for Claude / ChatGPT / Gemini"
                             >
                                 {copiedPrompt ? <Check size={13} className="text-green-500" /> : <Sparkles size={13} className="text-[rgb(var(--color-highlight))]" />}
@@ -561,7 +559,7 @@ ${baseJson}`;
                             <button
                                 type="button"
                                 onClick={copySchemaFormat}
-                                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-medium rounded-xl bg-[rgb(var(--color-foreground)/0.06)] hover:bg-[rgb(var(--color-foreground)/0.12)] text-[rgb(var(--color-foreground))] border border-[rgb(var(--color-foreground)/0.1)] transition-colors cursor-pointer"
+                                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-medium rounded-xl bg-[rgb(var(--color-foreground)/0.06)] hover:bg-[rgb(var(--color-foreground)/0.12)] text-[rgb(var(--color-foreground))] border border-[rgb(var(--color-foreground)/0.1)] transition-colors duration-300 ease-in-out cursor-pointer"
                                 title="Copy structured JSON format template with type specifications"
                             >
                                 {copied ? <Check size={13} className="text-green-500" /> : <Copy size={13} />}
@@ -577,11 +575,10 @@ ${baseJson}`;
                                 onDragOver={(e) => { e.preventDefault(); setDragActive(true); }}
                                 onDragLeave={() => setDragActive(false)}
                                 onDrop={handleDrop}
-                                className={`relative border-2 border-dashed rounded-2xl p-10 flex flex-col items-center justify-center text-center transition-all ${
-                                    dragActive
+                                className={`relative border-2 border-dashed rounded-2xl p-10 flex flex-col items-center justify-center text-center transition-all ${dragActive
                                         ? 'border-[rgb(var(--color-highlight))] bg-[rgb(var(--color-highlight)/0.08)] scale-[0.99]'
                                         : 'border-[rgb(var(--color-border))] hover:border-[rgb(var(--color-foreground)/0.4)] bg-[rgb(var(--color-background))]'
-                                }`}
+                                    }`}
                             >
                                 <div className="p-4 rounded-full bg-[rgb(var(--color-foreground)/0.05)] mb-3 text-[rgb(var(--color-foreground))]">
                                     <FileJson size={32} />
@@ -617,11 +614,10 @@ ${baseJson}`;
 
                                 {/* Status bar */}
                                 {parseResult && (
-                                    <div className={`p-3 rounded-xl flex items-center justify-between text-xs font-mono border ${
-                                        parseResult.valid
+                                    <div className={`p-3 rounded-xl flex items-center justify-between text-xs font-mono border ${parseResult.valid
                                             ? 'bg-green-500/10 border-green-500/30 text-green-700 dark:text-green-300'
                                             : 'bg-red-500/10 border-red-500/30 text-red-600 dark:text-red-400'
-                                    }`}>
+                                        }`}>
                                         <div className="flex items-center gap-2">
                                             {parseResult.valid ? <Check size={16} /> : <AlertCircle size={16} />}
                                             <span>
@@ -646,7 +642,7 @@ ${baseJson}`;
                         <button
                             type="button"
                             onClick={onClose}
-                            className="px-5 py-2 text-xs font-bold uppercase rounded-full hover:bg-[rgb(var(--color-foreground)/0.1)] text-[rgb(var(--color-muted-foreground))] transition-colors"
+                            className="px-5 py-2 text-xs font-bold uppercase rounded-full hover:bg-[rgb(var(--color-foreground)/0.1)] text-[rgb(var(--color-muted-foreground))] transition-colors duration-300 ease-in-out"
                         >
                             Cancel
                         </button>
@@ -655,11 +651,10 @@ ${baseJson}`;
                             type="button"
                             disabled={!parseResult?.valid}
                             onClick={handleApply}
-                            className={`px-6 py-2.5 text-xs font-bold uppercase rounded-full transition-all flex items-center gap-2 ${
-                                parseResult?.valid
+                            className={`px-6 py-2.5 text-xs font-bold uppercase rounded-full transition-all flex items-center gap-2 ${parseResult?.valid
                                     ? 'bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] hover:opacity-90 cursor-pointer shadow-md'
                                     : 'bg-[rgb(var(--color-muted))] text-[rgb(var(--color-muted-foreground))] opacity-50 cursor-not-allowed'
-                            }`}
+                                }`}
                         >
                             <Check size={14} /> {applyLabel} {parseResult?.valid ? `(${parseResult.count} Fields)` : ''}
                         </button>

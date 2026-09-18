@@ -41,7 +41,7 @@ class ErrorBoundary extends Component<Props, State> {
             return (
                 <div className="min-h-screen flex items-center justify-center bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))] p-6 selection:bg-[rgb(var(--color-foreground))] selection:text-[rgb(var(--color-background))]">
                     <div className="max-w-xl w-full bg-[rgb(var(--color-card))] border border-[rgb(var(--color-border))] rounded-3xl p-8 md:p-10 shadow-2xl text-center space-y-6">
-                        
+
                         {/* Icon Badge */}
                         <div className="w-16 h-16 rounded-2xl bg-[rgb(var(--color-destructive)/0.1)] text-[rgb(var(--color-destructive))] flex items-center justify-center mx-auto">
                             <AlertTriangle size={32} />
@@ -83,7 +83,7 @@ class ErrorBoundary extends Component<Props, State> {
                         {/* Collapsible Technical Details */}
                         {this.state.error && (
                             <details className="text-left pt-4 border-t border-[rgb(var(--color-border))] group">
-                                <summary className="cursor-pointer text-xs font-mono text-[rgb(var(--color-muted-foreground))] flex items-center justify-between hover:text-[rgb(var(--color-foreground))] transition-colors select-none py-1">
+                                <summary className="cursor-pointer text-xs font-mono text-[rgb(var(--color-muted-foreground))] flex items-center justify-between hover:text-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out select-none py-1">
                                     <span>Technical Details</span>
                                     <ChevronDown size={14} className="group-open:rotate-180 transition-transform" />
                                 </summary>

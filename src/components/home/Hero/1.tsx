@@ -3,6 +3,7 @@
 import { useLayoutEffect, useRef } from 'react';
 import gsap from 'gsap';
 import NeatGradient from '../components/NeatGradient';
+import { Squircle } from 'react-ios-corners';
 
 const Hero = () => {
     const containerRef = useRef<HTMLDivElement>(null);
@@ -41,17 +42,19 @@ const Hero = () => {
             {/* Main Content */}
             <main className="flex-1 flex flex-col justify-center items-center relative overflow-hidden p-4 sm:p-8 md:p-26 py-14 rounded-4xl
             z[background:radial-gradient(125%_125%_at_50%_0%,transparent_40%,var(--color-blue-600),var(--color-white)_100%)]"
-                // style={{
-                //     background:
-                //         "radial-gradient(45.33% 46.43% at 41.69% 50%, #0140FF 0%, rgba(1, 64, 255, 0) 100%), radial-gradient(28.41% 117.96% at 7.72% 28.75%, #A6FDFF 0%, rgba(255, 255, 255, 0) 100%), radial-gradient(37.39% 69.19% at 107.79% 0%, #0075FF 0%, rgba(0, 66, 255, 0) 100%), radial-gradient(54.38% 89.75% at 83.46% 89.75%, #26F9FF 0%, rgba(0, 69, 255, 0.6) 100%), #0140FF",
-                // }}
+            // style={{
+            //     background:
+            //         "radial-gradient(45.33% 46.43% at 41.69% 50%, #0140FF 0%, rgba(1, 64, 255, 0) 100%), radial-gradient(28.41% 117.96% at 7.72% 28.75%, #A6FDFF 0%, rgba(255, 255, 255, 0) 100%), radial-gradient(37.39% 69.19% at 107.79% 0%, #0075FF 0%, rgba(0, 66, 255, 0) 100%), radial-gradient(54.38% 89.75% at 83.46% 89.75%, #26F9FF 0%, rgba(0, 69, 255, 0.6) 100%), #0140FF",
+            // }}
             >
 
                 {/* <img src="/gradients/72pt.png" alt=""
                     className='fixed h-full w-full object-cover rounded-4xl' 
                 /> */}
-
+                
+                <Squircle className='rounded-4xl'>
                 <NeatGradient />
+                </Squircle>
 
                 <div className="relative z-10 text-center mx-auto">
                     {/* Heading */}
@@ -80,7 +83,7 @@ const Hero = () => {
                                 placeholder="Try 'Inter' or 'Geist'..."
                                 className="w-full h-14 pl-6 pr-14 bg-[rgb(var(--color-background))] rounded-2xl border border-[rgb(var(--color-foreground))] focus:border-none focus:ring-2 focus:ring-[rgb(var(--color-primary))] outline-none transition-all placeholder:text-[rgb(var(--color-foreground)/0.8)] font-medium"
                             />
-                            <button className="absolute right-2 top-2 h-10 w-10 bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] rounded-xl flex items-center justify-center group-focus-within:bg-[rgb(var(--color-primary))] transition-colors">
+                            <button className="absolute right-2 top-2 h-10 w-10 bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] rounded-xl flex items-center justify-center group-focus-within:bg-[rgb(var(--color-primary))] transition-colors duration-300 ease-in-out">
                                 <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                                 </svg>

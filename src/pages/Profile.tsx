@@ -141,7 +141,7 @@ export default function Profile() {
                                 await Haptics.impact({ style: ImpactStyle.Light });
                                 setActiveTab('favorites');
                             }}
-                            className={`flex-1 px-6 py-4 text-lg font-bold border-y md:border-r border-[rgb(var(--color-background))] rounded-4xl md:rounded-r-none transition-colors ${activeTab === 'favorites'
+                            className={`flex-1 px-6 py-4 text-lg font-bold border-y md:border-r border-[rgb(var(--color-background))] rounded-4xl md:rounded-r-none transition-colors duration-300 ease-in-out ${activeTab === 'favorites'
                                 ? 'bg-[rgb(var(--color-gold-1))]'
                                 : 'bg-[rgb(var(--color-surface,var(--color-muted)))]'
                                 }`}
@@ -155,7 +155,7 @@ export default function Profile() {
                                 await Haptics.impact({ style: ImpactStyle.Light });
                                 setActiveTab('analytics');
                             }}
-                            className={`flex-1 px-6 py-4 text-lg font-bold border-y md:border-x border-[rgb(var(--color-background))] rounded-4xl md:rounded-none transition-colors ${activeTab === 'analytics'
+                            className={`flex-1 px-6 py-4 text-lg font-bold border-y md:border-x border-[rgb(var(--color-background))] rounded-4xl md:rounded-none transition-colors duration-300 ease-in-out ${activeTab === 'analytics'
                                 ? 'bg-[rgb(var(--color-accent))]' // Pink to match admin/member vibe
                                 : 'bg-[rgb(var(--color-surface,var(--color-muted)))]'
                                 }`}
@@ -169,7 +169,7 @@ export default function Profile() {
                                 await Haptics.impact({ style: ImpactStyle.Light });
                                 setActiveTab('downloads');
                             }}
-                            className={`flex-1 px-6 py-4 text-lg font-bold border-y border-l rounded-4xl md:rounded-l-none border-[rgb(var(--color-background))] transition-colors ${activeTab === 'downloads'
+                            className={`flex-1 px-6 py-4 text-lg font-bold border-y border-l rounded-4xl md:rounded-l-none border-[rgb(var(--color-background))] transition-colors duration-300 ease-in-out ${activeTab === 'downloads'
                                 ? 'bg-[rgb(189_245_34)]' // Using raw highlight or success
                                 : 'bg-[rgb(var(--color-surface,var(--color-muted)))]'
                                 }`}

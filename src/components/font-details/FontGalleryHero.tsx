@@ -20,7 +20,7 @@ export default function FontGalleryHero({ font, isFontLoaded }: FontGalleryHeroP
 
     return (
         <div
-            className="relative w-full overflow-hidden border border-none rounded-4xl shadow-2xl group"
+            className="relative w-full overflow-hidden rounded-4xl group"
             style={{ '--mobile-ar': mobileAr, '--desktop-ar': desktopAr } as React.CSSProperties}
         >
             {galleryImages.length > 0 ? (

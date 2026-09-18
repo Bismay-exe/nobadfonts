@@ -106,7 +106,7 @@ export default function FileManager({ font, user, onClose, onSaveSuccess }: File
 
                 if (change.action === 'replace' && change.file) {
                     const fileName = `${Date.now()}-${change.file.name}`;
-                    const path = change.variantName 
+                    const path = change.variantName
                         ? `${font.uploaded_by}/${font.slug}/variants/${change.variantName}/${fileName}`
                         : `${font.uploaded_by}/${font.slug}/${fileName}`;
 
@@ -124,7 +124,7 @@ export default function FileManager({ font, user, onClose, onSaveSuccess }: File
                 if (change.action === 'delete') {
                     const variant = font.font_variants?.find((v: any) => v.id === change.variantId);
                     const urlToDelete = variant ? variant[`${change.format}_url`] : font[`${change.format}_url`];
-                    
+
                     if (urlToDelete) {
                         const urlObj = new URL(urlToDelete);
                         const pathParts = urlObj.pathname.split('/public/fonts/');
@@ -188,7 +188,7 @@ export default function FileManager({ font, user, onClose, onSaveSuccess }: File
             <div className="bg-[rgb(var(--color-card,var(--color-muted)))] border border-[rgb(var(--color-foreground)/0.1)] rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto p-6 md:p-8 space-y-8">
                 <div className="flex justify-between items-center">
                     <h2 className="text-2xl font-bold text-[rgb(var(--color-foreground))]">Manage Variants & Files</h2>
-                    <button onClick={onClose} className="p-2 text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.1)] rounded-full transition-colors"><X /></button>
+                    <button onClick={onClose} className="p-2 text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.1)] rounded-full transition-colors duration-300 ease-in-out"><X /></button>
                 </div>
 
                 <div className="space-y-4">
@@ -242,7 +242,7 @@ export default function FileManager({ font, user, onClose, onSaveSuccess }: File
                         <div className="flex gap-2">
                             <button
                                 onClick={addCustomVariantToState}
-                                className="text-xs bg-[rgb(var(--color-foreground)/0.05)] text-[rgb(var(--color-foreground))] border border-[rgb(var(--color-foreground)/0.1)] px-4 py-2 rounded-full font-bold hover:bg-[rgb(var(--color-foreground)/0.1)] transition-colors"
+                                className="text-xs bg-[rgb(var(--color-foreground)/0.05)] text-[rgb(var(--color-foreground))] border border-[rgb(var(--color-foreground)/0.1)] px-4 py-2 rounded-full font-bold hover:bg-[rgb(var(--color-foreground)/0.1)] transition-colors duration-300 ease-in-out"
                             >
                                 + Custom
                             </button>
@@ -337,7 +337,7 @@ export default function FileManager({ font, user, onClose, onSaveSuccess }: File
                                                 type="text"
                                                 value={variant.name}
                                                 onChange={(e) => updateAddedVariantName(variant.id, e.target.value)}
-                                                className="bg-transparent border-b border-[rgb(var(--color-foreground)/0.2)] text-[rgb(var(--color-foreground))] font-bold text-lg tracking-wide focus:border-[rgb(var(--color-success))] outline-none pb-1 w-full placeholder:text-[rgb(var(--color-muted-foreground))] transition-colors"
+                                                className="bg-transparent border-b border-[rgb(var(--color-foreground)/0.2)] text-[rgb(var(--color-foreground))] font-bold text-lg tracking-wide focus:border-[rgb(var(--color-success))] outline-none pb-1 w-full placeholder:text-[rgb(var(--color-muted-foreground))] transition-colors duration-300 ease-in-out"
                                                 placeholder="Variant Name"
                                                 autoFocus
                                             />
@@ -389,7 +389,7 @@ export default function FileManager({ font, user, onClose, onSaveSuccess }: File
                 <div className="sticky bottom-0 pt-6 pb-2 border-t border-[rgb(var(--color-foreground)/0.1)] flex justify-end gap-3 bg-[rgb(var(--color-card,var(--color-muted)))]">
                     <button
                         onClick={onClose}
-                        className="px-6 py-3 rounded-full font-bold bg-[rgb(var(--color-foreground)/0.05)] border border-[rgb(var(--color-foreground)/0.1)] text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.1)] transition-colors"
+                        className="px-6 py-3 rounded-full font-bold bg-[rgb(var(--color-foreground)/0.05)] border border-[rgb(var(--color-foreground)/0.1)] text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.1)] transition-colors duration-300 ease-in-out"
                     >
                         Cancel
                     </button>

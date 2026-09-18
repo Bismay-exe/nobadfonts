@@ -13,14 +13,14 @@ interface VariantListProps {
     downloadFont: (url: string, filename: string) => Promise<void>;
 }
 
-export default function VariantList({ 
-    font, 
-    profile, 
-    variantPreviewText, 
-    variantPreviewSize, 
+export default function VariantList({
+    font,
+    profile,
+    variantPreviewText,
+    variantPreviewSize,
     variantLineHeight = 1.4,
     variantLetterSpacing = 0,
-    downloadFont 
+    downloadFont
 }: VariantListProps) {
     const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
     const [reorderTrigger, setReorderTrigger] = useState(0);
@@ -118,7 +118,7 @@ export default function VariantList({
                                     <button
                                         onClick={() => handleMoveVariant(variant.id, 'up', sortedVariants)}
                                         disabled={index === 0}
-                                        className="p-1 bg-[rgb(var(--color-foreground)/0.05)] border border-[rgb(var(--color-foreground)/0.1)] rounded-md text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.9)] hover:text-[rgb(var(--color-background))] transition-colors disabled:opacity-30 disabled:hover:bg-[rgb(var(--color-foreground)/0.5)] disabled:hover:text-[rgb(var(--color-foreground))]"
+                                        className="p-1 bg-[rgb(var(--color-foreground)/0.05)] border border-[rgb(var(--color-foreground)/0.1)] rounded-md text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.9)] hover:text-[rgb(var(--color-background))] transition-colors duration-300 ease-in-out disabled:opacity-30 disabled:hover:bg-[rgb(var(--color-foreground)/0.5)] disabled:hover:text-[rgb(var(--color-foreground))]"
                                         title="Move Up"
                                     >
                                         <ArrowUp size={14} />
@@ -126,7 +126,7 @@ export default function VariantList({
                                     <button
                                         onClick={() => handleMoveVariant(variant.id, 'down', sortedVariants)}
                                         disabled={index === sortedVariants.length - 1}
-                                        className="p-1 bg-[rgb(var(--color-foreground)/0.05)] border border-[rgb(var(--color-foreground)/0.1)] rounded-md text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.9)] hover:text-[rgb(var(--color-background))] transition-colors disabled:opacity-30 disabled:hover:bg-[rgb(var(--color-background)/0.5)] disabled:hover:text-[rgb(var(--color-foreground))]"
+                                        className="p-1 bg-[rgb(var(--color-foreground)/0.05)] border border-[rgb(var(--color-foreground)/0.1)] rounded-md text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.9)] hover:text-[rgb(var(--color-background))] transition-colors duration-300 ease-in-out disabled:opacity-30 disabled:hover:bg-[rgb(var(--color-background)/0.5)] disabled:hover:text-[rgb(var(--color-foreground))]"
                                         title="Move Down"
                                     >
                                         <ArrowDown size={14} />
@@ -143,7 +143,7 @@ export default function VariantList({
                                             <button
                                                 key={format}
                                                 onClick={() => downloadFont(url, `${font.name}-${variant.variant_name}.${format}`)}
-                                                className="flex items-center gap-1.5 px-3 py-1.5 bg-[rgb(var(--color-background)/0.5)] border border-[rgb(var(--color-foreground)/0.2)] rounded-full text-[10px] font-bold uppercase hover:bg-[rgb(var(--color-foreground)/0.9)] hover:text-[rgb(var(--color-background))] transition-colors cursor-pointer"
+                                                className="flex items-center gap-1.5 px-3 py-1.5 bg-[rgb(var(--color-background)/0.5)] border border-[rgb(var(--color-foreground)/0.2)] rounded-full text-[10px] font-bold uppercase hover:bg-[rgb(var(--color-foreground)/0.9)] hover:text-[rgb(var(--color-background))] transition-colors duration-300 ease-in-out cursor-pointer"
                                                 title={`Download ${format.toUpperCase()}`}
                                             >
                                                 <Download size={12} /> {format}
@@ -160,7 +160,7 @@ export default function VariantList({
                                         e.stopPropagation();
                                         setActiveDropdown(activeDropdown === variant.id ? null : variant.id);
                                     }}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-[rgb(var(--color-foreground)/0.05)] border border-[rgb(var(--color-foreground)/0.1)] rounded-full text-[10px] font-bold uppercase hover:bg-[rgb(var(--color-foreground)/0.9)] hover:text-[rgb(var(--color-background))] transition-colors"
+                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-[rgb(var(--color-foreground)/0.05)] border border-[rgb(var(--color-foreground)/0.1)] rounded-full text-[10px] font-bold uppercase hover:bg-[rgb(var(--color-foreground)/0.9)] hover:text-[rgb(var(--color-background))] transition-colors duration-300 ease-in-out"
                                 >
                                     <Download size={12} /> <ChevronDown size={12} className={`transition-transform duration-200 ${activeDropdown === variant.id ? 'rotate-180' : ''}`} />
                                 </button>
@@ -177,7 +177,7 @@ export default function VariantList({
                                                         downloadFont(url, `${font.name}-${variant.variant_name}.${format}`);
                                                         setActiveDropdown(null);
                                                     }}
-                                                    className="flex items-center justify-between w-full px-4 py-3 text-xs font-bold uppercase text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.1)] transition-colors text-left"
+                                                    className="flex items-center justify-between w-full px-4 py-3 text-xs font-bold uppercase text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.1)] transition-colors duration-300 ease-in-out text-left"
                                                 >
                                                     <span>{format}</span>
                                                     <Download size={14} className="opacity-50" />

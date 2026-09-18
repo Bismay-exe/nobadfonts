@@ -20,7 +20,7 @@ export default function Navbar() {
     const [isScrolled, setIsScrolled] = useState(false);
     const location = useLocation();
     const navigate = useNavigate();
-    
+
     // Local state for instantaneous UI updates so animations don't lag
     const [activeTab, setActiveTab] = useState(location.pathname);
 
@@ -73,7 +73,7 @@ export default function Navbar() {
                             }}
                             className="flex items-center gap-2 group"
                         >
-                            <div className="w-10 h-10 bg-[rgb(var(--color-foreground)/0.1)] rounded-xl group-hover:bg-[rgb(var(--color-foreground)/0.2)] transition-colors backdrop-blur-sm border border-[rgb(var(--color-foreground)/0.05)]">
+                            <div className="w-10 h-10 bg-[rgb(var(--color-foreground)/0.1)] rounded-xl group-hover:bg-[rgb(var(--color-foreground)/0.2)] transition-colors duration-300 ease-in-out backdrop-blur-sm border border-[rgb(var(--color-foreground)/0.05)]">
                                 <img src={Logo} alt="NoBadFonts Logo" className='rounded-xl object-cover' />
                             </div>
                             <span className={cn(
@@ -215,7 +215,7 @@ export default function Navbar() {
                             ) : (
                                 <Link
                                     to="/auth"
-                                    className="bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] px-5 py-2 rounded-full font-bold text-sm hover:bg-[rgb(var(--color-muted-foreground))] transition-colors"
+                                    className="bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] px-5 py-2 rounded-full font-bold text-sm hover:bg-[rgb(var(--color-muted-foreground))] transition-colors duration-300 ease-in-out"
                                 >
                                     Login
                                 </Link>
@@ -240,10 +240,10 @@ export default function Navbar() {
                                 onClick={async (e) => {
                                     e.preventDefault();
                                     if (activeTab === link.path) return;
-                                    
+
                                     setActiveTab(link.path); // Instant UI feedback
                                     await Haptics.selectionChanged();
-                                    
+
                                     // Let the button layout animation finish (300ms) before hitting the React Router tree
                                     setTimeout(() => {
                                         navigate(link.path);
@@ -262,8 +262,8 @@ export default function Navbar() {
                                     "shrink-0 w-4.5 h-4.5",
                                     isActive
                                         ? "fill-[rgb(var(--color-background))]"
-                                        : "text-[rgb(var(--color-foreground))]" 
-                                )}/>
+                                        : "text-[rgb(var(--color-foreground))]"
+                                )} />
 
                                 {/* Animating Text */}
                                 <AnimatePresence initial={false}>

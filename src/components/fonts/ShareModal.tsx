@@ -50,7 +50,7 @@ const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, imageSrc, font
                     <h2 className="text-2xl font-black uppercase">Share Font</h2>
                     <button
                         onClick={onClose}
-                        className="p-2 hover:bg-[rgb(var(--color-muted)/0.1)] rounded-full transition-colors"
+                        className="p-2 hover:bg-[rgb(var(--color-muted)/0.1)] rounded-full transition-colors duration-300 ease-in-out"
                     >
                         <X />
                     </button>
@@ -133,7 +133,7 @@ const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, imageSrc, font
                             <MessageSquare size={24} />
                             <span className="text-xs font-bold uppercase">Reddit</span>
                         </a>
- 
+
                         <motion.button
                             whileTap={{ scale: 0.9 }}
                             onClick={handleCopyLink}

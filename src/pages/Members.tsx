@@ -200,7 +200,7 @@ export default function Members() {
                                         <td className="hidden md:block p-4 text-right">
                                             <Link
                                                 to={`/members/${member.username || member.id}`}
-                                                className="inline-flex gap-2 items-center px-6 py-3 border-2 border-[rgb(var(--color-foreground)/0.1)] text-[rgb(var(--color-foreground))] hover:text-[rgb(var(--color-background))] font-bold rounded-full hover:bg-[rgb(var(--color-foreground))] transition-colors"
+                                                className="inline-flex gap-2 items-center px-6 py-3 border-2 border-[rgb(var(--color-foreground)/0.1)] text-[rgb(var(--color-foreground))] hover:text-[rgb(var(--color-background))] font-bold rounded-full hover:bg-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out"
                                             >
                                                 View Profile <ArrowUpRight size={22} />
                                             </Link>
@@ -261,7 +261,7 @@ const MemberCard = ({ member, rank }: { member: Profile, rank?: number }) => (
             </div>
 
             <div className="text-center">
-                <h2 className="text-lg font-bold text-[rgb(var(--color-foreground))] group-hover:text-[rgb(var(--color-primary))] transition-colors line-clamp-1">
+                <h2 className="text-lg font-bold text-[rgb(var(--color-foreground))] group-hover:text-[rgb(var(--color-primary))] transition-colors duration-300 ease-in-out line-clamp-1">
                     {member.full_name}
                 </h2>
                 <p className="text-[rgb(var(--color-muted-foreground))] font-bold text-[10px] uppercase tracking-wider">

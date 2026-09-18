@@ -91,25 +91,25 @@ export const PreviewAccordion = memo(function PreviewAccordion({ images, vertica
         activeFlex = targetHeight;
         inactiveFlex = Math.max(inactiveItemHeight, 1); // Avoid 0
     } else if (images.length > 1 && !isVerticalOrientation && dimensions.width > 0 && dimensions.height > 0) {
-       // Target settings for horizontal mode (Aspect Ratio of active image should be roughly 3:2 or similar)
-       // Let's try to make the active image's aspect ratio close to 3:2 (width:height) based on the current height
-       // Height is fixed. Target Width = Height * (3 / 2)
-       const targetWidth = dimensions.height * (3 / 2);
-       const remainingWidth = Math.max(0, dimensions.width - targetWidth);
-       const inactiveItemWidth = remainingWidth / (images.length - 1);
-       
-       activeFlex = targetWidth;
-       inactiveFlex = Math.max(inactiveItemWidth, 1);
+        // Target settings for horizontal mode (Aspect Ratio of active image should be roughly 3:2 or similar)
+        // Let's try to make the active image's aspect ratio close to 3:2 (width:height) based on the current height
+        // Height is fixed. Target Width = Height * (3 / 2)
+        const targetWidth = dimensions.height * (3 / 2);
+        const remainingWidth = Math.max(0, dimensions.width - targetWidth);
+        const inactiveItemWidth = remainingWidth / (images.length - 1);
+
+        activeFlex = targetWidth;
+        inactiveFlex = Math.max(inactiveItemWidth, 1);
     } else if (images.length === 1) {
-       // If only 1 image, flex grow doesn't really matter, it will take 100% space. 
-       // We disable flex properties later if length === 1.
-       activeFlex = 1;
+        // If only 1 image, flex grow doesn't really matter, it will take 100% space. 
+        // We disable flex properties later if length === 1.
+        activeFlex = 1;
     }
 
     return (
         <div
             ref={containerRef}
-            className={`w-full h-full flex overflow-hidden bg-[rgb(var(--color-card))] group ${vertical ? 'flex-col rounded-4xl' : 'flex-col md:flex-row rounded-4xl border-2 border-[rgb(var(--color-border))]'}`}
+            className={`w-full h-full flex overflow-hidden bg-[rgb(var(--color-card))] group ${vertical ? 'flex-col rounded-4xl' : 'flex-col md:flex-row rounded-4xl border border-[rgb(var(--color-border)/0.5)]'}`}
             onMouseEnter={() => setPaused(true)}
             onMouseLeave={() => setPaused(false)}
             onTouchStart={handleTouchStart}
@@ -124,16 +124,7 @@ export const PreviewAccordion = memo(function PreviewAccordion({ images, vertica
                         flexShrink: images.length > 1 ? (activeIndex === index ? 0 : 1) : 1,
                         flexBasis: images.length > 1 ? 0 : 'auto',
                     }}
-                    className={`
-                        relative
-                        flex
-                        cursor-pointer
-                        select-none
-                        transition-[flex-grow]
-                        duration-700
-                        ease-in-out
-                        overflow-hidden
-                        border-[rgb(var(--color-border))]
+                    className={`relative flex cursor-pointer select-none transition-[flex-grow] duration-700 ease-in-out overflow-hidden border-[rgb(var(--color-border)/0.5)]
                         ${vertical
                             ? (images.length > 1 ? 'w-full border-b last:border-b-0' : 'w-full h-auto max-h-[80vh]')
                             : (images.length > 1 ? 'w-full md:w-auto md:h-full border-b md:border-b-0 md:border-r last:border-b-0 md:last:border-r-0' : 'w-full h-auto max-h-[80vh]')
@@ -153,7 +144,7 @@ export const PreviewAccordion = memo(function PreviewAccordion({ images, vertica
                     {images.length > 1 && (
                         <div
                             className={`
-                            absolute inset-0 transition-colors duration-700
+                            absolute inset-0 transition-colors ease-in-out duration-700
                             ${activeIndex === index ? 'bg-transparent' : 'bg-[rgb(var(--color-background)/0.4)]'}
                             `}
                         />

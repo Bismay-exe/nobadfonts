@@ -64,7 +64,7 @@ export default function Cli() {
                         </code>
                         <button
                             onClick={() => copyCommand(command)}
-                            className="p-2 bg-[rgb(var(--color-primary))] text-[rgb(var(--color-background))] rounded-lg hover:bg-[rgb(var(--color-highlight))] transition-colors font-bold flex items-center gap-2 shrink-0"
+                            className="p-2 bg-[rgb(var(--color-primary))] text-[rgb(var(--color-background))] rounded-lg hover:bg-[rgb(var(--color-highlight))] transition-colors duration-300 ease-in-out font-bold flex items-center gap-2 shrink-0"
                         >
                             {copied ? <Check className='h-5 w-5' strokeWidth={3} /> : <CustomClipboard className='h-5 w-5' />}
                             <span className="md:hidden font-mono uppercase tracking-widest text-xs">Copy</span>

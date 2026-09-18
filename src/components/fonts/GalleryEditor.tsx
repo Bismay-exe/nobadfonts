@@ -212,7 +212,7 @@ export default function GalleryEditor({ font, user, initialImages, initialSizes,
                 ))}
 
                 <div className="aspect-square flex flex-col gap-2">
-                    <label className="flex-1 flex flex-col items-center justify-center border border-dashed border-zinc-700 rounded-xl hover:border-white/50 hover:bg-white/5 cursor-pointer transition-colors bg-black/20">
+                    <label className="flex-1 flex flex-col items-center justify-center border border-dashed border-zinc-700 rounded-xl hover:border-white/50 hover:bg-white/5 cursor-pointer transition-colors duration-300 ease-in-out bg-black/20">
                         <input
                             type="file"
                             accept="image/*"
@@ -245,7 +245,7 @@ export default function GalleryEditor({ font, user, initialImages, initialSizes,
                     ) : (
                         <button
                             onClick={() => setShowUrlInput(true)}
-                            className="h-8 flex items-center justify-center gap-1 border border-dashed border-zinc-700 rounded-xl hover:border-white/50 hover:bg-white/5 transition-colors bg-black/20 text-xs font-bold text-zinc-500"
+                            className="h-8 flex items-center justify-center gap-1 border border-dashed border-zinc-700 rounded-xl hover:border-white/50 hover:bg-white/5 transition-colors duration-300 ease-in-out bg-black/20 text-xs font-bold text-zinc-500"
                         >
                             <LinkIcon size={12} /> Add URL
                         </button>

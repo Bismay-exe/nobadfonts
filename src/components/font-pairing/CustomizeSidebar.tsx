@@ -33,7 +33,7 @@ export default function CustomizeSidebar({
     if (!isOpen) return null;
 
     const variants = useMemo(() => font?.font_variants || [], [font?.font_variants]);
- 
+
     const handleStyleChange = useCallback((key: keyof StyleState, value: number | string) => {
         onStyleChange({ ...currentStyle, [key]: value });
     }, [currentStyle, onStyleChange]);
@@ -57,7 +57,7 @@ export default function CustomizeSidebar({
                     </div>
                     <button
                         onClick={onClose}
-                        className="p-2 bg-[rgb(var(--color-background))] border-2 border-[rgb(var(--color-border))] rounded-full hover:bg-[rgb(var(--color-foreground))] hover:text-[rgb(var(--color-background))] transition-colors text-[rgb(var(--color-foreground))]"
+                        className="p-2 bg-[rgb(var(--color-background))] border-2 border-[rgb(var(--color-border))] rounded-full hover:bg-[rgb(var(--color-foreground))] hover:text-[rgb(var(--color-background))] transition-colors duration-300 ease-in-out text-[rgb(var(--color-foreground))]"
                     >
                         <X size={20} />
                     </button>
@@ -75,7 +75,7 @@ export default function CustomizeSidebar({
                             <select
                                 value={currentVariant || ''}
                                 onChange={(e) => onVariantChange(e.target.value || null)}
-                                className="w-full p-3 bg-[rgb(var(--color-background))] border-2 border-[rgb(var(--color-border)/0.2)] rounded-xl font-bold focus:border-[rgb(var(--color-foreground))] focus:outline-none transition-colors appearance-none text-[rgb(var(--color-foreground))]"
+                                className="w-full p-3 bg-[rgb(var(--color-background))] border-2 border-[rgb(var(--color-border)/0.2)] rounded-xl font-bold focus:border-[rgb(var(--color-foreground))] focus:outline-none transition-colors duration-300 ease-in-out appearance-none text-[rgb(var(--color-foreground))]"
                             >
                                 <option value="">Regular (Default)</option>
                                 {variants.map(v => (

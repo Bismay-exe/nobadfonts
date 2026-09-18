@@ -38,32 +38,32 @@ export default memo(function ProfileHeader({ onEditClick, isEditing }: ProfileHe
                             {/* Social Links */}
                             <div className="flex flex-wrap gap-3 mt-3 justify-center md:justify-start">
                                 {profile?.website && (
-                                    <a href={profile.website} target="_blank" rel="noopener noreferrer" className="p-2 bg-[rgb(var(--color-muted)/0.1)] rounded-full border border-[rgb(var(--color-border))] hover:border-[rgb(var(--color-foreground))] transition-colors text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))] hover:-translate-y-1 hover:shadow-md">
+                                    <a href={profile.website} target="_blank" rel="noopener noreferrer" className="p-2 bg-[rgb(var(--color-muted)/0.1)] rounded-full border border-[rgb(var(--color-border))] hover:border-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))] hover:-translate-y-1 hover:shadow-md">
                                         <Globe size={18} />
                                     </a>
                                 )}
                                 {profile?.behance && (
-                                    <a href={profile.behance} target="_blank" rel="noopener noreferrer" className="p-2 bg-[rgb(var(--color-muted)/0.1)] rounded-full border border-[rgb(var(--color-border))] hover:border-[rgb(var(--color-foreground))] transition-colors text-[rgb(var(--color-muted-foreground))] hover:text-[#1769ff] hover:-translate-y-1 hover:shadow-md">
+                                    <a href={profile.behance} target="_blank" rel="noopener noreferrer" className="p-2 bg-[rgb(var(--color-muted)/0.1)] rounded-full border border-[rgb(var(--color-border))] hover:border-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out text-[rgb(var(--color-muted-foreground))] hover:text-[#1769ff] hover:-translate-y-1 hover:shadow-md">
                                         <Palette size={18} />
                                     </a>
                                 )}
                                 {profile?.twitter && (
-                                    <a href={profile.twitter} target="_blank" rel="noopener noreferrer" className="p-2 bg-[rgb(var(--color-muted)/0.1)] rounded-full border border-[rgb(var(--color-border))] hover:border-[rgb(var(--color-foreground))] transition-colors text-[rgb(var(--color-muted-foreground))] hover:text-[#1DA1F2] hover:-translate-y-1 hover:shadow-md">
+                                    <a href={profile.twitter} target="_blank" rel="noopener noreferrer" className="p-2 bg-[rgb(var(--color-muted)/0.1)] rounded-full border border-[rgb(var(--color-border))] hover:border-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out text-[rgb(var(--color-muted-foreground))] hover:text-[#1DA1F2] hover:-translate-y-1 hover:shadow-md">
                                         <Twitter size={18} />
                                     </a>
                                 )}
                                 {profile?.instagram && (
-                                    <a href={profile.instagram} target="_blank" rel="noopener noreferrer" className="p-2 bg-[rgb(var(--color-muted)/0.1)] rounded-full border border-[rgb(var(--color-border))] hover:border-[rgb(var(--color-foreground))] transition-colors text-[#E1306C] hover:-translate-y-1 hover:shadow-md">
+                                    <a href={profile.instagram} target="_blank" rel="noopener noreferrer" className="p-2 bg-[rgb(var(--color-muted)/0.1)] rounded-full border border-[rgb(var(--color-border))] hover:border-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out text-[#E1306C] hover:-translate-y-1 hover:shadow-md">
                                         <Instagram size={18} />
                                     </a>
                                 )}
                                 {profile?.linkedin && (
-                                    <a href={profile.linkedin} target="_blank" rel="noopener noreferrer" className="p-2 bg-[rgb(var(--color-muted)/0.1)] rounded-full border border-[rgb(var(--color-border))] hover:border-[rgb(var(--color-foreground))] transition-colors text-[rgb(var(--color-muted-foreground))] hover:text-[#0077b5] hover:-translate-y-1 hover:shadow-md">
+                                    <a href={profile.linkedin} target="_blank" rel="noopener noreferrer" className="p-2 bg-[rgb(var(--color-muted)/0.1)] rounded-full border border-[rgb(var(--color-border))] hover:border-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out text-[rgb(var(--color-muted-foreground))] hover:text-[#0077b5] hover:-translate-y-1 hover:shadow-md">
                                         <Linkedin size={18} />
                                     </a>
                                 )}
                                 {profile?.paypal_me && (
-                                    <a href={`https://paypal.me/${profile.paypal_me}`} target="_blank" rel="noopener noreferrer" className="p-2 bg-[rgb(var(--color-accent)/0.1)] rounded-full border border-[rgb(var(--color-accent)/0.2)] hover:border-[rgb(var(--color-accent))] transition-colors text-[rgb(var(--color-accent))] hover:brightness-110 hover:-translate-y-1 hover:shadow-md ml-2" title="Donation Link Active">
+                                    <a href={`https://paypal.me/${profile.paypal_me}`} target="_blank" rel="noopener noreferrer" className="p-2 bg-[rgb(var(--color-accent)/0.1)] rounded-full border border-[rgb(var(--color-accent)/0.2)] hover:border-[rgb(var(--color-accent))] transition-colors duration-300 ease-in-out text-[rgb(var(--color-accent))] hover:brightness-110 hover:-translate-y-1 hover:shadow-md ml-2" title="Donation Link Active">
                                         <Coffee size={18} />
                                     </a>
                                 )}
@@ -73,14 +73,14 @@ export default memo(function ProfileHeader({ onEditClick, isEditing }: ProfileHe
                         <div className="flex items-center gap-3">
                             <button
                                 onClick={onEditClick}
-                                className="flex items-center space-x-2 px-4 py-2 bg-[rgb(var(--color-muted)/0.1)] border border-[rgb(var(--color-border))] rounded-lg hover:bg-[rgb(var(--color-muted)/0.2)] hover:text-[rgb(var(--color-foreground))] transition-colors text-sm font-medium"
+                                className="flex items-center space-x-2 px-4 py-2 bg-[rgb(var(--color-muted)/0.1)] border border-[rgb(var(--color-border))] rounded-lg hover:bg-[rgb(var(--color-muted)/0.2)] hover:text-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out text-sm font-medium"
                             >
                                 <Settings size={16} />
                                 <span>{isEditing ? 'Cancel Edit' : 'Edit Profile'}</span>
                             </button>
                             <button
                                 onClick={() => signOut()}
-                                className="flex items-center space-x-2 px-4 py-2 bg-[rgb(var(--color-destructive)/0.15)] border border-[rgb(var(--color-destructive)/0.15)] text-[rgb(var(--color-destructive))] rounded-lg hover:bg-[rgb(var(--color-destructive)/0.3)] hover:brightness-110 transition-colors text-sm font-medium"
+                                className="flex items-center space-x-2 px-4 py-2 bg-[rgb(var(--color-destructive)/0.15)] border border-[rgb(var(--color-destructive)/0.15)] text-[rgb(var(--color-destructive))] rounded-lg hover:bg-[rgb(var(--color-destructive)/0.3)] hover:brightness-110 transition-colors duration-300 ease-in-out text-sm font-medium"
                             >
                                 <LogOut size={16} />
                                 <span>Sign Out</span>

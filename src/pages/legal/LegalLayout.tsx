@@ -20,7 +20,7 @@ export const LEGAL_STYLES = {
     h2: "text-lg md:text-3xl font-medium text-[rgb(var(--color-foreground))] tracking-tight",
     p: "text-[15px] leading-relaxed text-[rgb(var(--color-foreground)/0.8)]",
     strong: "font-medium text-[rgb(var(--color-foreground))]",
-    a: "text-[rgb(var(--color-orange))] hover:underline underline-offset-4 font-medium transition-colors",
+    a: "text-[rgb(var(--color-orange))] hover:underline underline-offset-4 font-medium transition-colors duration-300 ease-in-out",
     code: "text-xs bg-[rgb(var(--color-foreground)/0.06)] px-1.5 py-0.5 rounded font-mono text-[rgb(var(--color-foreground))]",
 };
 
@@ -47,7 +47,7 @@ export default function LegalLayout({
                 {/* <div className="mb-10">
                     <Link
                         to="/"
-                        className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))] transition-colors group"
+                        className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out group"
                     >
                         <ArrowLeft size={13} className="transition-transform group-hover:-translate-x-1" />
                         Back to Archive
@@ -95,7 +95,7 @@ export default function LegalLayout({
                     [&_p]:leading-normal [&_p]:md:leading-relaxed [&_p]:font-inter-tight
                     [&_strong]:font-light [&_strong]:text-[rgb(var(--color-foreground))]
                     [&_code]:text-[22px] [&_code]:bg-[rgb(var(--color-foreground)/0.06)] [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:font-mono [&_code]:text-[rgb(var(--color-foreground)/0.9)]
-                    [&_a]:text-[rgb(var(--color-orange))] [&_a]:hover:underline [&_a]:underline-offset-4 [&_a]:font-medium [&_a]:transition-colors"
+                    [&_a]:text-[rgb(var(--color-orange))] [&_a]:hover:underline [&_a]:underline-offset-4 [&_a]:font-medium [&_a]:transition-colors duration-300 ease-in-out"
                 >
                     {children}
                 </main>

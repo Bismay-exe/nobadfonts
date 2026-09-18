@@ -189,11 +189,11 @@ export default function FontTester({ font }: FontTesterProps) {
             <div className='sticky top-[111.5px] md:top-[63.5px] w-full h-px bg-linear-to-r from-transparent via-[rgb(var(--color-foreground)/0.1)] to-transparent z-11'></div>
 
             {/* Controls Toolbar */}
-            <div className="sticky h-full top-[111.5px] md:top-[63.5px] bg-[rgb(var(--color-background))] z-10 pt-1.5 md:pb-4 px-2">
+            <div className="sticky h-full top-[111.5px] md:top-[63.5px] bg-[rgb(var(--color-background))] z-10 pt-1.5 pb-2 md:pb-4 xl:pb-2 px-2">
                 {/* Settings - Always visible */}
                 <div className="flex flex-col sm:flex-col-reverse xl:flex-row gap-4">
 
-                    <div className='sm:hidden xl:flex flex-wrap md:flex-nowrap gap-2 justify-between items-end'>
+                    <div className='flex sm:hidden xl:flex flex-wrap md:flex-nowrap gap-2 justify-between items-end'>
                         {font.font_variants && font.font_variants.length > 0 && (
                             <div className="relative">
                                 <button
@@ -201,7 +201,7 @@ export default function FontTester({ font }: FontTesterProps) {
                                         setVariantDropdownOpen(!variantDropdownOpen);
                                         Haptics.impact({ style: ImpactStyle.Light });
                                     }}
-                                    className="h-8 px-3 py-1 bg-[rgb(var(--color-muted)/0.1)] hover:bg-[rgb(var(--color-foreground)/0.9)] hover:text-[rgb(var(--color-background))] border border-[rgb(var(--color-border))] rounded-md text-xs font-medium whitespace-nowrap hover:border-[rgb(var(--color-foreground))] transition-colors flex items-center gap-2 cursor-pointer"
+                                    className="h-8 px-3 py-1 bg-[rgb(var(--color-muted)/0.1)] hover:bg-[rgb(var(--color-foreground)/0.9)] hover:text-[rgb(var(--color-background))] border border-[rgb(var(--color-border))] rounded-md text-xs font-medium whitespace-nowrap hover:border-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out flex items-center gap-2 cursor-pointer"
                                 >
                                     {selectedVariant?.variant_name || 'Select Variant'}
                                     <ChevronDown size={14} className={`transition-transform ${variantDropdownOpen ? 'rotate-180' : ''}`} />
@@ -216,7 +216,7 @@ export default function FontTester({ font }: FontTesterProps) {
                                                 setVariantDropdownOpen(false);
                                                 Haptics.impact({ style: ImpactStyle.Light });
                                             }}
-                                            className="px-4 py-3 text-xs font-bold text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-muted)/0.1)] transition-colors text-left flex justify-between items-center cursor-pointer"
+                                            className="px-4 py-3 text-xs font-bold text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-muted)/0.1)] transition-colors duration-300 ease-in-out text-left flex justify-between items-center cursor-pointer"
                                         >
                                             <span>{variant.variant_name}</span>
                                             {selectedVariant?.id === variant.id && (
@@ -235,7 +235,7 @@ export default function FontTester({ font }: FontTesterProps) {
                                     setShowMobileFeatures(!showMobileFeatures);
                                     Haptics.impact({ style: ImpactStyle.Light });
                                 }}
-                                className={`px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-colors space-nowrap border border-[rgb(var(--color-border))] cursor-pointer
+                                className={`px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-colors duration-300 ease-in-out space-nowrap border border-[rgb(var(--color-border))] cursor-pointer
                                         ${showMobileFeatures ? 'bg-[rgb(var(--color-foreground)/0.9)] text-[rgb(var(--color-background))]' : 'bg-[rgb(var(--color-muted)/0.1)] text-[rgb(var(--color-muted-foreground))] hover:bg-[rgb(var(--color-foreground)/0.9)] hover:text-[rgb(var(--color-background))]'}
                                     `}
                             >
@@ -245,10 +245,10 @@ export default function FontTester({ font }: FontTesterProps) {
 
                         <div className="flex gap-2 items-end">
                             {/* Preset Buttons */}
-                            <button onClick={() => { setText(TEXT_PRESETS.sentence); Haptics.impact({ style: ImpactStyle.Light }); }} className="h-8 px-3 py-1 bg-[rgb(var(--color-muted)/0.1)] hover:bg-[rgb(var(--color-foreground)/0.9)] hover:text-[rgb(var(--color-background))] border border-[rgb(var(--color-border))] rounded-md text-xs font-medium hover:border-[rgb(var(--color-foreground))] transition-colors cursor-pointer">Abc</button>
-                            <button onClick={() => { setText(TEXT_PRESETS.alphabet); Haptics.impact({ style: ImpactStyle.Light }); }} className="h-8 px-3 py-1 bg-[rgb(var(--color-muted)/0.1)] hover:bg-[rgb(var(--color-foreground)/0.9)] hover:text-[rgb(var(--color-background))] border border-[rgb(var(--color-border))] rounded-md text-xs whitespace-nowrap font-medium hover:border-[rgb(var(--color-foreground))] transition-colors cursor-pointer">A-Z</button>
-                            <button onClick={() => { setText(TEXT_PRESETS.numerals); Haptics.impact({ style: ImpactStyle.Light }); }} className="h-8 px-3 py-1 bg-[rgb(var(--color-muted)/0.1)] hover:bg-[rgb(var(--color-foreground)/0.9)] hover:text-[rgb(var(--color-background))] border border-[rgb(var(--color-border))] rounded-md text-xs font-medium hover:border-[rgb(var(--color-foreground))] transition-colors cursor-pointer">123</button>
-                            <button onClick={() => { setText(TEXT_PRESETS.paragraph); Haptics.impact({ style: ImpactStyle.Light }); }} className="h-8 px-3 py-1 bg-[rgb(var(--color-muted)/0.1)] hover:bg-[rgb(var(--color-foreground)/0.9)] hover:text-[rgb(var(--color-background))] border border-[rgb(var(--color-border))] rounded-md text-xs font-medium hover:border-[rgb(var(--color-foreground))] transition-colors cursor-pointer">¶</button>
+                            <button onClick={() => { setText(TEXT_PRESETS.sentence); Haptics.impact({ style: ImpactStyle.Light }); }} className="h-8 px-3 py-1 bg-[rgb(var(--color-muted)/0.1)] hover:bg-[rgb(var(--color-foreground)/0.9)] hover:text-[rgb(var(--color-background))] border border-[rgb(var(--color-border))] rounded-md text-xs font-medium hover:border-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out cursor-pointer">Abc</button>
+                            <button onClick={() => { setText(TEXT_PRESETS.alphabet); Haptics.impact({ style: ImpactStyle.Light }); }} className="h-8 px-3 py-1 bg-[rgb(var(--color-muted)/0.1)] hover:bg-[rgb(var(--color-foreground)/0.9)] hover:text-[rgb(var(--color-background))] border border-[rgb(var(--color-border))] rounded-md text-xs whitespace-nowrap font-medium hover:border-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out cursor-pointer">A-Z</button>
+                            <button onClick={() => { setText(TEXT_PRESETS.numerals); Haptics.impact({ style: ImpactStyle.Light }); }} className="h-8 px-3 py-1 bg-[rgb(var(--color-muted)/0.1)] hover:bg-[rgb(var(--color-foreground)/0.9)] hover:text-[rgb(var(--color-background))] border border-[rgb(var(--color-border))] rounded-md text-xs font-medium hover:border-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out cursor-pointer">123</button>
+                            <button onClick={() => { setText(TEXT_PRESETS.paragraph); Haptics.impact({ style: ImpactStyle.Light }); }} className="h-8 px-3 py-1 bg-[rgb(var(--color-muted)/0.1)] hover:bg-[rgb(var(--color-foreground)/0.9)] hover:text-[rgb(var(--color-background))] border border-[rgb(var(--color-border))] rounded-md text-xs font-medium hover:border-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out cursor-pointer">¶</button>
                         </div>
                     </div>
 
@@ -292,7 +292,7 @@ export default function FontTester({ font }: FontTesterProps) {
                                             setVariantDropdownOpen(!variantDropdownOpen);
                                             Haptics.impact({ style: ImpactStyle.Light });
                                         }}
-                                        className="h-8 px-3 py-1 bg-[rgb(var(--color-muted)/0.1)] hover:bg-[rgb(var(--color-foreground)/0.9)] hover:text-[rgb(var(--color-background))] border border-[rgb(var(--color-border))] rounded-md text-xs font-medium whitespace-nowrap hover:border-[rgb(var(--color-foreground))] transition-colors flex items-center gap-2 cursor-pointer"
+                                        className="h-8 px-3 py-1 bg-[rgb(var(--color-muted)/0.1)] hover:bg-[rgb(var(--color-foreground)/0.9)] hover:text-[rgb(var(--color-background))] border border-[rgb(var(--color-border))] rounded-md text-xs font-medium whitespace-nowrap hover:border-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out flex items-center gap-2 cursor-pointer"
                                     >
                                         {selectedVariant?.variant_name || 'Select Variant'}
                                         <ChevronDown size={14} className={`transition-transform ${variantDropdownOpen ? 'rotate-180' : ''}`} />
@@ -307,7 +307,7 @@ export default function FontTester({ font }: FontTesterProps) {
                                                     setVariantDropdownOpen(false);
                                                     Haptics.impact({ style: ImpactStyle.Light });
                                                 }}
-                                                className="px-4 py-3 text-xs font-bold text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-muted)/0.1)] transition-colors text-left flex justify-between items-center cursor-pointer"
+                                                className="px-4 py-3 text-xs font-bold text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-muted)/0.1)] transition-colors duration-300 ease-in-out text-left flex justify-between items-center cursor-pointer"
                                             >
                                                 <span>{variant.variant_name}</span>
                                                 {selectedVariant?.id === variant.id && (
@@ -327,7 +327,7 @@ export default function FontTester({ font }: FontTesterProps) {
                                     setShowMobileFeatures(!showMobileFeatures);
                                     Haptics.impact({ style: ImpactStyle.Light });
                                 }}
-                                className={`px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-colors space-nowrap border border-[rgb(var(--color-border))] cursor-pointer
+                                className={`px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-colors duration-300 ease-in-out space-nowrap border border-[rgb(var(--color-border))] cursor-pointer
                                         ${showMobileFeatures ? 'bg-[rgb(var(--color-foreground)/0.9)] text-[rgb(var(--color-background))]' : 'bg-[rgb(var(--color-muted)/0.1)] text-[rgb(var(--color-muted-foreground))] hover:bg-[rgb(var(--color-foreground)/0.9)] hover:text-[rgb(var(--color-background))]'}
                                     `}
                             >
@@ -340,10 +340,10 @@ export default function FontTester({ font }: FontTesterProps) {
                         <div className='hidden sm:block xl:hidden'>
                             <div className="flex gap-2 items-end">
                                 {/* Preset Buttons */}
-                                <button onClick={() => { setText(TEXT_PRESETS.sentence); Haptics.impact({ style: ImpactStyle.Light }); }} className="h-8 px-3 py-1 bg-[rgb(var(--color-muted)/0.1)] hover:bg-[rgb(var(--color-foreground)/0.9)] hover:text-[rgb(var(--color-background))] border border-[rgb(var(--color-border))] rounded-md text-xs font-medium hover:border-[rgb(var(--color-foreground))] transition-colors cursor-pointer">Abc</button>
-                                <button onClick={() => { setText(TEXT_PRESETS.alphabet); Haptics.impact({ style: ImpactStyle.Light }); }} className="h-8 px-3 py-1 bg-[rgb(var(--color-muted)/0.1)] hover:bg-[rgb(var(--color-foreground)/0.9)] hover:text-[rgb(var(--color-background))] border border-[rgb(var(--color-border))] rounded-md text-xs whitespace-nowrap font-medium hover:border-[rgb(var(--color-foreground))] transition-colors cursor-pointer">A-Z</button>
-                                <button onClick={() => { setText(TEXT_PRESETS.numerals); Haptics.impact({ style: ImpactStyle.Light }); }} className="h-8 px-3 py-1 bg-[rgb(var(--color-muted)/0.1)] hover:bg-[rgb(var(--color-foreground)/0.9)] hover:text-[rgb(var(--color-background))] border border-[rgb(var(--color-border))] rounded-md text-xs font-medium hover:border-[rgb(var(--color-foreground))] transition-colors cursor-pointer">123</button>
-                                <button onClick={() => { setText(TEXT_PRESETS.paragraph); Haptics.impact({ style: ImpactStyle.Light }); }} className="h-8 px-3 py-1 bg-[rgb(var(--color-muted)/0.1)] hover:bg-[rgb(var(--color-foreground)/0.9)] hover:text-[rgb(var(--color-background))] border border-[rgb(var(--color-border))] rounded-md text-xs font-medium hover:border-[rgb(var(--color-foreground))] transition-colors cursor-pointer">¶</button>
+                                <button onClick={() => { setText(TEXT_PRESETS.sentence); Haptics.impact({ style: ImpactStyle.Light }); }} className="h-8 px-3 py-1 bg-[rgb(var(--color-muted)/0.1)] hover:bg-[rgb(var(--color-foreground)/0.9)] hover:text-[rgb(var(--color-background))] border border-[rgb(var(--color-border))] rounded-md text-xs font-medium hover:border-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out cursor-pointer">Abc</button>
+                                <button onClick={() => { setText(TEXT_PRESETS.alphabet); Haptics.impact({ style: ImpactStyle.Light }); }} className="h-8 px-3 py-1 bg-[rgb(var(--color-muted)/0.1)] hover:bg-[rgb(var(--color-foreground)/0.9)] hover:text-[rgb(var(--color-background))] border border-[rgb(var(--color-border))] rounded-md text-xs whitespace-nowrap font-medium hover:border-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out cursor-pointer">A-Z</button>
+                                <button onClick={() => { setText(TEXT_PRESETS.numerals); Haptics.impact({ style: ImpactStyle.Light }); }} className="h-8 px-3 py-1 bg-[rgb(var(--color-muted)/0.1)] hover:bg-[rgb(var(--color-foreground)/0.9)] hover:text-[rgb(var(--color-background))] border border-[rgb(var(--color-border))] rounded-md text-xs font-medium hover:border-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out cursor-pointer">123</button>
+                                <button onClick={() => { setText(TEXT_PRESETS.paragraph); Haptics.impact({ style: ImpactStyle.Light }); }} className="h-8 px-3 py-1 bg-[rgb(var(--color-muted)/0.1)] hover:bg-[rgb(var(--color-foreground)/0.9)] hover:text-[rgb(var(--color-background))] border border-[rgb(var(--color-border))] rounded-md text-xs font-medium hover:border-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out cursor-pointer">¶</button>
                             </div>
                         </div>
 
@@ -365,7 +365,7 @@ export default function FontTester({ font }: FontTesterProps) {
                 </div>
 
                 {/* Features - Toggleable on all devices */}
-                <div className={`${showMobileFeatures ? 'flex' : 'hidden'} flex-wrap gap-2 mt-4 pt-4 border-t border-[rgb(var(--color-border))] animate-in fade-in slide-in-from-top-2 duration-200`}>
+                <div className={`${showMobileFeatures ? 'flex' : 'hidden'} flex-wrap gap-2 mt-2 pt-2 zborder-t border-[rgb(var(--color-border))] animate-in fade-in slide-in-from-top-2 duration-200`}>
                     <Toggle label="Ligatures" code="liga" checked={features.liga} onChange={() => setFeatures(p => ({ ...p, liga: !p.liga }))} />
                     <Toggle label="Discretionary" code="dlig" checked={features.dlig} onChange={() => setFeatures(p => ({ ...p, dlig: !p.dlig }))} />
                     <Toggle label="Small Caps" code="smcp" checked={features.smcp} onChange={() => setFeatures(p => ({ ...p, smcp: !p.smcp }))} />
@@ -374,13 +374,15 @@ export default function FontTester({ font }: FontTesterProps) {
                     <Toggle label="Tabular #s" code="tnum" checked={features.tnum} onChange={() => setFeatures(p => ({ ...p, tnum: !p.tnum }))} />
                     <Toggle label="Alternates" code="salt" checked={features.salt} onChange={() => setFeatures(p => ({ ...p, salt: !p.salt }))} />
                 </div>
+
+                <div className='absolute bottom-0 w-full h-px bg-linear-to-r from-transparent via-[rgb(var(--color-foreground)/0.1)] to-transparent'></div>
             </div>
 
-            <div className="sticky top-71 md:top-[116.2px] h-px w-full bg-linear-to-r from-transparent via-[rgb(var(--color-foreground)/0.1)] to-transparent z-20 zmd:mt-15"></div>
+            {/* <div className="sticky top-71 md:top-[116.2px] h-px w-full bg-linear-to-r from-transparent via-[rgb(var(--color-foreground)/0.1)] to-transparent z-20 zmd:mt-15"></div> */}
 
             {/* Preview Area */}
             <div
-                className="flex-1 border-2 border-[rgb(var(--color-border))] rounded-4xl relative transition-colors duration-300 min-h-40"
+                className="flex-1 border border-[rgb(var(--color-border))] rounded-4xl relative transition-colors duration-300 ease-in-out min-h-40"
                 style={{ backgroundColor: bgColor }}
             >
                 <textarea

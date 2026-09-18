@@ -264,11 +264,10 @@ export default function FontResearchPanel({
                     onClick={triggerResearch}
                     disabled={isButtonDisabled}
                     title={isAnyResearching && !isCurrentFontResearching ? "Another font is currently being researched (1 at a time)" : ""}
-                    className={`px-3 py-1 text-xs font-bold rounded-full border transition-colors flex items-center gap-1 ${
-                        isCurrentFontResearching
+                    className={`px-3 py-1 text-xs font-bold rounded-full border transition-colors duration-300 ease-in-out flex items-center gap-1 ${isCurrentFontResearching
                             ? 'bg-[rgb(var(--color-accent)/0.15)] text-[rgb(var(--color-accent))] border-[rgb(var(--color-accent)/0.3)]'
                             : 'bg-[rgb(var(--color-foreground)/0.05)] hover:bg-[rgb(var(--color-foreground)/0.1)] border-[rgb(var(--color-border))] disabled:opacity-40 disabled:cursor-not-allowed'
-                    }`}
+                        }`}
                 >
                     {isCurrentFontResearching ? <Loader2 size={12} className="animate-spin" /> : <Search size={12} />}
                     {isCurrentFontResearching ? 'Working...' : research?.researched_at ? 'Re-Research' : 'Research'}
@@ -394,7 +393,7 @@ export default function FontResearchPanel({
                         <div className="space-y-3">
                             <button
                                 onClick={() => setShowDescription(!showDescription)}
-                                className="flex items-center gap-2 text-sm font-bold text-[rgb(var(--color-foreground))] hover:text-[rgb(var(--color-highlight))] transition-colors"
+                                className="flex items-center gap-2 text-sm font-bold text-[rgb(var(--color-foreground))] hover:text-[rgb(var(--color-highlight))] transition-colors duration-300 ease-in-out"
                             >
                                 <Sparkles size={14} />
                                 AI-Generated Description
@@ -428,7 +427,7 @@ export default function FontResearchPanel({
                                                 await navigator.clipboard.writeText(research.ai_description || '');
                                                 await Toast.show({ text: 'Copied!', duration: 'short' });
                                             }}
-                                            className="px-4 py-1.5 text-xs font-bold rounded-full bg-[rgb(var(--color-foreground)/0.05)] hover:bg-[rgb(var(--color-foreground)/0.1)] border border-[rgb(var(--color-border))] transition-colors cursor-pointer flex items-center gap-1"
+                                            className="px-4 py-1.5 text-xs font-bold rounded-full bg-[rgb(var(--color-foreground)/0.05)] hover:bg-[rgb(var(--color-foreground)/0.1)] border border-[rgb(var(--color-border))] transition-colors duration-300 ease-in-out cursor-pointer flex items-center gap-1"
                                         >
                                             <Copy size={10} /> Copy
                                         </motion.button>
@@ -443,7 +442,7 @@ export default function FontResearchPanel({
                         <div className="space-y-3">
                             <button
                                 onClick={() => setShowSources(!showSources)}
-                                className="flex items-center gap-2 text-sm font-bold text-[rgb(var(--color-foreground))] hover:text-[rgb(var(--color-highlight))] transition-colors"
+                                className="flex items-center gap-2 text-sm font-bold text-[rgb(var(--color-foreground))] hover:text-[rgb(var(--color-highlight))] transition-colors duration-300 ease-in-out"
                             >
                                 <Search size={14} />
                                 Sources ({sortedSources.length})

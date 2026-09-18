@@ -99,7 +99,7 @@ export default function FontDetailsNav({
                             ) : (
                                 <Link
                                     to="/auth"
-                                    className="bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] px-5 py-2 rounded-full font-bold text-sm hover:bg-[rgb(var(--color-muted-foreground))] transition-colors"
+                                    className="bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] px-5 py-2 rounded-full font-bold text-sm hover:bg-[rgb(var(--color-muted-foreground))] transition-colors duration-300 ease-in-out"
                                 >
                                     Login
                                 </Link>

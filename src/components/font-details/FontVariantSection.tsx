@@ -41,7 +41,7 @@ export default function FontVariantSection({
                             {variantPreviewText && (
                                 <button
                                     onClick={() => setVariantPreviewText('')}
-                                    className="text-[11px] font-mono hover:text-[rgb(var(--color-foreground))] cursor-pointer transition-colors"
+                                    className="text-[11px] font-mono hover:text-[rgb(var(--color-foreground))] cursor-pointer transition-colors duration-300 ease-in-out"
                                 >
                                     Reset
                                 </button>
@@ -53,7 +53,7 @@ export default function FontVariantSection({
                             onChange={(e) => setVariantPreviewText(e.target.value)}
                             placeholder="Your text"
                             aria-label="Type specimen preview text"
-                            className="w-full bg-transparent text-2xl text-[rgb(var(--color-foreground))] placeholder:text-[rgb(var(--color-muted-foreground)/0.4)] pb-1 transition-colors
+                            className="w-full bg-transparent text-2xl text-[rgb(var(--color-foreground))] placeholder:text-[rgb(var(--color-muted-foreground)/0.4)] pb-1 transition-colors duration-300 ease-in-out
                             outline-none! focus:outline-none! focus-visible:outline-none! ring-0! focus:ring-0! focus-visible:ring-0! shadow-none! focus:shadow-none!"
                         />
                     </div>

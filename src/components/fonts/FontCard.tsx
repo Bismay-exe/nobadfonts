@@ -8,6 +8,7 @@ import { motion } from 'framer-motion';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { Toast } from '@capacitor/toast';
 
+
 interface FontCardProps {
     font: Font;
     viewMode?: 'font' | 'image';
@@ -93,7 +94,7 @@ const AutoSizingText = React.memo(({
         <div ref={containerRef} className="w-full relative flex items-center justify-center transition-all duration-300 px-5 pt-8 pb-6 min-h-50">
             <div
                 ref={textRef}
-                className="max-w-full text-card-foreground/80 group-hover:text-card-foreground/90 text-center leading-[1.2] transition-opacity duration-300 m-0 flex flex-col items-center justify-center p-2"
+                className="max-w-full text-[rgb(var(--color-card-foreground)/0.8)] ztext-color-card-foreground/10 zgroup-hover:text-[rgb(var(--color-card-foreground)/0.9)] text-center leading-[1.2] transition-opacity duration-300 m-0 flex flex-col items-center justify-center py-2"
                 style={{
                     fontFamily: isLoaded ? `'font-${fontId}'` : 'sans-serif',
                     opacity: isLoaded ? 1 : 0
@@ -207,7 +208,7 @@ function FontCard({ font, viewMode = 'font', onClick, disableLink = false, isExp
 
         const newStatus = !isFavorited;
         setIsFavorited(newStatus); // Optimistic update
-        
+
         await Haptics.impact({ style: ImpactStyle.Medium });
         // We might want to update local favorite count state here too for immediate feedback, 
         // but for now we rely on the prop or a re-fetch if needed. 
@@ -263,113 +264,114 @@ function FontCard({ font, viewMode = 'font', onClick, disableLink = false, isExp
             initial={{ opacity: 1, scale: 1, y: 0 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ duration: 0.3 }}
-            className="group relative -mb-2 sm:mb-0 bg-[rgb(var(--color-foreground)/0.05)] rounded-4xl border border-[rgb(var(--color-foreground)/0.15)] transition-colors overflow-hidden flex flex-col"
+            className="group relative -mb-2 sm:mb-0 bg-[rgb(var(--color-foreground)/0.05)] rounded-4xl zborder border-[rgb(var(--color-foreground)/0.01)] transition-colors duration-300 ease-in-out overflow-hidden flex flex-col"
             onClick={handleCardClick}
         >
-            <div className="flex flex-col h-full relative cursor-pointer">
-                {/* Preview Section - Fixed Height or ratio? 
+                <div className="flex flex-col h-full relative cursor-pointer">
+                    {/* Preview Section - Fixed Height or ratio? 
                     In original, it was h-full. Now we want it to be the main part.
                     We keeping h-64 as a base or letting it fill?
                     Masonry usually expects items to define height.
                     Let's use a min-height for the preview part.
                 */}
-                <>
-                    {viewMode === 'image' && (font.preview_image_url || (font.gallery_images && font.gallery_images.length > 0)) ? (
-                        <div className="w-full relative flex items-center justify-center overflow-hidden transition-all duration-300 min-h-50">
-                            <div className={`w-full h-full flex items-center justify-center transition-all duration-300 ease-in-out
-                            ${isExpanded ? 'p-3' : 'p-0'}`}>
-                                <img
-                                    src={font.preview_image_url || font.gallery_images?.[0]}
-                                    alt={`${font.name} font preview specimen`}
-                                    loading="lazy"
-                                    decoding="async"
-                                    className="w-full h-full object-cover rounded-3xl shadow-[0_0_10px_0_rgba(0,0,0,0.3)]"
-                                />
+                    <>
+                        {viewMode === 'image' && (font.preview_image_url || (font.gallery_images && font.gallery_images.length > 0)) ? (
+                            <div className="w-full relative flex items-center justify-center overflow-hidden transition-all duration-300 min-h-50">
+                                <div className={`w-full h-full flex items-center justify-center transition-all duration-300 ease-in-out
+                            ${isExpanded ? 'p-2' : 'p-0'}`}>
+                                    <img
+                                        src={font.preview_image_url || font.gallery_images?.[0]}
+                                        alt={`${font.name} font preview specimen`}
+                                        loading="lazy"
+                                        decoding="async"
+                                        className="w-full h-full object-cover rounded-3xl"
+                                    />
+                                </div>
                             </div>
-                        </div>
-                    ) : (
-                        <AutoSizingText text={customText || font.name} fontId={font.id} isLoaded={isFontLoaded} />
-                    )}
-                </>
+                        ) : (
+                            <div className="py-4 sm:py-8 md:py-12 px-0 sm:px-2 md:px-4">
+                                <AutoSizingText text={customText || font.name} fontId={font.id} isLoaded={isFontLoaded} />
+                            </div>
+                        )}
+                    </>
 
-                {/* Expanded Content Section */}
-                <div
-                    style={{
-                        height: isExpanded ? "auto" : 0,
-                        overflow: "hidden"
-                    }}
-                >
-                    <motion.div
-                        initial={false}
-                        animate={{
-                            opacity: isExpanded ? 1 : 0,
-                            y: isExpanded ? 0 : -10
+                    {/* Expanded Content Section */}
+                    <div
+                        style={{
+                            height: isExpanded ? "auto" : 0,
+                            overflow: "hidden"
                         }}
-                        transition={{ duration: 0.25 }}
                     >
-                        <div className="overflow-hidden">
-                            <div className="bg-linear-to-t from-[rgb(var(--color-background))] to-[rgb(var(--color-background)/0)] w-full">
-                                <div className="px-4 pb-4 pt-2 flex flex-col gap-3">
-                                    {/* Top Row: Likes & View Button */}
-                                    <div className="flex items-center justify-between w-full">
-                                        {/* Likes */}
-                                        {!hideLike ? (
-                                            <button
-                                                onClick={toggleFavorite}
-                                                aria-label={isFavorited ? `Remove ${font.name} from favorites` : `Add ${font.name} to favorites`}
-                                                className="flex items-center gap-2 text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))] transition-colors group/like"
-                                            >
-                                                <Heart
-                                                    size={22}
-                                                    className={`transition-transform duration-300 ${isFavorited ? 'fill-pink-500 text-pink-500' : 'group-hover/like:scale-105'}`}
-                                                />
-                                                <span className="font-bold text-[16px]">{favoritesCount}</span>
-                                            </button>
-                                        ) : <div></div>}
+                        <motion.div
+                            initial={false}
+                            animate={{
+                                opacity: isExpanded ? 1 : 0,
+                                y: isExpanded ? 0 : -10
+                            }}
+                            transition={{ duration: 0.25 }}
+                        >
+                            <div className="overflow-hidden">
+                                <div className="zbg-linear-to-t from-[rgb(var(--color-background))] to-[rgb(var(--color-background)/0)] w-full">
+                                    <div className="px-4 pb-4 pt-2 flex flex-col gap-3">
+                                        {/* Top Row: Likes & View Button */}
+                                        <div className="flex items-center justify-between w-full ">
+                                            {/* Likes */}
+                                            {!hideLike ? (
+                                                <button
+                                                    onClick={toggleFavorite}
+                                                    aria-label={isFavorited ? `Remove ${font.name} from favorites` : `Add ${font.name} to favorites`}
+                                                    className="flex items-center gap-2 text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out group/like"
+                                                >
+                                                    <Heart
+                                                        size={22}
+                                                        className={`transition-transform duration-300 ${isFavorited ? 'fill-pink-500 text-pink-500' : 'group-hover/like:scale-105'}`}
+                                                    />
+                                                    <span className="font-bold text-[16px]">{favoritesCount}</span>
+                                                </button>
+                                            ) : <div></div>}
 
-                                        {/* View Font Button */}
-                                        <Link
-                                            to={`/fonts/${font.slug || font.id}`}
-                                            onClick={(e) => e.stopPropagation()}
-                                            aria-label={`View ${font.name} font details and specimen`}
-                                            className="bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] text-xs px-4 py-2 rounded-full font-bold font-bricolage-grotesque hover:opacity-80 transition-colors"
-                                        >
-                                            View Details
-                                        </Link>
-                                    </div>
-
-                                    <div className="w-full h-full">
-                                        <p className="text-2xl font-bold tracking-tight mb-0.5">{font.name}</p>
-                                        <p className="text-sm text-[rgb(var(--color-muted-foreground))] tracking-wide">
-                                            by <Link
-                                                to={`/designers/${encodeURIComponent(font.designer || '')}`}
-                                                state={{ from: location }}
-                                                onClick={(e) => e.stopPropagation()}
-                                                className="hover:text-[rgb(var(--color-foreground))] hover:underline transition-colors"
-                                            >
-                                                {font.designer}
-                                            </Link>
-                                        </p>
-                                    </div>
-
-                                    {/* Bottom Row: Tags */}
-                                    <div className="flex flex-wrap gap-1.5 mt-1">
-                                        {displayTags.map((tag, i) => (
+                                            {/* View Font Button */}
                                             <Link
-                                                key={i}
-                                                to={`/fonts?categories=${tag}`}
-                                                className="bg-[rgb(var(--color-foreground)/0.05)] border border-[rgb(var(--color-foreground)/0.05)] text-[rgb(var(--color-foreground)/0.6)] hover:bg-[rgb(var(--color-foreground)/0.9)] hover:text-[rgb(var(--color-background))] text-[10px] md:text-[11px] px-2.5 py-1 rounded-full tracking-wider font-medium font-bricolage-grotesque uppercase">
-                                                {tag}
+                                                to={`/fonts/${font.slug || font.id}`}
+                                                onClick={(e) => e.stopPropagation()}
+                                                aria-label={`View ${font.name} font details and specimen`}
+                                                className="bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] text-xs px-4 py-2 rounded-full font-bold font-bricolage-grotesque hover:opacity-80 transition-colors duration-300 ease-in-out"
+                                            >
+                                                View Details
                                             </Link>
-                                        ))}
+                                        </div>
+
+                                        <div className="w-full h-full">
+                                            <p className="text-2xl font-bold tracking-tight mb-0.5">{font.name}</p>
+                                            <p className="text-sm text-[rgb(var(--color-muted-foreground))] tracking-wide">
+                                                by <Link
+                                                    to={`/designers/${encodeURIComponent(font.designer || '')}`}
+                                                    state={{ from: location }}
+                                                    onClick={(e) => e.stopPropagation()}
+                                                    className="hover:text-[rgb(var(--color-foreground))] hover:underline transition-colors duration-300 ease-in-out"
+                                                >
+                                                    {font.designer}
+                                                </Link>
+                                            </p>
+                                        </div>
+
+                                        {/* Bottom Row: Tags */}
+                                        <div className="flex flex-wrap gap-1.5 mt-1">
+                                            {displayTags.map((tag, i) => (
+                                                <Link
+                                                    key={i}
+                                                    to={`/fonts?categories=${tag}`}
+                                                    className="bg-[rgb(var(--color-foreground)/0.05)] zborder border-[rgb(var(--color-foreground)/0.05)] text-[rgb(var(--color-foreground)/0.6)] hover:bg-[rgb(var(--color-foreground)/0.9)] hover:text-[rgb(var(--color-background))] text-[10px] md:text-[11px] px-2.5 py-1.5 rounded-full tracking-wider font-medium font-inter-tight uppercase transition-colors duration-300 ease-in-out">
+                                                    {tag}
+                                                </Link>
+                                            ))}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </motion.div>
+                        </motion.div>
+                    </div>
                 </div>
-            </div>
-
             {/* Hover overlay gradient for collapsed state */}
             <div
                 className={`absolute inset-0 bg-linear-to-t from-[rgb(var(--color-background)/0.8)] via-transparent to-transparent flex justify-between items-end p-6 z-10 transition-opacity duration-300 pointer-events-none ${isExpanded ? 'opacity-0' : 'opacity-0 group-hover:opacity-100'
@@ -385,7 +387,7 @@ function FontCard({ font, viewMode = 'font', onClick, disableLink = false, isExp
                         <button
                             onClick={toggleFavorite}
                             aria-label={isFavorited ? `Remove ${font.name} from favorites` : `Add ${font.name} to favorites`}
-                            className={`flex items-center gap-1 text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))] transition-colors group/like ${isExpanded ? 'pointer-events-none' : 'pointer-events-auto'}`}
+                            className={`flex items-center gap-1 text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out group/like ${isExpanded ? 'pointer-events-none' : 'pointer-events-auto'}`}
                         >
                             <Heart
                                 size={22}
@@ -406,7 +408,7 @@ function FontCard({ font, viewMode = 'font', onClick, disableLink = false, isExp
                                 e.preventDefault();
                             }
                         }}
-                        className={`text-xs px-4 py-2 font-bold text-[rgb(var(--color-foreground))] hover:opacity-80 transition-colors ${isExpanded ? 'pointer-events-none' : 'pointer-events-auto'}`}
+                        className={`text-xs px-4 py-2 font-bold text-[rgb(var(--color-foreground))] hover:opacity-80 transition-colors duration-300 ease-in-out ${isExpanded ? 'pointer-events-none' : 'pointer-events-auto'}`}
                     >
                         <ArrowUpRight size={22} />
                     </Link>

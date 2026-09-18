@@ -38,13 +38,13 @@ const Footer: React.FC = memo(() => {
                             <input
                                 type="email"
                                 placeholder="Join the newsletter"
-                                className="w-full bg-transparent border-0 border-b border-[rgb(var(--color-border))] py-2 pr-8 text-sm text-[rgb(var(--color-foreground))] placeholder-[rgb(var(--color-muted-foreground)/0.6)] outline-none! focus:outline-none! focus-visible:outline-none! ring-0! focus:ring-0! focus-visible:ring-0! shadow-none! focus:shadow-none! focus:border-[rgb(var(--color-foreground))] transition-colors rounded-none appearance-none"
+                                className="w-full bg-transparent border-0 border-b border-[rgb(var(--color-border))] py-2 pr-8 text-sm text-[rgb(var(--color-foreground))] placeholder-[rgb(var(--color-muted-foreground)/0.6)] outline-none! focus:outline-none! focus-visible:outline-none! ring-0! focus:ring-0! focus-visible:ring-0! shadow-none! focus:shadow-none! focus:border-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out rounded-none appearance-none"
                                 style={{ outline: 'none', boxShadow: 'none' }}
                                 required
                             />
                             <button
                                 type="submit"
-                                className="absolute right-0 text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))] transition-colors"
+                                className="absolute right-0 text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out"
                                 aria-label="Subscribe"
                             >
                                 <ArrowRight size={18} />
@@ -58,47 +58,47 @@ const Footer: React.FC = memo(() => {
                         {/* Column 1: The Archive */}
                         <div className="flex flex-col space-y-4">
                             <h3 className="text-[rgb(var(--color-foreground))] text-sm font-bold tracking-wider zuppercase mb-4">The Archive</h3>
-                            <Link to="/fonts" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors">All Fonts</Link>
-                            <Link to="/fonts?categories=sans" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors">Sans-Serif</Link>
-                            <Link to="/fonts?categories=serif" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors">Serif</Link>
-                            <Link to="/fonts?categories=display" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors">Display</Link>
-                            <Link to="/fonts?categories=monospace" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors">Monospace</Link>
-                            <Link to="/fonts?query=variable" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors">Variable Fonts</Link>
+                            <Link to="/fonts" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out">All Fonts</Link>
+                            <Link to="/fonts?categories=sans" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out">Sans-Serif</Link>
+                            <Link to="/fonts?categories=serif" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out">Serif</Link>
+                            <Link to="/fonts?categories=display" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out">Display</Link>
+                            <Link to="/fonts?categories=monospace" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out">Monospace</Link>
+                            <Link to="/fonts?query=variable" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out">Variable Fonts</Link>
                         </div>
 
                         {/* Column 2: Platform & Tools */}
                         <div className="flex flex-col space-y-4">
                             <h3 className="text-[rgb(var(--color-foreground))] text-sm font-bold tracking-wider zuppercase mb-4">Platform</h3>
-                            <Link to="/upload" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors">Submit a Font</Link>
-                            <Link to="/fonts" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors">Type Tester</Link>
-                            <Link to="/pairing" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors">Font Pairing</Link>
-                            <Link to="/cli" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors">CLI Tool</Link>
-                            <Link to="/members" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors">Community</Link>
+                            <Link to="/upload" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out">Submit a Font</Link>
+                            <Link to="/fonts" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out">Type Tester</Link>
+                            <Link to="/pairing" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out">Font Pairing</Link>
+                            <Link to="/cli" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out">CLI Tool</Link>
+                            <Link to="/members" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out">Community</Link>
                         </div>
 
                         {/* Column 3: Font Licensing (For the downloaded files) */}
                         <div className="flex flex-col space-y-4">
                             <h3 className="text-[rgb(var(--color-foreground))] text-sm font-bold tracking-wider zuppercase mb-4">Font Licenses</h3>
-                            <Link to="/legal/terms" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors">License Overview</Link>
-                            <Link to="/legal/terms" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors">SIL Open Font (OFL)</Link>
-                            <Link to="/legal/terms" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors">Commercial Use Guide</Link>
-                            <Link to="/legal/terms" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors">Personal Use Guide</Link>
+                            <Link to="/legal/terms" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out">License Overview</Link>
+                            <Link to="/legal/terms" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out">SIL Open Font (OFL)</Link>
+                            <Link to="/legal/terms" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out">Commercial Use Guide</Link>
+                            <Link to="/legal/terms" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out">Personal Use Guide</Link>
                         </div>
 
                         {/* Column 4: Site Policies (For using your website) */}
                         <div className="flex flex-col space-y-4">
                             <h3 className="text-[rgb(var(--color-foreground))] text-sm font-bold tracking-wider zuppercase mb-4">Site Policies</h3>
-                            <Link to="/legal/terms" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors">Terms of Service</Link>
-                            <Link to="/legal/privacy" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors">Privacy Policy</Link>
-                            <Link to="/legal/cookies" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors">Cookie Policy</Link>
-                            <Link to="/legal/dmca" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors">DMCA / Takedown</Link>
+                            <Link to="/legal/terms" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out">Terms of Service</Link>
+                            <Link to="/legal/privacy" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out">Privacy Policy</Link>
+                            <Link to="/legal/cookies" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out">Cookie Policy</Link>
+                            <Link to="/legal/dmca" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out">DMCA / Takedown</Link>
                         </div>
 
                     </div>
                 </div>
 
                 <div className="pointer-events-none  h-full bottom-0 w-full flex justify-center">
-                    
+
                     <h1 className="bg-linear-to-b from-[rgb(var(--color-foreground))] to-[rgb(var(--color-foreground)/0.05)] bg-clip-text text-transparent font-inter-tight font-medium tracking-tighter text-[16vw] leading-none z-0 md:-ml-5 pr-2">NOBADFONTS</h1>
                 </div>
 
@@ -110,15 +110,15 @@ const Footer: React.FC = memo(() => {
                     </div>
 
                     <div className="flex items-center gap-6 text-sm">
-                        <a href="https://x.com/NoBadFonts" target="_blank" rel="noopener noreferrer" aria-label="Follow NoBadFonts on X(formerly Twitter) (opens in new window)" className="hover:text-[rgb(var(--color-foreground))] transition-colors flex items-center gap-1 group">
+                        <a href="https://x.com/NoBadFonts" target="_blank" rel="noopener noreferrer" aria-label="Follow NoBadFonts on X(formerly Twitter) (opens in new window)" className="hover:text-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out flex items-center gap-1 group">
                             X (Twitter)
                             <svg className="w-3 h-3 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
                         </a>
-                        <a href="https://github.com/Bismay-exe" target="_blank" rel="noopener noreferrer" aria-label="Visit NoBadFonts on GitHub (opens in new window)" className="hover:text-[rgb(var(--color-foreground))] transition-colors flex items-center gap-1 group">
+                        <a href="https://github.com/Bismay-exe" target="_blank" rel="noopener noreferrer" aria-label="Visit NoBadFonts on GitHub (opens in new window)" className="hover:text-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out flex items-center gap-1 group">
                             GitHub
                             <svg className="w-3 h-3 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
                         </a>
-                        <a href="https://www.instagram.com/bismay.exe" target="_blank" rel="noopener noreferrer" aria-label="Follow NoBadFonts on Instagram (opens in new window)" className="hover:text-[rgb(var(--color-foreground))] transition-colors flex items-center gap-1 group">
+                        <a href="https://www.instagram.com/bismay.exe" target="_blank" rel="noopener noreferrer" aria-label="Follow NoBadFonts on Instagram (opens in new window)" className="hover:text-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out flex items-center gap-1 group">
                             Instagram
                             <svg className="w-3 h-3 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
                         </a>

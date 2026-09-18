@@ -207,7 +207,7 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                                             <div className="flex items-end gap-3 h-32 px-2 mb-6">
                                                 {[30, 45, 25, 60, 40, 70, 50, 80].map((h, i) => (
                                                     <div key={i} className="flex-1 bg-[rgb(var(--color-accent)/0.1)] rounded-t-sm relative group overflow-hidden">
-                                                        <div style={{ height: `${h}%` }} className="absolute bottom-0 w-full bg-[rgb(var(--color-accent))] rounded-t-sm group-hover:bg-[rgb(var(--color-accent)/0.8)] transition-colors"></div>
+                                                        <div style={{ height: `${h}%` }} className="absolute bottom-0 w-full bg-[rgb(var(--color-accent))] rounded-t-sm group-hover:bg-[rgb(var(--color-accent)/0.8)] transition-colors duration-300 ease-in-out"></div>
                                                     </div>
                                                 ))}
                                             </div>
@@ -291,7 +291,7 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                                         <p className="text-[rgb(var(--color-muted-foreground))] text-sm">New collections today</p>
                                     </div>
 
-                                     {/* Cards */}
+                                    {/* Cards */}
                                     <div className="flex gap-4 overflow-x-auto pb-4 -mx-6 px-6 no-scrollbar">
                                         <div className="shrink-0 w-48 h-64 bg-[rgb(var(--color-foreground))] rounded-2xl p-4 flex flex-col justify-end text-[rgb(var(--color-background))]">
                                             <span style={{ fontFamily }} className="text-xl">Minimalist</span>
@@ -488,7 +488,7 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
 
                                         <div className="flex flex-col gap-3">
                                             {/* Bitcoin */}
-                                            <div className="flex items-center justify-between p-3 bg-gray-800/50 hover:bg-gray-800 rounded-2xl transition-colors border border-gray-700/30">
+                                            <div className="flex items-center justify-between p-3 bg-gray-800/50 hover:bg-gray-800 rounded-2xl transition-colors duration-300 ease-in-out border border-gray-700/30">
                                                 <div className="flex items-center gap-3">
                                                     <div className="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center text-white shadow-lg shadow-orange-500/20">
                                                         <span className=" text-xs">₿</span>
@@ -505,7 +505,7 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                                             </div>
 
                                             {/* Ethereum */}
-                                            <div className="flex items-center justify-between p-3 bg-gray-800/50 hover:bg-gray-800 rounded-2xl transition-colors border border-gray-700/30">
+                                            <div className="flex items-center justify-between p-3 bg-gray-800/50 hover:bg-gray-800 rounded-2xl transition-colors duration-300 ease-in-out border border-gray-700/30">
                                                 <div className="flex items-center gap-3">
                                                     <div className="w-10 h-10 bg-indigo-500 rounded-full flex items-center justify-center text-white shadow-lg shadow-indigo-500/20">
                                                         <span className=" text-xs">Ξ</span>
@@ -553,7 +553,7 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                                         <ArrowLeft size={20} className="text-black" />
                                     </div>
                                     <div className="absolute top-12 right-4 z-20 p-2 bg-white/50 backdrop-blur-md rounded-full cursor-pointer hover:bg-white">
-                                        <Heart size={20} className="text-black hover:fill-red-500 hover:text-red-500 transition-colors" />
+                                        <Heart size={20} className="text-black hover:fill-red-500 hover:text-red-500 transition-colors duration-300 ease-in-out" />
                                     </div>
 
                                     {/* Simulated Product Image */}
@@ -793,7 +793,7 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                                         </div>
 
                                         {/* Smart TV */}
-                                        <div className="bg-white/5 border border-white/10 rounded-3xl p-4 flex flex-col justify-between aspect-square hover:bg-white/10 transition-colors">
+                                        <div className="bg-white/5 border border-white/10 rounded-3xl p-4 flex flex-col justify-between aspect-square hover:bg-white/10 transition-colors duration-300 ease-in-out">
                                             <div className="flex justify-between items-start">
                                                 <div className="w-8 h-8 bg-gray-700/50 rounded-full flex items-center justify-center text-gray-300">
                                                     <Tv size={16} />
@@ -809,7 +809,7 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                                         </div>
 
                                         {/* AC Unit */}
-                                        <div className="bg-white/5 border border-white/10 rounded-3xl p-4 flex flex-col justify-between aspect-square hover:bg-white/10 transition-colors">
+                                        <div className="bg-white/5 border border-white/10 rounded-3xl p-4 flex flex-col justify-between aspect-square hover:bg-white/10 transition-colors duration-300 ease-in-out">
                                             <div className="flex justify-between items-start">
                                                 <div className="w-8 h-8 bg-gray-700/50 rounded-full flex items-center justify-center text-gray-300">
                                                     <Wind size={16} />
@@ -825,7 +825,7 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                                         </div>
 
                                         {/* Security Lock */}
-                                        <div className="bg-white/5 border border-white/10 rounded-3xl p-4 flex flex-col justify-between aspect-square hover:bg-white/10 transition-colors">
+                                        <div className="bg-white/5 border border-white/10 rounded-3xl p-4 flex flex-col justify-between aspect-square hover:bg-white/10 transition-colors duration-300 ease-in-out">
                                             <div className="flex justify-between items-start">
                                                 <div className="w-8 h-8 bg-gray-700/50 rounded-full flex items-center justify-center text-gray-300">
                                                     <Lock size={16} />
@@ -1241,7 +1241,7 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                                     <p className="mb-4 text-black">
                                         A VISUAL EXPLORATION OF MODERN STREETWEAR AND BOLD TYPOGRAPHY.
                                     </p>
-                                    <button className="bg-black text-white px-3 md:px-6 py-2 md:py-3 text-[8px] md:text-xs uppercase tracking-wider hover:bg-[#FFEF00] hover:text-black transition-colors">
+                                    <button className="bg-black text-white px-3 md:px-6 py-2 md:py-3 text-[8px] md:text-xs uppercase tracking-wider hover:bg-[#FFEF00] hover:text-black transition-colors duration-300 ease-in-out">
                                         Get Tickets
                                     </button>
                                 </div>
