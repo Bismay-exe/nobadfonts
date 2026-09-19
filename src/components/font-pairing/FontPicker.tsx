@@ -10,13 +10,14 @@ import type { Font, FontFilterParams } from '../../types/font';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useMasonry, usePositioner, useResizeObserver } from "masonic";
 
-const MasonryCard = ({ data }: { data: any }) => (
+const MasonryCard = ({ data, width }: { data: any; width: number }) => (
     <FontCard
         font={data.font}
         viewMode={data.viewMode}
         customText={data.customText}
         disableLink={true}
         hideLike={true}
+        cardWidth={width}
         onClick={() => {
             data.onSelect(data.font);
             data.onClose();

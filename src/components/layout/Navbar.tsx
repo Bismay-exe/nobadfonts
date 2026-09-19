@@ -4,7 +4,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useState, useEffect, useMemo } from 'react';
 import { cn } from '../../lib/utils';
-import { Type, Combine, Terminal, Users, User, Shield, Plus, Sun, Moon, Building } from 'lucide-react';
+import { Type, Combine, Terminal, Users, User, Shield, Plus, Sun, Moon, Building, UserRound } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../../contexts/ThemeContext';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
@@ -12,6 +12,7 @@ import { useUpdate } from '../../contexts/UpdateContext';
 import { Download } from 'lucide-react';
 import Logo from '/logo/logo.png'; // Assuming white version exists or we filter it
 import { CustomSerifA, CustomTerminal, CustomUpload, CustomUsers } from '../ui/CustomIcons';
+import { Squircle } from 'react-ios-corners';
 
 export default function Navbar() {
     const { user, profile } = useAuth();
@@ -57,64 +58,60 @@ export default function Navbar() {
         <>
             <nav
                 className={cn(
-                    "fixed top-0 w-full left-1/2 -translate-x-1/2 z-50 border-[rgb(var(--color-border)/0.1)] transition-all duration-300",
+                    "fixed top-0 w-full left-1/2 -translate-x-1/2 z-50 transition-all duration-300",
                     isScrolled
-                        ? "max-w-full md:rounded-none bg-[rgb(var(--color-background)/0.5)] border-b backdrop-blur-3xl py-2 md:py-4 px-6 md:px-10"
+                        ? "max-w-full md:rounded-none bg-linear-to-b from-[rgb(var(--color-background))] via-[rgb(var(--color-background)/0.6)] to-[rgb(var(--color-background)/0)] py-2 md:py-4 px-6 md:px-10"
                         : "md:top-4 max-w-7xl md:rounded-3xl bg-transparent border-none py-4 px-4"
                 )}
             >
                 <div className="flex items-center pt-[env(safe-area-inset-top)] md:pt-0">
                     <div className="max-w-480 w-full mx-auto flex items-center justify-between">
-                        {/* Logo */}
-                        <Link
-                            to="/"
-                            onClick={async () => {
-                                await Haptics.impact({ style: ImpactStyle.Light });
-                            }}
-                            className="flex items-center gap-2 group"
-                        >
-                            <div className="w-10 h-10 bg-[rgb(var(--color-foreground)/0.1)] rounded-xl group-hover:bg-[rgb(var(--color-foreground)/0.2)] transition-colors duration-300 ease-in-out backdrop-blur-sm border border-[rgb(var(--color-foreground)/0.05)]">
-                                <img src={Logo} alt="NoBadFonts Logo" className='rounded-xl object-cover' />
-                            </div>
-                            <span className={cn(
-                                "font-advine text-3xl transition-opacity duration-300 hidden sm:block",
-                                "text-[rgb(var(--color-foreground))]"
-                            )}>
-                                NoBadFonts
-                            </span>
-                        </Link>
+                        <div className='flex gap-10'>
+                            {/* Logo */}
+                            <Link
+                                to="/"
+                                onClick={async () => {
+                                    await Haptics.impact({ style: ImpactStyle.Light });
+                                }}
+                                className="flex items-center gap-2 group"
+                            >
+                                <div className="w-10 h-10 bg-[rgb(var(--color-foreground)/0.1)] rounded-xl group-hover:bg-[rgb(var(--color-foreground)/0.2)] transition-colors duration-300 ease-in-out backdrop-blur-sm border border-[rgb(var(--color-foreground)/0.05)]">
+                                    <img src={Logo} alt="NoBadFonts Logo" className='rounded-xl object-cover' />
+                                </div>
+                                <span className={cn(
+                                    "font-advine text-3xl transition-opacity duration-300 hidden sm:block",
+                                    "text-[rgb(var(--color-foreground))]"
+                                )}>
+                                    NoBadFonts
+                                </span>
+                            </Link>
 
-                        {/* Desktop Navigation */}
-                        <div className={cn("hidden md:flex items-center gap-1 ",
-                            isScrolled
-                                ? "bg-transparent backdrop-blur-none border-none border-[rgb(var(--color-foreground))] rounded-full p-0 px-0"
-                                : "bg-[rgb(var(--color-foreground)/0.15)] backdrop-blur-md border border-[rgb(var(--color-foreground)/0.15)] rounded-full p-1"
-                        )}>
-                            {navLinks.map((link) => {
-                                const Icon = link.icon;
-                                const isActive = location.pathname === link.path;
-                                return (
-                                    <Link
-                                        key={link.path}
-                                        to={link.path}
-                                        className={cn(
-                                            "relative px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 flex items-center gap-2",
-                                            isActive
-                                                ? "bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] shadow-sm"
-                                                : "text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.15)]"
-                                        )}
-                                    >
-                                        <Icon size={16} />
-                                        {link.name}
-                                        {link.badge && (
-                                            <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
-                                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-lime-400 opacity-75"></span>
-                                                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-lime-500"></span>
-                                            </span>
-                                        )}
-                                    </Link>
-                                );
-                            })}
+                            {/* Desktop Navigation */}
+                            <div className={cn("hidden md:flex items-center gap-1 ",
+                                isScrolled
+                                    ? ""
+                                    : ""
+                            )}>
+                                {navLinks.map((link) => {
+                                    // const Icon = link.icon;
+                                    const isActive = location.pathname === link.path;
+                                    return (
+                                        <Link
+                                            key={link.path}
+                                            to={link.path}
+                                            className={cn(
+                                                "relative px-4 py-2 rounded-full text-sm font-inter-tight font-medium tracking-wider transition-all duration-200 flex items-center gap-2",
+                                                isActive
+                                                    ? "text-[rgb(var(--color-foreground))]"
+                                                    : "text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))]"
+                                            )}
+                                        >
+                                            {/* <Icon size={16} /> */}
+                                            {link.name}
+                                        </Link>
+                                    );
+                                })}
+                            </div>
                         </div>
 
                         {/* Right Side Actions */}
@@ -171,12 +168,12 @@ export default function Navbar() {
                                     await Haptics.impact({ style: ImpactStyle.Light });
                                     toggleTheme();
                                 }}
-                                className="h-10 w-10 flex items-center justify-center rounded-full bg-[rgb(var(--color-foreground)/0.05)] border border-[rgb(var(--color-border)/0.2)] text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.1)] transition-all cursor-pointer group"
+                                className="h-10 w-10 flex items-center justify-center rounded-full bg-[rgb(var(--color-foreground)/0.05)] backdrop-blur-3xl text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.1)] transition-all cursor-pointer group"
                                 title={`Switch Theme (Current: ${theme.charAt(0).toUpperCase() + theme.slice(1)})`}
                             >
-                                <div className="transition-transform duration-300 group-hover:rotate-12 group-active:scale-90">
-                                    {theme === 'light' && <Sun size={18} />}
-                                    {theme === 'dark' && <Moon size={18} />}
+                                <div className="transition-transform duration-700 group-hover:rotate-360 group-active:scale-90">
+                                    {theme === 'light' && <Sun size={18} fill='black' />}
+                                    {theme === 'dark' && <Moon size={18} fill="white" />}
                                     {theme === 'concrete' && <Building size={18} />}
                                 </div>
                             </motion.button>
@@ -184,41 +181,47 @@ export default function Navbar() {
                             {user ? (
                                 <>
                                     {profile?.role === 'admin' && (
-                                        <Link to="/admin"
+                                        <Squircle radius={20} className='hidden sm:block bg-[rgb(var(--color-accent)/0.2)] backdrop-blur-3xl hover:bg-[rgb(var(--color-accent)/0.3)] transition-all duration-300 ease-in-out'>
+                                            <Link to="/admin"
+                                                onClick={async () => {
+                                                    await Haptics.impact({ style: ImpactStyle.Light });
+                                                }}
+                                                className="flex items-center justify-center h-10 w-10 text-[rgb(var(--color-accent))]">
+                                                <Shield size={18} className='fill-[rgb(var(--color-accent))]' />
+                                            </Link>
+                                        </Squircle>
+                                    )}
+                                    <Squircle radius={20} className='hidden sm:block bg-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-muted-foreground))] transition-colors duration-300 ease-in-out'>
+                                        <Link to="/upload"
                                             onClick={async () => {
                                                 await Haptics.impact({ style: ImpactStyle.Light });
                                             }}
-                                            className="flex items-center justify-center h-10 w-10 rounded-full bg-[rgb(var(--color-accent)/0.2)] text-[rgb(var(--color-accent))] border border-[rgb(var(--color-accent)/0.3)] hover:bg-[rgb(var(--color-accent))] hover:text-[rgb(var(--color-background))] transition-all">
-                                            <Shield size={18} />
+                                            className="flex items-center gap-2 text-[rgb(var(--color-background))] px-4 py-2 text-sm font-medium">
+                                            <Plus size={16} />
+                                            <span>Upload</span>
                                         </Link>
-                                    )}
-                                    <Link to="/upload"
-                                        onClick={async () => {
-                                            await Haptics.impact({ style: ImpactStyle.Light });
-                                        }}
-                                        className="hidden sm:flex items-center gap-2 bg-[rgb(var(--color-foreground))] border border-[rgb(var(--color-border))] hover:bg-[rgb(var(--color-muted-foreground))] text-[rgb(var(--color-background))] px-4 py-2 rounded-full text-sm font-medium transition-all">
-                                        <Plus size={16} />
-                                        <span>Upload</span>
-                                    </Link>
+                                    </Squircle>
                                     <Link to="/profile"
                                         onClick={async () => {
                                             await Haptics.impact({ style: ImpactStyle.Light });
                                         }}
-                                        className="h-10 w-10 rounded-full bg-[rgb(var(--color-foreground)/0.1)] border border-[rgb(var(--color-border)/0.2)] flex items-center justify-center text-[rgb(var(--color-foreground))] overflow-hidden hover:bg-[rgb(var(--color-foreground)/0.2)] hover:scale-105 transition-transform">
+                                        className="h-10 w-10 rounded-full bg-[rgb(var(--color-foreground)/0.1)] backdrop-blur-3xl border border-[rgb(var(--color-border)/0.2)] flex items-center justify-center text-[rgb(var(--color-foreground))] overflow-hidden hover:bg-[rgb(var(--color-foreground)/0.2)] hover:scale-105 transition-transform duration-300 ease-in-out">
                                         {profile?.avatar_url ? (
                                             <img src={profile.avatar_url} alt={profile?.full_name ? `${profile.full_name}'s avatar` : "User profile avatar"} className="h-full w-full object-cover" />
                                         ) : (
-                                            <User size={18} />
+                                            <UserRound size={18} className='fill-current' />
                                         )}
                                     </Link>
                                 </>
                             ) : (
-                                <Link
-                                    to="/auth"
-                                    className="bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] px-5 py-2 rounded-full font-bold text-sm hover:bg-[rgb(var(--color-muted-foreground))] transition-colors duration-300 ease-in-out"
-                                >
-                                    Login
-                                </Link>
+                                <Squircle radius={20} className='bg-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-muted-foreground))] transition-colors duration-300 ease-in-out'>
+                                    <Link
+                                        to="/auth"
+                                        className="flex items-center justify-center text-[rgb(var(--color-background))] px-5 py-2 rounded-full font-bold text-sm"
+                                    >
+                                        Login
+                                    </Link>
+                                </Squircle>
                             )}
                         </div>
                     </div>
@@ -273,7 +276,7 @@ export default function Navbar() {
                                             animate={{ width: 'auto', opacity: 1, marginLeft: 8 }}
                                             exit={{ width: 0, opacity: 0, marginLeft: 0 }}
                                             transition={{ type: 'spring', bounce: 0, duration: 0.35 }}
-                                            className="font-boldx font-rayton-brink text-[28px] mt-1 overflow-hidden whitespace-nowrap"
+                                            className="font-semibold font-inter-tight text-[18px] overflow-hidden whitespace-nowrap"
                                         >
                                             {link.name}
                                         </motion.span>

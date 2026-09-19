@@ -7,6 +7,7 @@ import { supabase } from '../../lib/supabase';
 import { motion } from 'framer-motion';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { Toast } from '@capacitor/toast';
+import { Squircle } from 'react-ios-corners';
 
 
 interface FontCardProps {
@@ -19,35 +20,51 @@ interface FontCardProps {
     customText?: string;
     hideLike?: boolean;
     bulkToggleVersion?: number;
+    cardWidth?: number;
+    isFavorited?: boolean;
+    onFavoriteChange?: (fontId: string, isFavorited: boolean) => void;
 }
 
 const measurementCanvas = typeof document !== 'undefined' ? document.createElement('canvas') : null;
+const fontSizeCache = new Map<string, number>();
 
 const AutoSizingText = React.memo(({
     text,
     fontId,
     isLoaded,
+    cardWidth,
 }: {
     text: string
     fontId: string
     isLoaded: boolean
+    cardWidth?: number
 }) => {
 
     const containerRef = useRef<HTMLDivElement>(null)
     const textRef = useRef<HTMLDivElement>(null)
 
     const calculateFontSize = useCallback(() => {
-        const container = containerRef.current
         const textEl = textRef.current
 
-        if (!container || !textEl || !measurementCanvas || !isLoaded) return
+        if (!textEl || !measurementCanvas || !isLoaded) return
 
-        const rect = container.getBoundingClientRect()
+        let width = 0
+        if (cardWidth && cardWidth > 40) {
+            width = cardWidth - 40
+        } else if (containerRef.current) {
+            const rect = containerRef.current.getBoundingClientRect()
+            width = rect.width - 40
+        }
 
-        const width = rect.width - 40
-        const height = rect.height - 40
+        if (width <= 0) return
 
-        if (width <= 0 || height <= 0) return
+        const roundedWidth = Math.round(width)
+        const cacheKey = `${fontId}:${text}:${roundedWidth}`
+        const cached = fontSizeCache.get(cacheKey)
+        if (cached) {
+            textEl.style.fontSize = `${cached}px`
+            return
+        }
 
         const ctx = measurementCanvas.getContext("2d")
         if (!ctx) return
@@ -70,16 +87,20 @@ const AutoSizingText = React.memo(({
         const ratio = width / longest
 
         const fontSize = Math.floor(base * ratio * 0.95)
+        fontSizeCache.set(cacheKey, fontSize)
 
         textEl.style.fontSize = `${fontSize}px`
 
-    }, [text, fontId, isLoaded])
+    }, [text, fontId, isLoaded, cardWidth])
 
     useEffect(() => {
         calculateFontSize()
     }, [calculateFontSize])
 
     useEffect(() => {
+        // If cardWidth is supplied externally (from Masonic), no per-card ResizeObserver is needed
+        if (cardWidth) return
+
         const resizeObserver = new ResizeObserver(() => {
             calculateFontSize()
         })
@@ -87,14 +108,14 @@ const AutoSizingText = React.memo(({
             resizeObserver.observe(containerRef.current)
         }
         return () => resizeObserver.disconnect()
-    }, [calculateFontSize])
+    }, [calculateFontSize, cardWidth])
 
 
     return (
         <div ref={containerRef} className="w-full relative flex items-center justify-center transition-all duration-300 px-5 pt-8 pb-6 min-h-50">
             <div
                 ref={textRef}
-                className="max-w-full text-[rgb(var(--color-card-foreground)/0.8)] ztext-color-card-foreground/10 zgroup-hover:text-[rgb(var(--color-card-foreground)/0.9)] text-center leading-[1.2] transition-opacity duration-300 m-0 flex flex-col items-center justify-center py-2"
+                className="max-w-full text-[rgb(var(--color-card-foreground)/0.8)] ztext-color-card-foreground/10 text-center leading-[1.2] transition-opacity duration-300 m-0 flex flex-col items-center justify-center py-2"
                 style={{
                     fontFamily: isLoaded ? `'font-${fontId}'` : 'sans-serif',
                     opacity: isLoaded ? 1 : 0
@@ -110,19 +131,40 @@ const AutoSizingText = React.memo(({
 
 const loadedFontsCache = new Set<string>();
 
-function FontCard({ font, viewMode = 'font', onClick, disableLink = false, isExpanded: propIsExpanded, onToggle, customText, hideLike = false }: FontCardProps) {
+function FontCard({
+    font,
+    viewMode = 'font',
+    onClick,
+    disableLink = false,
+    isExpanded: propIsExpanded,
+    onToggle,
+    customText,
+    hideLike = false,
+    cardWidth,
+    isFavorited: propIsFavorited,
+    onFavoriteChange,
+}: FontCardProps) {
     const { user } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
     const [isFontLoaded, setIsFontLoaded] = useState(() => font ? loadedFontsCache.has(font.id) : false);
-    const [isFavorited, setIsFavorited] = useState(false);
+    const [localIsFavorited, setLocalIsFavorited] = useState(() => propIsFavorited ?? false);
     const [localIsExpanded, setLocalIsExpanded] = useState(false);
     const [favoritesCount, setFavoritesCount] = useState(font?.favorites_count || 0);
 
     const isExpanded = propIsExpanded ?? localIsExpanded;
+    const isFavorited = propIsFavorited !== undefined ? propIsFavorited : localIsFavorited;
 
     useEffect(() => {
-        if (!user || !font) return;
+        if (propIsFavorited !== undefined) {
+            setLocalIsFavorited(propIsFavorited);
+        }
+    }, [propIsFavorited]);
+
+    // Only make single fetch if propIsFavorited was NOT provided by parent
+    useEffect(() => {
+        if (propIsFavorited !== undefined || !user || !font) return;
+        let isMounted = true;
         const checkFavorite = async () => {
             const { data } = await supabase
                 .from('favorites')
@@ -130,10 +172,11 @@ function FontCard({ font, viewMode = 'font', onClick, disableLink = false, isExp
                 .eq('font_id', font.id)
                 .eq('user_id', user.id)
                 .single();
-            if (data) setIsFavorited(true);
+            if (data && isMounted) setLocalIsFavorited(true);
         };
         checkFavorite();
-    }, [user, font]);
+        return () => { isMounted = false; };
+    }, [user, font, propIsFavorited]);
 
     useEffect(() => {
         setFavoritesCount(font?.favorites_count || 0);
@@ -207,13 +250,10 @@ function FontCard({ font, viewMode = 'font', onClick, disableLink = false, isExp
         }
 
         const newStatus = !isFavorited;
-        setIsFavorited(newStatus); // Optimistic update
+        setLocalIsFavorited(newStatus); // Optimistic update
+        onFavoriteChange?.(font.id, newStatus);
 
         await Haptics.impact({ style: ImpactStyle.Medium });
-        // We might want to update local favorite count state here too for immediate feedback, 
-        // but for now we rely on the prop or a re-fetch if needed. 
-        // Since `font` prop isn't updated instantly, the count won't change immediately unless we track it locally.
-        // For simplicity in this step, we'll just toggle the icon state.
 
         if (newStatus) {
             setFavoritesCount(prev => prev + 1);
@@ -237,7 +277,8 @@ function FontCard({ font, viewMode = 'font', onClick, disableLink = false, isExp
             }
         } catch (error) {
             console.error('Error updating favorite:', error);
-            setIsFavorited(!newStatus); // Revert on error
+            setLocalIsFavorited(!newStatus); // Revert on error
+            onFavoriteChange?.(font.id, !newStatus);
             setFavoritesCount(prev => newStatus ? prev - 1 : prev + 1); // Revert count
             await Toast.show({ text: 'Failed to update favorites', duration: 'short' });
         }
@@ -260,13 +301,10 @@ function FontCard({ font, viewMode = 'font', onClick, disableLink = false, isExp
     };
 
     return (
-        <motion.div
-            initial={{ opacity: 1, scale: 1, y: 0 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-            className="group relative -mb-2 sm:mb-0 bg-[rgb(var(--color-foreground)/0.05)] rounded-4xl zborder border-[rgb(var(--color-foreground)/0.01)] transition-colors duration-300 ease-in-out overflow-hidden flex flex-col"
+        <div
+            className="group relative -mb-2 sm:mb-0 overflow-hidden flex flex-col"
             onClick={handleCardClick}
-        >
+        >   <Squircle className='w-full h-full bg-[rgb(var(--color-foreground)/0.05)]' radius={40}>
                 <div className="flex flex-col h-full relative cursor-pointer">
                     {/* Preview Section - Fixed Height or ratio? 
                     In original, it was h-full. Now we want it to be the main part.
@@ -290,7 +328,12 @@ function FontCard({ font, viewMode = 'font', onClick, disableLink = false, isExp
                             </div>
                         ) : (
                             <div className="py-4 sm:py-8 md:py-12 px-0 sm:px-2 md:px-4">
-                                <AutoSizingText text={customText || font.name} fontId={font.id} isLoaded={isFontLoaded} />
+                                <AutoSizingText
+                                    text={customText || font.name}
+                                    fontId={font.id}
+                                    isLoaded={isFontLoaded}
+                                    cardWidth={cardWidth}
+                                />
                             </div>
                         )}
                     </>
@@ -314,8 +357,7 @@ function FontCard({ font, viewMode = 'font', onClick, disableLink = false, isExp
                                 <div className="zbg-linear-to-t from-[rgb(var(--color-background))] to-[rgb(var(--color-background)/0)] w-full">
                                     <div className="px-4 pb-4 pt-2 flex flex-col gap-3">
                                         {/* Top Row: Likes & View Button */}
-                                        <div className="flex items-center justify-between w-full ">
-                                            {/* Likes */}
+                                        {/* <div className="flex items-center justify-between w-full ">
                                             {!hideLike ? (
                                                 <button
                                                     onClick={toggleFavorite}
@@ -330,7 +372,6 @@ function FontCard({ font, viewMode = 'font', onClick, disableLink = false, isExp
                                                 </button>
                                             ) : <div></div>}
 
-                                            {/* View Font Button */}
                                             <Link
                                                 to={`/fonts/${font.slug || font.id}`}
                                                 onClick={(e) => e.stopPropagation()}
@@ -339,10 +380,28 @@ function FontCard({ font, viewMode = 'font', onClick, disableLink = false, isExp
                                             >
                                                 View Details
                                             </Link>
-                                        </div>
+                                        </div> */}
 
                                         <div className="w-full h-full">
-                                            <p className="text-2xl font-bold tracking-tight mb-0.5">{font.name}</p>
+                                            <div className='flex justify-between items-start gap-4'>
+                                                <Link to={`/fonts/${font.slug || font.id}`}
+                                                    className="flex items-end text-2xl font-bold tracking-tight mb-0.5 group/title">
+                                                    {font.name} <ArrowUpRight size={25} className='mb-0.5 opacity-0 group-hover/title:opacity-100 -translate-x-1 translate-y-1 group-hover/title:translate-x-0 group-hover/title:translate-y-0 transition-all duration-300 ease-in-out' />
+                                                </Link>
+                                                {!hideLike ? (
+                                                    <button
+                                                        onClick={toggleFavorite}
+                                                        aria-label={isFavorited ? `Remove ${font.name} from favorites` : `Add ${font.name} to favorites`}
+                                                        className="flex items-center gap-2 mt-1 text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out group/like"
+                                                    >
+                                                        <Heart
+                                                            size={22}
+                                                            className={`transition-transform duration-300 ${isFavorited ? 'fill-pink-500 text-pink-500' : 'group-hover/like:scale-105'}`}
+                                                        />
+                                                        <span className="font-bold text-[16px]">{favoritesCount}</span>
+                                                    </button>
+                                                ) : <div></div>}
+                                            </div>
                                             <p className="text-sm text-[rgb(var(--color-muted-foreground))] tracking-wide">
                                                 by <Link
                                                     to={`/designers/${encodeURIComponent(font.designer || '')}`}
@@ -372,9 +431,10 @@ function FontCard({ font, viewMode = 'font', onClick, disableLink = false, isExp
                         </motion.div>
                     </div>
                 </div>
+            </Squircle>
             {/* Hover overlay gradient for collapsed state */}
             <div
-                className={`absolute inset-0 bg-linear-to-t from-[rgb(var(--color-background)/0.8)] via-transparent to-transparent flex justify-between items-end p-6 z-10 transition-opacity duration-300 pointer-events-none ${isExpanded ? 'opacity-0' : 'opacity-0 group-hover:opacity-100'
+                className={`absolute inset-0 bg-linear-to-t from-[rgb(var(--color-background)/0.8)] via-transparent to-transparent flex justify-between items-end p-6 z-10 transition-opacity duration-300 ease-in-out pointer-events-none ${isExpanded ? 'opacity-0' : 'opacity-0 group-hover:opacity-100'
                     }`}
             >
                 <div className="flex flex-col">
@@ -414,7 +474,7 @@ function FontCard({ font, viewMode = 'font', onClick, disableLink = false, isExp
                     </Link>
                 </div>
             </div>
-        </motion.div>
+        </div>
     );
 }
 

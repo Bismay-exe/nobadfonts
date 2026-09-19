@@ -1,14 +1,25 @@
-import { Search, Type, Image, SlidersHorizontal, ArrowUpDown, Maximize2, Minimize2, Pencil, X } from 'lucide-react';
-import type { FontFilterParams } from '../../types/font';
-import React, { useState, useRef, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import {
+    Search,
+    Type,
+    Image,
+    SlidersHorizontal,
+    ArrowUpDown,
+    Maximize2,
+    Minimize2,
+    Pencil,
+    X,
+    ChevronDown,
+} from "lucide-react";
+import type { FontFilterParams } from "../../types/font";
+import React, { useState, useRef, useEffect } from "react";
+import { Haptics, ImpactStyle } from "@capacitor/haptics";
+import { Squircle } from "react-ios-corners";
 
 interface FiltersProps {
     filters: FontFilterParams;
     onChange: (filters: FontFilterParams) => void;
-    viewMode?: 'font' | 'image';
-    onViewModeChange?: (mode: 'font' | 'image') => void;
+    viewMode?: "font" | "image";
+    onViewModeChange?: (mode: "font" | "image") => void;
     showExpandToggle?: boolean;
     allExpanded?: boolean;
     onToggleAll?: () => void;
@@ -18,66 +29,66 @@ interface FiltersProps {
 
 const CATEGORIES = [
     {
-        group: 'Classification',
+        group: "Classification",
         items: [
-            { id: 'sans', label: 'Sans' },
-            { id: 'serif', label: 'Serif' },
-            { id: 'slab-serif', label: 'Slab Serif' },
-            { id: 'display', label: 'Display' },
-            { id: 'monospace', label: 'Mono' },
-            { id: 'script', label: 'Script' },
-            { id: 'calligraphy', label: 'Calligraphy' },
-            { id: 'brush', label: 'Brush' },
-            { id: 'handwritten', label: 'Handwritten' },
-            { id: 'signature', label: 'Signature' }
+            { id: "sans", label: "Sans" },
+            { id: "serif", label: "Serif" },
+            { id: "slab-serif", label: "Slab Serif" },
+            { id: "display", label: "Display" },
+            { id: "monospace", label: "Mono" },
+            { id: "script", label: "Script" },
+            { id: "calligraphy", label: "Calligraphy" },
+            { id: "brush", label: "Brush" },
+            { id: "handwritten", label: "Handwritten" },
+            { id: "signature", label: "Signature" },
         ],
     },
     {
-        group: 'Style',
+        group: "Style",
         items: [
-            { id: 'modern', label: 'Modern' },
-            { id: 'classic', label: 'Classic' },
-            { id: 'minimal', label: 'Minimal' },
-            { id: 'bold', label: 'Bold' },
-            { id: 'elegant', label: 'Elegant' },
-            { id: 'luxury', label: 'Luxury' },
-            { id: 'playful', label: 'Playful' },
-            { id: 'comic', label: 'Comic' },
-            { id: 'graffiti', label: 'Graffiti' },
-            { id: 'experimental', label: 'Experimental' },
-            { id: 'brutalist', label: 'Brutalist' },
-            { id: 'industrial', label: 'Industrial' },
-            { id: 'editorial', label: 'Editorial' },
-            { id: 'geometric', label: 'Geometric' },
-            { id: 'organic', label: 'Organic' },
-            { id: 'techno', label: 'Techno' },
-            { id: 'sci-fi', label: 'Sci-Fi' }
+            { id: "modern", label: "Modern" },
+            { id: "classic", label: "Classic" },
+            { id: "minimal", label: "Minimal" },
+            { id: "bold", label: "Bold" },
+            { id: "elegant", label: "Elegant" },
+            { id: "luxury", label: "Luxury" },
+            { id: "playful", label: "Playful" },
+            { id: "comic", label: "Comic" },
+            { id: "graffiti", label: "Graffiti" },
+            { id: "experimental", label: "Experimental" },
+            { id: "brutalist", label: "Brutalist" },
+            { id: "industrial", label: "Industrial" },
+            { id: "editorial", label: "Editorial" },
+            { id: "geometric", label: "Geometric" },
+            { id: "organic", label: "Organic" },
+            { id: "techno", label: "Techno" },
+            { id: "sci-fi", label: "Sci-Fi" },
         ],
     },
     {
-        group: 'Use Case',
+        group: "Use Case",
         items: [
-            { id: 'branding', label: 'Branding' },
-            { id: 'logo', label: 'Logo' },
-            { id: 'headline', label: 'Headline' },
-            { id: 'poster', label: 'Poster' },
-            { id: 'editorial-use', label: 'Editorial' },
-            { id: 'corporate', label: 'Corporate' },
-            { id: 'tech', label: 'Tech / UI' },
-            { id: "social-media", label: "Social Media" }
+            { id: "branding", label: "Branding" },
+            { id: "logo", label: "Logo" },
+            { id: "headline", label: "Headline" },
+            { id: "poster", label: "Poster" },
+            { id: "editorial-use", label: "Editorial" },
+            { id: "corporate", label: "Corporate" },
+            { id: "tech", label: "Tech / UI" },
+            { id: "social-media", label: "Social Media" },
         ],
     },
     {
-        group: 'Weight & Shape',
+        group: "Weight & Shape",
         items: [
             { id: "hairline", label: "Hairline" },
-            { id: 'thin', label: 'Thin' },
-            { id: 'light', label: 'Light' },
+            { id: "thin", label: "Thin" },
+            { id: "light", label: "Light" },
             { id: "normal-width", label: "Normal Width" },
-            { id: 'heavy', label: 'Heavy' },
-            { id: 'tall', label: 'Tall' },
-            { id: 'condensed', label: 'Condensed' },
-            { id: 'wide', label: 'Wide' },
+            { id: "heavy", label: "Heavy" },
+            { id: "tall", label: "Tall" },
+            { id: "condensed", label: "Condensed" },
+            { id: "wide", label: "Wide" },
             { id: "extended", label: "Extended" },
         ],
     },
@@ -87,389 +98,484 @@ const CATEGORIES = [
             { id: "inktrap", label: "Ink Trap" },
             { id: "rounded", label: "Rounded" },
             { id: "square", label: "Square" },
-            { id: 'sharp', label: 'Sharp' },
+            { id: "sharp", label: "Sharp" },
             { id: "stencil", label: "Stencil" },
             { id: "outline", label: "Outline" },
             { id: "inline", label: "Inline" },
             { id: "pixel", label: "Pixel / Bitmap" },
-            { id: "messy", label: "Messy" }
-        ]
+            { id: "messy", label: "Messy" },
+        ],
     },
     {
-        group: 'Era & Vibe',
+        group: "Era & Vibe",
         items: [
-            { id: 'casual', label: 'Casual' },
-            { id: 'retro', label: 'Retro' },
-            { id: 'vintage', label: 'Vintage' },
-            { id: 'cyberpunk', label: 'Cyberpunk' },
-            { id: 'futuristic', label: 'Futuristic' },
-            { id: 'gothic', label: 'Gothic' },
-            { id: 'y2k', label: 'Y2K' }
+            { id: "casual", label: "Casual" },
+            { id: "retro", label: "Retro" },
+            { id: "vintage", label: "Vintage" },
+            { id: "cyberpunk", label: "Cyberpunk" },
+            { id: "futuristic", label: "Futuristic" },
+            { id: "gothic", label: "Gothic" },
+            { id: "y2k", label: "Y2K" },
         ],
     },
 ];
 
-
 const SORT_OPTIONS = [
-    { id: 'trending', label: 'Trending' },
-    { id: 'popular', label: 'Most Popular' },
-    { id: 'editor-picks', label: 'Editor’s picks' },
-    { id: 'featured', label: 'Featured' },
-    { id: 'newest', label: 'Newest' },
-    { id: 'alpha', label: 'A-Z' },
+    { id: "trending", label: "Trending" },
+    { id: "popular", label: "Most Popular" },
+    { id: "editor-picks", label: "Editor’s picks" },
+    { id: "featured", label: "Featured" },
+    { id: "newest", label: "Newest" },
+    { id: "alpha", label: "A-Z" },
 ];
 
-export const Filters = React.memo(({ filters, onChange, viewMode, onViewModeChange, showExpandToggle, allExpanded, onToggleAll, customText, onCustomTextChange }: FiltersProps) => {
-    const [localQuery, setLocalQuery] = useState(filters.query || '');
-    const [localCustomText, setLocalCustomText] = useState(customText || '');
-    
-    // Sync local state with props if they change externally (e.g. from URL or clear)
-    useEffect(() => {
-        setLocalQuery(filters.query || '');
-    }, [filters.query]);
+export const Filters = React.memo(
+    ({
+        filters,
+        onChange,
+        viewMode,
+        onViewModeChange,
+        showExpandToggle,
+        allExpanded,
+        onToggleAll,
+        customText,
+        onCustomTextChange,
+    }: FiltersProps) => {
+        const [localQuery, setLocalQuery] = useState(filters.query || "");
+        const [localCustomText, setLocalCustomText] = useState(customText || "");
 
-    useEffect(() => {
-        setLocalCustomText(customText || '');
-    }, [customText]);
+        // Sync local state with props if they change externally (e.g. from URL or clear)
+        useEffect(() => {
+            setLocalQuery(filters.query || "");
+        }, [filters.query]);
 
-    const debounceTimerRef = useRef<any>(null);
+        useEffect(() => {
+            setLocalCustomText(customText || "");
+        }, [customText]);
 
-    const debouncedOnChange = (key: keyof FontFilterParams, value: any) => {
-        if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
-        debounceTimerRef.current = setTimeout(() => {
-            onChange({ ...filters, [key]: value });
-        }, 300);
-    };
+        const debounceTimerRef = useRef<any>(null);
 
-    const handleQueryChange = (value: string) => {
-        setLocalQuery(value);
-        debouncedOnChange('query', value);
-    };
-
-    const handleCustomTextChange = (value: string) => {
-        setLocalCustomText(value);
-        if (onCustomTextChange) {
+        const debouncedOnChange = (key: keyof FontFilterParams, value: any) => {
             if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
             debounceTimerRef.current = setTimeout(() => {
-                onCustomTextChange(value);
+                onChange({ ...filters, [key]: value });
             }, 300);
-        }
-    };
+        };
 
-    const handleChange = (key: keyof FontFilterParams, value: any) => {
-        onChange({ ...filters, [key]: value });
-    };
+        const handleQueryChange = (value: string) => {
+            setLocalQuery(value);
+            debouncedOnChange("query", value);
+        };
 
-    const [isSortOpen, setIsSortOpen] = useState(false);
-    const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
-    const [isCustomTextOpen, setIsCustomTextOpen] = useState(false);
-    const [isSearchOpen, setIsSearchOpen] = useState(false);
-    const customTextInputRef = useRef<HTMLInputElement>(null);
-    const searchInputRef = useRef<HTMLInputElement>(null);
+        const handleCustomTextChange = (value: string) => {
+            setLocalCustomText(value);
+            if (onCustomTextChange) {
+                if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+                debounceTimerRef.current = setTimeout(() => {
+                    onCustomTextChange(value);
+                }, 300);
+            }
+        };
 
-    // Auto-focus input when opened
-    useEffect(() => {
-        if (isCustomTextOpen && customTextInputRef.current) {
-            customTextInputRef.current.focus();
-        }
-    }, [isCustomTextOpen]);
+        const handleChange = (key: keyof FontFilterParams, value: any) => {
+            onChange({ ...filters, [key]: value });
+        };
 
-    useEffect(() => {
-        if (isSearchOpen && searchInputRef.current) {
-            searchInputRef.current.focus();
-        }
-    }, [isSearchOpen]);
+        const [isSortOpen, setIsSortOpen] = useState(false);
+        const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
+        const [isCustomTextOpen, setIsCustomTextOpen] = useState(false);
+        const [isSearchOpen, setIsSearchOpen] = useState(false);
+        const customTextInputRef = useRef<HTMLInputElement>(null);
+        const searchInputRef = useRef<HTMLInputElement>(null);
 
-    const closeAllPanels = () => {
-        setIsSortOpen(false);
-        setIsCategoriesOpen(false);
-        setIsCustomTextOpen(false);
-        setIsSearchOpen(false);
-    };
+        // Auto-focus input when opened
+        useEffect(() => {
+            if (isCustomTextOpen && customTextInputRef.current) {
+                customTextInputRef.current.focus();
+            }
+        }, [isCustomTextOpen]);
 
-    const togglePanel = (setter: React.Dispatch<React.SetStateAction<boolean>>, value: boolean) => {
-        closeAllPanels();
-        setter(value);
-    };
+        useEffect(() => {
+            if (isSearchOpen && searchInputRef.current) {
+                searchInputRef.current.focus();
+            }
+        }, [isSearchOpen]);
 
-    // Find current label
-    const currentSortLabel = SORT_OPTIONS.find(opt => opt.id === (filters.sortBy || 'trending'))?.label || 'Trending';
+        const closeAllPanels = () => {
+            setIsSortOpen(false);
+            setIsCategoriesOpen(false);
+            setIsCustomTextOpen(false);
+            setIsSearchOpen(false);
+        };
 
-    return (
-        <div className="fixed bottom-20 inset-x-4 md:bottom-6 lg:bottom-8 lg:inset-auto lg:left-1/2 lg:-translate-x-1/2 flex flex-col-reverse items-center z-50">
+        const togglePanel = (
+            setter: React.Dispatch<React.SetStateAction<boolean>>,
+            value: boolean,
+        ) => {
+            closeAllPanels();
+            setter(value);
+        };
 
-            {/* Main Filter Dock */}
-            <div className="pointer-events-auto flex items-center gap-1 lg:gap-2 p-1 lg:p-2 bg-[rgb(var(--color-foreground)/0.8)]  backdrop-blur-xl border border-[rgb(var(--color-background)/0.3)] rounded-full shadow-2xl w-auto max-w-full transition-all duration-300 hover:shadow-[0_20px_40px_-5px_rgba(var(--color-background),0.1)]">
+        // Find current label
+        const currentSortLabel =
+            SORT_OPTIONS.find((opt) => opt.id === (filters.sortBy || "trending"))
+                ?.label || "Trending";
 
-                {/* 1. Search Icon (Toggle on Mobile, Static on Desktop) */}
-                <motion.button
-                    whileTap={{ scale: 0.95 }}
-                    onClick={async () => {
-                        if (window.innerWidth < 768) {
-                            await Haptics.impact({ style: ImpactStyle.Light });
-                            togglePanel(setIsSearchOpen, !isSearchOpen);
-                        }
-                    }}
-                    className={`
-                        w-12 h-12 flex items-center justify-center rounded-full shrink-0 transition-all duration-300
-                        ${isSearchOpen && window.innerWidth < 768 ? 'bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))]' : 'bg-transparent text-[rgb(var(--color-background))]'}
-                    `}
+        return (
+            <div className="fixed bottom-20 inset-x-4 md:bottom-6 lg:bottom-8 lg:inset-auto lg:left-1/2 lg:-translate-x-1/2 flex flex-col-reverse items-center z-50 font-inter-tight">
+                {/* Main Filter Dock */}
+                {/* <Squircle className='w-full h-full bg-[rgb(var(--color-foreground)/0.05)]' radius={70}></Squircle> */}
+                <Squircle
+                    radius={40}
+                    className="pointer-events-auto bg-[rgb(var(--color-foreground)/0.7)] backdrop-blur-3xl border border-[rgb(var(--color-background)/0.3)] transition-all duration-300"
                 >
-                    <Search size={20} strokeWidth={2.5} />
-                </motion.button>
-
-                {/* 2. Search Input (Desktop Only) */}
-                <input
-                    type="text"
-                    placeholder="Search fonts..."
-                    value={localQuery}
-                    onChange={(e) => handleQueryChange(e.target.value)}
-                    className="hidden lg:block flex-1 w-0 min-w-40 lg:min-w-64 bg-transparent border-none outline-none text-[rgb(var(--color-background))] font-medium placeholder:text-[rgb(var(--color-background)/0.5)] px-2 lg:px-4 text-sm lg:text-base"
-                />
-
-                {/* Divider (Desktop Only) */}
-                <div className="w-px h-6 bg-[rgb(var(--color-background)/0.1)] mx-1 hidden lg:block"></div>
-
-                {/* 3. Custom Text Toggle (Moved Here) */}
-                {onCustomTextChange && (
-                    <motion.button
-                        whileTap={{ scale: 0.95 }}
-                        onClick={async () => {
-                            await Haptics.impact({ style: ImpactStyle.Light });
-                            togglePanel(setIsCustomTextOpen, !isCustomTextOpen);
-                        }}
-                        className={`
-                            group relative flex items-center gap-2 p-2 px-3 lg:px-4 h-10 lg:h-11 rounded-full transition-all duration-300 font-medium text-sm lg:text-base cursor-pointer
-                            ${isCustomTextOpen || customText
-                                ? "bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))] shadow-md"
-                                : "bg-transparent text-[rgb(var(--color-background))] hover:bg-[rgb(var(--color-background)/0.1)]"
-                            }
-                        `}
-                        title="Custom Text"
-                    >
-                        <Pencil size={18} strokeWidth={2.5} />
-                        <span className="hidden lg:inline whitespace-nowrap">Custom Text</span>
-                    </motion.button>
-                )}
-
-
-                {/* 4. Categories Toggle */}
-                <motion.button
-                    whileTap={{ scale: 0.95 }}
-                    onClick={async () => {
-                        await Haptics.impact({ style: ImpactStyle.Light });
-                        togglePanel(setIsCategoriesOpen, !isCategoriesOpen);
-                    }}
-                    className={`
-                        group relative flex items-center gap-2 p-2 px-3 lg:px-4 h-10 lg:h-11 rounded-full transition-all duration-300 font-medium text-sm lg:text-base cursor-pointer
-                        ${isCategoriesOpen
-                            ? "bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))] shadow-md"
-                            : "bg-transparent text-[rgb(var(--color-background))] hover:bg-[rgb(var(--color-background)/0.1)]"
-                        }
-                    `}
-                >
-                    <SlidersHorizontal size={18} strokeWidth={2.5} />
-                    <span className="hidden lg:inline">Filters</span>
-                </motion.button>
-
-                {/* 5. Sort Toggle */}
-                <motion.button
-                    whileTap={{ scale: 0.95 }}
-                    onClick={async () => {
-                        await Haptics.impact({ style: ImpactStyle.Light });
-                        togglePanel(setIsSortOpen, !isSortOpen);
-                    }}
-                    className={`
-                        group relative flex items-center gap-1 lg:gap-2 p-2 px-3 lg:px-4 h-10 lg:h-11 rounded-full transition-all duration-300 font-medium text-sm lg:text-base cursor-pointer
-                        ${isSortOpen
-                            ? "bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))] shadow-md"
-                            : "bg-transparent text-[rgb(var(--color-background))] hover:bg-[rgb(var(--color-background)/0.1)]"
-                        }
-                    `}
-                >
-                    <ArrowUpDown size={18} strokeWidth={2.5} className="lg:hidden" />
-                    <span className="hidden lg:inline">{currentSortLabel}</span>
-                    <span className={`transform transition-transform duration-300 hidden lg:block ${isSortOpen ? 'rotate-180' : ''}`}>▼</span>
-                </motion.button>
-
-                {/* 6. View Toggle Group */}
-                {onViewModeChange && (
-                    <>
-                        <div className="w-px h-6 bg-[rgb(var(--color-background)/0.1)] mx-1 hidden lg:block"></div>
-                        <div className="flex bg-[rgb(var(--color-background)/0.15)] h-11 p-1.5 rounded-full">
+                    <div className="flex items-center gap-1 lg:gap-2 px-1 py-1 lg:px-2 lg:py-1.5">
+                        {/* 1. Search Icon (Toggle on Mobile, Static on Desktop) */}
+                        <Squircle
+                            radius={40}
+                            className={`transition-all duration-300 xl:hiddenz flex
+                        ${isSearchOpen && window.innerWidth < 768 ? "bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))]" : "text-[rgb(var(--color-background))] hover:bg-[rgb(var(--color-background)/0.2)] bg-[rgb(var(--color-background)/0.1)]"}`}
+                        >
                             <button
-                                onClick={() => {
-                                    closeAllPanels();
-                                    onViewModeChange('font');
+                                onClick={async () => {
+                                    if (window.innerWidth < 768) {
+                                        await Haptics.impact({ style: ImpactStyle.Light });
+                                        togglePanel(setIsSearchOpen, !isSearchOpen);
+                                    }
                                 }}
-                                className={`p-2 rounded-full transition-all duration-300 ${viewMode === 'font'
-                                    ? 'bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))] shadow-sm'
-                                    : 'text-[rgb(var(--color-background))] hover:text-[rgb(var(--color-background))] hover:bg-[rgb(var(--color-background)/0.1)]'
-                                    }`}
-                                title="Font View"
+                                className={`xl:hiddenz
+                            p-2 px-3 lg:px-4 h-10 lg:h-11 flex items-center justify-center shrink-0
+                            `}
                             >
-                                <Type size={16} strokeWidth={2.5} />
-                            </button>
-                            <button
-                                onClick={() => {
-                                    closeAllPanels();
-                                    onViewModeChange('image');
-                                }}
-                                className={`p-2 rounded-full transition-all duration-300 ${viewMode === 'image'
-                                    ? 'bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))] shadow-sm'
-                                    : 'text-[rgb(var(--color-background))] hover:text-[rgb(var(--color-background))] hover:bg-[rgb(var(--color-background)/0.1)]'
-                                    }`}
-                                title="Image View"
-                            >
-                                <Image size={16} strokeWidth={2.5} />
+                                <Search size={20} strokeWidth={2.5} />
                             </button>
 
-                            {/* Separator & Expand Toggle */}
-                            {showExpandToggle && onToggleAll && (
-                                <>
-                                    <div className="w-px h-6 bg-[rgb(var(--color-background)/0.1)] mx-1"></div>
-                                    <button
-                                        onClick={async () => {
-                                            closeAllPanels();
-                                            await Haptics.impact({ style: ImpactStyle.Medium });
-                                            window.scrollTo({ top: 0, behavior: 'smooth' });
-                                            onToggleAll();
-                                        }}
-                                        className="p-2 rounded-full text-[rgb(var(--color-background))] hover:text-[rgb(var(--color-background))] hover:bg-[rgb(var(--color-background)/0.1)] transition-all duration-300"
-                                        title={allExpanded ? "Collapse All" : "Expand All"}
-                                    >
-                                        {allExpanded ? (
-                                            <Minimize2 size={16} strokeWidth={2.5} />
-                                        ) : (
-                                            <Maximize2 size={16} strokeWidth={2.5} />
-                                        )}
-                                    </button>
-                                </>
-                            )}
-                        </div>
-                    </>
-                )}
-            </div>
-
-            {/* PANELS AREA (Visually Above Dock because of flex-col-reverse) */}
-
-            {/* 1. Search Panel (Mobile Only) */}
-            {isSearchOpen && (
-                <div className="pointer-events-auto flex flex-col gap-3 rounded-4xl bg-[rgb(var(--color-foreground)/0.8)] backdrop-blur-2xl p-4 mb-5 border border-[rgb(var(--color-background)/0.8)] w-full max-w-sm animate-in fade-in slide-in-from-bottom-2 duration-300">
-                    <h3 className="text-md font-black text-[rgb(var(--color-background))] uppercase px-1 cursor-default">
-                        Search
-                    </h3>
-                    <div className="flex items-center gap-2 bg-[rgb(var(--color-background)/0.1)] rounded-full px-4 py-2">
-                        <input
-                            ref={searchInputRef}
-                            type="text"
-                            placeholder="Search fonts..."
-                            value={localQuery}
-                            onChange={(e) => handleQueryChange(e.target.value)}
-                            className="bg-transparent border-none outline-none text-[rgb(var(--color-background))] font-bold placeholder:text-[rgb(var(--color-background)/0.4)] w-full"
-                        />
-                        {localQuery && (
-                            <button onClick={() => handleQueryChange('')} className="text-[rgb(var(--color-background)/0.6)]">
-                                <X size={16} />
-                            </button>
-                        )}
-                    </div>
-                </div>
-            )}
-
-            {/* 2. Custom Text Panel */}
-            {isCustomTextOpen && onCustomTextChange && (
-                <div className="pointer-events-auto flex flex-col gap-3 rounded-4xl bg-[rgb(var(--color-foreground)/0.8)] backdrop-blur-2xl p-4 mb-5 border border-[rgb(var(--color-background)/0.8)] w-full max-w-sm animate-in fade-in slide-in-from-bottom-2 duration-300">
-                    <h3 className="text-md font-black text-[rgb(var(--color-background))] uppercase px-1 cursor-default">
-                        Custom Text
-                    </h3>
-                    <div className="flex items-center gap-2 bg-[rgb(var(--color-background)/0.1)] rounded-full px-4 py-2">
-                        <input
-                            ref={customTextInputRef}
-                            type="text"
-                            placeholder="Type something..."
-                            value={localCustomText}
-                            onChange={(e) => handleCustomTextChange(e.target.value)}
-                            className="bg-transparent border-none outline-none text-[rgb(var(--color-background))] font-bold placeholder:text-[rgb(var(--color-background)/0.4)] w-full"
-                        />
-                        {localCustomText && (
-                            <button
-                                onClick={() => handleCustomTextChange('')}
-                                className="text-[rgb(var(--color-background)/0.6)] hover:text-[rgb(var(--color-background))]"
-                            >
-                                <X size={16} />
-                            </button>
-                        )}
-                    </div>
-                </div>
-            )}
-
-            {/* 3. Categories Panel */}
-            {isCategoriesOpen && (
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-6 max-h-[67vh] overflow-y-auto rounded-4xl bg-[rgb(var(--color-foreground)/0.8)] backdrop-blur-2xl p-4 lg:p-6 mb-5 border border-[rgb(var(--color-background)/0.8)]">
-                    {CATEGORIES.map((group, groupIndex) => (
-                        <div key={groupIndex} className="flex flex-col gap-2 md:gap-3">
-                            <h3 className="text-md md:text-md font-black text-[rgb(var(--color-background)/0.85)] uppercase px-3 py-2 cursor-default">
-                                {group.group}
-                            </h3>
-                            <div className="flex gap-1 md:gap-2 flex-wrap">
-                                {group.items.map(cat => {
-                                    const isSelected = filters.categories?.includes(cat.id);
-                                    return (
-                                        <button
-                                            key={cat.id}
-                                            type="button"
-                                            onClick={() => {
-                                                const current = filters.categories || [];
-                                                const newCategories = current.includes(cat.id)
-                                                    ? current.filter(c => c !== cat.id)
-                                                    : [...current, cat.id];
-                                                handleChange('categories', newCategories);
-                                            }}
-                                            className={`
-                                                px-2 py-1 md:px-3 md:py-1.5 font-medium rounded-full border text-[11px] md:text-sm whitespace-nowrap transition-all duration-200 text-left cursor-pointer ${isSelected
-                                                    ? "bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))] border-[rgb(var(--color-background)/0.1)]"
-                                                    : "bg-transparent text-[rgb(var(--color-background)/0.8)] border-[rgb(var(--color-background)/0.1)] hover:bg-[rgb(var(--color-background))] hover:text-[rgb(var(--color-foreground))]"
-                                                }
-                                            `}
-                                        >
-                                            {cat.label}
-                                        </button>
-                                    );
-                                })}
+                            {/* 2. Search Input (Desktop Only) */}
+                            <div className="hidden lg:block h-full bg-[rgb(var(--color-background)/0)]">
+                                <input
+                                    type="text"
+                                    placeholder="Search fonts..."
+                                    value={localQuery}
+                                    onChange={(e) => handleQueryChange(e.target.value)}
+                                    className="flex-1 w-0 min-w-40 lg:min-w-64 border-none! outline-none! text-[rgb(var(--color-background))] text-lg font-inter-tight font-medium placeholder:text-[rgb(var(--color-background)/0.5)] px-2 lg:px-4 h-11 selection:text-[rgb(var(--color-accent))]"
+                                />
                             </div>
-                        </div>
-                    ))}
-                </div>
-            )}
+                        </Squircle>
 
-            {/* 4. Sort Panel */}
-            {isSortOpen && (
-                <div className="flex flex-col gap-3 rounded-4xl bg-[rgb(var(--color-foreground)/0.8)] backdrop-blur-2xl p-4 lg:p-6 mb-5 ml-0 lg:ml-110 border border-[rgb(var(--color-background)/0.8)] w-full max-w-xs animate-in fade-in slide-in-from-bottom-2 duration-300">
-                    <h3 className="text-md px-3 font-black text-[rgb(var(--color-background))] uppercase cursor-default">
-                        Sort By
-                    </h3>
-                    <div className="flex flex-col gap-1">
-                        {SORT_OPTIONS.map(opt => (
-                            <button
-                                key={opt.id}
-                                onClick={() => handleChange('sortBy', opt.id)}
-                                className={`
-                                    w-full px-4 py-3 rounded-xl text-left text-sm border transition-all duration-200
-                                    ${(filters.sortBy || 'trending') === opt.id
-                                        ? "bg-[rgb(var(--color-background)/0.9)] text-[rgb(var(--color-foreground))] border-[rgb(var(--color-background)/0.1)]"
-                                        : "bg-transparent text-[rgb(var(--color-background))] hover:bg-[rgb(var(--color-background)/0.05)] hover:text-[rgb(var(--color-background))] border-transparent"
+                        {/* Divider (Desktop Only) */}
+                        {/* <div className="w-px h-6 bg-[rgb(var(--color-background)/0.1)] mx-1 hidden lg:block"></div> */}
+
+                        {/* 3. Custom Text Toggle (Moved Here) */}
+                        {onCustomTextChange && (
+                            <Squircle
+                                radius={40}
+                                className={`transition-all duration-300 ease-in-out
+                                    ${isCustomTextOpen || customText
+                                        ? "bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))]"
+                                        : "text-[rgb(var(--color-background))] hover:bg-[rgb(var(--color-background)/0.2)] bg-[rgb(var(--color-background)/0.1)]"
                                     }
                                 `}
                             >
-                                {opt.label}
+                                <button
+                                    onClick={async () => {
+                                        await Haptics.impact({ style: ImpactStyle.Light });
+                                        togglePanel(setIsCustomTextOpen, !isCustomTextOpen);
+                                    }}
+                                    className={`
+                                        group relative flex items-center gap-2 p-2 px-3 lg:px-4 h-10 lg:h-11 font-medium text-sm lg:text-base cursor-pointer
+                                    `}
+                                    title="Custom Text"
+                                >
+                                    <Pencil size={18} strokeWidth={2.5} className="lg:hidden" />
+                                    <span className="hidden lg:inline whitespace-nowrap">
+                                        Custom Text
+                                    </span>
+                                </button>
+                            </Squircle>
+                        )}
+
+                        {/* 4. Categories Toggle */}
+                        <Squircle
+                            radius={40}
+                            className={`group transition-all duration-300 cursor-pointer ease-in-out
+                                ${isCategoriesOpen
+                                    ? "bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))]"
+                                    : "text-[rgb(var(--color-background))] hover:bg-[rgb(var(--color-background)/0.2)] bg-[rgb(var(--color-background)/0.1)]"
+                                }
+                            `}
+                        >
+                            <button
+                                onClick={async () => {
+                                    await Haptics.impact({ style: ImpactStyle.Light });
+                                    togglePanel(setIsCategoriesOpen, !isCategoriesOpen);
+                                }}
+                                className={`group relative flex items-center gap-2 p-2 px-3 lg:px-4 h-10 lg:h-11 font-medium text-sm lg:text-base cursor-pointer`}
+                            >
+                                <SlidersHorizontal
+                                    size={18}
+                                    strokeWidth={2.5}
+                                    className="lg:hidden"
+                                />
+                                <span className="hidden lg:inline">Filters</span>
                             </button>
-                        ))}
+                        </Squircle>
+
+                        {/* 5. Sort Toggle */}
+                        <Squircle
+                            radius={40}
+                            className={`group transition-all duration-300 cursor-pointer ease-in-out
+                                ${isSortOpen
+                                    ? "bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))]"
+                                    : "text-[rgb(var(--color-background))] hover:bg-[rgb(var(--color-background)/0.2)] bg-[rgb(var(--color-background)/0.1)]"
+                                }
+                            `}
+                        >
+                            <button
+                                onClick={async () => {
+                                    await Haptics.impact({ style: ImpactStyle.Light });
+                                    togglePanel(setIsSortOpen, !isSortOpen);
+                                }}
+                                className={`
+                                    group relative flex justify-between items-center gap-1 lg:gap-2 p-2 px-3 lg:px-4 h-10 lg:h-11 lg:w-45 font-medium text-sm lg:text-base cursor-pointer
+                                `}
+                            >
+                                <ArrowUpDown
+                                    size={18}
+                                    strokeWidth={2.5}
+                                    className="lg:hidden"
+                                />
+                                <span className="hidden lg:inline">{currentSortLabel}</span>
+                                <span
+                                    className={`transform transition-transform duration-300 hidden lg:block ${isSortOpen ? "rotate-180" : ""}`}
+                                >
+                                    <ChevronDown size={18} strokeWidth={2.5} />
+                                </span>
+                            </button>
+                        </Squircle>
+
+                        {/* 6. View Toggle Group */}
+                        {onViewModeChange && (
+                            <>
+                                {/* <div className="w-px h-6 bg-[rgb(var(--color-background)/0.1)] mx-1 hidden lg:block"></div> */}
+                                <Squircle
+                                    radius={40}
+                                    className="bg-[rgb(var(--color-background)/0.15)]"
+                                >
+                                    <div className="flex justify-center items-center h-10 xl:h-11 py-1 px-1.5">
+                                        <Squircle
+                                            radius={40}
+                                            onClick={() => {
+                                                closeAllPanels();
+                                                onViewModeChange("font");
+                                            }}
+                                            className={`p-2 transition-all duration-300 ${viewMode === "font"
+                                                    ? "bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))] shadow-sm"
+                                                    : "text-[rgb(var(--color-background))] hover:text-[rgb(var(--color-background))] hover:bg-[rgb(var(--color-background)/0.1)]"
+                                                }`}
+                                            title="Font View"
+                                        >
+                                            <Type size={16} strokeWidth={2.5} />
+                                        </Squircle>
+                                        <Squircle
+                                            radius={40}
+                                            onClick={() => {
+                                                closeAllPanels();
+                                                onViewModeChange("image");
+                                            }}
+                                            className={`p-2 transition-all duration-300 ${viewMode === "image"
+                                                    ? "bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))] shadow-sm"
+                                                    : "text-[rgb(var(--color-background))] hover:text-[rgb(var(--color-background))] hover:bg-[rgb(var(--color-background)/0.1)]"
+                                                }`}
+                                            title="Image View"
+                                        >
+                                            <Image size={16} strokeWidth={2.5} />
+                                        </Squircle>
+
+                                        {/* Separator & Expand Toggle */}
+                                        {showExpandToggle && onToggleAll && (
+                                            <>
+                                                <div className="w-px h-6 bg-[rgb(var(--color-background)/0.1)] mx-1"></div>
+                                                <Squircle
+                                                    radius={40}
+                                                    onClick={async () => {
+                                                        closeAllPanels();
+                                                        await Haptics.impact({ style: ImpactStyle.Medium });
+                                                        window.scrollTo({ top: 0, behavior: "smooth" });
+                                                        onToggleAll();
+                                                    }}
+                                                    className="p-2 text-[rgb(var(--color-background))] hover:text-[rgb(var(--color-background))] hover:bg-[rgb(var(--color-background)/0.1)] transition-all duration-300"
+                                                    title={allExpanded ? "Collapse All" : "Expand All"}
+                                                >
+                                                    {allExpanded ? (
+                                                        <Minimize2 size={16} strokeWidth={2.5} />
+                                                    ) : (
+                                                        <Maximize2 size={16} strokeWidth={2.5} />
+                                                    )}
+                                                </Squircle>
+                                            </>
+                                        )}
+                                    </div>
+                                </Squircle>
+                            </>
+                        )}
                     </div>
-                </div>
-            )}
-        </div>
-    );
-});
+                </Squircle>
+
+                {/* PANELS AREA (Visually Above Dock because of flex-col-reverse) */}
+
+                {/* 1. Search Panel (Mobile Only) */}
+                {isSearchOpen && (
+                    <Squircle
+                        radius={40}
+                        className="pointer-events-auto bg-[rgb(var(--color-foreground)/0.8)] backdrop-blur-2xl mb-2 w-full max-w-sm animate-in fade-in slide-in-from-bottom-2 duration-300"
+                    >
+                        <div className="flex flex-col gap-1 p-4 w-full max-w-sm">
+                            <h3 className="text-xl sm:text-xl md:text-2xl font-medium tracking-wide text-[rgb(var(--color-background)/0.85)] px-3 py-2 cursor-default">
+                                Search
+                            </h3>
+                            <Squircle
+                                radius={40}
+                                className="bg-[rgb(var(--color-background)/0.1)]"
+                            >
+                                <div className="flex items-center gap-2 px-4 py-2">
+                                    <input
+                                        ref={searchInputRef}
+                                        type="text"
+                                        placeholder="Search fonts..."
+                                        value={localQuery}
+                                        onChange={(e) => handleQueryChange(e.target.value)}
+                                        className="bg-transparent border-none! outline-none! text-[rgb(var(--color-background))] text-lg font-inter-tight font-medium placeholder:text-[rgb(var(--color-background)/0.4)] w-full"
+                                    />
+                                    {localQuery && (
+                                        <button
+                                            onClick={() => handleQueryChange("")}
+                                            className="text-[rgb(var(--color-background)/0.6)]"
+                                        >
+                                            <X size={16} strokeWidth={3} />
+                                        </button>
+                                    )}
+                                </div>
+                            </Squircle>
+                        </div>
+                    </Squircle>
+                )}
+
+                {/* 2. Custom Text Panel */}
+                {isCustomTextOpen && onCustomTextChange && (
+                    <Squircle
+                        radius={40}
+                        className="pointer-events-auto bg-[rgb(var(--color-foreground)/0.8)] backdrop-blur-2xl mb-2 w-full max-w-sm animate-in fade-in slide-in-from-bottom-2 duration-300"
+                    >
+                        <div className="flex flex-col gap-1 p-4 w-full max-w-sm">
+                            <h3 className="text-xl sm:text-xl md:text-2xl font-medium tracking-wide text-[rgb(var(--color-background)/0.85)] px-3 py-2 cursor-default">
+                                Your text
+                            </h3>
+                            <Squircle
+                                radius={40}
+                                className="bg-[rgb(var(--color-background)/0.1)]"
+                            >
+                                <div className="flex items-center gap-2 px-4 py-2">
+                                    <input
+                                        ref={customTextInputRef}
+                                        type="text"
+                                        placeholder="Type something..."
+                                        value={localCustomText}
+                                        onChange={(e) => handleCustomTextChange(e.target.value)}
+                                        className="bg-transparent border-none! outline-none! text-[rgb(var(--color-background))] text-lg font-inter-tight font-medium placeholder:text-[rgb(var(--color-background)/0.4)] w-full"
+                                    />
+                                    {localCustomText && (
+                                        <button
+                                            onClick={() => handleCustomTextChange("")}
+                                            className="text-[rgb(var(--color-background)/0.6)] hover:text-[rgb(var(--color-background))]"
+                                        >
+                                            <X size={16} strokeWidth={3} />
+                                        </button>
+                                    )}
+                                </div>
+                            </Squircle>
+                        </div>
+                    </Squircle>
+                )}
+
+                {/* 3. Categories Panel */}
+                {isCategoriesOpen && (
+                    <Squircle
+                        radius={80}
+                        className="max-h-[67vh] overflow-y-auto bg-[rgb(var(--color-foreground)/0.8)] backdrop-blur-2xl mb-2"
+                    >
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-6 p-4 lg:p-6">
+                            {CATEGORIES.map((group, groupIndex) => (
+                                <div key={groupIndex} className="flex flex-col gap-0 md:gap-3">
+                                    <h3 className="text-xl sm:text-xl md:text-2xl font-medium tracking-wide text-[rgb(var(--color-background)/0.85)] px-3 py-2 cursor-default">
+                                        {group.group}
+                                    </h3>
+                                    <div className="flex gap-1.5 md:gap-2 flex-wrap">
+                                        {group.items.map((cat) => {
+                                            const isSelected = filters.categories?.includes(cat.id);
+                                            return (
+                                                <button
+                                                    key={cat.id}
+                                                    type="button"
+                                                    onClick={() => {
+                                                        const current = filters.categories || [];
+                                                        const newCategories = current.includes(cat.id)
+                                                            ? current.filter((c) => c !== cat.id)
+                                                            : [...current, cat.id];
+                                                        handleChange("categories", newCategories);
+                                                    }}
+                                                    className={`
+                                                px-3 py-1.5 md:px-3 md:py-2 font-medium rounded-full zborder text-[14px] md:text-sm whitespace-nowrap transition-all duration-200 text-left cursor-pointer ${isSelected
+                                                            ? "bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))] border-[rgb(var(--color-background)/0.1)]"
+                                                            : "bg-[rgb(var(--color-background)/0.05)] text-[rgb(var(--color-background)/0.8)] border-[rgb(var(--color-background)/0.1)] hover:bg-[rgb(var(--color-background)/0.1)] zhover:text-[rgb(var(--color-foreground))]"
+                                                        }
+                                            `}
+                                                >
+                                                    {cat.label}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </Squircle>
+                )}
+
+                {/* 4. Sort Panel */}
+                {isSortOpen && (
+                    <Squircle
+                        radius={40}
+                        className="w-45 mb-2 ml-0 lg:ml-120 bg-[rgb(var(--color-foreground)/0.8)] backdrop-blur-sm animate-in fade-in slide-in-from-bottom-2 duration-300"
+                    >
+                        <div className="flex flex-col zitems-center gap-2 px-4 py-4 lg:px-4 lg:py-4">
+                            <h3 className="w-full text-xl sm:text-xl md:text-2xl font-medium tracking-wide text-[rgb(var(--color-background)/0.85)] px-3 py-2 cursor-default">
+                                Sort By
+                            </h3>
+                            <div className="flex flex-col gap-1">
+                                {SORT_OPTIONS.map((opt) => (
+                                    <Squircle radius={40} className="w-full">
+                                        <button
+                                            key={opt.id}
+                                            onClick={() => handleChange("sortBy", opt.id)}
+                                            className={`
+                                    w-full px-4 py-3 text-left text-sm transition-all duration-300 tracking-wider
+                                    ${(filters.sortBy || "trending") === opt.id
+                                                    ? "bg-[rgb(var(--color-background)/0.9)] text-[rgb(var(--color-foreground))]"
+                                                    : "bg-transparent text-[rgb(var(--color-background))] hover:bg-[rgb(var(--color-background)/0.05)] hover:text-[rgb(var(--color-background))]"
+                                                }
+                                `}
+                                        >
+                                            {opt.label}
+                                        </button>
+                                    </Squircle>
+                                ))}
+                            </div>
+                        </div>
+                    </Squircle>
+                )}
+            </div>
+        );
+    },
+);
 
 export default Filters;

@@ -11,13 +11,14 @@ import { ArrowLeft } from 'lucide-react';
 import SEO from '../components/shared/SEO';
 import { Masonry } from "masonic";
 
-const MasonryCard = ({ data }: { data: any }) => (
+const MasonryCard = ({ data, width }: { data: any; width: number }) => (
     <FontCard
         font={data}
         viewMode={data.viewMode}
         customText={data.customText}
         isExpanded={data.isExpanded}
         onToggle={data.onToggle}
+        cardWidth={width}
     />
 );
 
@@ -228,8 +229,11 @@ export default function DesignerFonts() {
                         <div className={`masonic-grid ${isBulkToggling ? 'is-bulk-toggling' : ''}`}>
                             <Masonry
                                 items={items}
+                                itemKey={(data) => data.id}
                                 columnCount={columns}
                                 columnGutter={24}
+                                itemHeightEstimate={280}
+                                overscanBy={1}
                                 render={MasonryCard}
                             />
                         </div>

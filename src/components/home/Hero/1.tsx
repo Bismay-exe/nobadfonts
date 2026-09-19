@@ -3,7 +3,6 @@
 import { useLayoutEffect, useRef } from 'react';
 import gsap from 'gsap';
 import NeatGradient from '../components/NeatGradient';
-import { Squircle } from 'react-ios-corners';
 
 const Hero = () => {
     const containerRef = useRef<HTMLDivElement>(null);
@@ -48,13 +47,9 @@ const Hero = () => {
             // }}
             >
 
-                {/* <img src="/gradients/72pt.png" alt=""
-                    className='fixed h-full w-full object-cover rounded-4xl' 
-                /> */}
+
                 
-                <Squircle className='rounded-4xl'>
-                <NeatGradient />
-                </Squircle>
+                    <NeatGradient />
 
                 <div className="relative z-10 text-center mx-auto">
                     {/* Heading */}

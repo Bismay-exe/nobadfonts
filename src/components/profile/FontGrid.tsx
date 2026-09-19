@@ -11,13 +11,14 @@ interface FontGridProps {
     loading?: boolean;
 }
 
-const MasonryCard = ({ data }: { data: any }) => (
+const MasonryCard = ({ data, width }: { data: any; width: number }) => (
     <FontCard
         font={data}
         viewMode={data.viewMode}
         customText={data.customText}
         isExpanded={data.isExpanded}
         onToggle={data.onToggle}
+        cardWidth={width}
     />
 );
 
@@ -119,8 +120,11 @@ export default function FontGrid({ fonts, emptyMessage = "No fonts found.", load
                 <div className={`masonic-grid ${isBulkToggling ? 'is-bulk-toggling' : ''}`}>
                     <Masonry
                         items={masonryItems}
+                        itemKey={(data) => data.id}
                         columnCount={columns}
                         columnGutter={24}
+                        itemHeightEstimate={280}
+                        overscanBy={1}
                         render={MasonryCard}
                     />
                 </div>

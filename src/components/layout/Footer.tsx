@@ -1,5 +1,6 @@
 import { ArrowRight } from 'lucide-react';
 import React, { useEffect, useRef, memo } from 'react';
+import { Squircle } from 'react-ios-corners';
 import { Link } from 'react-router-dom';
 
 const Footer: React.FC = memo(() => {
@@ -25,6 +26,7 @@ const Footer: React.FC = memo(() => {
                 {/* Main Content Grid */}
                 <div className="flex flex-col lg:flex-row justify-between gap-16 lg:gap-24 mt-4 mb-8">
 
+                    <Squircle radius={80} className=' bg-blue-600 px-8 py-4'>
                     {/* Left Column: Brand & Newsletter */}
                     <div className="w-full lg:max-w-xl flex flex-col">
                         <h2 className="text-[rgb(var(--color-foreground))] text-2xl font-medium tracking-tight mb-4">
@@ -51,6 +53,7 @@ const Footer: React.FC = memo(() => {
                             </button>
                         </form>
                     </div>
+                    </Squircle>
 
                     {/* Right Columns: The Navigation Directory */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-12 w-full">

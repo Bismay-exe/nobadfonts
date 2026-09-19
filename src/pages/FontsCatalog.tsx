@@ -10,14 +10,19 @@ import { useFonts } from '../hooks/useFonts';
 import type { FontFilterParams } from '../types/font';
 import SEO from '../components/shared/SEO';
 import { Masonry } from "masonic";
+import { useAuth } from '../contexts/AuthContext';
+import { supabase } from '../lib/supabase';
 
-const MasonryCard = ({ data }: { data: any }) => (
+const MasonryCard = ({ data, width }: { data: any; width: number }) => (
     <FontCard
         font={data}
         viewMode={data.viewMode}
         customText={data.customText}
         isExpanded={data.isExpanded}
         onToggle={data.onToggle}
+        isFavorited={data.isFavorited}
+        onFavoriteChange={data.onFavoriteChange}
+        cardWidth={width}
     />
 );
 
@@ -37,6 +42,41 @@ export default function FontsCatalog() {
     const [isBulkToggling, setIsBulkToggling] = useState(false);
     const bulkToggleTimeoutRef = useRef<any>(null);
     const [customText, setCustomText] = useState('');
+    const { user } = useAuth();
+    const [userFavoriteIds, setUserFavoriteIds] = useState<Set<string>>(new Set());
+
+    useEffect(() => {
+        if (!user) {
+            setUserFavoriteIds(new Set());
+            return;
+        }
+
+        let isMounted = true;
+        supabase
+            .from('favorites')
+            .select('font_id')
+            .eq('user_id', user.id)
+            .then(({ data, error }) => {
+                if (!isMounted || error || !data) return;
+                setUserFavoriteIds(new Set(data.map((f: any) => f.font_id)));
+            });
+
+        return () => {
+            isMounted = false;
+        };
+    }, [user]);
+
+    const handleFavoriteToggle = useCallback((fontId: string, isFav: boolean) => {
+        setUserFavoriteIds(prev => {
+            const next = new Set(prev);
+            if (isFav) {
+                next.add(fontId);
+            } else {
+                next.delete(fontId);
+            }
+            return next;
+        });
+    }, []);
 
     const { fonts, loading, loadingMore, error, hasMore, loadMore } = useFonts(filters);
 
@@ -111,7 +151,7 @@ export default function FontsCatalog() {
         return fonts
             .filter(f => f && f.id)
             .map(f => {
-                const cardProps = getCardProps(f.id)
+                const cardProps = getCardProps(f.id);
 
                 return {
                     ...f,
@@ -119,10 +159,12 @@ export default function FontsCatalog() {
                     customText,
                     isExpanded: cardProps.isExpanded,
                     onToggle: cardProps.onToggle,
+                    isFavorited: userFavoriteIds.has(f.id),
+                    onFavoriteChange: handleFavoriteToggle,
                     bulkToggleVersion
-                }
-            })
-    }, [fonts, viewMode, customText, getCardProps, bulkToggleVersion])
+                };
+            });
+    }, [fonts, viewMode, customText, getCardProps, userFavoriteIds, handleFavoriteToggle, bulkToggleVersion]);
 
     const columns =
         width > 1280 ? 4 :
@@ -165,7 +207,7 @@ export default function FontsCatalog() {
                 schema={catalogSchema}
             />
 
-            <div className="relative px-4 pt-0 md:pt-6 w-full">
+            <div className="relative px-1 sm:px-2 md:px-4 pt-0 md:pt-6 w-full">
                 {/* Header */}
                 <div className="mb-8 text-center">
                     <h1 className="text-4xl md:text-6xl font-bold tracking-tighter text-[rgb(var(--color-foreground)/0.85)] mb-4">Catalog</h1>
@@ -216,11 +258,14 @@ export default function FontsCatalog() {
                         </div>
                     ) : fonts.length > 0 ? (
                         <>
-                            <div className={`masonic-grid ${isBulkToggling ? 'is-bulk-toggling' : ''}`}>
+                            <div className={`masonic-grid select-none ${isBulkToggling ? 'is-bulk-toggling' : ''}`}>
                                 <Masonry
                                     items={items}
+                                    itemKey={(data) => data.id}
                                     columnCount={columns}
                                     columnGutter={16}
+                                    itemHeightEstimate={280}
+                                    overscanBy={1}
                                     render={MasonryCard}
                                 />
                             </div>
