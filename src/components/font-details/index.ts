@@ -9,3 +9,5 @@ export { default as FontGlyphMapSection } from './FontGlyphMapSection';
 export { default as FontSimilarSection } from './FontSimilarSection';
 export { default as FontEditorialDetails } from './FontEditorialDetails';
 export { default as FontJsonToolbar } from './FontJsonToolbar';
+export { default as ScrollProgress } from '../ui/ScrollProgress';
+export type { ScrollProgressSection } from '../ui/ScrollProgress';

@@ -61,7 +61,8 @@ export default function Navbar() {
                     "fixed top-0 w-full left-1/2 -translate-x-1/2 z-50 transition-all duration-300",
                     isScrolled
                         ? "max-w-full md:rounded-none bg-linear-to-b from-[rgb(var(--color-background))] via-[rgb(var(--color-background)/0.6)] to-[rgb(var(--color-background)/0)] py-2 md:py-4 px-6 md:px-10"
-                        : "md:top-4 max-w-7xl md:rounded-3xl bg-transparent border-none py-4 px-4"
+                        : "max-w-full md:rounded-none bg-linear-to-b from-[rgb(var(--color-background))] via-[rgb(var(--color-background)/0.6)] to-[rgb(var(--color-background)/0)] py-2 md:py-4 px-6 md:px-10"
+                        // : "md:top-4 max-w-7xl md:rounded-3xl bg-transparent border-none py-4 px-4"
                 )}
             >
                 <div className="flex items-center pt-[env(safe-area-inset-top)] md:pt-0">

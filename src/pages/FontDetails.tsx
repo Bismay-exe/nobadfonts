@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from 'react-router-dom';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import SocialShareCard from '../components/fonts/SocialShareCard';
 import ShareModal from '../components/fonts/ShareModal';
 import { useAuth } from '../contexts/AuthContext';
@@ -26,6 +26,8 @@ import {
     FontSimilarSection,
     FontEditorialDetails,
     FontJsonToolbar,
+    ScrollProgress,
+    type ScrollProgressSection,
 } from '../components/font-details';
 import AdminOgImageManager from '../components/fonts/AdminOgImageManager';
 import ContextPreview from '../components/fonts/ContextPreview';
@@ -313,6 +315,23 @@ export default function FontDetails() {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
+    // Scroll Progress Sections (must run before early returns)
+    const sections = useMemo<ScrollProgressSection[]>(() => {
+        const list: ScrollProgressSection[] = [
+            { id: 'overview', label: 'Overview' },
+            { id: 'variants', label: 'Variants' },
+            { id: 'details', label: 'Details' },
+            { id: 'tester', label: 'Type Tester' },
+            { id: 'integration', label: 'Integration' },
+            { id: 'glyphs', label: 'Glyphs' },
+            { id: 'context', label: 'Context' },
+        ];
+        if (similarFonts && similarFonts.length > 0) {
+            list.push({ id: 'similar', label: 'Similar' });
+        }
+        return list;
+    }, [similarFonts]);
+
     if (loading) return <div className="container mx-auto px-4 py-8">Loading...</div>;
     if (error || !font) return <div className="container mx-auto px-4 py-8">Font not found</div>;
 
@@ -403,23 +422,25 @@ export default function FontDetails() {
             />
 
             <div className="max-w-480 mx-auto pt-16 md:pt-24 px-4 md:px-8 space-y-6 md:space-y-12">
-                {/* 1. Hero Header */}
-                <FontHeroHeader
-                    font={font}
-                    isFavorited={isFavorited}
-                    shareLoading={shareLoading}
-                    isDownloadingZip={isDownloadingZip}
-                    zipStatusText={zipStatusText}
-                    onFavorite={handleFavorite}
-                    onShare={handleShare}
-                    onDownloadZip={handleDownloadZip}
-                />
+                {/* 1. Hero Header & Gallery */}
+                <div id="overview" className="scroll-mt-24 space-y-6 md:space-y-12">
+                    <FontHeroHeader
+                        font={font}
+                        isFavorited={isFavorited}
+                        shareLoading={shareLoading}
+                        isDownloadingZip={isDownloadingZip}
+                        zipStatusText={zipStatusText}
+                        onFavorite={handleFavorite}
+                        onShare={handleShare}
+                        onDownloadZip={handleDownloadZip}
+                    />
 
-                {/* Gallery / Specimen Display */}
-                <FontGalleryHero font={font} isFontLoaded={isFontLoaded} />
+                    {/* Gallery / Specimen Display */}
+                    <FontGalleryHero font={font} isFontLoaded={isFontLoaded} />
 
-                {/* Tags & Categories */}
-                <FontTags tags={font.tags} />
+                    {/* Tags & Categories */}
+                    <FontTags tags={font.tags} />
+                </div>
 
                 {/* Admin Controls & OG Social Card Manager (Exclusively for Admins) */}
                 {profile?.role === 'admin' && (
@@ -464,14 +485,16 @@ export default function FontDetails() {
                 />
 
                 {/* 2. Variant Previews */}
-                <FontVariantSection
-                    font={font}
-                    profile={profile}
-                    downloadFont={downloadFont}
-                />
+                <div id="variants" className="scroll-mt-24">
+                    <FontVariantSection
+                        font={font}
+                        profile={profile}
+                        downloadFont={downloadFont}
+                    />
+                </div>
 
                 {/* 3. Editorial Details & Taxonomy */}
-                <div className="pt-4 space-y-4">
+                <div id="details" className="scroll-mt-24 pt-4 space-y-4">
                     {profile?.role === 'admin' && (
                         <div className="flex items-center justify-between flex-wrap gap-4 pb-2 border-b border-[rgb(var(--color-foreground)/0.08)]">
                             <span className="font-mono text-xs uppercase tracking-widest text-[rgb(var(--color-muted-foreground))]">
@@ -525,7 +548,7 @@ export default function FontDetails() {
                 )}
 
                 {/* 4. Type Tester */}
-                <div className="space-y-8">
+                <div id="tester" className="scroll-mt-24 space-y-8">
                     <div className="flex justify-center items-center gap-4 py-10">
                         <h2 className="text-4xl sm:text-6xl md:text-8xl font-inter-tight font-medium zuppercase ztracking-widest text-[rgb(var(--color-foreground))]">
                             Type tester
@@ -535,17 +558,21 @@ export default function FontDetails() {
                 </div>
 
                 {/* 5. Integration & Stats */}
-                <FontIntegrationSection font={font} research={fontResearch} />
+                <div id="integration" className="scroll-mt-24">
+                    <FontIntegrationSection font={font} research={fontResearch} />
+                </div>
 
                 {/* 6. Glyph Map */}
-                <FontGlyphMapSection font={font} isFontLoaded={isFontLoaded} />
+                <div id="glyphs" className="scroll-mt-24">
+                    <FontGlyphMapSection font={font} isFontLoaded={isFontLoaded} />
+                </div>
 
-
-
-                <div className="space-y-8 mt-40">
+                {/* 7. Real-World Context Preview */}
+                <div id="context" className="scroll-mt-24 space-y-8 mt-40">
                     <div className="flex justify-center items-center gap-4 py-10">
                         <h2 className="relative flex justify-end items-center text-4xl sm:text-6xl md:text-8xl font-inter-tight font-medium zuppercase ztracking-widest text-[rgb(var(--color-foreground))]">
-                            Real-World <br className='md:hidden' />Context <span className="absolute bottom-full sm:bottom-auto left-0 sm:left-auto text-sm sm:text-xl px-2.5 sm:px-3.5 py-0.5 sm:py-2.5 bg-[rgb(var(--color-accent))] text-black rounded-full">Experimental</span>
+                            Real-World <br className='md:hidden' />Context 
+                            <div className="absolute bottom-full left-0 text-sm sm:text-xl px-2.5 sm:px-3.5 py-0.5 sm:py-2.5 bg-[rgb(var(--color-accent))] text-black rounded-full">Experimental</div>
                         </h2>
                     </div>
                     <div className="">
@@ -553,9 +580,14 @@ export default function FontDetails() {
                     </div>
                 </div>
 
-                {/* 7. Similar Fonts */}
-                <FontSimilarSection similarFonts={similarFonts} />
+                {/* 8. Similar Fonts */}
+                <div id="similar" className="scroll-mt-24">
+                    <FontSimilarSection similarFonts={similarFonts} />
+                </div>
             </div>
+
+            {/* Scroll Progress & Section Navigation */}
+            <ScrollProgress sections={sections} />
 
             {/* Admin File Manager Overlay */}
             {profile?.role === 'admin' && isEditingFiles && (

@@ -304,7 +304,10 @@ function FontCard({
         <div
             className="group relative -mb-2 sm:mb-0 overflow-hidden flex flex-col"
             onClick={handleCardClick}
-        >   <Squircle className='w-full h-full bg-[rgb(var(--color-foreground)/0.05)]' radius={40}>
+        >   <div
+            className='w-full h-full bg-[rgb(var(--color-foreground)/0.05)] rounded-4xl'
+        // radius={50}
+        >
                 <div className="flex flex-col h-full relative cursor-pointer">
                     {/* Preview Section - Fixed Height or ratio? 
                     In original, it was h-full. Now we want it to be the main part.
@@ -314,17 +317,18 @@ function FontCard({
                 */}
                     <>
                         {viewMode === 'image' && (font.preview_image_url || (font.gallery_images && font.gallery_images.length > 0)) ? (
-                            <div className="w-full relative flex items-center justify-center overflow-hidden transition-all duration-300 min-h-50">
-                                <div className={`w-full h-full flex items-center justify-center transition-all duration-300 ease-in-out
+
+                            <div className={`w-full h-full flex items-center justify-center transition-all duration-300 ease-in-out min-h-50
                             ${isExpanded ? 'p-2' : 'p-0'}`}>
+                                <Squircle radius={50}>
                                     <img
                                         src={font.preview_image_url || font.gallery_images?.[0]}
                                         alt={`${font.name} font preview specimen`}
                                         loading="lazy"
                                         decoding="async"
-                                        className="w-full h-full object-cover rounded-3xl"
+                                        className="w-full h-full object-cover"
                                     />
-                                </div>
+                                </Squircle>
                             </div>
                         ) : (
                             <div className="py-4 sm:py-8 md:py-12 px-0 sm:px-2 md:px-4">
@@ -340,8 +344,10 @@ function FontCard({
 
                     {/* Expanded Content Section */}
                     <div
+                        // transition={{ duration: 0.25, ease: "easeInOut" }}
                         style={{
                             height: isExpanded ? "auto" : 0,
+                            opacity: isExpanded ? 1 : 0,
                             overflow: "hidden"
                         }}
                     >
@@ -354,7 +360,7 @@ function FontCard({
                             transition={{ duration: 0.25 }}
                         >
                             <div className="overflow-hidden">
-                                <div className="zbg-linear-to-t from-[rgb(var(--color-background))] to-[rgb(var(--color-background)/0)] w-full">
+                                <div className="w-full">
                                     <div className="px-4 pb-4 pt-2 flex flex-col gap-3">
                                         {/* Top Row: Likes & View Button */}
                                         {/* <div className="flex items-center justify-between w-full ">
@@ -420,7 +426,7 @@ function FontCard({
                                                 <Link
                                                     key={i}
                                                     to={`/fonts?categories=${tag}`}
-                                                    className="bg-[rgb(var(--color-foreground)/0.05)] zborder border-[rgb(var(--color-foreground)/0.05)] text-[rgb(var(--color-foreground)/0.6)] hover:bg-[rgb(var(--color-foreground)/0.9)] hover:text-[rgb(var(--color-background))] text-[10px] md:text-[11px] px-2.5 py-1.5 rounded-full tracking-wider font-medium font-inter-tight uppercase transition-colors duration-300 ease-in-out">
+                                                    className="bg-[rgb(var(--color-foreground)/0.05)] text-[rgb(var(--color-foreground)/0.6)] hover:bg-[rgb(var(--color-foreground)/0.9)] hover:text-[rgb(var(--color-background))] text-[10px] md:text-[11px] px-2.5 py-1.5 rounded-full tracking-wider font-normal font-inter-tight zuppercase transition-colors duration-300 ease-in-out">
                                                     {tag}
                                                 </Link>
                                             ))}
@@ -431,47 +437,50 @@ function FontCard({
                         </motion.div>
                     </div>
                 </div>
-            </Squircle>
+            </div>
             {/* Hover overlay gradient for collapsed state */}
             <div
-                className={`absolute inset-0 bg-linear-to-t from-[rgb(var(--color-background)/0.8)] via-transparent to-transparent flex justify-between items-end p-6 z-10 transition-opacity duration-300 ease-in-out pointer-events-none ${isExpanded ? 'opacity-0' : 'opacity-0 group-hover:opacity-100'
+                // radius={50}
+                className={`absolute inset-0 flex justify-between items-end w-full bg-linear-to-t from-[rgb(var(--color-card)/0.8)] via-transparent to-transparent z-10 transition-opacity duration-300 ease-in-out pointer-events-none ${isExpanded ? 'opacity-0' : 'opacity-0 group-hover:opacity-100'
                     }`}
             >
-                <div className="flex flex-col">
-                    <p className={`text-[rgb(var(--color-foreground))] font-bold text-lg transition-transform duration-300 ${isExpanded ? 'translate-y-2' : 'translate-y-2 group-hover:translate-y-0'}`}>{font.name}</p>
-                    <p className={`text-[rgb(var(--color-muted-foreground))] text-xs transition-transform duration-300 delay-75 ${isExpanded ? 'translate-y-2' : 'translate-y-2 group-hover:translate-y-0'}`}>{font.designer}</p>
-                </div>
-                <div className="flex items-center justify-end gap-2">
-                    {/* Likes */}
-                    {!hideLike && (
-                        <button
-                            onClick={toggleFavorite}
-                            aria-label={isFavorited ? `Remove ${font.name} from favorites` : `Add ${font.name} to favorites`}
-                            className={`flex items-center gap-1 text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out group/like ${isExpanded ? 'pointer-events-none' : 'pointer-events-auto'}`}
-                        >
-                            <Heart
-                                size={22}
-                                className={`transition-transform duration-300 ${isFavorited ? 'fill-pink-500 text-pink-500' : 'group-hover/like:scale-105'}`}
-                            />
-                            <span className="font-bold text-[16px]">{favoritesCount}</span>
-                        </button>
-                    )}
+                <div className='flex justify-between items-end p-5 w-full'>
+                    <div className="flex flex-col font-inter-tight tracking-wider">
+                        <p className={`text-[rgb(var(--color-foreground))] font-medium text-base transition-transform duration-300 ${isExpanded ? 'translate-y-2' : 'translate-y-2 group-hover:translate-y-0'}`}>{font.name}</p>
+                        <p className={`text-[rgb(var(--color-muted-foreground))] text-sm transition-transform duration-300 delay-75 ${isExpanded ? 'translate-y-2' : 'translate-y-2 group-hover:translate-y-0'}`}>{font.designer}</p>
+                    </div>
+                    <div className="flex items-center justify-end gap-2 font-inter-tight tracking-wider">
+                        {/* Likes */}
+                        {!hideLike && (
+                            <button
+                                onClick={toggleFavorite}
+                                aria-label={isFavorited ? `Remove ${font.name} from favorites` : `Add ${font.name} to favorites`}
+                                className={`flex items-center gap-1 text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out group/like ${isExpanded ? 'pointer-events-none' : 'pointer-events-auto'}`}
+                            >
+                                <Heart
+                                    size={22}
+                                    className={`transition-transform duration-300 ${isFavorited ? 'fill-pink-500 text-pink-500' : 'group-hover/like:scale-105'}`}
+                                />
+                                <span className="font-medium text-[16px]">{favoritesCount}</span>
+                            </button>
+                        )}
 
-                    {/* View Font Button */}
-                    <Link
-                        to={`/fonts/${font.slug || font.id}`}
-                        aria-label={`View ${font.name} font details and specimen`}
-                        onClick={(e) => {
-                            if (!isExpanded) {
-                                e.stopPropagation();
-                            } else {
-                                e.preventDefault();
-                            }
-                        }}
-                        className={`text-xs px-4 py-2 font-bold text-[rgb(var(--color-foreground))] hover:opacity-80 transition-colors duration-300 ease-in-out ${isExpanded ? 'pointer-events-none' : 'pointer-events-auto'}`}
-                    >
-                        <ArrowUpRight size={22} />
-                    </Link>
+                        {/* View Font Button */}
+                        <Link
+                            to={`/fonts/${font.slug || font.id}`}
+                            aria-label={`View ${font.name} font details and specimen`}
+                            onClick={(e) => {
+                                if (!isExpanded) {
+                                    e.stopPropagation();
+                                } else {
+                                    e.preventDefault();
+                                }
+                            }}
+                            className={`text-xs pl-4 py-2 font-bold text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out ${isExpanded ? 'pointer-events-none' : 'pointer-events-auto'}`}
+                        >
+                            <ArrowUpRight size={22} />
+                        </Link>
+                    </div>
                 </div>
             </div>
         </div>

@@ -20,7 +20,7 @@ export default defineConfig({
         manualChunks: {
           'vendor-react': ['react', 'react-dom', 'react-router-dom', 'react-helmet-async'],
           'vendor-supabase': ['@supabase/supabase-js'],
-          'vendor-animations': ['framer-motion', 'gsap', 'lenis'],
+          'vendor-animations': ['framer-motion', 'motion', 'gsap', 'lenis'],
           'vendor-utils': ['clsx', 'tailwind-merge', 'lucide-react', 'masonic'],
           'vendor-charts': ['recharts'],
           'vendor-font': ['opentype.js'],
