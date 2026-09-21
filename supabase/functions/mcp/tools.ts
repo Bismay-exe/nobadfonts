@@ -2090,3 +2090,801 @@ export async function handleRollbackFontRevision(args: {
 }
 
 
+
+// ══════════════════════════════════════════════════════════════════════════════
+// RBAC TYPES & HELPERS
+// ══════════════════════════════════════════════════════════════════════════════
+
+export type CallerRole = 'user' | 'member' | 'admin';
+
+export interface Caller {
+  user_id: string;
+  role: CallerRole;
+}
+
+/**
+ * RBAC enforcement helper.
+ * Returns an MCP error response if the caller's role is not in the allowed list.
+ * Returns null if access is granted.
+ */
+export function requireRole(
+  caller: Caller | null | undefined,
+  allowed: CallerRole[],
+  toolName: string
+): { isError: true; content: { type: 'text'; text: string }[] } | null {
+  if (!caller || !caller.user_id) {
+    return {
+      isError: true,
+      content: [{ type: 'text', text: `401 Unauthorized: This tool (${toolName}) requires authentication. Provide a valid Supabase user token via the Authorization header.` }]
+    };
+  }
+  if (!allowed.includes(caller.role)) {
+    return {
+      isError: true,
+      content: [{ type: 'text', text: `403 Forbidden: Your role "${caller.role}" does not have permission to call "${toolName}". Required role: ${allowed.join(' or ')}.` }]
+    };
+  }
+  return null;
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// TOOL 12: get_font_sections
+// Fetches only the requested sections or dot-notation fields from a font's
+// canonical taxonomy, without returning the full 7-section JSON.
+// ══════════════════════════════════════════════════════════════════════════════
+
+export async function handleGetFontSections(args: {
+  slug?: string;
+  id?: string;
+  sections?: string[];
+  fields?: string[];
+  caller?: Caller;
+}) {
+  const authError = requireRole(args.caller, ['user', 'member', 'admin'], 'get_font_sections');
+  if (authError) return authError;
+
+  if (!args.slug && !args.id) {
+    return {
+      isError: true,
+      content: [{ type: 'text', text: 'Error: Either "slug" or "id" is required.' }]
+    };
+  }
+
+  if ((!args.sections || args.sections.length === 0) && (!args.fields || args.fields.length === 0)) {
+    return {
+      isError: true,
+      content: [{ type: 'text', text: 'Error: Provide at least one "sections" name or "fields" dot-notation key.' }]
+    };
+  }
+
+  const supabase = getSupabaseClient();
+  const query = supabase
+    .from('fonts')
+    .select('*, font_research(*)');
+
+  const { data: font, error: fontError } = args.slug
+    ? await query.eq('slug', args.slug).maybeSingle()
+    : await query.eq('id', args.id!).maybeSingle();
+
+  if (fontError || !font) {
+    return {
+      isError: true,
+      content: [{ type: 'text', text: `Font not found for identifier: ${args.slug || args.id}` }]
+    };
+  }
+
+  const research = Array.isArray(font.font_research) ? font.font_research[0] : font.font_research;
+  const fullTaxonomy = buildCanonicalTaxonomy(font, research);
+
+  const result: Record<string, any> = {};
+
+  // Return requested top-level sections
+  if (args.sections && args.sections.length > 0) {
+    const VALID_SECTIONS = ['identity', 'creator', 'classification', 'description', 'license', 'official_links', 'technical'];
+    for (const section of args.sections) {
+      if (!VALID_SECTIONS.includes(section)) {
+        return {
+          isError: true,
+          content: [{ type: 'text', text: `Invalid section "${section}". Must be one of: ${VALID_SECTIONS.join(', ')}` }]
+        };
+      }
+      result[section] = fullTaxonomy[section] ?? null;
+    }
+  }
+
+  // Return requested dot-notation fields
+  if (args.fields && args.fields.length > 0) {
+    const fieldResults: Record<string, any> = {};
+    for (const dotKey of args.fields) {
+      const parts = dotKey.split('.');
+      if (parts.length !== 2) {
+        return {
+          isError: true,
+          content: [{ type: 'text', text: `Invalid field key "${dotKey}". Use format "section.field" (e.g. "description.description").` }]
+        };
+      }
+      const [section, field] = parts;
+      fieldResults[dotKey] = fullTaxonomy[section]?.[field] ?? null;
+    }
+    result['fields'] = fieldResults;
+  }
+
+  return {
+    content: [{
+      type: 'text',
+      text: JSON.stringify({
+        font_id: font.id,
+        slug: font.slug,
+        name: font.name,
+        requested: result
+      }, null, 2)
+    }]
+  };
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// TOOL 13: patch_font_fields
+// Lightweight dot-notation wrapper around propose_font_update.
+// AI provides flat patches like { "description.description": "..." }
+// instead of nested section objects.
+// ══════════════════════════════════════════════════════════════════════════════
+
+export async function handlePatchFontFields(args: {
+  slug?: string;
+  id?: string;
+  patches: Record<string, any>;
+  rationale?: string;
+  caller?: Caller;
+}) {
+  const authError = requireRole(args.caller, ['member', 'admin'], 'patch_font_fields');
+  if (authError) return authError;
+
+  if (!args.slug && !args.id) {
+    return {
+      isError: true,
+      content: [{ type: 'text', text: 'Error: Either "slug" or "id" is required.' }]
+    };
+  }
+
+  if (!args.patches || Object.keys(args.patches).length === 0) {
+    return {
+      isError: true,
+      content: [{ type: 'text', text: 'Error: "patches" must be a non-empty object of dot-notation keys and values.' }]
+    };
+  }
+
+  // Convert flat dot-notation patches to nested section objects
+  const changes: Record<string, any> = {};
+  for (const [dotKey, value] of Object.entries(args.patches)) {
+    const parts = dotKey.split('.');
+    if (parts.length !== 2) {
+      return {
+        isError: true,
+        content: [{ type: 'text', text: `Invalid patch key "${dotKey}". Use "section.field" format (e.g. "description.description").` }]
+      };
+    }
+    const [section, field] = parts;
+    if (!changes[section]) changes[section] = {};
+    changes[section][field] = value;
+  }
+
+  // Delegate to the existing propose_font_update handler
+  return handleProposeFontUpdate({
+    slug: args.slug,
+    id: args.id,
+    changes,
+    rationale: args.rationale || 'Targeted patch via patch_font_fields tool.',
+    client_hint: 'patch_font_fields'
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// TOOL 14: suggest_fonts
+// NLP description → matching fonts via category/tag/name search.
+// ══════════════════════════════════════════════════════════════════════════════
+
+export async function handleSuggestFonts(args: {
+  description: string;
+  limit?: number;
+  caller?: Caller;
+}) {
+  const authError = requireRole(args.caller, ['user', 'member', 'admin'], 'suggest_fonts');
+  if (authError) return authError;
+
+  if (!args.description || args.description.trim().length === 0) {
+    return {
+      isError: true,
+      content: [{ type: 'text', text: 'Error: "description" is required — describe the font you need in natural language.' }]
+    };
+  }
+
+  const limit = Math.min(Math.max(args.limit ?? 8, 1), 20);
+  const supabase = getSupabaseClient();
+
+  // Extract category hints from description (simple keyword matching)
+  const desc = args.description.toLowerCase();
+  const categoryHints: string[] = [];
+  if (desc.includes('sans') || desc.includes('clean') || desc.includes('modern') || desc.includes('minimal')) categoryHints.push('sans');
+  if (desc.includes('serif') || desc.includes('classic') || desc.includes('traditional') || desc.includes('editorial')) categoryHints.push('serif');
+  if (desc.includes('display') || desc.includes('headline') || desc.includes('decorative') || desc.includes('eye-catching')) categoryHints.push('display');
+  if (desc.includes('script') || desc.includes('handwriting') || desc.includes('cursive') || desc.includes('calligraphy')) categoryHints.push('script');
+  if (desc.includes('slab') || desc.includes('slab-serif')) categoryHints.push('slab-serif');
+  if (desc.includes('mono') || desc.includes('code') || desc.includes('developer') || desc.includes('terminal')) categoryHints.push('monospace');
+  if (desc.includes('handwritten') || desc.includes('informal') || desc.includes('casual')) categoryHints.push('handwritten');
+
+  let fonts: any[] = [];
+
+  // First: try category-filtered search
+  if (categoryHints.length > 0) {
+    const { data } = await supabase
+      .from('fonts')
+      .select('id, name, slug, category, tags, designer, foundry, description, license_type, commercial_use')
+      .in('category', categoryHints)
+      .not('category', 'is', null)
+      .limit(limit * 2);
+    fonts = data || [];
+  }
+
+  // Fallback: full-text search on the description as a query
+  if (fonts.length < limit) {
+    const words = args.description.split(/\s+/).filter(w => w.length > 3).slice(0, 5);
+    for (const word of words) {
+      const { data } = await supabase
+        .from('fonts')
+        .select('id, name, slug, category, tags, designer, foundry, description, license_type, commercial_use')
+        .ilike('name', `%${word}%`)
+        .limit(limit);
+      if (data) {
+        for (const f of data) {
+          if (!fonts.find((existing: any) => existing.id === f.id)) fonts.push(f);
+        }
+      }
+    }
+  }
+
+  const results = fonts.slice(0, limit).map((f: any) => ({
+    id: f.id,
+    name: f.name,
+    slug: f.slug,
+    category: f.category,
+    tags: f.tags,
+    designer: f.designer,
+    foundry: f.foundry,
+    license_type: f.license_type,
+    commercial_use: f.commercial_use,
+    reasoning: `Matched based on: ${categoryHints.length > 0 ? `category "${f.category}" aligns with your query` : 'name similarity to your description'}.`
+  }));
+
+  return {
+    content: [{
+      type: 'text',
+      text: JSON.stringify({
+        query: args.description,
+        matched_categories: categoryHints,
+        count: results.length,
+        fonts: results
+      }, null, 2)
+    }]
+  };
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// TOOL 15: generate_font_pairing
+// Given a primary font slug, suggests 2-3 complementary pairing fonts.
+// ══════════════════════════════════════════════════════════════════════════════
+
+export async function handleGenerateFontPairing(args: {
+  slug: string;
+  limit?: number;
+  caller?: Caller;
+}) {
+  const authError = requireRole(args.caller, ['user', 'member', 'admin'], 'generate_font_pairing');
+  if (authError) return authError;
+
+  if (!args.slug) {
+    return {
+      isError: true,
+      content: [{ type: 'text', text: 'Error: "slug" of the primary font is required.' }]
+    };
+  }
+
+  const supabase = getSupabaseClient();
+
+  // Fetch the primary font
+  const { data: primaryFont, error: primaryError } = await supabase
+    .from('fonts')
+    .select('id, name, slug, category, tags, description')
+    .eq('slug', args.slug)
+    .maybeSingle();
+
+  if (primaryError || !primaryFont) {
+    return {
+      isError: true,
+      content: [{ type: 'text', text: `Font not found: "${args.slug}"` }]
+    };
+  }
+
+  const limit = Math.min(Math.max(args.limit ?? 3, 1), 5);
+
+  // Classic pairing logic: contrast the category
+  const PAIRING_MAP: Record<string, string[]> = {
+    'sans':       ['serif', 'slab-serif'],
+    'serif':      ['sans', 'script'],
+    'display':    ['sans', 'serif'],
+    'script':     ['sans', 'serif'],
+    'slab-serif': ['sans', 'script'],
+    'monospace':  ['sans', 'serif'],
+    'handwritten': ['sans', 'serif']
+  };
+
+  const pairCategories = PAIRING_MAP[primaryFont.category] || ['sans', 'serif'];
+
+  const { data: candidates, error: candidatesError } = await supabase
+    .from('fonts')
+    .select('id, name, slug, category, tags, description, license_type, commercial_use')
+    .in('category', pairCategories)
+    .neq('slug', args.slug)
+    .limit(limit * 3);
+
+  if (candidatesError || !candidates || candidates.length === 0) {
+    return {
+      isError: true,
+      content: [{ type: 'text', text: 'Could not find complementary fonts for this pairing.' }]
+    };
+  }
+
+  const pairings = candidates.slice(0, limit).map((f: any) => ({
+    id: f.id,
+    name: f.name,
+    slug: f.slug,
+    category: f.category,
+    tags: f.tags,
+    license_type: f.license_type,
+    commercial_use: f.commercial_use,
+    pairing_rationale: `"${f.name}" (${f.category}) pairs well with "${primaryFont.name}" (${primaryFont.category}) — contrasting styles create visual hierarchy and typographic balance.`
+  }));
+
+  return {
+    content: [{
+      type: 'text',
+      text: JSON.stringify({
+        primary_font: { name: primaryFont.name, slug: primaryFont.slug, category: primaryFont.category },
+        suggested_pairings: pairings,
+        pairing_principle: `Primary is ${primaryFont.category} → complemented by ${pairCategories.join(' or ')} for contrast and hierarchy.`
+      }, null, 2)
+    }]
+  };
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// TOOL 16: like_font
+// Toggle like — saves or removes a font from the user's favorites.
+// ══════════════════════════════════════════════════════════════════════════════
+
+export async function handleLikeFont(args: {
+  slug?: string;
+  font_id?: string;
+  caller?: Caller;
+}) {
+  const authError = requireRole(args.caller, ['user', 'member', 'admin'], 'like_font');
+  if (authError) return authError;
+
+  if (!args.slug && !args.font_id) {
+    return {
+      isError: true,
+      content: [{ type: 'text', text: 'Error: Either "slug" or "font_id" is required.' }]
+    };
+  }
+
+  const supabase = getSupabaseClient();
+
+  // Resolve font_id from slug if needed
+  let fontId = args.font_id;
+  let fontName = '';
+  if (!fontId) {
+    const { data: f } = await supabase.from('fonts').select('id, name').eq('slug', args.slug!).maybeSingle();
+    if (!f) return { isError: true, content: [{ type: 'text', text: `Font not found: "${args.slug}"` }] };
+    fontId = f.id;
+    fontName = f.name;
+  } else {
+    const { data: f } = await supabase.from('fonts').select('name').eq('id', fontId).maybeSingle();
+    fontName = f?.name || fontId;
+  }
+
+  const userId = args.caller!.user_id;
+
+  // Check if already liked
+  const { data: existing } = await supabase
+    .from('favorites')
+    .select('id')
+    .eq('user_id', userId)
+    .eq('font_id', fontId)
+    .maybeSingle();
+
+  if (existing) {
+    // Unlike: remove from favorites
+    await supabase.from('favorites').delete().eq('id', existing.id);
+    return {
+      content: [{
+        type: 'text',
+        text: JSON.stringify({ action: 'unliked', font: fontName, font_id: fontId, message: `✅ Removed "${fontName}" from your favorites.` }, null, 2)
+      }]
+    };
+  } else {
+    // Like: add to favorites
+    const { error: insertError } = await supabase.from('favorites').insert({ user_id: userId, font_id: fontId });
+    if (insertError) {
+      return { isError: true, content: [{ type: 'text', text: `Failed to like font: ${insertError.message}` }] };
+    }
+    return {
+      content: [{
+        type: 'text',
+        text: JSON.stringify({ action: 'liked', font: fontName, font_id: fontId, message: `❤️ "${fontName}" saved to your favorites.` }, null, 2)
+      }]
+    };
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// TOOL 17: dislike_font
+// Toggle dislike — saves or removes a font from font_preferences.
+// ══════════════════════════════════════════════════════════════════════════════
+
+export async function handleDislikeFont(args: {
+  slug?: string;
+  font_id?: string;
+  caller?: Caller;
+}) {
+  const authError = requireRole(args.caller, ['user', 'member', 'admin'], 'dislike_font');
+  if (authError) return authError;
+
+  if (!args.slug && !args.font_id) {
+    return {
+      isError: true,
+      content: [{ type: 'text', text: 'Error: Either "slug" or "font_id" is required.' }]
+    };
+  }
+
+  const supabase = getSupabaseClient();
+
+  let fontId = args.font_id;
+  let fontName = '';
+  if (!fontId) {
+    const { data: f } = await supabase.from('fonts').select('id, name').eq('slug', args.slug!).maybeSingle();
+    if (!f) return { isError: true, content: [{ type: 'text', text: `Font not found: "${args.slug}"` }] };
+    fontId = f.id;
+    fontName = f.name;
+  } else {
+    const { data: f } = await supabase.from('fonts').select('name').eq('id', fontId).maybeSingle();
+    fontName = f?.name || fontId;
+  }
+
+  const userId = args.caller!.user_id;
+
+  // Check if already disliked
+  const { data: existing } = await supabase
+    .from('font_preferences')
+    .select('id')
+    .eq('user_id', userId)
+    .eq('font_id', fontId)
+    .maybeSingle();
+
+  if (existing) {
+    // Un-dislike: remove preference
+    await supabase.from('font_preferences').delete().eq('id', existing.id);
+    return {
+      content: [{
+        type: 'text',
+        text: JSON.stringify({ action: 'undisliked', font: fontName, font_id: fontId, message: `↩️ Removed dislike for "${fontName}".` }, null, 2)
+      }]
+    };
+  } else {
+    // Dislike: insert preference
+    const { error: insertError } = await supabase.from('font_preferences').insert({
+      user_id: userId,
+      font_id: fontId,
+      preference: 'dislike'
+    });
+    if (insertError) {
+      return { isError: true, content: [{ type: 'text', text: `Failed to dislike font: ${insertError.message}` }] };
+    }
+    return {
+      content: [{
+        type: 'text',
+        text: JSON.stringify({ action: 'disliked', font: fontName, font_id: fontId, message: `👎 "${fontName}" marked as disliked. It will be deprioritized in suggestions.` }, null, 2)
+      }]
+    };
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// TOOL 18: save_to_storyboard
+// Saves a font to the user's personal storyboard with an optional note.
+// ══════════════════════════════════════════════════════════════════════════════
+
+export async function handleSaveToStoryboard(args: {
+  slug?: string;
+  font_id?: string;
+  note?: string;
+  position?: number;
+  caller?: Caller;
+}) {
+  const authError = requireRole(args.caller, ['user', 'member', 'admin'], 'save_to_storyboard');
+  if (authError) return authError;
+
+  if (!args.slug && !args.font_id) {
+    return {
+      isError: true,
+      content: [{ type: 'text', text: 'Error: Either "slug" or "font_id" is required.' }]
+    };
+  }
+
+  const supabase = getSupabaseClient();
+
+  let fontId = args.font_id;
+  let fontName = '';
+  if (!fontId) {
+    const { data: f } = await supabase.from('fonts').select('id, name').eq('slug', args.slug!).maybeSingle();
+    if (!f) return { isError: true, content: [{ type: 'text', text: `Font not found: "${args.slug}"` }] };
+    fontId = f.id;
+    fontName = f.name;
+  } else {
+    const { data: f } = await supabase.from('fonts').select('name').eq('id', fontId).maybeSingle();
+    fontName = f?.name || fontId;
+  }
+
+  const userId = args.caller!.user_id;
+
+  const { data, error } = await supabase
+    .from('storyboard_fonts')
+    .upsert({
+      user_id: userId,
+      font_id: fontId,
+      note: args.note?.trim() || null,
+      position: args.position ?? 0
+    }, { onConflict: 'user_id,font_id' })
+    .select()
+    .single();
+
+  if (error) {
+    return { isError: true, content: [{ type: 'text', text: `Failed to save to storyboard: ${error.message}` }] };
+  }
+
+  return {
+    content: [{
+      type: 'text',
+      text: JSON.stringify({
+        saved: true,
+        font: fontName,
+        font_id: fontId,
+        note: data.note,
+        position: data.position,
+        message: `📌 "${fontName}" saved to your storyboard.${data.note ? ` Note: "${data.note}"` : ''}`
+      }, null, 2)
+    }]
+  };
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// TOOL 19: get_my_storyboard
+// Retrieves all fonts in the user's storyboard, with joined font data.
+// ══════════════════════════════════════════════════════════════════════════════
+
+export async function handleGetMyStoryboard(args: {
+  caller?: Caller;
+}) {
+  const authError = requireRole(args.caller, ['user', 'member', 'admin'], 'get_my_storyboard');
+  if (authError) return authError;
+
+  const supabase = getSupabaseClient();
+  const userId = args.caller!.user_id;
+
+  const { data, error } = await supabase
+    .from('storyboard_fonts')
+    .select(`
+      id,
+      note,
+      position,
+      created_at,
+      fonts (
+        id, name, slug, category, tags, designer, foundry,
+        license_type, commercial_use, description
+      )
+    `)
+    .eq('user_id', userId)
+    .order('position', { ascending: true });
+
+  if (error) {
+    return { isError: true, content: [{ type: 'text', text: `Failed to fetch storyboard: ${error.message}` }] };
+  }
+
+  const entries = (data || []).map((entry: any) => ({
+    storyboard_entry_id: entry.id,
+    position: entry.position,
+    note: entry.note,
+    saved_at: entry.created_at,
+    font: entry.fonts
+  }));
+
+  return {
+    content: [{
+      type: 'text',
+      text: JSON.stringify({
+        user_id: userId,
+        total_fonts: entries.length,
+        storyboard: entries
+      }, null, 2)
+    }]
+  };
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// TOOL 20: create_collection
+// Admin-only: create a new curated font collection.
+// ══════════════════════════════════════════════════════════════════════════════
+
+export async function handleCreateCollection(args: {
+  title: string;
+  description?: string;
+  theme?: string;
+  font_ids?: string[];
+  status?: 'draft' | 'published';
+  caller?: Caller;
+}) {
+  const authError = requireRole(args.caller, ['admin'], 'create_collection');
+  if (authError) return authError;
+
+  if (!args.title || args.title.trim().length === 0) {
+    return {
+      isError: true,
+      content: [{ type: 'text', text: 'Error: "title" is required for a collection.' }]
+    };
+  }
+
+  const VALID_THEMES = [
+    'featured', 'trending', 'seasonal', 'mood', 'wedding', 'holiday',
+    'editors_choice', 'retro', 'tech', 'luxury', 'playful', 'minimal', 'bold'
+  ];
+
+  if (args.theme && !VALID_THEMES.includes(args.theme)) {
+    return {
+      isError: true,
+      content: [{ type: 'text', text: `Invalid theme "${args.theme}". Valid themes: ${VALID_THEMES.join(', ')}` }]
+    };
+  }
+
+  const supabase = getSupabaseClient();
+
+  const { data, error } = await supabase
+    .from('curated_collections')
+    .insert({
+      title: args.title.trim(),
+      description: args.description?.trim() || null,
+      theme: args.theme || null,
+      font_ids: args.font_ids || [],
+      status: args.status || 'draft',
+      created_by: args.caller!.user_id
+    })
+    .select()
+    .single();
+
+  if (error) {
+    return { isError: true, content: [{ type: 'text', text: `Failed to create collection: ${error.message}` }] };
+  }
+
+  return {
+    content: [{
+      type: 'text',
+      text: JSON.stringify({
+        created: true,
+        collection: {
+          id: data.id,
+          title: data.title,
+          description: data.description,
+          theme: data.theme,
+          status: data.status,
+          font_count: data.font_ids?.length || 0,
+          font_ids: data.font_ids,
+          created_by: data.created_by,
+          created_at: data.created_at
+        },
+        message: `✅ Collection "${data.title}" created with status "${data.status}".`
+      }, null, 2)
+    }]
+  };
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// TOOL 21: update_collection
+// Admin-only: add/remove fonts, update metadata, change status.
+// ══════════════════════════════════════════════════════════════════════════════
+
+export async function handleUpdateCollection(args: {
+  collection_id: string;
+  title?: string;
+  description?: string;
+  theme?: string;
+  status?: 'draft' | 'published' | 'archived';
+  add_font_ids?: string[];
+  remove_font_ids?: string[];
+  caller?: Caller;
+}) {
+  const authError = requireRole(args.caller, ['admin'], 'update_collection');
+  if (authError) return authError;
+
+  if (!args.collection_id) {
+    return {
+      isError: true,
+      content: [{ type: 'text', text: 'Error: "collection_id" is required.' }]
+    };
+  }
+
+  const supabase = getSupabaseClient();
+
+  // Fetch current collection
+  const { data: current, error: fetchError } = await supabase
+    .from('curated_collections')
+    .select('*')
+    .eq('id', args.collection_id)
+    .maybeSingle();
+
+  if (fetchError || !current) {
+    return {
+      isError: true,
+      content: [{ type: 'text', text: `Collection not found: "${args.collection_id}"` }]
+    };
+  }
+
+  // Compute updated font_ids
+  let fontIds: string[] = [...(current.font_ids || [])];
+  if (args.add_font_ids && args.add_font_ids.length > 0) {
+    for (const id of args.add_font_ids) {
+      if (!fontIds.includes(id)) fontIds.push(id);
+    }
+  }
+  if (args.remove_font_ids && args.remove_font_ids.length > 0) {
+    fontIds = fontIds.filter((id: string) => !args.remove_font_ids!.includes(id));
+  }
+
+  // Build update payload (only include provided fields)
+  const updatePayload: Record<string, any> = { font_ids: fontIds };
+  if (args.title !== undefined) updatePayload['title'] = args.title.trim();
+  if (args.description !== undefined) updatePayload['description'] = args.description?.trim() || null;
+  if (args.theme !== undefined) updatePayload['theme'] = args.theme || null;
+  if (args.status !== undefined) updatePayload['status'] = args.status;
+
+  const { data, error } = await supabase
+    .from('curated_collections')
+    .update(updatePayload)
+    .eq('id', args.collection_id)
+    .select()
+    .single();
+
+  if (error) {
+    return { isError: true, content: [{ type: 'text', text: `Failed to update collection: ${error.message}` }] };
+  }
+
+  return {
+    content: [{
+      type: 'text',
+      text: JSON.stringify({
+        updated: true,
+        collection: {
+          id: data.id,
+          title: data.title,
+          description: data.description,
+          theme: data.theme,
+          status: data.status,
+          font_count: data.font_ids?.length || 0,
+          font_ids: data.font_ids,
+          updated_at: data.updated_at
+        },
+        changes: {
+          fonts_added: args.add_font_ids?.length || 0,
+          fonts_removed: args.remove_font_ids?.length || 0
+        },
+        message: `✅ Collection "${data.title}" updated successfully.`
+      }, null, 2)
+    }]
+  };
+}

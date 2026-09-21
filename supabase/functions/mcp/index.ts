@@ -17,7 +17,19 @@ import {
   handleApproveFontRevision,
   handleRejectFontRevision,
   handlePublishFontRevision,
-  handleRollbackFontRevision
+  handleRollbackFontRevision,
+  // New RBAC tools (Tools 12-21)
+  handleGetFontSections,
+  handlePatchFontFields,
+  handleSuggestFonts,
+  handleGenerateFontPairing,
+  handleLikeFont,
+  handleDislikeFont,
+  handleSaveToStoryboard,
+  handleGetMyStoryboard,
+  handleCreateCollection,
+  handleUpdateCollection,
+  type Caller
 } from './tools.ts';
 
 const app = new Hono();
@@ -51,12 +63,12 @@ app.use('*', async (c, next) => {
 
   // Check Bearer Token / API Key (supports headers AND query parameters for Claude Web connectors)
   const expectedKey = Deno.env.get('MCP_API_KEY');
-  if (expectedKey) {
-    const queryToken = c.req.query('key') || c.req.query('token') || c.req.query('api_key');
-    const authHeader = c.req.header('Authorization') || c.req.header('x-api-key');
-    const headerToken = authHeader ? authHeader.replace(/^Bearer\s+/i, '').trim() : '';
-    const token = headerToken || queryToken || '';
+  const authHeader = c.req.header('Authorization') || c.req.header('x-api-key');
+  const headerToken = authHeader ? authHeader.replace(/^Bearer\s+/i, '').trim() : '';
+  const queryToken = c.req.query('key') || c.req.query('token') || c.req.query('api_key');
+  const token = headerToken || queryToken || '';
 
+  if (expectedKey) {
     if (!token || token !== expectedKey) {
       return c.json(
         { error: 'Unauthorized: Missing or invalid API key. Pass via Authorization header or ?key= query parameter.' },
@@ -64,6 +76,53 @@ app.use('*', async (c, next) => {
       );
     }
   }
+
+  // ─── RBAC: Resolve caller identity from Supabase JWT ───────────────────────
+  // If a user JWT (not an API key) is present, decode it to extract user_id and role.
+  // This allows user-scoped tools (like_font, save_to_storyboard, etc.) to operate
+  // on behalf of the authenticated user without exposing the service role key.
+  let caller: Caller | null = null;
+  if (token && token !== expectedKey) {
+    // Attempt JWT decode (header.payload.signature — base64url)
+    try {
+      const parts = token.split('.');
+      if (parts.length === 3) {
+        const payload = JSON.parse(
+          atob(parts[1].replace(/-/g, '+').replace(/_/g, '/'))
+        );
+        const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
+        const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ||
+          Deno.env.get('SUPABASE_SECRET_KEY') ||
+          Deno.env.get('SB_SECRET_KEY') ||
+          '';
+
+        // Verify the token is not expired
+        const now = Math.floor(Date.now() / 1000);
+        if (payload.exp && payload.exp < now) {
+          return c.json({ error: 'Unauthorized: Token has expired.' }, 401);
+        }
+
+        const userId: string = payload.sub || '';
+        if (userId) {
+          // Fetch role from profiles table using service key
+          const { createClient } = await import('jsr:@supabase/supabase-js@2');
+          const supabase = createClient(supabaseUrl, serviceKey);
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('role, membership_status')
+            .eq('id', userId)
+            .maybeSingle();
+
+          const role: Caller['role'] = (profile?.role as Caller['role']) || 'user';
+          caller = { user_id: userId, role };
+          c.set('caller', caller);
+        }
+      }
+    } catch (jwtErr) {
+      console.warn('JWT decode failed (non-blocking):', jwtErr);
+    }
+  }
+  // ───────────────────────────────────────────────────────────────────────────
 
   await next();
 });
@@ -689,7 +748,186 @@ Concurrency protection: verifies the current live state matches after_state_hash
   async (args) => handleRollbackFontRevision(args)
 );
 
-// ─── 4. Connect Transport & Serve ─────────────────────────────────────
+// ─── Tools 12-21: New RBAC tools ─────────────────────────────────────────────
+
+// Register Tool 12: get_font_sections
+server.tool(
+  'get_font_sections',
+  `Fetch only specific sections or dot-notation fields from a font's canonical taxonomy — without returning the full 7-section JSON.
+
+Use this before patch_font_fields to inspect only the fields you need to update.
+
+Examples:
+- sections: ["description", "license"] → returns only those 2 sections
+- fields: ["description.description", "official_links.purchase_url"] → returns only those 2 field values
+
+Requires: user, member, or admin role.`,
+  {
+    slug: z.string().optional().describe('URL slug of the font (e.g. "oreon")'),
+    id: z.string().optional().describe('UUID of the font'),
+    sections: z.array(z.string()).optional().describe('Top-level section names to return (identity, creator, classification, description, license, official_links, technical)'),
+    fields: z.array(z.string()).optional().describe('Dot-notation field keys to return (e.g. "description.description", "official_links.purchase_url")')
+  },
+  async (args, _extra, c) => handleGetFontSections({ ...args, caller: c?.get?.('caller') ?? undefined })
+);
+
+// Register Tool 13: patch_font_fields
+server.tool(
+  'patch_font_fields',
+  `Propose targeted font field updates using simple dot-notation keys instead of full nested section objects.
+
+Internally wraps propose_font_update but with a much simpler interface — ideal for AI agents making targeted edits.
+
+Example:
+  patch_font_fields(slug: "oreon", patches: { "description.description": "A bold geometric sans...", "official_links.purchase_url": "https://example.com/buy" })
+  → Creates a revision touching ONLY those 2 fields. All other taxonomy fields are untouched.
+
+Requires: member or admin role.`,
+  {
+    slug: z.string().optional().describe('URL slug of the font'),
+    id: z.string().optional().describe('UUID of the font'),
+    patches: z.record(z.any()).describe('Flat dot-notation patches: { "section.field": value }. Use section.field format (e.g. "description.description", "license.license_type").'),
+    rationale: z.string().optional().describe('Evidence-backed rationale for these specific field changes')
+  },
+  async (args, _extra, c) => handlePatchFontFields({ ...args, caller: c?.get?.('caller') ?? undefined })
+);
+
+// Register Tool 14: suggest_fonts
+server.tool(
+  'suggest_fonts',
+  `Find the best matching fonts from the database using a natural language description of your need.
+
+Examples:
+- "bold sans-serif for a tech startup logo"
+- "elegant serif for editorial use with commercial license"
+- "playful handwritten font for children's content"
+
+Returns matching fonts with category, tags, license, and AI-generated reasoning for each match.
+
+Requires: user, member, or admin role.`,
+  {
+    description: z.string().describe('Natural language description of the font you need (e.g. "bold sans for a tech startup logo")'),
+    limit: z.number().optional().describe('Maximum results to return (1-20, default 8)')
+  },
+  async (args, _extra, c) => handleSuggestFonts({ ...args, caller: c?.get?.('caller') ?? undefined })
+);
+
+// Register Tool 15: generate_font_pairing
+server.tool(
+  'generate_font_pairing',
+  `Given a primary font slug, suggests 2-3 complementary pairing fonts with pairing rationale.
+
+Pairing logic is based on typographic contrast principles (e.g. sans + serif, display + body).
+
+Requires: user, member, or admin role.`,
+  {
+    slug: z.string().describe('URL slug of the primary font to pair (e.g. "oreon")'),
+    limit: z.number().optional().describe('Number of pairing suggestions (1-5, default 3)')
+  },
+  async (args, _extra, c) => handleGenerateFontPairing({ ...args, caller: c?.get?.('caller') ?? undefined })
+);
+
+// Register Tool 16: like_font
+server.tool(
+  'like_font',
+  `Toggle like — saves a font to the authenticated user's favorites, or removes it if already liked.
+
+Uses the existing "favorites" table. Calling this twice on the same font will unlike it.
+
+Requires: user, member, or admin role.`,
+  {
+    slug: z.string().optional().describe('URL slug of the font to like/unlike'),
+    font_id: z.string().optional().describe('UUID of the font to like/unlike')
+  },
+  async (args, _extra, c) => handleLikeFont({ ...args, caller: c?.get?.('caller') ?? undefined })
+);
+
+// Register Tool 17: dislike_font
+server.tool(
+  'dislike_font',
+  `Toggle dislike — marks a font as disliked in the user's font_preferences, or removes the dislike if already set.
+
+Disliked fonts will be deprioritized in suggest_fonts results. Calling this twice will remove the dislike.
+
+Requires: user, member, or admin role.`,
+  {
+    slug: z.string().optional().describe('URL slug of the font to dislike/un-dislike'),
+    font_id: z.string().optional().describe('UUID of the font to dislike/un-dislike')
+  },
+  async (args, _extra, c) => handleDislikeFont({ ...args, caller: c?.get?.('caller') ?? undefined })
+);
+
+// Register Tool 18: save_to_storyboard
+server.tool(
+  'save_to_storyboard',
+  `Add a font to the authenticated user's personal storyboard with an optional note and position.
+
+If the font is already in the storyboard, updates the note and position (upsert).
+
+Requires: user, member, or admin role.`,
+  {
+    slug: z.string().optional().describe('URL slug of the font to save'),
+    font_id: z.string().optional().describe('UUID of the font to save'),
+    note: z.string().optional().describe('Personal note about why you saved this font (e.g. "Great for header text on dark backgrounds")'),
+    position: z.number().optional().describe('Display order position in the storyboard (default 0)')
+  },
+  async (args, _extra, c) => handleSaveToStoryboard({ ...args, caller: c?.get?.('caller') ?? undefined })
+);
+
+// Register Tool 19: get_my_storyboard
+server.tool(
+  'get_my_storyboard',
+  `Retrieve all fonts the authenticated user saved to their storyboard, including their personal notes and position ordering.
+
+Returns full font metadata (name, slug, category, tags, designer, license) for each saved font.
+
+Requires: user, member, or admin role.`,
+  {},
+  async (_args, _extra, c) => handleGetMyStoryboard({ caller: c?.get?.('caller') ?? undefined })
+);
+
+// Register Tool 20: create_collection
+server.tool(
+  'create_collection',
+  `Create a new curated font collection for the NoBadFonts site.
+
+Collections group fonts around a theme (featured, trending, seasonal, mood, wedding, holiday, editors_choice, retro, tech, luxury, playful, minimal, bold) for editorial curation and discovery.
+
+New collections start as "draft" by default. Set status to "published" to make them live.
+
+Requires: admin role only.`,
+  {
+    title: z.string().describe('Collection title (e.g. "Summer 2026 Display Fonts")'),
+    description: z.string().optional().describe('Optional editorial description of the collection'),
+    theme: z.string().optional().describe('Collection theme: featured | trending | seasonal | mood | wedding | holiday | editors_choice | retro | tech | luxury | playful | minimal | bold'),
+    font_ids: z.array(z.string()).optional().describe('Initial array of font UUIDs to include in the collection'),
+    status: z.enum(['draft', 'published']).optional().describe('Initial status (default: "draft")')
+  },
+  async (args, _extra, c) => handleCreateCollection({ ...args, caller: c?.get?.('caller') ?? undefined })
+);
+
+// Register Tool 21: update_collection
+server.tool(
+  'update_collection',
+  `Update an existing curated font collection — add/remove fonts, change metadata, or update status.
+
+Use add_font_ids and remove_font_ids to modify font membership without needing to provide the full list.
+Set status to "published" to make a draft collection live, or "archived" to retire it.
+
+Requires: admin role only.`,
+  {
+    collection_id: z.string().describe('UUID of the collection to update'),
+    title: z.string().optional().describe('New collection title'),
+    description: z.string().optional().describe('New editorial description'),
+    theme: z.string().optional().describe('New theme: featured | trending | seasonal | mood | wedding | holiday | editors_choice | retro | tech | luxury | playful | minimal | bold'),
+    status: z.enum(['draft', 'published', 'archived']).optional().describe('New status'),
+    add_font_ids: z.array(z.string()).optional().describe('Font UUIDs to add to the collection'),
+    remove_font_ids: z.array(z.string()).optional().describe('Font UUIDs to remove from the collection')
+  },
+  async (args, _extra, c) => handleUpdateCollection({ ...args, caller: c?.get?.('caller') ?? undefined })
+);
+
+// ═══ 4. Connect Transport & Serve ═══════════════════════════════════════════
 // Stateless mode for Edge Functions
 const transport = new WebStandardStreamableHTTPServerTransport({
   sessionIdGenerator: undefined
