@@ -209,7 +209,7 @@ export default function FontsCatalog() {
 
             <div className="relative px-1 sm:px-2 md:px-4 pt-0 md:pt-6 w-full">
                 {/* Header */}
-                <div className="mb-8 text-center">
+                <div className="mb-8 text-center px-8">
                     <h1 className="text-4xl md:text-6xl font-bold tracking-tighter text-[rgb(var(--color-foreground)/0.85)] mb-4">Catalog</h1>
                     <p className="text-[rgb(var(--color-muted-foreground))] max-w-xl mx-auto">
                         Discover the perfect typeface for your next project from our extensive collection of premium fonts.

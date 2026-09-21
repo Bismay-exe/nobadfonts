@@ -1,6 +1,5 @@
 import { ArrowRight } from 'lucide-react';
 import React, { useEffect, useRef, memo } from 'react';
-import { Squircle } from 'react-ios-corners';
 import { Link } from 'react-router-dom';
 
 const Footer: React.FC = memo(() => {
@@ -15,7 +14,7 @@ const Footer: React.FC = memo(() => {
 
     return (
         <footer className="hidden sm:block bg-[rgb(var(--color-background))] text-[rgb(var(--color-muted-foreground))] font-sans selection:bg-[rgb(var(--color-foreground))] selection:text-[rgb(var(--color-background))] relative z-0">
-            <div className="max-w-480 mx-auto pb-10 z-10">
+            <div className="max-w-480 mx-auto pb-10 z-10 px-4 md:px-8">
 
                 {/* <div className=''>
                     <div className='hidden h-20rem w-20rem relative'>
@@ -25,8 +24,6 @@ const Footer: React.FC = memo(() => {
 
                 {/* Main Content Grid */}
                 <div className="flex flex-col lg:flex-row justify-between gap-16 lg:gap-24 mt-4 mb-8">
-
-                    <Squircle radius={80} className=' bg-blue-600 px-8 py-4'>
                     {/* Left Column: Brand & Newsletter */}
                     <div className="w-full lg:max-w-xl flex flex-col">
                         <h2 className="text-[rgb(var(--color-foreground))] text-2xl font-medium tracking-tight mb-4">
@@ -53,7 +50,6 @@ const Footer: React.FC = memo(() => {
                             </button>
                         </form>
                     </div>
-                    </Squircle>
 
                     {/* Right Columns: The Navigation Directory */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-12 w-full">
@@ -98,11 +94,6 @@ const Footer: React.FC = memo(() => {
                         </div>
 
                     </div>
-                </div>
-
-                <div className="pointer-events-none  h-full bottom-0 w-full flex justify-center">
-
-                    <h1 className="bg-linear-to-b from-[rgb(var(--color-foreground))] to-[rgb(var(--color-foreground)/0.05)] bg-clip-text text-transparent font-inter-tight font-medium tracking-tighter text-[16vw] leading-none z-0 md:-ml-5 pr-2">NOBADFONTS</h1>
                 </div>
 
                 {/* Absolute Bottom Footer: Socials & Copyright */}

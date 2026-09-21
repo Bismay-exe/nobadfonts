@@ -145,6 +145,26 @@ export function useBoards() {
     return true;
   }, []);
 
+  const deleteBoards = useCallback(async (boardIds: string[]): Promise<boolean> => {
+    if (boardIds.length === 0) return true;
+    const { error } = await supabase.from('boards').delete().in('id', boardIds);
+    if (error) { console.error('deleteBoards error:', error); return false; }
+    setBoards(prev => prev.filter(b => !boardIds.includes(b.id)));
+    return true;
+  }, []);
+
+  const removeFontsFromBoard = useCallback(async (boardId: string, fontIds: string[]): Promise<boolean> => {
+    if (fontIds.length === 0) return true;
+    const { error } = await supabase
+      .from('board_fonts')
+      .delete()
+      .eq('board_id', boardId)
+      .in('font_id', fontIds);
+    if (error) { console.error('removeFonts error:', error); return false; }
+    setBoards(prev => prev.map(b => b.id === boardId ? { ...b, font_count: Math.max(0, b.font_count - fontIds.length) } : b));
+    return true;
+  }, []);
+
   const toggleFontInBoard = useCallback(async (
     boardId: string,
     fontId: string,
@@ -243,7 +263,9 @@ export function useBoards() {
     createBoard,
     updateBoard,
     deleteBoard,
+    deleteBoards,
     toggleFontInBoard,
+    removeFontsFromBoard,
     saveFontToBoards,
     getFontBoardIds,
     getBoardFonts,

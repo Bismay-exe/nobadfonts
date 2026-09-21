@@ -3,7 +3,10 @@ import { useParams, Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import SEO from '../../components/shared/SEO';
-import type { Board, BoardFont } from '../../hooks/useBoards';
+import { useBoards, type Board, type BoardFont } from '../../hooks/useBoards';
+import EditBoardModal from '../../components/boards/EditBoardModal';
+import { Trash2, Edit3 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useViewMode } from '../../hooks/useViewMode';
 import { useWindowSize } from '../../hooks/useWindowSize';
 import { Filters } from '../../components/fonts/Filters';
@@ -18,18 +21,42 @@ interface BoardOwner {
   avatar_url: string | null;
 }
 
-const MasonryCard = ({ data, width }: { data: any; width: number }) => (
-    <FontCard
-        font={data}
-        viewMode={data.viewMode}
-        customText={data.customText}
-        isExpanded={data.isExpanded}
-        onToggle={data.onToggle}
-        isFavorited={data.isFavorited}
-        onFavoriteChange={data.onFavoriteChange}
-        cardWidth={width}
-    />
-);
+const MasonryCard = ({ data, width }: { data: any; width: number }) => {
+    if (!data) return null;
+    return (
+        <div className="relative group/masonry">
+            <FontCard
+                font={data}
+                viewMode={data.viewMode}
+                customText={data.customText}
+                isExpanded={data.isExpanded}
+                onToggle={data.onToggle}
+                isFavorited={data.isFavorited}
+                onFavoriteChange={data.onFavoriteChange}
+                cardWidth={width}
+                disableLink={data.selectionMode}
+            />
+            {data.selectionMode && (
+                <div 
+                    className={`absolute inset-0 z-20 rounded-3xl border-2 transition-all cursor-pointer ${
+                        data.isSelected ? 'border-[rgb(var(--color-highlight))] bg-[rgb(var(--color-highlight)/0.1)]' : 'border-transparent hover:border-[rgb(var(--color-foreground)/0.2)] bg-[rgb(var(--color-foreground)/0.02)]'
+                    }`}
+                    onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        data.onToggleSelect();
+                    }}
+                >
+                    <div className={`absolute top-4 left-4 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors shadow-sm ${
+                        data.isSelected ? 'border-[rgb(var(--color-highlight))] bg-[rgb(var(--color-highlight))]' : 'border-[rgb(var(--color-foreground)/0.3)] bg-[rgb(var(--color-card))]'
+                    }`}>
+                        {data.isSelected && <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>}
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};
 
 export default function BoardDetail() {
   const { username, boardSlug } = useParams<{ username: string; boardSlug: string }>();
@@ -40,6 +67,41 @@ export default function BoardDetail() {
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [copied, setCopied] = useState(false);
+  const navigate = useNavigate();
+
+  const { updateBoard, deleteBoard, removeFontsFromBoard } = useBoards();
+  
+  // Board Edit State
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+  // Font Selection State
+  const [selectionMode, setSelectionMode] = useState(false);
+  const [selectedFonts, setSelectedFonts] = useState<Set<string>>(new Set());
+  const [deleteCount, setDeleteCount] = useState(0);
+
+  const toggleFontSelection = useCallback((fontId: string) => {
+      setSelectedFonts(prev => {
+          const next = new Set(prev);
+          if (next.has(fontId)) next.delete(fontId);
+          else next.add(fontId);
+          return next;
+      });
+  }, []);
+
+  const handleRemoveSelectedFonts = async () => {
+      if (selectedFonts.size === 0 || !board) return;
+      const ids = Array.from(selectedFonts);
+      const success = await removeFontsFromBoard(board.id, ids);
+      if (success) {
+          setFonts(prev => prev.filter(f => !selectedFonts.has(f.font_id)));
+          setBoard(prev => prev ? { ...prev, font_count: Math.max(0, prev.font_count - ids.length) } : prev);
+          setSelectionMode(false);
+          setSelectedFonts(new Set());
+          setDeleteCount(c => c + 1); // Force Masonic remount to clear internal WeakMap caches
+      } else {
+          alert('Failed to remove some fonts.');
+      }
+  };
 
   // Filters & Masonry State
   const [filters, setFilters] = useState<FontFilterParams>({ query: '', categories: [], sortBy: 'trending' });
@@ -168,10 +230,13 @@ export default function BoardDetail() {
               onToggle: cardProps.onToggle,
               isFavorited: userFavoriteIds.has(f.id),
               onFavoriteChange: handleFavoriteToggle,
-              bulkToggleVersion
+              bulkToggleVersion,
+              selectionMode,
+              isSelected: selectedFonts.has(f.id),
+              onToggleSelect: () => toggleFontSelection(f.id)
           };
       });
-  }, [fonts, filters, viewMode, customText, getCardProps, userFavoriteIds, handleFavoriteToggle, bulkToggleVersion]);
+  }, [fonts, filters, viewMode, customText, getCardProps, userFavoriteIds, handleFavoriteToggle, bulkToggleVersion, selectionMode, selectedFonts, toggleFontSelection]);
 
   const columns =
       width > 1280 ? 4 :
@@ -234,20 +299,93 @@ export default function BoardDetail() {
               </p>
             </div>
 
-            <button
-              onClick={copyLink}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-[rgb(var(--color-foreground)/0.15)] text-sm font-semibold text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.04)] transition-all"
-            >
-              {copied ? (
-                <><svg className="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg> Copied!</>
-              ) : (
-                <><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
-                  {board.visibility === 'private' ? 'Share private link' : 'Share board'}</>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={copyLink}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-[rgb(var(--color-foreground)/0.15)] text-sm font-semibold text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.04)] transition-all"
+              >
+                {copied ? (
+                  <><svg className="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg> Copied!</>
+                ) : (
+                  <><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
+                    {board.visibility === 'private' ? 'Share private link' : 'Share board'}</>
+                )}
+              </button>
+              
+              {isOwner && (
+                <>
+                  <button
+                    onClick={() => setIsEditModalOpen(true)}
+                    className="flex items-center justify-center w-10 h-10 rounded-xl border border-[rgb(var(--color-foreground)/0.15)] text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.04)] transition-all"
+                    title="Edit Board"
+                  >
+                    <Edit3 size={18} />
+                  </button>
+                  <button
+                    onClick={() => {
+                      setSelectionMode(!selectionMode);
+                      setSelectedFonts(new Set());
+                    }}
+                    className={`flex items-center justify-center px-4 h-10 rounded-xl border transition-all text-sm font-semibold ${
+                      selectionMode 
+                        ? 'border-[rgb(var(--color-highlight))] bg-[rgb(var(--color-highlight)/0.1)] text-[rgb(var(--color-highlight))]' 
+                        : 'border-[rgb(var(--color-foreground)/0.15)] text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.04)]'
+                    }`}
+                  >
+                    {selectionMode ? 'Cancel' : 'Manage Fonts'}
+                  </button>
+                </>
               )}
-            </button>
+            </div>
           </div>
         </div>
       </div>
+
+      {selectionMode && (
+        <div className="max-w-6xl mx-auto px-4 mt-4 mb-2">
+          <div className="p-4 rounded-2xl bg-[rgb(var(--color-foreground)/0.03)] border border-[rgb(var(--color-foreground)/0.08)] flex items-center justify-between">
+            <span className="font-semibold text-sm">
+              {selectedFonts.size} font{selectedFonts.size !== 1 ? 's' : ''} selected
+            </span>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => {
+                  if (selectedFonts.size === fonts.length) setSelectedFonts(new Set());
+                  else setSelectedFonts(new Set(fonts.map(f => f.font_id)));
+                }}
+                className="text-xs font-semibold text-[rgb(var(--color-foreground)/0.6)] hover:text-[rgb(var(--color-foreground))] transition-colors"
+              >
+                {selectedFonts.size === fonts.length ? 'Deselect All' : 'Select All'}
+              </button>
+              <button
+                onClick={handleRemoveSelectedFonts}
+                disabled={selectedFonts.size === 0}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[rgb(var(--color-destructive)/0.1)] text-[rgb(var(--color-destructive))] text-xs font-bold hover:bg-[rgb(var(--color-destructive)/0.2)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Trash2 size={14} />
+                Remove Selected
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isEditModalOpen && board && (
+        <EditBoardModal
+          board={board}
+          isOpen={isEditModalOpen}
+          onClose={() => setIsEditModalOpen(false)}
+          onUpdate={async (id, updates) => {
+            const success = await updateBoard(id, updates);
+            if (success) {
+              setBoard(prev => prev ? { ...prev, ...updates } : prev);
+            }
+            return success;
+          }}
+          onDelete={deleteBoard}
+          onDeleted={() => navigate(`/${username}`)}
+        />
+      )}
 
       <div className="relative px-1 sm:px-2 md:px-4 pt-4 md:pt-6 w-full">
         <aside className="w-full shrink-0 transition-all duration-300 ease-in-out">
@@ -285,6 +423,7 @@ export default function BoardDetail() {
             ) : items.length > 0 ? (
                 <div className={`masonic-grid select-none ${isBulkToggling ? 'is-bulk-toggling' : ''}`}>
                     <Masonry
+                        key={`masonry-grid-${deleteCount}`}
                         items={items}
                         itemKey={(data) => data.id}
                         columnCount={columns}
