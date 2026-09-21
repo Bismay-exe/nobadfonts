@@ -12,6 +12,7 @@ interface AuthContextType {
     user: User | null;
     profile: Profile | null;
     loading: boolean;
+    needsOnboarding: boolean;
     signInWithGoogle: () => Promise<void>;
     signOut: () => Promise<void>;
     refreshProfile: () => Promise<void>;
@@ -106,6 +107,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         user,
         profile,
         loading,
+        needsOnboarding: !loading && !!user && (!profile?.username || !(profile as any)?.onboarding_completed),
         signInWithGoogle,
         signOut,
         refreshProfile

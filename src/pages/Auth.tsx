@@ -31,11 +31,10 @@ const AUTH_IMAGES = [
 ];
 
 export default function Auth() {
-    const { user, loading: authLoading } = useAuth();
+    const { user, loading: authLoading, needsOnboarding } = useAuth();
     const [isLogin, setIsLogin] = useState(true);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [fullName, setFullName] = useState('');
     const [otp, setOtp] = useState('');
     const [isVerifying, setIsVerifying] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -46,9 +45,13 @@ export default function Auth() {
 
     useEffect(() => {
         if (!authLoading && user) {
-            navigate('/profile', { replace: true });
+            if (needsOnboarding) {
+                navigate('/onboarding', { replace: true });
+            } else {
+                navigate('/profile', { replace: true });
+            }
         }
-    }, [user, authLoading, navigate]);
+    }, [user, authLoading, needsOnboarding, navigate]);
 
     const handleAuth = useCallback(async (e: React.FormEvent) => {
         e.preventDefault();
@@ -80,11 +83,6 @@ export default function Auth() {
                 const { data, error } = await supabase.auth.signUp({
                     email,
                     password,
-                    options: {
-                        data: {
-                            full_name: fullName,
-                        },
-                    },
                 });
                 if (error) throw error;
 
@@ -92,7 +90,7 @@ export default function Auth() {
                 if (data.user && !data.session) {
                     setIsVerifying(true);
                 } else {
-                    navigate('/profile');
+                    navigate('/onboarding');
                 }
             }
         } catch (err: any) {
@@ -100,7 +98,7 @@ export default function Auth() {
         } finally {
             setLoading(false);
         }
-    }, [isLogin, email, password, fullName, navigate, honeypot, turnstileToken]);
+    }, [isLogin, email, password, navigate, honeypot, turnstileToken]);
 
     const handleVerifyOtp = useCallback(async (e: React.FormEvent) => {
         e.preventDefault();
@@ -115,7 +113,7 @@ export default function Auth() {
             });
 
             if (error) throw error;
-            navigate('/profile');
+            navigate('/onboarding');
         } catch (err: any) {
             setError(err.message);
         } finally {
@@ -126,18 +124,16 @@ export default function Auth() {
     const handleSocialLogin = useCallback(async (provider: 'google' | 'github') => {
         try {
             const isNative = Capacitor.isNativePlatform();
-            const redirectTo = isNative ? 'nobadfonts://auth' : `${window.location.origin}/profile`;
+            const redirectTo = isNative ? 'nobadfonts://auth' : `${window.location.origin}/onboarding`;
 
             const { data, error } = await supabase.auth.signInWithOAuth({
                 provider,
                 options: {
                     redirectTo,
                     skipBrowserRedirect: isNative,
-                },
+                }
             });
-
             if (error) throw error;
-
             if (isNative && data?.url) {
                 await Browser.open({ url: data.url, windowName: '_self' });
             }
@@ -249,18 +245,7 @@ export default function Auth() {
                             </form>
                         ) : (
                             <form onSubmit={handleAuth} className="space-y-4">
-                                {!isLogin && (
-                                    <div>
-                                        <label className="block text-sm font-medium text-[rgb(var(--color-muted-foreground))] mb-1">Full Name</label>
-                                        <input
-                                            type="text"
-                                            required
-                                            className="w-full bg-[rgb(var(--color-card))] border border-[rgb(var(--color-foreground)/0.1)] rounded-xl p-2 text-[rgb(var(--color-foreground))] font-bold placeholder-[rgb(var(--color-muted-foreground))] focus:outline-none focus:bg-[rgb(var(--color-foreground)/0.03)] focus:border-[rgb(var(--color-accent))] transition-all"
-                                            value={fullName}
-                                            onChange={(e) => setFullName(e.target.value)}
-                                        />
-                                    </div>
-                                )}
+
                                 <div>
                                     <label className="block text-sm font-medium text-[rgb(var(--color-muted-foreground))] mb-1">Email</label>
                                     <input

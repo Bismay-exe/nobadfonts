@@ -336,7 +336,7 @@ export const Filters = React.memo(
                                     togglePanel(setIsSortOpen, !isSortOpen);
                                 }}
                                 className={`
-                                    group relative flex justify-between items-center gap-1 lg:gap-2 p-2 px-3 lg:px-4 h-10 lg:h-11 lg:w-45 font-medium text-sm lg:text-base cursor-pointer
+                                    group relative flex justify-between items-center gap-1 lg:gap-2 p-2 px-3 lg:px-4 h-10 lg:h-11 lg:w-40 font-medium text-sm lg:text-base cursor-pointer
                                 `}
                             >
                                 <ArrowUpDown

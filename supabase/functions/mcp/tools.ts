@@ -2598,8 +2598,75 @@ export async function handleDislikeFont(args: {
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
-// TOOL 18: save_to_storyboard
-// Saves a font to the user's personal storyboard with an optional note.
+// ══════════════════════════════════════════════════════════════════════════════
+// TOOL 18: save_to_board
+// Saves a font to the user's personal board with an optional note.
+// (Replaces save_to_storyboard — tables renamed: storyboard_fonts → board_fonts)
+// ══════════════════════════════════════════════════════════════════════════════
+
+export async function handleSaveToBoard(args: {
+  slug?: string;
+  font_id?: string;
+  board_id: string;
+  note?: string;
+  caller?: Caller;
+}) {
+  const authError = requireRole(args.caller, ['user', 'member', 'admin'], 'save_to_board');
+  if (authError) return authError;
+
+  if (!args.slug && !args.font_id) {
+    return { isError: true, content: [{ type: 'text', text: 'Error: Either "slug" or "font_id" is required.' }] };
+  }
+  if (!args.board_id) {
+    return { isError: true, content: [{ type: 'text', text: 'Error: "board_id" is required.' }] };
+  }
+
+  const supabase = getSupabaseClient();
+  let fontId = args.font_id;
+  let fontName = '';
+  if (!fontId) {
+    const { data: f } = await supabase.from('fonts').select('id, name').eq('slug', args.slug!).maybeSingle();
+    if (!f) return { isError: true, content: [{ type: 'text', text: `Font not found: "${args.slug}"` }] };
+    fontId = f.id;
+    fontName = f.name;
+  } else {
+    const { data: f } = await supabase.from('fonts').select('name').eq('id', fontId).maybeSingle();
+    fontName = f?.name || fontId;
+  }
+
+  const userId = args.caller!.user_id;
+
+  // Verify board belongs to the caller
+  const { data: board } = await supabase.from('boards').select('id, name').eq('id', args.board_id).eq('user_id', userId).maybeSingle();
+  if (!board) return { isError: true, content: [{ type: 'text', text: 'Board not found or does not belong to you.' }] };
+
+  const { data, error } = await supabase
+    .from('board_fonts')
+    .upsert({
+      board_id: args.board_id,
+      font_id: fontId,
+      note: args.note?.trim() || null,
+      position: 0
+    }, { onConflict: 'board_id,font_id' })
+    .select()
+    .single();
+
+  if (error) {
+    return { isError: true, content: [{ type: 'text', text: `Failed to save to board: ${error.message}` }] };
+  }
+
+  return {
+    content: [{ type: 'text', text: JSON.stringify({
+      saved: true,
+      font: fontName,
+      font_id: fontId,
+      board: board.name,
+      board_id: args.board_id,
+      note: data.note,
+      message: `📌 "${fontName}" saved to board "${board.name}".`
+    }, null, 2) }]
+  };
+}
 // ══════════════════════════════════════════════════════════════════════════════
 
 export async function handleSaveToStoryboard(args: {
@@ -2666,8 +2733,61 @@ export async function handleSaveToStoryboard(args: {
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
-// TOOL 19: get_my_storyboard
-// Retrieves all fonts in the user's storyboard, with joined font data.
+// ══════════════════════════════════════════════════════════════════════════════
+// TOOL 19: get_my_boards
+// Retrieves all boards belonging to the user, with font counts.
+// (Replaces get_my_storyboard — tables renamed: storyboard_fonts → boards)
+// ══════════════════════════════════════════════════════════════════════════════
+
+export async function handleGetMyBoards(args: {
+  board_id?: string; // optional: get fonts inside a specific board
+  caller?: Caller;
+}) {
+  const authError = requireRole(args.caller, ['user', 'member', 'admin'], 'get_my_boards');
+  if (authError) return authError;
+
+  const supabase = getSupabaseClient();
+  const userId = args.caller!.user_id;
+
+  if (args.board_id) {
+    // Return fonts inside a specific board
+    const { data, error } = await supabase
+      .from('board_fonts')
+      .select(`
+        id, note, position, added_at,
+        fonts (id, name, slug, category, tags, designer, foundry, license_type, commercial_use)
+      `)
+      .eq('board_id', args.board_id)
+      .order('position', { ascending: true });
+
+    if (error) return { isError: true, content: [{ type: 'text', text: `Failed to fetch board fonts: ${error.message}` }] };
+
+    return {
+      content: [{ type: 'text', text: JSON.stringify({
+        board_id: args.board_id,
+        font_count: (data || []).length,
+        fonts: data
+      }, null, 2) }]
+    };
+  }
+
+  // Return all boards
+  const { data, error } = await supabase
+    .from('boards')
+    .select('id, name, slug, description, visibility, font_count, created_at, updated_at')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false });
+
+  if (error) return { isError: true, content: [{ type: 'text', text: `Failed to fetch boards: ${error.message}` }] };
+
+  return {
+    content: [{ type: 'text', text: JSON.stringify({
+      user_id: userId,
+      total_boards: (data || []).length,
+      boards: data
+    }, null, 2) }]
+  };
+}
 // ══════════════════════════════════════════════════════════════════════════════
 
 export async function handleGetMyStoryboard(args: {

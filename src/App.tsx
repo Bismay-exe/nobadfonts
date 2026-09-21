@@ -1,5 +1,5 @@
 import React, { useEffect, Suspense } from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import Layout from './components/layout/Layout';
 import { ScrollRestoration } from './components/layout/ScrollRestoration';
 import { UploadProvider } from './contexts/UploadContext';
@@ -33,7 +33,37 @@ const PrivacyPolicy = React.lazy(() => import('./pages/legal/PrivacyPolicy'));
 const DmcaPolicy = React.lazy(() => import('./pages/legal/DmcaPolicy'));
 const CookiePolicy = React.lazy(() => import('./pages/legal/SiteCookies'));
 const NotFound = React.lazy(() => import('./pages/NotFound'));
+const Onboarding = React.lazy(() => import('./pages/Onboarding'));
+const UserBoards = React.lazy(() => import('./pages/boards/UserBoards'));
+const BoardDetail = React.lazy(() => import('./pages/boards/BoardDetail'));
+const BoardShare = React.lazy(() => import('./pages/boards/BoardShare'));
 import CookieConsent from './components/layout/CookieConsent';
+import { useAuth } from './contexts/AuthContext';
+
+/**
+ * OnboardingGuard — intercepts navigation for users who haven't completed onboarding.
+ * Exempt routes: /onboarding, /auth, /board-share/*
+ */
+function OnboardingGuard({ children }: { children: React.ReactNode }) {
+  const { needsOnboarding, loading } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const exempt = [
+    '/onboarding',
+    '/auth',
+  ];
+  const isExempt = exempt.some(p => location.pathname.startsWith(p)) ||
+    location.pathname.startsWith('/board-share/');
+
+  useEffect(() => {
+    if (!loading && needsOnboarding && !isExempt) {
+      navigate(`/onboarding?returnTo=${encodeURIComponent(location.pathname)}`, { replace: true });
+    }
+  }, [needsOnboarding, loading, isExempt, navigate, location.pathname]);
+
+  return <>{children}</>;
+}
 
 function AppContent() {
   const location = useLocation();
@@ -86,6 +116,7 @@ function AppContent() {
       <ScrollRestoration />
       <UploadProgressPopup />
       <BackHandler />
+      <OnboardingGuard>
       <Suspense fallback={
         <div className="fixed inset-0 flex items-center justify-center bg-[rgb(var(--color-background))] z-50">
           <div className="animate-spin rounded-full h-12 w-12 border-4 border-[rgb(var(--color-foreground)/0.1)] border-t-[rgb(var(--color-foreground))]"></div>
@@ -93,6 +124,8 @@ function AppContent() {
       }>
         <Routes location={location} key={location.pathname}>
           <Route path="/auth" element={<Auth />} />
+          <Route path="/onboarding" element={<Onboarding />} />
+          <Route path="/board-share/:shareToken" element={<BoardShare />} />
           <Route path="/fonts/:id" element={<FontDetails />} />
           <Route path="/" element={<Layout />}>
             <Route index element={<Home />} />
@@ -109,10 +142,14 @@ function AppContent() {
             <Route path="legal/privacy" element={<PrivacyPolicy />} />
             <Route path="legal/dmca" element={<DmcaPolicy />} />
             <Route path="legal/cookies" element={<CookiePolicy />} />
+            {/* User boards routes — must be after all known paths */}
+            <Route path=":username" element={<UserBoards />} />
+            <Route path=":username/:boardSlug" element={<BoardDetail />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
       </Suspense>
+      </OnboardingGuard>
       <UpdateModal />
       <CookieConsent />
     </>

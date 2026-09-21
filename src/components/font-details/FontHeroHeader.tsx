@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Heart, Share2, Download, Loader2 } from 'lucide-react';
+import { Heart, Share2, Download, Loader2, BookmarkPlus } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '../../lib/utils';
 import type { Font } from '../../types/font';
+import SaveToBoardModal from '../boards/SaveToBoardModal';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface FontHeroHeaderProps {
     font: Font;
@@ -26,6 +28,9 @@ export default function FontHeroHeader({
     onShare,
     onDownloadZip,
 }: FontHeroHeaderProps) {
+    const { user } = useAuth();
+    const [boardModalOpen, setBoardModalOpen] = useState(false);
+
     return (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 mt-4">
             <div className="lg:col-span-2 space-y-8">
@@ -61,6 +66,19 @@ export default function FontHeroHeader({
                         <span className="font-bold">{font.favorites_count || 0}</span>
                     </motion.button>
 
+                    {/* Save to Board Button — only for logged-in users */}
+                    {user && (
+                        <motion.button
+                            whileTap={{ scale: 0.9 }}
+                            onClick={() => setBoardModalOpen(true)}
+                            aria-label={`Save ${font.name} to a board`}
+                            className="flex items-center gap-2 px-4 md:px-6 py-3 rounded-full border bg-[rgb(var(--color-foreground)/0.05)] border-[rgb(var(--color-foreground)/0.1)] text-[rgb(var(--color-foreground))] hover:opacity-80 transition-all duration-300 cursor-pointer"
+                        >
+                            <BookmarkPlus size={20} />
+                            <span className="font-bold hidden md:inline">Save to</span>
+                        </motion.button>
+                    )}
+
                     {/* Share Button */}
                     <motion.button
                         whileTap={{ scale: 0.9 }}
@@ -95,6 +113,14 @@ export default function FontHeroHeader({
                     </motion.button>
                 </div>
             </div>
+
+            {/* Save to Board Modal */}
+            <SaveToBoardModal
+                fontId={font.id}
+                fontName={font.name}
+                isOpen={boardModalOpen}
+                onClose={() => setBoardModalOpen(false)}
+            />
         </div>
     );
 }

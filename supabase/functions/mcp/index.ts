@@ -25,8 +25,8 @@ import {
   handleGenerateFontPairing,
   handleLikeFont,
   handleDislikeFont,
-  handleSaveToStoryboard,
-  handleGetMyStoryboard,
+  handleSaveToBoard,
+  handleGetMyBoards,
   handleCreateCollection,
   handleUpdateCollection,
   type Caller
@@ -857,33 +857,39 @@ Requires: user, member, or admin role.`,
   async (args, _extra, c) => handleDislikeFont({ ...args, caller: c?.get?.('caller') ?? undefined })
 );
 
-// Register Tool 18: save_to_storyboard
+// Register Tool 18: save_to_board
 server.tool(
-  'save_to_storyboard',
-  `Add a font to the authenticated user's personal storyboard with an optional note and position.
+  'save_to_board',
+  `Save a font to one of the authenticated user's named boards.
 
-If the font is already in the storyboard, updates the note and position (upsert).
+Boards are the primary curation system on NoBadFonts — each user can have multiple boards (e.g. "Portfolio Fonts", "Wedding", "Inspiration"). This tool adds a font to a specific board by board_id.
+
+First call get_my_boards to see the user's boards and get the board_id. Then call save_to_board with the font slug/id and board_id.
 
 Requires: user, member, or admin role.`,
   {
     slug: z.string().optional().describe('URL slug of the font to save'),
     font_id: z.string().optional().describe('UUID of the font to save'),
-    note: z.string().optional().describe('Personal note about why you saved this font (e.g. "Great for header text on dark backgrounds")'),
-    position: z.number().optional().describe('Display order position in the storyboard (default 0)')
+    board_id: z.string().describe('UUID of the board to save the font into (use get_my_boards to find board IDs)'),
+    note: z.string().optional().describe('Personal note about why you saved this font (e.g. "Great for header text on dark backgrounds")')
   },
-  async (args, _extra, c) => handleSaveToStoryboard({ ...args, caller: c?.get?.('caller') ?? undefined })
+  async (args, _extra, c) => handleSaveToBoard({ ...args, caller: c?.get?.('caller') ?? undefined })
 );
 
-// Register Tool 19: get_my_storyboard
+// Register Tool 19: get_my_boards
 server.tool(
-  'get_my_storyboard',
-  `Retrieve all fonts the authenticated user saved to their storyboard, including their personal notes and position ordering.
+  'get_my_boards',
+  `Retrieve all boards for the authenticated user, with font counts and metadata.
 
-Returns full font metadata (name, slug, category, tags, designer, license) for each saved font.
+Optionally pass a board_id to get the fonts inside a specific board.
+
+Returns: board id, name, slug, description, visibility (public/private), font_count, created_at for each board.
 
 Requires: user, member, or admin role.`,
-  {},
-  async (_args, _extra, c) => handleGetMyStoryboard({ caller: c?.get?.('caller') ?? undefined })
+  {
+    board_id: z.string().optional().describe('Optional board UUID — if provided, returns the fonts inside that board instead of the board list')
+  },
+  async (args, _extra, c) => handleGetMyBoards({ ...args, caller: c?.get?.('caller') ?? undefined })
 );
 
 // Register Tool 20: create_collection
