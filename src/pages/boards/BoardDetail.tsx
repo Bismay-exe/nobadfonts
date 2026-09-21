@@ -1,9 +1,15 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import SEO from '../../components/shared/SEO';
 import type { Board, BoardFont } from '../../hooks/useBoards';
+import { useViewMode } from '../../hooks/useViewMode';
+import { useWindowSize } from '../../hooks/useWindowSize';
+import { Filters } from '../../components/fonts/Filters';
+import FontCard from '../../components/fonts/FontCard';
+import type { FontFilterParams } from '../../types/font';
+import { Masonry } from "masonic";
 
 interface BoardOwner {
   id: string;
@@ -11,6 +17,19 @@ interface BoardOwner {
   username: string | null;
   avatar_url: string | null;
 }
+
+const MasonryCard = ({ data, width }: { data: any; width: number }) => (
+    <FontCard
+        font={data}
+        viewMode={data.viewMode}
+        customText={data.customText}
+        isExpanded={data.isExpanded}
+        onToggle={data.onToggle}
+        isFavorited={data.isFavorited}
+        onFavoriteChange={data.onFavoriteChange}
+        cardWidth={width}
+    />
+);
 
 export default function BoardDetail() {
   const { username, boardSlug } = useParams<{ username: string; boardSlug: string }>();
@@ -21,6 +40,17 @@ export default function BoardDetail() {
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [copied, setCopied] = useState(false);
+
+  // Filters & Masonry State
+  const [filters, setFilters] = useState<FontFilterParams>({ query: '', categories: [], sortBy: 'trending' });
+  const [viewMode, setViewMode] = useViewMode();
+  const [expandedFontId, setExpandedFontId] = useState<string | null>(null);
+  const [globalExpanded, setGlobalExpanded] = useState(true);
+  const [bulkToggleVersion, setBulkToggleVersion] = useState(0);
+  const [isBulkToggling, setIsBulkToggling] = useState(false);
+  const bulkToggleTimeoutRef = useRef<any>(null);
+  const [customText, setCustomText] = useState('');
+  const [userFavoriteIds, setUserFavoriteIds] = useState<Set<string>>(new Set());
 
   const isOwner = user && owner && user.id === owner.id;
 
@@ -38,7 +68,6 @@ export default function BoardDetail() {
     if (!username || !boardSlug) return;
     const load = async () => {
       setLoading(true);
-      // Fetch owner by username
       const { data: profileData } = await supabase
         .from('profiles')
         .select('id, full_name, username, avatar_url')
@@ -47,7 +76,6 @@ export default function BoardDetail() {
       if (!profileData) { setNotFound(true); setLoading(false); return; }
       setOwner(profileData as BoardOwner);
 
-      // Fetch board
       const { data: boardData } = await supabase
         .from('boards')
         .select('*')
@@ -57,19 +85,17 @@ export default function BoardDetail() {
       if (!boardData) { setNotFound(true); setLoading(false); return; }
       const b = boardData as Board;
 
-      // Block private boards unless owner
       const viewerIsOwner = user?.id === profileData.id;
       if (b.visibility === 'private' && !viewerIsOwner) {
         setNotFound(true); setLoading(false); return;
       }
       setBoard(b);
 
-      // Fetch board fonts
       const { data: bfData } = await supabase
         .from('board_fonts')
         .select(`
           id, board_id, font_id, note, position, added_at,
-          fonts (id, name, slug, category, preview_image_url, designer, license_type, commercial_use)
+          fonts (id, name, slug, category, preview_image_url, designer, license_type, commercial_use, tags, favorites_count, font_variants(variant_name, woff2_url, woff_url, ttf_url, otf_url))
         `)
         .eq('board_id', b.id)
         .order('position', { ascending: true });
@@ -77,7 +103,81 @@ export default function BoardDetail() {
       setLoading(false);
     };
     load();
-  }, [username, boardSlug, user]);
+  }, [username, boardSlug, user?.id]);
+
+  useEffect(() => {
+      if (!user) {
+          setUserFavoriteIds(new Set());
+          return;
+      }
+      let isMounted = true;
+      supabase
+          .from('favorites')
+          .select('font_id')
+          .eq('user_id', user.id)
+          .then(({ data, error }) => {
+              if (!isMounted || error || !data) return;
+              setUserFavoriteIds(new Set(data.map((f: any) => f.font_id)));
+          });
+      return () => { isMounted = false; };
+  }, [user]);
+
+  const handleFavoriteToggle = useCallback((fontId: string, isFav: boolean) => {
+      setUserFavoriteIds(prev => {
+          const next = new Set(prev);
+          if (isFav) next.add(fontId);
+          else next.delete(fontId);
+          return next;
+      });
+  }, []);
+
+  const getCardProps = useCallback((fontId: string) => {
+      if (globalExpanded) {
+          return {
+              isExpanded: expandedFontId === fontId,
+              onToggle: () => setExpandedFontId(expandedFontId === fontId ? null : fontId)
+          };
+      } else {
+          return {
+              isExpanded: true,
+              onToggle: undefined
+          };
+      }
+  }, [expandedFontId, globalExpanded]);
+
+  const { width } = useWindowSize();
+
+  const items = useMemo(() => {
+      let filtered = fonts.map(entry => entry.fonts).filter(Boolean) as any[];
+      
+      if (filters.query) {
+          const q = filters.query.toLowerCase();
+          filtered = filtered.filter(f => f.name.toLowerCase().includes(q));
+      }
+      if (filters.categories && filters.categories.length > 0) {
+          filtered = filtered.filter(f => filters.categories!.includes(f.category));
+      }
+
+      return filtered.map(f => {
+          const cardProps = getCardProps(f.id);
+          return {
+              ...f,
+              viewMode,
+              customText,
+              isExpanded: cardProps.isExpanded,
+              onToggle: cardProps.onToggle,
+              isFavorited: userFavoriteIds.has(f.id),
+              onFavoriteChange: handleFavoriteToggle,
+              bulkToggleVersion
+          };
+      });
+  }, [fonts, filters, viewMode, customText, getCardProps, userFavoriteIds, handleFavoriteToggle, bulkToggleVersion]);
+
+  const columns =
+      width > 1280 ? 4 :
+          width > 1024 ? 3 :
+              width > 640 ? 2 :
+                  1;
 
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-[rgb(var(--color-background))]">
@@ -101,10 +201,8 @@ export default function BoardDetail() {
         description={board.description || `A curated font board by ${owner.full_name} on NoBadFonts.`}
       />
 
-      {/* Board header */}
       <div className="border-b border-[rgb(var(--color-foreground)/0.08)] bg-[rgb(var(--color-card)/0.4)] backdrop-blur-sm">
         <div className="max-w-6xl mx-auto px-4 py-8">
-          {/* Breadcrumb */}
           <div className="flex items-center gap-2 text-sm text-[rgb(var(--color-muted-foreground))] mb-5">
             <Link to={`/${username}`} className="hover:text-[rgb(var(--color-foreground))] transition-colors flex items-center gap-1.5">
               {owner.avatar_url ? (
@@ -151,55 +249,60 @@ export default function BoardDetail() {
         </div>
       </div>
 
-      {/* Font grid */}
-      <div className="mx-auto p-2 sm:p-3 md:p-6">
-        {fonts.length === 0 ? (
-          <div className="text-center py-20 text-[rgb(var(--color-muted-foreground))]">
-            <p className="text-4xl mb-3">🎨</p>
-            <p className="font-semibold text-[rgb(var(--color-foreground))]">This board is empty</p>
-            {isOwner && (
-              <p className="text-sm mt-1">
-                <Link to="/fonts" className="text-[rgb(var(--color-highlight))] hover:underline">Browse fonts</Link> and save them to this board.
-              </p>
+      <div className="relative px-1 sm:px-2 md:px-4 pt-4 md:pt-6 w-full">
+        <aside className="w-full shrink-0 transition-all duration-300 ease-in-out">
+            <Filters
+                filters={filters}
+                onChange={setFilters}
+                viewMode={viewMode}
+                onViewModeChange={setViewMode}
+                showExpandToggle={true}
+                allExpanded={globalExpanded}
+                onToggleAll={() => {
+                    setGlobalExpanded(!globalExpanded);
+                    setBulkToggleVersion(v => v + 1);
+                    setIsBulkToggling(true);
+                    if (bulkToggleTimeoutRef.current) clearTimeout(bulkToggleTimeoutRef.current);
+                    bulkToggleTimeoutRef.current = setTimeout(() => setIsBulkToggling(false), 450);
+                    setExpandedFontId(null);
+                }}
+                customText={customText}
+                onCustomTextChange={setCustomText}
+            />
+        </aside>
+
+        <div className="w-full h-full pb-20">
+            {fonts.length === 0 ? (
+              <div className="text-center py-20 text-[rgb(var(--color-muted-foreground))]">
+                <p className="text-4xl mb-3">🎨</p>
+                <p className="font-semibold text-[rgb(var(--color-foreground))]">This board is empty</p>
+                {isOwner && (
+                  <p className="text-sm mt-1">
+                    <Link to="/fonts" className="text-[rgb(var(--color-highlight))] hover:underline">Browse fonts</Link> and save them to this board.
+                  </p>
+                )}
+              </div>
+            ) : items.length > 0 ? (
+                <div className={`masonic-grid select-none ${isBulkToggling ? 'is-bulk-toggling' : ''}`}>
+                    <Masonry
+                        items={items}
+                        itemKey={(data) => data.id}
+                        columnCount={columns}
+                        columnGutter={16}
+                        itemHeightEstimate={280}
+                        overscanBy={1}
+                        render={MasonryCard}
+                    />
+                </div>
+            ) : (
+                <div className="text-center py-20 text-[rgb(var(--color-muted-foreground))]">
+                    <p className="text-xl mb-2">No fonts match your filters</p>
+                    <button onClick={() => setFilters({ query: '', categories: [], sortBy: 'trending' })} className="text-[rgb(var(--color-highlight))] hover:underline text-sm font-semibold">
+                        Clear all filters
+                    </button>
+                </div>
             )}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {fonts.map(entry => {
-              const font = entry.fonts as any;
-              if (!font) return null;
-              return (
-                <Link
-                  key={entry.id}
-                  to={`/fonts/${font.slug}`}
-                  className="group bg-[rgb(var(--color-card))] border border-[rgb(var(--color-foreground)/0.08)] rounded-2xl overflow-hidden hover:border-[rgb(var(--color-foreground)/0.2)] hover:shadow-md transition-all"
-                >
-                  {/* Preview */}
-                  <div className="bg-[rgb(var(--color-background))] flex items-center justify-center overflow-hidden">
-                    {font.preview_image_url ? (
-                      <img src={font.preview_image_url} alt={font.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                    ) : (
-                      <span className="text-3xl font-black text-[rgb(var(--color-foreground)/0.1)]" style={{ fontFamily: 'serif' }}>Aa</span>
-                    )}
-                  </div>
-                  <div className="p-4">
-                    <h3 className="font-black text-[rgb(var(--color-foreground))] text-sm truncate group-hover:text-[rgb(var(--color-highlight))] transition-colors">{font.name}</h3>
-                    <p className="text-xs text-[rgb(var(--color-muted-foreground))] mt-0.5">{font.designer}</p>
-                    {entry.note && (
-                      <p className="text-xs text-[rgb(var(--color-muted-foreground))] mt-2 italic border-l-2 border-[rgb(var(--color-highlight)/0.4)] pl-2 line-clamp-2">"{entry.note}"</p>
-                    )}
-                    <div className="mt-3 flex items-center gap-1.5">
-                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-[rgb(var(--color-foreground)/0.06)] text-[rgb(var(--color-muted-foreground))] font-medium capitalize">{font.category}</span>
-                      <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${font.commercial_use ? 'bg-green-500/10 text-green-400' : 'bg-[rgb(var(--color-foreground)/0.06)] text-[rgb(var(--color-muted-foreground))]'}`}>
-                        {font.commercial_use ? 'Free commercial' : font.license_type || 'Unknown'}
-                      </span>
-                    </div>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        )}
+        </div>
       </div>
     </div>
   );
