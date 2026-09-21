@@ -4,6 +4,7 @@ import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import SEO from '../../components/shared/SEO';
 import type { Board } from '../../hooks/useBoards';
+import BoardCard from '../../components/boards/BoardCard2';
 
 interface UserProfile {
   id: string;
@@ -42,14 +43,36 @@ export default function UserBoards() {
       // Fetch their public boards (or all if own profile)
       const query = supabase
         .from('boards')
-        .select('*')
+        .select('*, board_fonts(fonts(id, name, font_variants(variant_name, woff2_url, woff_url, ttf_url, otf_url)))')
         .eq('user_id', profileData.id)
         .order('created_at', { ascending: false });
 
       if (!isOwnProfile) query.eq('visibility', 'public');
 
       const { data: boardsData } = await query;
-      setBoards((boardsData as Board[]) || []);
+
+      const formattedBoards = (boardsData || []).map((b: any) => ({
+        ...b,
+        preview_fonts: b.board_fonts
+          ?.map((bf: any) => {
+            const font = bf.fonts;
+            if (!font) return null;
+            const variants = font.font_variants || [];
+            const regular = variants.find((v: any) => v.variant_name === 'Regular') || variants[0];
+            return {
+              id: font.id,
+              name: font.name,
+              woff2_url: regular?.woff2_url,
+              woff_url: regular?.woff_url,
+              ttf_url: regular?.ttf_url,
+              otf_url: regular?.otf_url
+            };
+          })
+          ?.filter(Boolean)
+          ?.slice(0, 4) || []
+      }));
+
+      setBoards(formattedBoards as Board[]);
       setLoading(false);
     };
     load();
@@ -117,7 +140,7 @@ export default function UserBoards() {
       </div>
 
       {/* Boards grid */}
-      <div className="max-w-5xl mx-auto px-4 py-8">
+      <div className="zmax-w-5xl mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-lg font-black text-[rgb(var(--color-foreground))]">
             Boards <span className="text-[rgb(var(--color-muted-foreground))] font-normal text-sm ml-1">{boards.length}</span>
@@ -133,49 +156,9 @@ export default function UserBoards() {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-4">
             {boards.map(board => (
-              <div key={board.id} className="group bg-[rgb(var(--color-card))] border border-[rgb(var(--color-foreground)/0.08)] rounded-2xl overflow-hidden hover:border-[rgb(var(--color-foreground)/0.18)] hover:shadow-lg transition-all">
-                {/* Board thumbnail placeholder */}
-                <Link to={`/${username}/${board.slug}`} className="block aspect-3/2 bg-linear-to-br from-[rgb(var(--color-highlight)/0.08)] to-[rgb(var(--color-accent)/0.08)] relative overflow-hidden">
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-4xl opacity-30">
-                      {board.visibility === 'private' ? '🔒' : '📋'}
-                    </span>
-                  </div>
-                  {/* Font count badge */}
-                  <div className="absolute bottom-3 left-3 bg-black/50 backdrop-blur-sm text-white text-xs font-semibold px-2.5 py-1 rounded-full">
-                    {board.font_count} font{board.font_count !== 1 ? 's' : ''}
-                  </div>
-                </Link>
-
-                <div className="p-4">
-                  <div className="flex items-start justify-between gap-2">
-                    <Link to={`/${username}/${board.slug}`} className="flex-1 min-w-0">
-                      <h3 className="font-black text-[rgb(var(--color-foreground))] truncate group-hover:text-[rgb(var(--color-highlight))] transition-colors">{board.name}</h3>
-                      {board.description && (
-                        <p className="text-xs text-[rgb(var(--color-muted-foreground))] mt-0.5 line-clamp-2">{board.description}</p>
-                      )}
-                    </Link>
-                    <button
-                      onClick={() => copyLink(board)}
-                      title="Copy share link"
-                      className="shrink-0 w-8 h-8 flex items-center justify-center rounded-lg text-[rgb(var(--color-muted-foreground))] hover:bg-[rgb(var(--color-foreground)/0.06)] hover:text-[rgb(var(--color-foreground))] transition-all"
-                    >
-                      {copied === board.id ? (
-                        <svg className="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg>
-                      ) : (
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
-                      )}
-                    </button>
-                  </div>
-                  <div className="mt-3 flex items-center gap-2">
-                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${board.visibility === 'private' ? 'bg-[rgb(var(--color-foreground)/0.08)] text-[rgb(var(--color-muted-foreground))]' : 'bg-[rgb(var(--color-highlight)/0.1)] text-[rgb(var(--color-highlight))]'}`}>
-                      {board.visibility === 'private' ? '🔒 Private' : '🌐 Public'}
-                    </span>
-                  </div>
-                </div>
-              </div>
+              <BoardCard key={board.id} board={board} username={username!} />
             ))}
           </div>
         )}

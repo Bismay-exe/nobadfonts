@@ -13,6 +13,14 @@ export interface Board {
   font_count: number;
   created_at: string;
   updated_at: string;
+  preview_fonts?: {
+    id: string;
+    name: string;
+    woff2_url?: string;
+    woff_url?: string;
+    ttf_url?: string;
+    otf_url?: string;
+  }[];
 }
 
 export interface BoardFont {
@@ -54,11 +62,34 @@ export function useBoards() {
     try {
       const { data, error } = await supabase
         .from('boards')
-        .select('*')
+        .select('*, board_fonts(fonts(id, name, font_variants(variant_name, woff2_url, woff_url, ttf_url, otf_url)))')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
       if (error) throw error;
-      setBoards((data as Board[]) || []);
+
+      const formattedBoards = (data || []).map((b: any) => ({
+        ...b,
+        preview_fonts: b.board_fonts
+          ?.map((bf: any) => {
+            const font = bf.fonts;
+            if (!font) return null;
+            // Try to get the Regular variant first, otherwise fallback to the first variant
+            const variants = font.font_variants || [];
+            const regular = variants.find((v: any) => v.variant_name === 'Regular') || variants[0];
+            return {
+              id: font.id,
+              name: font.name,
+              woff2_url: regular?.woff2_url,
+              woff_url: regular?.woff_url,
+              ttf_url: regular?.ttf_url,
+              otf_url: regular?.otf_url
+            };
+          })
+          ?.filter(Boolean)
+          ?.slice(0, 4) || []
+      }));
+
+      setBoards(formattedBoards as Board[]);
     } catch (err) {
       console.error('useBoards fetchBoards error:', err);
     } finally {
