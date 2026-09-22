@@ -294,7 +294,7 @@ export default function SaveToBoardModal({ fontId, isOpen, onClose }: SaveToBoar
                 className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-lg text-[rgb(var(--color-muted-foreground))] bg-[rgb(var(--color-foreground)/0.05)] hover:bg-[rgb(var(--color-foreground)/0.1)] hover:text-[rgb(var(--color-foreground))] transition-all duration-300 ease-in-out"
               >
                 <Plus />
-                <span className="font-inter-tight font-medium tracking-wider">New Board</span>
+                <span className="font-inter-tight font-normal tracking-wider">New Board</span>
               </button>
             )}
           </div>

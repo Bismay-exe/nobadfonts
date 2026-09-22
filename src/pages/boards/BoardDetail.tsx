@@ -5,7 +5,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import SEO from '../../components/shared/SEO';
 import { useBoards, type Board, type BoardFont } from '../../hooks/useBoards';
 import EditBoardModal from '../../components/boards/EditBoardModal';
-import { Trash2, Edit3 } from 'lucide-react';
+import { Trash2, Edit3, Lock, Globe } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useViewMode } from '../../hooks/useViewMode';
 import { useWindowSize } from '../../hooks/useWindowSize';
@@ -22,40 +22,42 @@ interface BoardOwner {
 }
 
 const MasonryCard = ({ data, width }: { data: any; width: number }) => {
-    if (!data) return null;
-    return (
-        <div className="relative group/masonry">
-            <FontCard
-                font={data}
-                viewMode={data.viewMode}
-                customText={data.customText}
-                isExpanded={data.isExpanded}
-                onToggle={data.onToggle}
-                isFavorited={data.isFavorited}
-                onFavoriteChange={data.onFavoriteChange}
-                cardWidth={width}
-                disableLink={data.selectionMode}
-            />
-            {data.selectionMode && (
-                <div 
-                    className={`absolute inset-0 z-20 rounded-3xl border-2 transition-all cursor-pointer ${
-                        data.isSelected ? 'border-[rgb(var(--color-highlight))] bg-[rgb(var(--color-highlight)/0.1)]' : 'border-transparent hover:border-[rgb(var(--color-foreground)/0.2)] bg-[rgb(var(--color-foreground)/0.02)]'
-                    }`}
-                    onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        data.onToggleSelect();
-                    }}
-                >
-                    <div className={`absolute top-4 left-4 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors shadow-sm ${
-                        data.isSelected ? 'border-[rgb(var(--color-highlight))] bg-[rgb(var(--color-highlight))]' : 'border-[rgb(var(--color-foreground)/0.3)] bg-[rgb(var(--color-card))]'
-                    }`}>
-                        {data.isSelected && <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>}
-                    </div>
-                </div>
-            )}
+  if (!data) return null;
+  return (
+    <div className="relative group/masonry">
+      <FontCard
+        font={data}
+        viewMode={data.viewMode}
+        customText={data.customText}
+        isExpanded={data.isExpanded}
+        onToggle={data.onToggle}
+        isFavorited={data.isFavorited}
+        onFavoriteChange={data.onFavoriteChange}
+        cardWidth={width}
+        disableLink={data.selectionMode}
+      />
+      {data.selectionMode && (
+        <div
+        className={`absolute inset-0 z-20 rounded-3xl border-2 transition-all duration-300 ease-in-out cursor-pointer 
+          ${data.viewMode==='image' ? 'border-[rgb(var(--color-muted-foreground)/0)] rounded-4xl' : 'border-[rgb(var(--color-muted-foreground)/0.3)]'} 
+          ${data.isSelected ? 
+            'bg-[rgb(var(--color-muted)/0.85)]'
+            : 'border-transparent hover:border-[rgb(var(--color-foreground)/0.2)] bg-[rgb(var(--color-foreground)/0.02)]'
+            }`}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            data.onToggleSelect();
+          }}
+        >
+          <div className={`absolute top-4 right-4 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors duration-300 ease-in-out shadow-sm ${data.isSelected ? 'border-[rgb(var(--color-foreground))] bg-[rgb(var(--color-foreground))]' : 'border-[rgb(var(--color-foreground)/0.3)] bg-[rgb(var(--color-card))]'
+            }`}>
+            {data.isSelected && <svg className="w-4 h-4 text-[rgb(var(--color-background))]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>}
+          </div>
         </div>
-    );
+      )}
+    </div>
+  );
 };
 
 export default function BoardDetail() {
@@ -70,7 +72,7 @@ export default function BoardDetail() {
   const navigate = useNavigate();
 
   const { updateBoard, deleteBoard, removeFontsFromBoard } = useBoards();
-  
+
   // Board Edit State
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
@@ -80,27 +82,27 @@ export default function BoardDetail() {
   const [deleteCount, setDeleteCount] = useState(0);
 
   const toggleFontSelection = useCallback((fontId: string) => {
-      setSelectedFonts(prev => {
-          const next = new Set(prev);
-          if (next.has(fontId)) next.delete(fontId);
-          else next.add(fontId);
-          return next;
-      });
+    setSelectedFonts(prev => {
+      const next = new Set(prev);
+      if (next.has(fontId)) next.delete(fontId);
+      else next.add(fontId);
+      return next;
+    });
   }, []);
 
   const handleRemoveSelectedFonts = async () => {
-      if (selectedFonts.size === 0 || !board) return;
-      const ids = Array.from(selectedFonts);
-      const success = await removeFontsFromBoard(board.id, ids);
-      if (success) {
-          setFonts(prev => prev.filter(f => !selectedFonts.has(f.font_id)));
-          setBoard(prev => prev ? { ...prev, font_count: Math.max(0, prev.font_count - ids.length) } : prev);
-          setSelectionMode(false);
-          setSelectedFonts(new Set());
-          setDeleteCount(c => c + 1); // Force Masonic remount to clear internal WeakMap caches
-      } else {
-          alert('Failed to remove some fonts.');
-      }
+    if (selectedFonts.size === 0 || !board) return;
+    const ids = Array.from(selectedFonts);
+    const success = await removeFontsFromBoard(board.id, ids);
+    if (success) {
+      setFonts(prev => prev.filter(f => !selectedFonts.has(f.font_id)));
+      setBoard(prev => prev ? { ...prev, font_count: Math.max(0, prev.font_count - ids.length) } : prev);
+      setSelectionMode(false);
+      setSelectedFonts(new Set());
+      setDeleteCount(c => c + 1); // Force Masonic remount to clear internal WeakMap caches
+    } else {
+      alert('Failed to remove some fonts.');
+    }
   };
 
   // Filters & Masonry State
@@ -168,85 +170,85 @@ export default function BoardDetail() {
   }, [username, boardSlug, user?.id]);
 
   useEffect(() => {
-      if (!user) {
-          setUserFavoriteIds(new Set());
-          return;
-      }
-      let isMounted = true;
-      supabase
-          .from('favorites')
-          .select('font_id')
-          .eq('user_id', user.id)
-          .then(({ data, error }) => {
-              if (!isMounted || error || !data) return;
-              setUserFavoriteIds(new Set(data.map((f: any) => f.font_id)));
-          });
-      return () => { isMounted = false; };
+    if (!user) {
+      setUserFavoriteIds(new Set());
+      return;
+    }
+    let isMounted = true;
+    supabase
+      .from('favorites')
+      .select('font_id')
+      .eq('user_id', user.id)
+      .then(({ data, error }) => {
+        if (!isMounted || error || !data) return;
+        setUserFavoriteIds(new Set(data.map((f: any) => f.font_id)));
+      });
+    return () => { isMounted = false; };
   }, [user]);
 
   const handleFavoriteToggle = useCallback((fontId: string, isFav: boolean) => {
-      setUserFavoriteIds(prev => {
-          const next = new Set(prev);
-          if (isFav) next.add(fontId);
-          else next.delete(fontId);
-          return next;
-      });
+    setUserFavoriteIds(prev => {
+      const next = new Set(prev);
+      if (isFav) next.add(fontId);
+      else next.delete(fontId);
+      return next;
+    });
   }, []);
 
   const getCardProps = useCallback((fontId: string) => {
-      if (globalExpanded) {
-          return {
-              isExpanded: expandedFontId === fontId,
-              onToggle: () => setExpandedFontId(expandedFontId === fontId ? null : fontId)
-          };
-      } else {
-          return {
-              isExpanded: true,
-              onToggle: undefined
-          };
-      }
+    if (globalExpanded) {
+      return {
+        isExpanded: expandedFontId === fontId,
+        onToggle: () => setExpandedFontId(expandedFontId === fontId ? null : fontId)
+      };
+    } else {
+      return {
+        isExpanded: true,
+        onToggle: undefined
+      };
+    }
   }, [expandedFontId, globalExpanded]);
 
   const { width } = useWindowSize();
 
   const items = useMemo(() => {
-      let filtered = fonts.map(entry => entry.fonts).filter(Boolean) as any[];
-      
-      if (filters.query) {
-          const q = filters.query.toLowerCase();
-          filtered = filtered.filter(f => f.name.toLowerCase().includes(q));
-      }
-      if (filters.categories && filters.categories.length > 0) {
-          filtered = filtered.filter(f => filters.categories!.includes(f.category));
-      }
+    let filtered = fonts.map(entry => entry.fonts).filter(Boolean) as any[];
 
-      return filtered.map(f => {
-          const cardProps = getCardProps(f.id);
-          return {
-              ...f,
-              viewMode,
-              customText,
-              isExpanded: cardProps.isExpanded,
-              onToggle: cardProps.onToggle,
-              isFavorited: userFavoriteIds.has(f.id),
-              onFavoriteChange: handleFavoriteToggle,
-              bulkToggleVersion,
-              selectionMode,
-              isSelected: selectedFonts.has(f.id),
-              onToggleSelect: () => toggleFontSelection(f.id)
-          };
-      });
+    if (filters.query) {
+      const q = filters.query.toLowerCase();
+      filtered = filtered.filter(f => f.name.toLowerCase().includes(q));
+    }
+    if (filters.categories && filters.categories.length > 0) {
+      filtered = filtered.filter(f => filters.categories!.includes(f.category));
+    }
+
+    return filtered.map(f => {
+      const cardProps = getCardProps(f.id);
+      return {
+        ...f,
+        viewMode,
+        customText,
+        isExpanded: cardProps.isExpanded,
+        onToggle: cardProps.onToggle,
+        isFavorited: userFavoriteIds.has(f.id),
+        onFavoriteChange: handleFavoriteToggle,
+        bulkToggleVersion,
+        selectionMode,
+        isSelected: selectedFonts.has(f.id),
+        onToggleSelect: () => toggleFontSelection(f.id)
+      };
+    });
   }, [fonts, filters, viewMode, customText, getCardProps, userFavoriteIds, handleFavoriteToggle, bulkToggleVersion, selectionMode, selectedFonts, toggleFontSelection]);
 
   const columns =
-      width > 1280 ? 4 :
-          width > 1024 ? 3 :
-              width > 640 ? 2 :
-                  1;
+    width > 1280 ? 4 :
+      width > 1024 ? 3 :
+        width > 640 ? 2 :
+          1;
 
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-[rgb(var(--color-background))]">
-      <div className="w-8 h-8 rounded-full border-2 border-[rgb(var(--color-foreground)/0.1)] border-t-[rgb(var(--color-highlight))] animate-spin" />
+      <div className="w-8 h-8 rounded-full border-2 border-[rgb(var(--color-foreground)/0.1)] border-t-[rgb(var(--color-foreground))] animate-spin" />
     </div>
   );
 
@@ -255,7 +257,7 @@ export default function BoardDetail() {
       <p className="text-5xl mb-4">🔒</p>
       <h1 className="text-2xl font-black mb-2">Board not found</h1>
       <p className="text-[rgb(var(--color-muted-foreground))] mb-6">This board doesn't exist or is private.</p>
-      <Link to="/" className="text-[rgb(var(--color-highlight))] hover:underline text-sm font-semibold">← Back to home</Link>
+      <Link to="/" className="text-[rgb(var(--color-highlight))] hover:underline text-sm font-medium">← Back to home</Link>
     </div>
   );
 
@@ -266,29 +268,33 @@ export default function BoardDetail() {
         description={board.description || `A curated font board by ${owner.full_name} on NoBadFonts.`}
       />
 
-      <div className="border-b border-[rgb(var(--color-foreground)/0.08)] bg-[rgb(var(--color-card)/0.4)] backdrop-blur-sm">
+      <div className="relative bg-[rgb(var(--color-card)/0.4)] backdrop-blur-sm">
+        <div className='h-px w-full bg-linear-to-r from-transparent via-[rgb(var(--color-foreground)/0.08)] to-transparent absolute bottom-0 left-0 right-0' />
         <div className="max-w-6xl mx-auto px-4 py-8">
           <div className="flex items-center gap-2 text-sm text-[rgb(var(--color-muted-foreground))] mb-5">
             <Link to={`/${username}`} className="hover:text-[rgb(var(--color-foreground))] transition-colors flex items-center gap-1.5">
               {owner.avatar_url ? (
                 <img src={owner.avatar_url} alt={owner.full_name} className="w-5 h-5 rounded-full object-cover" />
               ) : (
-                <div className="w-5 h-5 rounded-full bg-[rgb(var(--color-highlight))] flex items-center justify-center text-white text-[10px] font-black">{owner.full_name?.[0]}</div>
+                <div className="w-5 h-5 rounded-full bg-[rgb(var(--color-foreground)/0.1)] flex items-center justify-center text-[rgb(var(--color-foreground))] text-[10px] font-black">{owner.full_name?.[0]}</div>
               )}
               @{owner.username}
             </Link>
             <span className="text-[rgb(var(--color-foreground)/0.3)]">/</span>
-            <span className="text-[rgb(var(--color-foreground))] font-semibold">{board.name}</span>
+            <span className="text-[rgb(var(--color-foreground))] font-medium">{board.name}</span>
           </div>
 
           <div className="flex items-start gap-4 justify-between flex-wrap">
             <div>
               <div className="flex items-center gap-3 flex-wrap">
                 <h1 className="text-3xl font-black text-[rgb(var(--color-foreground))]">{board.name}</h1>
-                <span className={`text-xs px-2.5 py-1 rounded-full font-semibold ${board.visibility === 'private'
+                <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${board.visibility === 'private'
                   ? 'bg-[rgb(var(--color-foreground)/0.08)] text-[rgb(var(--color-muted-foreground))]'
-                  : 'bg-[rgb(var(--color-highlight)/0.1)] text-[rgb(var(--color-highlight))]'}`}>
-                  {board.visibility === 'private' ? '🔒 Private' : '🌐 Public'}
+                  : 'bg-[rgb(var(--color-foreground)/0.08)] text-[rgb(var(--color-muted-foreground))]'}`}>
+                  {board.visibility === 'private' ?
+                    <div className='flex gap-1 items-center'><Lock size={14} /> Private</div>
+                    : <div className='flex gap-1 items-center'><Globe size={14} /> Public</div>
+                  }
                 </span>
               </div>
               {board.description && (
@@ -299,10 +305,10 @@ export default function BoardDetail() {
               </p>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className={`${selectionMode ? 'w-full' : 'w-auto'} md:w-auto flex justify-between md:justify-center items-center gap-2`}>
               <button
                 onClick={copyLink}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-[rgb(var(--color-foreground)/0.15)] text-sm font-semibold text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.04)] transition-all"
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border border-[rgb(var(--color-foreground)/0.15)] text-sm font-medium text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.04)] transition-all ${selectionMode ? 'hidden' : ''}`}
               >
                 {copied ? (
                   <><svg className="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg> Copied!</>
@@ -311,26 +317,53 @@ export default function BoardDetail() {
                     {board.visibility === 'private' ? 'Share private link' : 'Share board'}</>
                 )}
               </button>
-              
+
               {isOwner && (
                 <>
-                  <button
-                    onClick={() => setIsEditModalOpen(true)}
-                    className="flex items-center justify-center w-10 h-10 rounded-xl border border-[rgb(var(--color-foreground)/0.15)] text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.04)] transition-all"
-                    title="Edit Board"
-                  >
-                    <Edit3 size={18} />
-                  </button>
+                  {selectionMode ? (
+                    <div className="w-full flex items-center justify-between md:justify-center gap-2 font-inter-tight tracking-wider">
+                      <span className="font-medium text-sm md:px-4">
+                        {selectedFonts.size} font{selectedFonts.size !== 1 ? 's' : ''} selected
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => {
+                            if (selectedFonts.size === fonts.length) setSelectedFonts(new Set());
+                            else setSelectedFonts(new Set(fonts.map(f => f.font_id)));
+                          }}
+                          className="px-4 h-10 text-xs bg-[rgb(var(--color-foreground)/0.05)] hover:bg-[rgb(var(--color-foreground)/0.1)] rounded-xl font-medium text-[rgb(var(--color-foreground)/0.6)] hover:text-[rgb(var(--color-foreground))] transition-colors"
+                        >
+                          {selectedFonts.size === fonts.length ? 'Deselect All' : 'Select All'}
+                        </button>
+                        <button
+                          onClick={handleRemoveSelectedFonts}
+                          disabled={selectedFonts.size === 0}
+                          className="flex items-center gap-1.5 px-4 h-10 rounded-xl bg-[rgb(var(--color-destructive)/0.15)] border border-[rgb(var(--color-destructive)/0.25)] text-[rgb(var(--color-destructive))] text-xs font-medium hover:bg-[rgb(var(--color-destructive)/0.25)] transition-colors duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          <Trash2 size={14} />
+                          <span className='hidden sm:block'>Remove Selected</span>
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => setIsEditModalOpen(true)}
+                      className="flex items-center justify-center w-10 h-10 rounded-xl border border-[rgb(var(--color-foreground)/0.15)] text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.04)] transition-all duration-300 ease-in-out"
+                      title="Edit Board"
+                    >
+                      <Edit3 size={18} />
+                    </button>
+                  )}
+
                   <button
                     onClick={() => {
                       setSelectionMode(!selectionMode);
                       setSelectedFonts(new Set());
                     }}
-                    className={`flex items-center justify-center px-4 h-10 rounded-xl border transition-all text-sm font-semibold ${
-                      selectionMode 
-                        ? 'border-[rgb(var(--color-highlight))] bg-[rgb(var(--color-highlight)/0.1)] text-[rgb(var(--color-highlight))]' 
-                        : 'border-[rgb(var(--color-foreground)/0.15)] text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.04)]'
-                    }`}
+                    className={`flex items-center justify-center px-4 h-10 rounded-xl border border-[rgb(var(--color-foreground)/0.15)] transition-all duration-300 ease-in-out text-sm font-medium ${selectionMode
+                      ? 'bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))]'
+                      : 'text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.04)]'
+                      }`}
                   >
                     {selectionMode ? 'Cancel' : 'Manage Fonts'}
                   </button>
@@ -341,10 +374,10 @@ export default function BoardDetail() {
         </div>
       </div>
 
-      {selectionMode && (
+      {/* {selectionMode && (
         <div className="max-w-6xl mx-auto px-4 mt-4 mb-2">
           <div className="p-4 rounded-2xl bg-[rgb(var(--color-foreground)/0.03)] border border-[rgb(var(--color-foreground)/0.08)] flex items-center justify-between">
-            <span className="font-semibold text-sm">
+            <span className="font-medium text-sm">
               {selectedFonts.size} font{selectedFonts.size !== 1 ? 's' : ''} selected
             </span>
             <div className="flex items-center gap-3">
@@ -353,14 +386,14 @@ export default function BoardDetail() {
                   if (selectedFonts.size === fonts.length) setSelectedFonts(new Set());
                   else setSelectedFonts(new Set(fonts.map(f => f.font_id)));
                 }}
-                className="text-xs font-semibold text-[rgb(var(--color-foreground)/0.6)] hover:text-[rgb(var(--color-foreground))] transition-colors"
+                className="px-4 h-10 text-xs bg-[rgb(var(--color-foreground)/0.05)] hover:bg-[rgb(var(--color-foreground)/0.1)] rounded-xl font-medium text-[rgb(var(--color-foreground)/0.6)] hover:text-[rgb(var(--color-foreground))] transition-colors"
               >
                 {selectedFonts.size === fonts.length ? 'Deselect All' : 'Select All'}
               </button>
               <button
                 onClick={handleRemoveSelectedFonts}
                 disabled={selectedFonts.size === 0}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[rgb(var(--color-destructive)/0.1)] text-[rgb(var(--color-destructive))] text-xs font-bold hover:bg-[rgb(var(--color-destructive)/0.2)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center gap-1.5 px-4 h-10 rounded-xl bg-[rgb(var(--color-destructive)/0.1)] text-[rgb(var(--color-destructive))] text-xs font-medium hover:bg-[rgb(var(--color-destructive)/0.2)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Trash2 size={14} />
                 Remove Selected
@@ -368,7 +401,7 @@ export default function BoardDetail() {
             </div>
           </div>
         </div>
-      )}
+      )} */}
 
       {isEditModalOpen && board && (
         <EditBoardModal
@@ -389,58 +422,58 @@ export default function BoardDetail() {
 
       <div className="relative px-1 sm:px-2 md:px-4 pt-4 md:pt-6 w-full">
         <aside className="w-full shrink-0 transition-all duration-300 ease-in-out">
-            <Filters
-                filters={filters}
-                onChange={setFilters}
-                viewMode={viewMode}
-                onViewModeChange={setViewMode}
-                showExpandToggle={true}
-                allExpanded={globalExpanded}
-                onToggleAll={() => {
-                    setGlobalExpanded(!globalExpanded);
-                    setBulkToggleVersion(v => v + 1);
-                    setIsBulkToggling(true);
-                    if (bulkToggleTimeoutRef.current) clearTimeout(bulkToggleTimeoutRef.current);
-                    bulkToggleTimeoutRef.current = setTimeout(() => setIsBulkToggling(false), 450);
-                    setExpandedFontId(null);
-                }}
-                customText={customText}
-                onCustomTextChange={setCustomText}
-            />
+          <Filters
+            filters={filters}
+            onChange={setFilters}
+            viewMode={viewMode}
+            onViewModeChange={setViewMode}
+            showExpandToggle={true}
+            allExpanded={globalExpanded}
+            onToggleAll={() => {
+              setGlobalExpanded(!globalExpanded);
+              setBulkToggleVersion(v => v + 1);
+              setIsBulkToggling(true);
+              if (bulkToggleTimeoutRef.current) clearTimeout(bulkToggleTimeoutRef.current);
+              bulkToggleTimeoutRef.current = setTimeout(() => setIsBulkToggling(false), 450);
+              setExpandedFontId(null);
+            }}
+            customText={customText}
+            onCustomTextChange={setCustomText}
+          />
         </aside>
 
         <div className="w-full h-full pb-20">
-            {fonts.length === 0 ? (
-              <div className="text-center py-20 text-[rgb(var(--color-muted-foreground))]">
-                <p className="text-4xl mb-3">🎨</p>
-                <p className="font-semibold text-[rgb(var(--color-foreground))]">This board is empty</p>
-                {isOwner && (
-                  <p className="text-sm mt-1">
-                    <Link to="/fonts" className="text-[rgb(var(--color-highlight))] hover:underline">Browse fonts</Link> and save them to this board.
-                  </p>
-                )}
-              </div>
-            ) : items.length > 0 ? (
-                <div className={`masonic-grid select-none ${isBulkToggling ? 'is-bulk-toggling' : ''}`}>
-                    <Masonry
-                        key={`masonry-grid-${deleteCount}`}
-                        items={items}
-                        itemKey={(data) => data.id}
-                        columnCount={columns}
-                        columnGutter={16}
-                        itemHeightEstimate={280}
-                        overscanBy={1}
-                        render={MasonryCard}
-                    />
-                </div>
-            ) : (
-                <div className="text-center py-20 text-[rgb(var(--color-muted-foreground))]">
-                    <p className="text-xl mb-2">No fonts match your filters</p>
-                    <button onClick={() => setFilters({ query: '', categories: [], sortBy: 'trending' })} className="text-[rgb(var(--color-highlight))] hover:underline text-sm font-semibold">
-                        Clear all filters
-                    </button>
-                </div>
-            )}
+          {fonts.length === 0 ? (
+            <div className="text-center py-20 text-[rgb(var(--color-muted-foreground))]">
+              <p className="text-4xl mb-3">🎨</p>
+              <p className="font-medium text-[rgb(var(--color-foreground))]">This board is empty</p>
+              {isOwner && (
+                <p className="text-sm mt-1">
+                  <Link to="/fonts" className="text-[rgb(var(--color-foreground))] hover:underline">Browse fonts</Link> and save them to this board.
+                </p>
+              )}
+            </div>
+          ) : items.length > 0 ? (
+            <div className={`masonic-grid zselect-none ${isBulkToggling ? 'is-bulk-toggling' : ''}`}>
+              <Masonry
+                key={`masonry-grid-${deleteCount}`}
+                items={items}
+                itemKey={(data) => data.id}
+                columnCount={columns}
+                columnGutter={16}
+                itemHeightEstimate={280}
+                overscanBy={1}
+                render={MasonryCard}
+              />
+            </div>
+          ) : (
+            <div className="text-center py-20 text-[rgb(var(--color-muted-foreground)/0.5)]">
+              <p className="text-xl mb-2">No fonts match your filters</p>
+              <button onClick={() => setFilters({ query: '', categories: [], sortBy: 'trending' })} className="text-[rgb(var(--color-foreground))] hover:underline text-sm font-medium cursor-pointer">
+                Clear all filters
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

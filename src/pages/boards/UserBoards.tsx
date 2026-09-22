@@ -141,7 +141,8 @@ export default function UserBoards() {
       />
 
       {/* Profile header */}
-      <div className="border-b border-[rgb(var(--color-foreground)/0.08)] bg-[rgb(var(--color-card)/0.5)] backdrop-blur-sm">
+      <div className="relative bg-[rgb(var(--color-card)/0.5)] backdrop-blur-sm">
+        <div className='h-px w-full bg-linear-to-r from-transparent via-[rgb(var(--color-foreground)/0.08)] to-transparent absolute bottom-0 left-0 right-0' />
         <div className="max-w-5xl mx-auto px-4 py-8 flex md:flex-row flex-col md:items-center gap-5">
           {ownerProfile.avatar_url ? (
             <img src={ownerProfile.avatar_url} alt={ownerProfile.full_name} className="w-24 h-24 md:w-20 md:h-20 rounded-full object-cover border-2 border-[rgb(var(--color-foreground)/0.1)]" />
