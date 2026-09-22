@@ -1,5 +1,5 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { ArrowUpRight, Heart, Bookmark } from 'lucide-react';
+import { ArrowUpRight, Heart, Bookmark, ShoppingBag } from 'lucide-react';
 import SaveToBoardModal from '../boards/SaveToBoardModal';
 import type { Font } from '../../types/font';
 import React, { useEffect, useState, useRef, useCallback, useMemo } from 'react';
@@ -9,6 +9,7 @@ import { motion } from 'framer-motion';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { Toast } from '@capacitor/toast';
 import { Squircle } from 'react-ios-corners';
+import { useBag } from '../../contexts/BagContext';
 
 
 interface FontCardProps {
@@ -148,11 +149,13 @@ function FontCard({
     const { user } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
+    const { addToBag, isInBag, openBag } = useBag();
     const [isFontLoaded, setIsFontLoaded] = useState(() => font ? loadedFontsCache.has(font.id) : false);
     const [localIsFavorited, setLocalIsFavorited] = useState(() => propIsFavorited ?? false);
     const [localIsExpanded, setLocalIsExpanded] = useState(false);
     const [favoritesCount, setFavoritesCount] = useState(font?.favorites_count || 0);
     const [boardModalOpen, setBoardModalOpen] = useState(false);
+    const fontIsInBag = isInBag(font?.id);
 
     const isExpanded = propIsExpanded ?? localIsExpanded;
     const isFavorited = propIsFavorited !== undefined ? propIsFavorited : localIsFavorited;
@@ -392,12 +395,13 @@ function FontCard({
                                         </div> */}
 
                                             <div className="w-full h-full">
-                                                <div className='flex justify-between items-start gap-4'>
+                                            <div className='flex justify-between items-start gap-4'>
                                                     <Link to={`/fonts/${font.slug || font.id}`}
                                                         className="flex items-end text-2xl font-bold tracking-tight mb-0.5 group/title">
                                                         {font.name} <ArrowUpRight size={25} className='mb-0.5 opacity-0 group-hover/title:opacity-100 -translate-x-1 translate-y-1 group-hover/title:translate-x-0 group-hover/title:translate-y-0 transition-all duration-300 ease-in-out' />
                                                     </Link>
-                                                    {!hideLike ? (
+                                                    <div className="flex items-center gap-1">
+                                                        {!hideLike ? (
                                                         <div className="flex items-center gap-1">
                                                             <button
                                                                 onClick={toggleFavorite}
@@ -424,6 +428,31 @@ function FontCard({
                                                             )}
                                                         </div>
                                                     ) : <div></div>}
+                                                        {/* Add to Bag */}
+                                                        <button
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                if (fontIsInBag) {
+                                                                    openBag();
+                                                                } else {
+                                                                    addToBag(font);
+                                                                    openBag();
+                                                                }
+                                                            }}
+                                                            aria-label={fontIsInBag ? `${font.name} is in your bag` : `Add ${font.name} to bag`}
+                                                            title={fontIsInBag ? 'View in bag' : 'Add to bag'}
+                                                            className={`flex items-center gap-1.5 mt-1 px-2 transition-colors duration-300 ease-in-out group/bag ${
+                                                                fontIsInBag
+                                                                    ? 'text-[rgb(var(--color-primary))]'
+                                                                    : 'text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))]'
+                                                            }`}
+                                                        >
+                                                            <ShoppingBag
+                                                                size={22}
+                                                                className={`transition-transform duration-300 group-hover/bag:scale-105 ${fontIsInBag ? 'fill-[rgb(var(--color-primary)/0.2)]' : ''}`}
+                                                            />
+                                                        </button>
+                                                    </div>
                                                 </div>
                                                 <p className="text-sm text-[rgb(var(--color-muted-foreground))] tracking-wide">
                                                     by <Link
@@ -461,7 +490,7 @@ function FontCard({
                     className={`absolute inset-0 flex flex-col justify-between items-end w-full p-5 rounded-4xl bg-linear-to-t from-[rgb(var(--color-card)/0.8)] via-transparent to-transparent [rgb(var(--color-card)/0.8)] z-10 opacity-0 transition-opacity duration-300 ease-in-out pointer-events-none ${isExpanded ? '' : 'group-hover:opacity-100'
                         }`}
                 >
-                    <div className='flex justify-end items-start gap-5'>
+                    <div className='flex justify-end items-start gap-3'>
                         {user && (
                             <button
                                 onClick={(e) => { e.stopPropagation(); setBoardModalOpen(true); }}
@@ -472,6 +501,31 @@ function FontCard({
                                 <div className='absolute inset-0 bg-[rgb(var(--color-card)/0.3)] rounded-full blur-md zgroup-hover/save:blur-sm'></div>
                             </button>
                         )}
+                        {/* Add to Bag — hover overlay */}
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                if (fontIsInBag) {
+                                    openBag();
+                                } else {
+                                    addToBag(font);
+                                    openBag();
+                                }
+                            }}
+                            aria-label={fontIsInBag ? `${font.name} is in your bag — view bag` : `Add ${font.name} to bag`}
+                            title={fontIsInBag ? 'View in bag' : 'Add to bag'}
+                            className={`relative flex items-center backdrop-blur-sm transition-colors duration-300 ease-in-out group/bag p-2 rounded-full pointer-events-auto cursor-pointer ${
+                                fontIsInBag
+                                    ? 'text-[rgb(var(--color-primary))]'
+                                    : 'text-[rgb(var(--color-foreground))] hover:text-[rgb(var(--color-primary))]'
+                            }`}
+                        >
+                            <ShoppingBag
+                                size={20}
+                                className={`relative z-10 transition-transform duration-200 group-hover/bag:scale-110 ${fontIsInBag ? 'fill-[rgb(var(--color-primary)/0.25)]' : ''}`}
+                            />
+                            <div className='absolute inset-0 bg-[rgb(var(--color-card)/0.3)] rounded-full blur-md'></div>
+                        </button>
                     </div>
                     <div className='flex justify-between items-end gap-5 w-full'>
                         <div className="flex flex-col font-inter-tight tracking-wider">

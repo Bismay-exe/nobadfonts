@@ -130,7 +130,7 @@ app.use('*', async (c, next) => {
 // ─── 3. Initialize MCP Server ─────────────────────────────────────────
 const server = new McpServer({
   name: 'nobadfonts-mcp',
-  version: '1.0.0',
+  version: '1.1.0',
 });
 
 // ─── 3a. Research Instructions Resource ───────────────────────────────
@@ -933,6 +933,112 @@ Requires: admin role only.`,
   async (args, _extra, c) => handleUpdateCollection({ ...args, caller: c?.get?.('caller') ?? undefined })
 );
 
+// Register Tool 22: generate_cli_command
+server.tool(
+  'generate_cli_command',
+  `Generate the correct npx nobadfonts CLI command for installing a font, with optional variant selection.
+
+Use this when a user asks how to install a font via the NoBadFonts CLI, or wants a copy-paste command.
+
+The CLI package name is "nobadfonts" (NOT "nobadfonts-cli"). The correct invocation is:
+  npx nobadfonts <command> <slug> [options]
+
+Commands:
+- add: Import font via CSS @import (lightweight, recommended for most projects)
+- download: Download font files locally + generate @font-face CSS
+- info: List all available variants before installing
+
+Variant selection options (all equivalent):
+- --variant <name>   (repeatable, e.g. --variant pixelbold --variant extradot-pixel)
+- -v <name>          (short alias, e.g. -v pixelbold -v extradot-pixel)
+- --variants a,b,c   (comma-separated, e.g. --variants pixelbold,extradot-pixel)
+- --select           (opens interactive terminal checkbox prompt)
+
+Examples:
+  npx nobadfonts add offbit                                    # all variants
+  npx nobadfonts add offbit --variant pixelbold                # specific variant
+  npx nobadfonts add offbit -v pixelbold -v extradot-pixel     # multiple variants  
+  npx nobadfonts add offbit --variants pixelbold,extradot-pixel # comma style
+  npx nobadfonts add offbit --select                           # interactive
+  npx nobadfonts download offbit --variant pixelbold           # local download
+  npx nobadfonts info offbit                                   # inspect variants
+
+Returns the ready-to-copy command string plus usage notes.`,
+  {
+    slug: z.string().describe('Font slug (e.g. "offbit", "inter", "space-grotesk")'),
+    command: z.enum(['add', 'download', 'info']).optional().describe('CLI command to use (default: "add")'),
+    variants: z.array(z.string()).optional().describe('Specific variant names to install (empty = all variants)'),
+    variant_style: z.enum(['long', 'short', 'comma', 'interactive']).optional().describe('Flag style: "long" = --variant flags, "short" = -v flags, "comma" = --variants a,b,c, "interactive" = --select (default: "long")')
+  },
+  async (args) => {
+    const cmd = args.command || 'add';
+    const slug = args.slug?.toLowerCase().trim();
+
+    if (!slug) {
+      return {
+        isError: true,
+        content: [{ type: 'text', text: 'Error: "slug" is required.' }]
+      };
+    }
+
+    let command = `npx nobadfonts ${cmd} ${slug}`;
+    const variants = args.variants || [];
+    const style = args.variant_style || 'long';
+
+    if (variants.length > 0 && style !== 'interactive') {
+      const normalized = variants.map(v => v.toLowerCase().replace(/\s+/g, '-'));
+
+      if (style === 'comma') {
+        command += ` --variants ${normalized.join(',')}`;
+      } else if (style === 'short') {
+        command += ' ' + normalized.map(v => `-v ${v}`).join(' ');
+      } else {
+        // long (default)
+        command += ' ' + normalized.map(v => `--variant ${v}`).join(' ');
+      }
+    } else if (style === 'interactive') {
+      command += ' --select';
+    }
+
+    const infoCommand = `npx nobadfonts info ${slug}`;
+
+    const notes: string[] = [
+      '• Run in your project root directory (where package.json lives)',
+      '• Works with Vite, Next.js, Create React App, and vanilla HTML',
+      '• Generated CSS is written to src/fonts.css automatically',
+    ];
+
+    if (cmd === 'add') {
+      notes.push('• Uses CDN @import — no local files, fastest setup');
+    } else if (cmd === 'download') {
+      notes.push('• Downloads font files to public/fonts/ and generates @font-face CSS');
+    }
+
+    if (variants.length === 0 && style !== 'interactive') {
+      notes.push(`• To see available variants first: ${infoCommand}`);
+      notes.push('• To choose interactively: ' + command.replace(slug, slug + ' --select').replace(' --select --select', ' --select'));
+    }
+
+    return {
+      content: [{
+        type: 'text',
+        text: JSON.stringify({
+          command,
+          info_command: infoCommand,
+          variants_specified: variants,
+          all_variants: variants.length === 0 && style !== 'interactive',
+          notes,
+          alternative_styles: variants.length > 0 ? {
+            long_flags: `npx nobadfonts ${cmd} ${slug} ` + variants.map(v => `--variant ${v.toLowerCase().replace(/\s+/g, '-')}`).join(' '),
+            short_flags: `npx nobadfonts ${cmd} ${slug} ` + variants.map(v => `-v ${v.toLowerCase().replace(/\s+/g, '-')}`).join(' '),
+            comma_style: `npx nobadfonts ${cmd} ${slug} --variants ${variants.map(v => v.toLowerCase().replace(/\s+/g, '-')).join(',')}`
+          } : null
+        }, null, 2)
+      }]
+    };
+  }
+);
+
 // ═══ 4. Connect Transport & Serve ═══════════════════════════════════════════
 // Stateless mode for Edge Functions
 const transport = new WebStandardStreamableHTTPServerTransport({
@@ -947,3 +1053,4 @@ app.all('*', async (c) => {
 });
 
 Deno.serve(app.fetch);
+

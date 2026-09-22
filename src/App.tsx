@@ -15,6 +15,8 @@ import { App as CapApp } from '@capacitor/app';
 import { Browser } from '@capacitor/browser';
 import { UpdateModal } from './components/modals/UpdateModal';
 import { UpdateProvider } from './contexts/UpdateContext';
+import { BagProvider } from './contexts/BagContext';
+import BagPanel from './components/bag/BagPanel';
 
 const FontsCatalog = React.lazy(() => import('./pages/FontsCatalog'));
 const FontDetails = React.lazy(() => import('./pages/FontDetails'));
@@ -111,11 +113,12 @@ function AppContent() {
     };
   }, []);
 
-  return (
+    return (
     <>
       <ScrollRestoration />
       <UploadProgressPopup />
       <BackHandler />
+      <BagPanel />
       <OnboardingGuard>
       <Suspense fallback={
         <div className="fixed inset-0 flex items-center justify-center bg-[rgb(var(--color-background))] z-50">
@@ -162,7 +165,9 @@ function App() {
       <ThemeProvider>
         <UploadProvider>
           <UpdateProvider>
-            <AppContent />
+            <BagProvider>
+              <AppContent />
+            </BagProvider>
           </UpdateProvider>
         </UploadProvider>
       </ThemeProvider>

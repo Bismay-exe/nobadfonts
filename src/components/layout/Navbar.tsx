@@ -4,7 +4,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useState, useEffect, useMemo } from 'react';
 import { cn } from '../../lib/utils';
-import { Type, Combine, Terminal, Users, Shield, Plus, Sun, Moon, Building, UserRound } from 'lucide-react';
+import { Type, Combine, Terminal, Users, Shield, Plus, Sun, Moon, Building, UserRound, ShoppingBag } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../../contexts/ThemeContext';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
@@ -13,11 +13,13 @@ import { Download } from 'lucide-react';
 import Logo from '/logo/logo.png'; // Assuming white version exists or we filter it
 import { CustomSerifA, CustomTerminal, CustomUpload, CustomUsers } from '../ui/CustomIcons';
 import { Squircle } from 'react-ios-corners';
+import { useBag } from '../../contexts/BagContext';
 
 export default function Navbar() {
     const { user, profile } = useAuth();
     const { theme, toggleTheme } = useTheme();
     const { hasUpdate, isDownloading, progress, openModal, closeModal, isModalOpen } = useUpdate();
+    const { count: bagCount, toggleBag } = useBag();
     const [isScrolled, setIsScrolled] = useState(false);
     const location = useLocation();
     const navigate = useNavigate();
@@ -161,6 +163,25 @@ export default function Navbar() {
                                     )}
                                 </motion.button>
                             )}
+
+                            {/* Bag Button */}
+                            <motion.button
+                                whileTap={{ scale: 0.95 }}
+                                onClick={async () => {
+                                    await Haptics.impact({ style: ImpactStyle.Light });
+                                    toggleBag();
+                                }}
+                                className="relative h-10 w-10 flex items-center justify-center rounded-full bg-[rgb(var(--color-foreground)/0.05)] text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.1)] transition-all cursor-pointer group"
+                                title="Font Bag"
+                                aria-label={`Font Bag — ${bagCount} font${bagCount !== 1 ? 's' : ''}`}
+                            >
+                                <ShoppingBag size={18} className="transition-transform duration-300 group-hover:-translate-y-0.5" />
+                                {bagCount > 0 && (
+                                    <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-[rgb(var(--color-primary))] text-[rgb(var(--color-background))] text-[10px] font-bold rounded-full flex items-center justify-center">
+                                        {bagCount > 99 ? '99+' : bagCount}
+                                    </span>
+                                )}
+                            </motion.button>
 
                             {/* Theme Switcher */}
                             <motion.button
