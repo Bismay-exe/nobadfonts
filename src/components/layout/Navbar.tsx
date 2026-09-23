@@ -175,7 +175,12 @@ export default function Navbar() {
                                 title="Font Bag"
                                 aria-label={`Font Bag — ${bagCount} font${bagCount !== 1 ? 's' : ''}`}
                             >
-                                <Handbag size={18} className="transition-transform duration-300 group-hover:-translate-y-0.5" />
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
+                                    <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                                        <path d="M3.977 9.84A2 2 0 0 1 5.971 8h12.058a2 2 0 0 1 1.994 1.84l.803 10A2 2 0 0 1 18.833 22H5.167a2 2 0 0 1-1.993-2.16z" fill="currentColor" />
+                                        <path d="M16 11V6a4 4 0 0 0-4-4v0a4 4 0 0 0-4 4v5" />
+                                    </g>
+                                </svg>
                                 {bagCount > 0 && (
                                     <span className="absolute -top-1 -right-1 min-w-4.5 h-4.5 px-1 bg-[rgb(var(--color-primary))] text-[rgb(var(--color-background))] text-[10px] font-bold rounded-full flex items-center justify-center">
                                         {bagCount > 99 ? '99+' : bagCount}
@@ -193,10 +198,10 @@ export default function Navbar() {
                                 className="h-10 w-10 flex items-center justify-center rounded-full bg-[rgb(var(--color-foreground)/0.05)] backdrop-blur-3xl text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.1)] transition-all cursor-pointer group"
                                 title={`Switch Theme (Current: ${theme.charAt(0).toUpperCase() + theme.slice(1)})`}
                             >
-                                <div className="transition-transform duration-700 group-hover:rotate-360 group-active:scale-90">
-                                    {theme === 'light' && <Sun size={18} fill='black' />}
-                                    {theme === 'dark' && <Moon size={18} fill="white" />}
-                                    {theme === 'concrete' && <Building size={18} />}
+                                <div className="">
+                                    {theme === 'light' && <Sun size={18} fill='black' className='transition-transform duration-700 group-hover:rotate-360 group-active:scale-90' />}
+                                    {theme === 'dark' && <Moon size={18} fill="white" className='transition-transform duration-700 group-hover:rotate-360 group-active:scale-90' />}
+                                    {theme === 'concrete' && <Building size={18} className='group-active:scale-90' />}
                                 </div>
                             </motion.button>
 
