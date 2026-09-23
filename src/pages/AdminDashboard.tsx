@@ -349,7 +349,7 @@ export default function AdminDashboard() {
     }), [allFonts]);
 
 
-    if (authLoading) return <div>Loading...</div>;
+    if (authLoading) <div className="w-screen h-screen flex justify-center items-center bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))]">Loading...</div>;
     if (!user || profile?.role !== 'admin') return <Navigate to="/" replace />;
 
     return (

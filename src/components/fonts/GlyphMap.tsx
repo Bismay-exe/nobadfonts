@@ -589,7 +589,7 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
                             </div>
 
                             {isScanning ? (
-                                <div className="grid grid-cols-6 md:grid-cols-10 gap-2 opacity-50">Loading...</div>
+                                <div className="w-full h-full flex justify-center items-center bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))]">Loading...</div>
                             ) : (
                                 <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-px bg-[rgb(var(--color-muted)/0.1)] border border-[rgb(var(--color-border)/0.5)]">
                                     {availableGlyphs.length > 0 ? availableGlyphs.map(char => (
@@ -597,7 +597,7 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
                                             key={char}
                                             onClick={() => setSelectedChar(char)}
                                             aria-label={`Inspect glyph ${char}`}
-                                            className={`aspect-square flex items-center justify-center bg-[rgb(var(--color-background))] hover:bg-[rgb(var(--color-muted)/0.05)] border border-transparent hover:border-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out duration-100 ${selectedChar === char ? 'ring-1 ring-[rgb(var(--color-foreground))] z-10' : ''}`}
+                                            className={`aspect-square flex items-center justify-center bg-[rgb(var(--color-background))] hover:bg-[rgb(var(--color-muted)/0.05)] border border-transparent hover:border-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out ${selectedChar === char ? 'ring-1 ring-[rgb(var(--color-foreground))] z-10' : ''}`}
                                         >
                                             <span style={{ fontFamily: `"${fontFamily}"` }} className="text-2xl">{char}</span>
                                         </button>
@@ -641,7 +641,7 @@ function CategoryView({ fontFamily, basicUppercase, basicLowercase, basicNumeral
                             key={char}
                             onClick={() => setSelectedChar(char)}
                             aria-label={`Inspect glyph ${char}`}
-                            className={`aspect-square flex items-center justify-center bg-[rgb(var(--color-background))] hover:bg-[rgb(var(--color-muted)/0.05)] border border-transparent hover:border-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out duration-100 ${selectedChar === char ? 'ring-1 ring-[rgb(var(--color-foreground))] z-10' : ''}`}
+                            className={`aspect-square flex items-center justify-center bg-[rgb(var(--color-background))] hover:bg-[rgb(var(--color-muted)/0.05)] border border-transparent hover:border-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out ${selectedChar === char ? 'ring-1 ring-[rgb(var(--color-foreground))] z-10' : ''}`}
                         >
                             <span style={{ fontFamily: `"${fontFamily}"` }} className="text-2xl">{char}</span>
                         </button>
@@ -658,7 +658,7 @@ function CategoryView({ fontFamily, basicUppercase, basicLowercase, basicNumeral
                             key={char}
                             onClick={() => setSelectedChar(char)}
                             aria-label={`Inspect glyph ${char}`}
-                            className={`aspect-square flex items-center justify-center bg-[rgb(var(--color-background))] hover:bg-[rgb(var(--color-muted)/0.05)] border border-transparent hover:border-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out duration-100 ${selectedChar === char ? 'ring-1 ring-[rgb(var(--color-foreground))] z-10' : ''}`}
+                            className={`aspect-square flex items-center justify-center bg-[rgb(var(--color-background))] hover:bg-[rgb(var(--color-muted)/0.05)] border border-transparent hover:border-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out ${selectedChar === char ? 'ring-1 ring-[rgb(var(--color-foreground))] z-10' : ''}`}
                         >
                             <span style={{ fontFamily: `"${fontFamily}"` }} className="text-2xl">{char}</span>
                         </button>
@@ -675,7 +675,7 @@ function CategoryView({ fontFamily, basicUppercase, basicLowercase, basicNumeral
                             key={char}
                             onClick={() => setSelectedChar(char)}
                             aria-label={`Inspect glyph ${char}`}
-                            className={`aspect-square flex items-center justify-center bg-[rgb(var(--color-background))] hover:bg-[rgb(var(--color-muted)/0.05)] border border-transparent hover:border-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out duration-100 ${selectedChar === char ? 'ring-1 ring-[rgb(var(--color-foreground))] z-10' : ''}`}
+                            className={`aspect-square flex items-center justify-center bg-[rgb(var(--color-background))] hover:bg-[rgb(var(--color-muted)/0.05)] border border-transparent hover:border-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out ${selectedChar === char ? 'ring-1 ring-[rgb(var(--color-foreground))] z-10' : ''}`}
                         >
                             <span style={{ fontFamily: `"${fontFamily}"` }} className="text-2xl">{char}</span>
                         </button>

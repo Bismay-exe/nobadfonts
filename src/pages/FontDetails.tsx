@@ -332,8 +332,35 @@ export default function FontDetails() {
         return list;
     }, [similarFonts]);
 
-    if (loading) return <div className="container mx-auto px-4 py-8">Loading...</div>;
-    if (error || !font) return <div className="container mx-auto px-4 py-8">Font not found</div>;
+    if (loading) return <div className="w-screen h-screen flex justify-center items-center bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))]">Loading...</div>;
+    if (error || !font) {
+        return (
+            <main className="flex min-h-screen flex-col justify-center items-center bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))]">
+                {/* <header className="px-6 py-5 sm:px-10">
+                    <a href="/" className="text-lg font-bold tracking-tight">
+                        NoBadFonts
+                    </a>
+                </header> */}
+
+                <section className="flex flex-col items-start justify-center px-6 sm:px-10">
+                    <h1 className="text-5xl font-bold leading-[1.05] tracking-tight sm:text-7xl">
+                        Hmm... <br className='sm:hidden w-2'/>this font <br className=''/>doesn't exist.
+                    </h1>
+
+                    <p className="mt-5 text-sm text-neutral-500 sm:text-base font-inter-tight tracking-wider max-w-xl">
+                        We couldn't track down the typeface you're looking for. <br className='sm:block w-2'/>It may have been moved, or the URL might be incorrect.
+                    </p>
+
+                    <a
+                        href="/fonts"
+                        className="mt-8 inline-flex rounded-full bg-[rgb(var(--color-foreground))] px-6 py-3 text-sm font-semibold text-[rgb(var(--color-background))] transition-opacity hover:opacity-80"
+                    >
+                        Explore fonts
+                    </a>
+                </section>
+            </main>
+        );
+    }
 
     const fontSlug = font.slug || id;
     const fontCanonicalUrl = `/fonts/${fontSlug}`;
@@ -571,7 +598,7 @@ export default function FontDetails() {
                 <div id="context" className="scroll-mt-24 space-y-8 mt-40">
                     <div className="flex justify-center items-center gap-4 py-10">
                         <h2 className="relative flex justify-end items-center text-4xl sm:text-6xl md:text-8xl font-inter-tight font-medium zuppercase ztracking-widest text-[rgb(var(--color-foreground))]">
-                            Real-World <br className='md:hidden' />Context 
+                            Real-World <br className='md:hidden' />Context
                             <div className="absolute bottom-full left-0 text-sm sm:text-xl px-2.5 sm:px-3.5 py-0.5 sm:py-2.5 bg-[rgb(var(--color-accent))] text-black rounded-full">Experimental</div>
                         </h2>
                     </div>

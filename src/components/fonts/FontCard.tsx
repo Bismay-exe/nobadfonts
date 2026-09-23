@@ -1,5 +1,5 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { ArrowUpRight, Heart, Bookmark, ShoppingBag } from 'lucide-react';
+import { ArrowUpRight, Heart, Bookmark, Handbag } from 'lucide-react';
 import SaveToBoardModal from '../boards/SaveToBoardModal';
 import type { Font } from '../../types/font';
 import React, { useEffect, useState, useRef, useCallback, useMemo } from 'react';
@@ -149,7 +149,7 @@ function FontCard({
     const { user } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
-    const { addToBag, isInBag, openBag } = useBag();
+    const { addToBag, isInBag } = useBag();
     const [isFontLoaded, setIsFontLoaded] = useState(() => font ? loadedFontsCache.has(font.id) : false);
     const [localIsFavorited, setLocalIsFavorited] = useState(() => propIsFavorited ?? false);
     const [localIsExpanded, setLocalIsExpanded] = useState(false);
@@ -395,59 +395,58 @@ function FontCard({
                                         </div> */}
 
                                             <div className="w-full h-full">
-                                            <div className='flex justify-between items-start gap-4'>
+                                                <div className='flex justify-between items-start gap-4'>
                                                     <Link to={`/fonts/${font.slug || font.id}`}
                                                         className="flex items-end text-2xl font-bold tracking-tight mb-0.5 group/title">
                                                         {font.name} <ArrowUpRight size={25} className='mb-0.5 opacity-0 group-hover/title:opacity-100 -translate-x-1 translate-y-1 group-hover/title:translate-x-0 group-hover/title:translate-y-0 transition-all duration-300 ease-in-out' />
                                                     </Link>
                                                     <div className="flex items-center gap-1">
                                                         {!hideLike ? (
-                                                        <div className="flex items-center gap-1">
-                                                            <button
-                                                                onClick={toggleFavorite}
-                                                                aria-label={isFavorited ? `Remove ${font.name} from favorites` : `Add ${font.name} to favorites`}
-                                                                className="flex items-center gap-1.5 mt-1 text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out group/like"
-                                                            >
-                                                                <Heart
-                                                                    size={22}
-                                                                    className={`transition-transform duration-300 ${isFavorited ? 'fill-pink-500 text-pink-500' : 'group-hover/like:scale-105'}`}
-                                                                />
-                                                                <span className="font-bold text-[16px]">{favoritesCount}</span>
-                                                            </button>
-                                                            {user && (
+                                                            <div className="flex items-center gap-1">
                                                                 <button
-                                                                    onClick={(e) => { e.stopPropagation(); setBoardModalOpen(true); }}
-                                                                    aria-label={`Save ${font.name} to a board`}
-                                                                    className="flex items-center gap-1.5 mt-1 px-2 text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out group/save"
+                                                                    onClick={toggleFavorite}
+                                                                    aria-label={isFavorited ? `Remove ${font.name} from favorites` : `Add ${font.name} to favorites`}
+                                                                    className="flex items-center gap-1.5 mt-1 text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out group/like"
                                                                 >
-                                                                    <Bookmark
+                                                                    <Heart
                                                                         size={22}
-                                                                        className="transition-transform duration-300 group-hover/save:scale-105"
+                                                                        className={`transition-transform duration-300 ${isFavorited ? 'fill-pink-500 text-pink-500' : 'group-hover/like:scale-105'}`}
                                                                     />
+                                                                    <span className="font-bold text-[16px]">{favoritesCount}</span>
                                                                 </button>
-                                                            )}
-                                                        </div>
-                                                    ) : <div></div>}
+                                                                {user && (
+                                                                    <button
+                                                                        onClick={(e) => { e.stopPropagation(); setBoardModalOpen(true); }}
+                                                                        aria-label={`Save ${font.name} to a board`}
+                                                                        className="flex items-center gap-1.5 mt-1 px-2 text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out group/save"
+                                                                    >
+                                                                        <Bookmark
+                                                                            size={22}
+                                                                            className="transition-transform duration-300 group-hover/save:scale-105"
+                                                                        />
+                                                                    </button>
+                                                                )}
+                                                            </div>
+                                                        ) : <div></div>}
                                                         {/* Add to Bag */}
                                                         <button
                                                             onClick={(e) => {
                                                                 e.stopPropagation();
                                                                 if (fontIsInBag) {
-                                                                    openBag();
+                                                                    navigate('/bag');
                                                                 } else {
                                                                     addToBag(font);
-                                                                    openBag();
+                                                                    navigate('/bag');
                                                                 }
                                                             }}
                                                             aria-label={fontIsInBag ? `${font.name} is in your bag` : `Add ${font.name} to bag`}
                                                             title={fontIsInBag ? 'View in bag' : 'Add to bag'}
-                                                            className={`flex items-center gap-1.5 mt-1 px-2 transition-colors duration-300 ease-in-out group/bag ${
-                                                                fontIsInBag
-                                                                    ? 'text-[rgb(var(--color-primary))]'
-                                                                    : 'text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))]'
-                                                            }`}
+                                                            className={`flex items-center gap-1.5 mt-1 px-2 transition-colors duration-300 ease-in-out group/bag ${fontIsInBag
+                                                                ? 'text-[rgb(var(--color-primary))]'
+                                                                : 'text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))]'
+                                                                }`}
                                                         >
-                                                            <ShoppingBag
+                                                            <Handbag
                                                                 size={22}
                                                                 className={`transition-transform duration-300 group-hover/bag:scale-105 ${fontIsInBag ? 'fill-[rgb(var(--color-primary)/0.2)]' : ''}`}
                                                             />
@@ -490,12 +489,12 @@ function FontCard({
                     className={`absolute inset-0 flex flex-col justify-between items-end w-full p-5 rounded-4xl bg-linear-to-t from-[rgb(var(--color-card)/0.8)] via-transparent to-transparent [rgb(var(--color-card)/0.8)] z-10 opacity-0 transition-opacity duration-300 ease-in-out pointer-events-none ${isExpanded ? '' : 'group-hover:opacity-100'
                         }`}
                 >
-                    <div className='flex justify-end items-start gap-3'>
+                    <div className='w-full flex justify-between items-start gap-3'>
                         {user && (
                             <button
                                 onClick={(e) => { e.stopPropagation(); setBoardModalOpen(true); }}
                                 aria-label={`Save ${font.name} to a board`}
-                                className="relative flex items-center zbg-[rgb(var(--color-background)/0.5)] backdrop-blur-sm text-[rgb(var(--color-foreground))] hover:text-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out group/save p-2 rounded-full pointer-events-auto cursor-pointer"
+                                className="relative flex items-center zbg-[rgb(var(--color-background)/0.5)] backdrop-blur-sm text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out group/save p-2 rounded-full pointer-events-auto cursor-pointer"
                             >
                                 <Bookmark size={20} className='relative z-10' />
                                 <div className='absolute inset-0 bg-[rgb(var(--color-card)/0.3)] rounded-full blur-md zgroup-hover/save:blur-sm'></div>
@@ -506,23 +505,22 @@ function FontCard({
                             onClick={(e) => {
                                 e.stopPropagation();
                                 if (fontIsInBag) {
-                                    openBag();
+                                    navigate('/bag');
                                 } else {
                                     addToBag(font);
-                                    openBag();
+                                    navigate('/bag');
                                 }
                             }}
                             aria-label={fontIsInBag ? `${font.name} is in your bag — view bag` : `Add ${font.name} to bag`}
                             title={fontIsInBag ? 'View in bag' : 'Add to bag'}
-                            className={`relative flex items-center backdrop-blur-sm transition-colors duration-300 ease-in-out group/bag p-2 rounded-full pointer-events-auto cursor-pointer ${
-                                fontIsInBag
-                                    ? 'text-[rgb(var(--color-primary))]'
-                                    : 'text-[rgb(var(--color-foreground))] hover:text-[rgb(var(--color-primary))]'
-                            }`}
+                            className={`relative flex items-center backdrop-blur-sm transition-colors duration-300 ease-in-out p-2 rounded-full pointer-events-auto cursor-pointer ${fontIsInBag
+                                ? 'text-[rgb(var(--color-foreground))]'
+                                : 'text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))]'
+                                }`}
                         >
-                            <ShoppingBag
+                            <Handbag
                                 size={20}
-                                className={`relative z-10 transition-transform duration-200 group-hover/bag:scale-110 ${fontIsInBag ? 'fill-[rgb(var(--color-primary)/0.25)]' : ''}`}
+                                className={`relative z-10 transition-all duration-300 ease-in-out ${fontIsInBag ? 'fill-[rgb(var(--color-foreground)/0.25)] text-[rgb(var(--color-muted-foreground))]' : ''}`}
                             />
                             <div className='absolute inset-0 bg-[rgb(var(--color-card)/0.3)] rounded-full blur-md'></div>
                         </button>
@@ -531,7 +529,7 @@ function FontCard({
                         <div className="flex flex-col font-inter-tight tracking-wider">
                             <p className={`text-[rgb(var(--color-foreground))] font-medium text-base transition-transform duration-300 ${isExpanded ? 'translate-y-2' : 'translate-y-2 group-hover:translate-y-0'}`}>{font.name}</p>
                             <p className={`text-[rgb(var(--color-muted-foreground))] text-sm transition-transform duration-300 delay-75 ${isExpanded ? 'translate-y-2' : 'translate-y-2 group-hover:translate-y-0'}`}>{font.designer}</p>
-                            
+
                             {/* <p className={`text-[rgb(var(--color-foreground))] text-sm transition-transform duration-300 delay-75 ${isExpanded ? 'translate-y-2' : 'translate-y-2 group-hover:translate-y-0'}`}>{font.name}</p>
                             <p className={`text-[rgb(var(--color-muted-foreground))] text-xs transition-transform duration-300 delay-75 ${isExpanded ? 'translate-y-2' : 'translate-y-2 group-hover:translate-y-0'}`}>by {font.designer}</p> */}
                         </div>

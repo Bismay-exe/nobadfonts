@@ -4,7 +4,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useState, useEffect, useMemo } from 'react';
 import { cn } from '../../lib/utils';
-import { Type, Combine, Terminal, Users, Shield, Plus, Sun, Moon, Building, UserRound, ShoppingBag } from 'lucide-react';
+import { Type, Combine, Terminal, Users, Shield, Plus, Sun, Moon, Building, UserRound, Handbag } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../../contexts/ThemeContext';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
@@ -19,7 +19,7 @@ export default function Navbar() {
     const { user, profile } = useAuth();
     const { theme, toggleTheme } = useTheme();
     const { hasUpdate, isDownloading, progress, openModal, closeModal, isModalOpen } = useUpdate();
-    const { count: bagCount, toggleBag } = useBag();
+    const { count: bagCount } = useBag();
     const [isScrolled, setIsScrolled] = useState(false);
     const location = useLocation();
     const navigate = useNavigate();
@@ -64,7 +64,7 @@ export default function Navbar() {
                     isScrolled
                         ? "max-w-full md:rounded-none bg-linear-to-b from-[rgb(var(--color-background))] via-[rgb(var(--color-background)/0.6)] to-[rgb(var(--color-background)/0)] py-2 md:py-4 px-6 md:px-10"
                         : "max-w-full md:rounded-none zbg-linear-to-b from-[rgb(var(--color-background))] via-[rgb(var(--color-background)/0.6)] to-[rgb(var(--color-background)/0)] py-2 md:py-4 px-6 md:px-10"
-                        // : "md:top-4 max-w-7xl md:rounded-3xl bg-transparent border-none py-4 px-4"
+                    // : "md:top-4 max-w-7xl md:rounded-3xl bg-transparent border-none py-4 px-4"
                 )}
             >
                 <div className="flex items-center pt-[env(safe-area-inset-top)] md:pt-0">
@@ -169,15 +169,15 @@ export default function Navbar() {
                                 whileTap={{ scale: 0.95 }}
                                 onClick={async () => {
                                     await Haptics.impact({ style: ImpactStyle.Light });
-                                    toggleBag();
+                                    navigate('/bag');
                                 }}
                                 className="relative h-10 w-10 flex items-center justify-center rounded-full bg-[rgb(var(--color-foreground)/0.05)] text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.1)] transition-all cursor-pointer group"
                                 title="Font Bag"
                                 aria-label={`Font Bag — ${bagCount} font${bagCount !== 1 ? 's' : ''}`}
                             >
-                                <ShoppingBag size={18} className="transition-transform duration-300 group-hover:-translate-y-0.5" />
+                                <Handbag size={18} className="transition-transform duration-300 group-hover:-translate-y-0.5" />
                                 {bagCount > 0 && (
-                                    <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-[rgb(var(--color-primary))] text-[rgb(var(--color-background))] text-[10px] font-bold rounded-full flex items-center justify-center">
+                                    <span className="absolute -top-1 -right-1 min-w-4.5 h-4.5 px-1 bg-[rgb(var(--color-primary))] text-[rgb(var(--color-background))] text-[10px] font-bold rounded-full flex items-center justify-center">
                                         {bagCount > 99 ? '99+' : bagCount}
                                     </span>
                                 )}

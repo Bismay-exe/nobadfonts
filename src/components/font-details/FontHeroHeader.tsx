@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Heart, Share2, Download, Loader2, BookmarkPlus } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Heart, Share2, Download, Loader2, BookmarkPlus, Handbag } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '../../lib/utils';
 import type { Font } from '../../types/font';
 import SaveToBoardModal from '../boards/SaveToBoardModal';
 import { useAuth } from '../../contexts/AuthContext';
+import { useBag } from '../../contexts/BagContext';
 
 interface FontHeroHeaderProps {
     font: Font;
@@ -29,7 +30,10 @@ export default function FontHeroHeader({
     onDownloadZip,
 }: FontHeroHeaderProps) {
     const { user } = useAuth();
+    const navigate = useNavigate();
+    const { addToBag, isInBag } = useBag();
     const [boardModalOpen, setBoardModalOpen] = useState(false);
+    const fontIsInBag = isInBag(font?.id);
 
     return (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 mt-4">
@@ -58,7 +62,7 @@ export default function FontHeroHeader({
                         className={cn(
                             "flex items-center gap-2 px-4 md:px-6 py-3 rounded-full border transition-all duration-300 cursor-pointer",
                             isFavorited
-                                ? "bg-[rgb(var(--color-accent)/0.1)] border-[rgb(var(--color-accent))] text-[rgb(var(--color-accent))]"
+                                ? "bg-[rgb(var(--color-accent)/0.15)] border-[rgb(var(--color-accent)/0.3)] text-[rgb(var(--color-accent))]"
                                 : "bg-[rgb(var(--color-foreground)/0.05)] border-[rgb(var(--color-foreground)/0.1)] text-[rgb(var(--color-foreground))] hover:opacity-80"
                         )}
                     >
@@ -91,23 +95,46 @@ export default function FontHeroHeader({
                         <span className="font-bold hidden md:inline">Share</span>
                     </motion.button>
 
+                    {/* Add to Bag */}
+                    <motion.button
+                        whileTap={{ scale: 0.9 }}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            if (fontIsInBag) {
+                                navigate('/bag');
+                            } else {
+                                addToBag(font);
+                                navigate('/bag');
+                            }
+                        }}
+                        aria-label={fontIsInBag ? `${font.name} is in your bag` : `Add ${font.name} to bag`}
+                        title={fontIsInBag ? 'View in bag' : 'Add to bag'}
+                        className={`flex items-center gap-2 px-4 md:px-6 py-3 rounded-full border transition-all duration-300 cursor-pointer ${fontIsInBag
+                            ? 'bg-blue-500/25 border-blue-500/30 text-blue-500'
+                            : 'bg-[rgb(var(--color-foreground)/0.05)] border-[rgb(var(--color-foreground)/0.1)] text-[rgb(var(--color-foreground))] hover:opacity-80'
+                            }`}
+                    >
+                        <Handbag size={22} className={`transition-all duration-300 ${fontIsInBag ? 'fill-blue-500/5' : ''}`} />
+                        <span className="font-bold hidden md:inline">{fontIsInBag ? 'In bag' : 'Add to bag'}</span>
+                    </motion.button>
+
                     {/* Download Family (.ZIP) Button */}
                     <motion.button
                         whileTap={{ scale: 0.95 }}
                         onClick={onDownloadZip}
                         disabled={isDownloadingZip}
                         aria-label={`Download ${font.name} font ZIP package`}
-                        className="flex items-center gap-2.5 px-6 md:px-8 py-3 bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] rounded-full font-bold hover:opacity-85 transition-all shadow-[0_0_25px_rgba(var(--color-foreground),0.2)] disabled:opacity-75 cursor-pointer"
+                        className="flex items-center gap-2.5 px-4 md:px-6 py-3 bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] rounded-full font-bold hover:opacity-85 transition-all shadow-[0_0_25px_rgba(var(--color-foreground),0.2)] disabled:opacity-75 cursor-pointer"
                     >
                         {isDownloadingZip ? (
                             <>
                                 <Loader2 size={20} className="animate-spin" />
-                                <span className="font-bold">{zipStatusText || 'Packaging ZIP...'}</span>
+                                <span className="font-bold hidden md:inline">{zipStatusText || 'Packaging ZIP...'}</span>
                             </>
                         ) : (
                             <>
                                 <Download size={20} />
-                                <span className="font-bold">Download Family (.ZIP)</span>
+                                <span className="font-bold hidden md:inline">Download Family (.ZIP)</span>
                             </>
                         )}
                     </motion.button>

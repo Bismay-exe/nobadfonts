@@ -88,7 +88,7 @@ export default function Profile() {
         });
     }, []);
 
-    if (loading) return <div>Loading...</div>;
+    if (loading) return <div className="w-screen h-screen flex justify-center items-center bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))]">Loading...</div>;
     if (!user) return <Navigate to="/auth" replace />;
 
     return (

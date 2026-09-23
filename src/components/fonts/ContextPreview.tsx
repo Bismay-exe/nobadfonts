@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { Smartphone, Monitor, Image as ImageIcon, Menu, Battery, Wifi, Signal, ChevronDown, MoreHorizontal, Music, Heart, Shuffle, SkipBack, Play, SkipForward, Repeat, CreditCard, ArrowDown, ArrowUp, TrendingUp, Bell, ArrowUpRight, Star, ShoppingBag, ArrowLeft, ArrowRight, Search, MapPin, Grid, Settings, Tv, Lightbulb, Flame, Wind, Lock, HomeIcon, ChevronRight, CloudRain, Zap, Plus, Sun, Cloud, Droplets, Eye, RotateCw, Shield, CheckCircle } from 'lucide-react';
+import { Smartphone, Monitor, Image as ImageIcon, Menu, Battery, Wifi, Signal, ChevronDown, MoreHorizontal, Music, Heart, Shuffle, SkipBack, Play, SkipForward, Repeat, CreditCard, ArrowDown, ArrowUp, TrendingUp, Bell, ArrowUpRight, Star, Handbag, ArrowLeft, ArrowRight, Search, MapPin, Grid, Settings, Tv, Lightbulb, Flame, Wind, Lock, HomeIcon, ChevronRight, CloudRain, Zap, Plus, Sun, Cloud, Droplets, Eye, RotateCw, Shield, CheckCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 
@@ -608,7 +608,7 @@ export default function ContextPreview({ fontFamily }: ContextPreviewProps) {
                                             onClick={() => Haptics.impact({ style: ImpactStyle.Light })}
                                             className="absolute bottom-3 bg-black text-white py-4 px-15 rounded-2xl font-bold text-sm mt-4 active:scale-95 transition-transform flex items-center justify-center gap-2 shadow-lg shadow-black/20"
                                         >
-                                            <ShoppingBag size={18} />
+                                            <Handbag size={18} />
                                             Add to Cart
                                         </motion.button>
                                     </div>

@@ -12,10 +12,6 @@ export interface BagItem {
 interface BagContextValue {
     items: BagItem[];
     count: number;
-    isOpen: boolean;
-    openBag: () => void;
-    closeBag: () => void;
-    toggleBag: () => void;
     addToBag: (font: Font) => void;
     removeFromBag: (fontId: string) => void;
     isInBag: (fontId: string) => boolean;
@@ -85,16 +81,11 @@ function saveBagToStorage(items: BagItem[]) {
 
 export function BagProvider({ children }: { children: React.ReactNode }) {
     const [items, setItems] = useState<BagItem[]>(() => loadBagFromStorage());
-    const [isOpen, setIsOpen] = useState(false);
 
     // Persist on every change
     useEffect(() => {
         saveBagToStorage(items);
     }, [items]);
-
-    const openBag = useCallback(() => setIsOpen(true), []);
-    const closeBag = useCallback(() => setIsOpen(false), []);
-    const toggleBag = useCallback(() => setIsOpen(p => !p), []);
 
     const addToBag = useCallback((font: Font) => {
         setItems(prev => {
@@ -154,10 +145,6 @@ export function BagProvider({ children }: { children: React.ReactNode }) {
         <BagContext.Provider value={{
             items,
             count,
-            isOpen,
-            openBag,
-            closeBag,
-            toggleBag,
             addToBag,
             removeFromBag,
             isInBag,

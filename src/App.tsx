@@ -16,9 +16,8 @@ import { Browser } from '@capacitor/browser';
 import { UpdateModal } from './components/modals/UpdateModal';
 import { UpdateProvider } from './contexts/UpdateContext';
 import { BagProvider } from './contexts/BagContext';
-import BagPanel from './components/bag/BagPanel';
-
 const FontsCatalog = React.lazy(() => import('./pages/FontsCatalog'));
+const Bag = React.lazy(() => import('./pages/Bag'));
 const FontDetails = React.lazy(() => import('./pages/FontDetails'));
 const Auth = React.lazy(() => import('./pages/Auth'));
 const Profile = React.lazy(() => import('./pages/Profile'));
@@ -118,7 +117,6 @@ function AppContent() {
       <ScrollRestoration />
       <UploadProgressPopup />
       <BackHandler />
-      <BagPanel />
       <OnboardingGuard>
       <Suspense fallback={
         <div className="fixed inset-0 flex items-center justify-center bg-[rgb(var(--color-background))] z-50">
@@ -145,6 +143,7 @@ function AppContent() {
             <Route path="legal/privacy" element={<PrivacyPolicy />} />
             <Route path="legal/dmca" element={<DmcaPolicy />} />
             <Route path="legal/cookies" element={<CookiePolicy />} />
+            <Route path="bag" element={<Bag />} />
             {/* User boards routes — must be after all known paths */}
             <Route path=":username" element={<UserBoards />} />
             <Route path=":username/:boardSlug" element={<BoardDetail />} />

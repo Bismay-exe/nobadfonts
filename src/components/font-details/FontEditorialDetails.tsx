@@ -1,4 +1,4 @@
-import { Check, X, ExternalLink, Globe, ShoppingBag, Download, Cat } from 'lucide-react';
+import { Check, X, ExternalLink, Globe, Handbag, Download, Cat } from 'lucide-react';
 import type { Font } from '../../types/font';
 import type { Database } from '../../types/database.types';
 import { generateDescription } from '../../utils/fontDescriptionGenerator';
@@ -155,7 +155,7 @@ export default function FontEditorialDetails({ font, research }: FontEditorialDe
         {
             label: 'Purchase License',
             url: cleanUrl(taxonomy?.official_links?.purchase_url || research?.purchase_url),
-            icon: ShoppingBag,
+            icon: Handbag,
             desc: 'Commercial licenses and upgrades'
         },
         {
@@ -279,7 +279,7 @@ export default function FontEditorialDetails({ font, research }: FontEditorialDe
                             {traits.map((trait, idx) => (
                                 <div
                                     key={idx}
-                                    className="py-3 px-4 flex justify-center items-center border border-[rgb(var(--color-foreground)/0.1)] rounded-lg text-center md:text-left bg-[rgb(var(--color-foreground)/0.02)] transition-colors duration-300 ease-in-out duration-300 ease-in-out text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))]"
+                                    className="py-3 px-4 flex justify-center items-center border border-[rgb(var(--color-foreground)/0.1)] rounded-lg text-center md:text-left bg-[rgb(var(--color-foreground)/0.02)] transition-colors duration-300 ease-in-out text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))]"
                                 >
                                     <span className="text-sm md:text-lg font-light tracking-wide">
                                         {trait}
