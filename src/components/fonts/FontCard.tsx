@@ -1,5 +1,5 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { ArrowUpRight, Heart, Bookmark, Handbag } from 'lucide-react';
+import { Heart } from 'lucide-react';
 import SaveToBoardModal from '../boards/SaveToBoardModal';
 import type { Font } from '../../types/font';
 import React, { useEffect, useState, useRef, useCallback, useMemo } from 'react';

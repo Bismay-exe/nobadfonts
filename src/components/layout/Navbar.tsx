@@ -4,7 +4,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useState, useEffect, useMemo } from 'react';
 import { cn } from '../../lib/utils';
-import { Type, Combine, Terminal, Users, Shield, Plus, Sun, Moon, Building, UserRound, Handbag } from 'lucide-react';
+import { Type, Combine, Terminal, Users, Shield, Plus, Sun, Moon, Building, UserRound } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../../contexts/ThemeContext';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
