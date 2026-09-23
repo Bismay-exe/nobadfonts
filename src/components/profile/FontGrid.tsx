@@ -82,14 +82,18 @@ export default function FontGrid({ fonts, emptyMessage = "No fonts found.", load
                     : { isExpanded: expandedFontId === f.id, onToggle: () => setExpandedFontId(expandedFontId === f.id ? null : f.id) };
                 return { ...f, viewMode, customText, ...cardProps, bulkToggleVersion };
             })
-    , [filteredFonts, viewMode, customText, expandedFontId, globalExpanded, bulkToggleVersion]);
+        , [filteredFonts, viewMode, customText, expandedFontId, globalExpanded, bulkToggleVersion]);
 
     if (loading) {
         return (
             <div className="masonic-grid">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {[...Array(8)].map((_, i) => (
-                        <div key={i} className="bg-[rgb(var(--color-card)/0.6)] rounded-4xl border border-[rgb(var(--color-border))] h-64 animate-pulse" />
+                <div className="gap-6"
+                    style={{
+                        columnWidth: 'clamp(320px, 20vw, 420px)',
+                    }}
+                >
+                    {[...Array(16)].map((_, i) => (
+                        <div key={i} className="bg-[rgb(var(--color-card)/0.6)] mb-4 sm:mb-6 rounded-4xl zborder border-[rgb(var(--color-foreground)/0.2)] h-64 animate-pulse" />
                     ))}
                 </div>
             </div>
@@ -122,7 +126,7 @@ export default function FontGrid({ fonts, emptyMessage = "No fonts found.", load
                         items={masonryItems}
                         itemKey={(data) => data.id}
                         columnCount={columns}
-                        columnGutter={24}
+                        columnGutter={16}
                         itemHeightEstimate={280}
                         overscanBy={1}
                         render={MasonryCard}

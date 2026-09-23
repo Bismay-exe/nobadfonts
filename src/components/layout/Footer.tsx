@@ -13,7 +13,7 @@ const Footer: React.FC = memo(() => {
     }, []);
 
     return (
-        <footer className="hidden sm:block bg-[rgb(var(--color-background))] text-[rgb(var(--color-muted-foreground))] font-sans selection:bg-[rgb(var(--color-foreground))] selection:text-[rgb(var(--color-background))] relative z-0">
+        <footer className="hidden sm:block pt-34 bg-[rgb(var(--color-background))] text-[rgb(var(--color-muted-foreground))] font-sans selection:bg-[rgb(var(--color-foreground))] selection:text-[rgb(var(--color-background))] relative z-0">
             <div className="max-w-480 mx-auto pb-10 z-10 px-4 md:px-8">
 
                 {/* <div className=''>

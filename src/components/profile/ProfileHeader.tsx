@@ -18,16 +18,16 @@ export default memo(function ProfileHeader({ onEditClick, isEditing }: ProfileHe
     const showReadMore = (profile?.bio && profile.bio.length > 150) || bioLines > 5;
 
     return (
-        <div className="py-8">
-            <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
+        <div className="w-full flex flex-col md:flex-col justify-center items-center md:items-center gap-8 z-10 pt-40 md:pt-40 pb-12 md:pb-20">
+            <div className='max-w-5xl w-full'>
                 {/* Avatar */}
-                <div className="w-48 h-48 rounded-full flex items-center justify-center text-3xl font-bold text-[rgb(var(--color-foreground)/0.8)] overflow-hidden shrink-0">
-                    <img src='/profile/profile.png' alt={profile?.full_name ? `${profile.full_name}'s avatar` : "User profile avatar"} className="w-full h-full object-cover" />
+                <div className="w-40 md:w-40 mx-10 rounded-full flex items-center justify-center text-3xl font-bold text-[rgb(var(--color-foreground)/0.8)] overflow-hidden shrink-0">
+                    <img src={profile?.avatar_url || '/profile/profile.png'} alt={profile?.full_name ? `${profile.full_name}'s avatar` : "User profile avatar"} className="h-full w-full object-cover" />
                 </div>
 
                 {/* Info */}
                 <div className="grow text-center md:text-left">
-                    <div className="flex flex-col md:flex-row items-center md:justify-between gap-4 mb-2">
+                    <div className="flex flex-col md:flex-row items-center md:justify-between gap-4">
                         <div>
                             <h1 className="text-2xl md:text-4xl font-bold text-[rgb(var(--color-foreground)/0.85)]">{profile?.full_name || 'User'}</h1>
                             {profile?.username && (

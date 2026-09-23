@@ -37,20 +37,17 @@ const Hero = () => {
     }, []);
 
     return (
-        <div ref={containerRef} className="@container max-w-480 h-full text-[rgb(var(--color-foreground))] font-mono selection:bg-[rgb(var(--color-primary)/0)] selection:text-[rgb(var(--color-foreground))] overflow-hidden flex flex-col -translate-y-23.5 min-h-[99.6vh] px-px -mb-34">
+        <div ref={containerRef} className="@container max-w-480 min-h-screen text-[rgb(var(--color-foreground))] font-mono selection:bg-[rgb(var(--color-primary)/0)] selection:text-[rgb(var(--color-foreground))] overflow-hidden flex flex-col">
 
             {/* Main Content */}
-            <main className="flex-1 flex flex-col justify-center items-center relative overflow-hidden p-4 sm:p-8 md:p-26 py-14 rounded-4xl
-            z[background:radial-gradient(125%_125%_at_50%_0%,transparent_40%,var(--color-blue-600),var(--color-white)_100%)]"
-            // style={{
-            //     background:
-            //         "radial-gradient(45.33% 46.43% at 41.69% 50%, #0140FF 0%, rgba(1, 64, 255, 0) 100%), radial-gradient(28.41% 117.96% at 7.72% 28.75%, #A6FDFF 0%, rgba(255, 255, 255, 0) 100%), radial-gradient(37.39% 69.19% at 107.79% 0%, #0075FF 0%, rgba(0, 66, 255, 0) 100%), radial-gradient(54.38% 89.75% at 83.46% 89.75%, #26F9FF 0%, rgba(0, 69, 255, 0.6) 100%), #0140FF",
-            // }}
+            <main className="flex-1 flex flex-col justify-center items-center relative overflow-hidden p-4 sm:p-8 md:p-26 py-14"
             >
+                {/* <NeatGradient /> */}
 
-
-
-                <NeatGradient />
+                <div className='absolute w-full h-full'>
+                    <img src="https://images.unsplash.com/photo-1694868162090-382eae3ee23a?q=80&w=2060&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="" className='top-0 left-0 w-full h-full object-cover rounded-4xl p-0.5' />
+                    {/* <div className="absolute inset-0 w-full h-full bg-linear-to-b from-transparent via-[rgb(var(--color-background)/0.7)] to-[rgb(var(--color-background))]" /> */}
+                </div>
 
                 <div className="relative z-10 text-center mx-auto">
                     {/* Heading */}

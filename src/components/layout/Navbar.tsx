@@ -257,7 +257,7 @@ export default function Navbar() {
 
             {/* Mobile Bottom Dock */}
             <div className="md:hidden fixed bottom-0 left-1/2 -translate-x-1/2 z-100">
-                <nav className="flex items-center justify-evenly w-screen px-2 pt-2.5 pb-[calc(0.625rem+env(safe-area-inset-bottom))] bg-[rgb(var(--color-background)/0.6)] backdrop-blur-3xl border-t border-[rgb(var(--color-border)/0.3)]">
+                <nav className="flex items-center justify-evenly gap-1 w-screen px-2 pt-2.5 pb-[calc(0.625rem+env(safe-area-inset-bottom))] bg-[rgb(var(--color-background)/0.6)] backdrop-blur-3xl border-t border-[rgb(var(--color-border)/0.3)]">
                     {mobileNavLinks.map((link) => {
                         const Icon = link.icon;
                         const isActive = activeTab === link.path;
@@ -280,10 +280,10 @@ export default function Navbar() {
                                     }, 300);
                                 }}
                                 className={cn(
-                                    "relative flex items-center justify-center max-h-12 py-2 rounded-full transition-all duration-300 ease-in-out",
+                                    "relative flex items-center justify-center min-h-10 max-h-12 rounded-full transition-all duration-300 ease-in-out",
                                     isActive
                                         ? "bg-[rgb(var(--color-foreground)/0.8)] text-[rgb(var(--color-background))] px-4 shadow-sm"
-                                        : "bg-transparent text-[rgb(var(--color-foreground))] hover:text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.1)] px-3"
+                                        : "bg-[rgb(var(--color-foreground)/0.05)] text-[rgb(var(--color-foreground))] hover:text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.1)] px-3"
                                 )}
                                 style={{ WebkitTapHighlightColor: 'transparent' }}
                             >
