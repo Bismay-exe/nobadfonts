@@ -353,7 +353,7 @@ export default function AdminDashboard() {
     if (!user || profile?.role !== 'admin') return <Navigate to="/" replace />;
 
     return (
-        <div className="mx-auto bg-transparent rounded-4xl">
+        <div className="pt-24 mx-auto bg-transparent rounded-4xl">
             <SEO title="Admin Dashboard | NoBadFonts" noindex url="/admin" />
             <h1 className="text-4xl md:text-6xl text-center md:text-left font-inter-tight font-medium uppercase text-[rgb(var(--color-foreground))] pt-8 pb-4">Admin Dashboard</h1>
 

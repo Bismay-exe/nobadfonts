@@ -388,7 +388,7 @@ export default function FontPairing() {
     };
 
     return (
-        <div className="min-h-screen bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))] relative text-selection">
+        <div className="pt-24 min-h-screen bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))] relative text-selection">
             <style>{`
                 .text-selection ::selection {
                     background: rgb(var(--color-foreground));
@@ -490,10 +490,10 @@ export default function FontPairing() {
             </div>
 
             {/* Main Playground */}
-            <div className="px-0 md:px-4 pb-20">
+            <div className="px-2 md:px-4">
                 <motion.div
                     layout
-                    className="max-w-480 mx-auto rounded-2xl md:rounded-[3rem] p-4 md:p-16 relative transition-colors duration-300 ease-in-out duration-500 shadow-2xl border border-[rgb(var(--color-border)/0.5)]"
+                    className="max-w-480 mx-auto rounded-2xl md:rounded-[3rem] p-4 md:p-16 relative transition-colors duration-300 ease-in-out shadow-2xl border border-[rgb(var(--color-border)/0.5)]"
                     style={{ backgroundColor: bgColor }}
                 >
                     <div className="space-y-6 lg:space-y-12">

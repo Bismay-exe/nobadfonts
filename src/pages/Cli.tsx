@@ -47,7 +47,7 @@ export default function Cli() {
     };
 
     return (
-        <div className="mx-auto md:py-20">
+        <div className="pt-24 mx-auto md:py-20">
             <SEO
                 title="NoBadFonts CLI — Developer Command Line Typography Tool"
                 description="Install webfonts directly into your React, Next.js, and Vite projects with a single command. Supports variant selection, interactive prompts, and ZIP downloads."

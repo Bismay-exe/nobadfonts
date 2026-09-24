@@ -117,6 +117,24 @@
 /* Font: Abc Gravity (Added via NoBadFonts CLI) */
 
 @font-face {
+  font-family: 'Abc Gravity Variable';
+  src: url('/fonts/abc-gravity/abc-gravity-Variable.woff2') format('woff2'),
+    url('/fonts/abc-gravity/abc-gravity-Variable.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Abc Gravity Variable';
+  src: url('/fonts/abc-gravity/abc-gravity-Italic Variable.woff2') format('woff2'),
+    url('/fonts/abc-gravity/abc-gravity-Italic Variable.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
   font-family: 'Abc Gravity';
   src: url('/fonts/abc-gravity/abc-gravity-Variable.woff2') format('woff2'),
     url('/fonts/abc-gravity/abc-gravity-Variable.ttf') format('truetype');
@@ -388,4 +406,5 @@
 
 @theme {
   --font-abc-gravity: "Abc Gravity", sans-serif;
+  --font-abc-gravity-var: "Abc Gravity Variable", sans-serif;
 }

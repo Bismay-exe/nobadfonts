@@ -335,7 +335,7 @@ export default function FontDetails() {
     if (loading) return <div className="w-screen h-screen flex justify-center items-center bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))]">Loading...</div>;
     if (error || !font) {
         return (
-            <main className="flex min-h-screen flex-col justify-center items-center bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))]">
+            <main className="pt-24 flex min-h-screen flex-col justify-center items-center bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))]">
                 {/* <header className="px-6 py-5 sm:px-10">
                     <a href="/" className="text-lg font-bold tracking-tight">
                         NoBadFonts

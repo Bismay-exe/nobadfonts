@@ -95,7 +95,7 @@ export default function Members() {
     // Role Check
     if (!profile || (profile.role !== 'member' && profile.role !== 'admin')) {
         return (
-            <div className="flex flex-col items-center justify-center w-full md:h-[86vh] max-w-480 bg-[rgb(var(--color-background))] rounded-4xl text-center space-y-6 z-90">
+            <div className="pt-24 flex flex-col items-center justify-center w-full md:h-[86vh] max-w-480 bg-[rgb(var(--color-background))] rounded-4xl text-center space-y-6 z-90">
                 <SEO title="Access Restricted" noindex url="/members" />
                 <div className="bg-[rgb(var(--color-destructive)/0.9)] p-10 rounded-full mt-40 md:mt-0">
                     <div className="text-6xl">
@@ -116,13 +116,13 @@ export default function Members() {
     }
 
     if (loading) return (
-        <div className="flex justify-center items-center min-h-[50vh]">
+        <div className="pt-24 flex justify-center items-center min-h-[50vh]">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[rgb(var(--color-foreground))]"></div>
         </div>
     );
 
     return (
-        <div className="mx-auto">
+        <div className="pt-24 mx-auto">
             <SEO
                 title="Members & Typeface Designers Directory"
                 description="Explore creators, designers, and contributors on NoBadFonts. Discover unique typography portfolios and font releases."

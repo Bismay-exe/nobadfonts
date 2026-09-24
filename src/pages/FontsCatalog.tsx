@@ -198,7 +198,7 @@ export default function FontsCatalog() {
     };
 
     return (
-        <div className="min-h-screen w-full">
+        <div className="pt-24 min-h-screen w-full">
             <SEO
                 title={dynamicTitle}
                 description={dynamicDescription}

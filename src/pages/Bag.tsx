@@ -288,7 +288,7 @@ export default function BagPage() {
     };
 
     return (
-        <div className="min-h-screen bg-[rgb(var(--color-background))] font-inter-tight text-[rgb(var(--color-foreground))]">
+        <div className="pt-24 min-h-screen bg-[rgb(var(--color-background))] font-inter-tight text-[rgb(var(--color-foreground))]">
             <div>
                 {items.length === 0 ? (
                     <div className="flex flex-col items-center justify-center w-full h-[calc(100vh-184px)] text-center px-12">

@@ -134,7 +134,7 @@ export default function UserBoards() {
   }
 
   return (
-    <div className="min-h-screen bg-[rgb(var(--color-background))]">
+    <div className="pt-24 min-h-screen bg-[rgb(var(--color-background))]">
       <SEO
         title={`${ownerProfile.full_name}'s Boards — NoBadFonts`}
         description={`Font boards curated by ${ownerProfile.full_name} on NoBadFonts.`}

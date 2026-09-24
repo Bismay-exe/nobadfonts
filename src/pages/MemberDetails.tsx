@@ -157,7 +157,7 @@ export default function MemberDetails() {
     // Role Check
     if (!currentUserProfile || (currentUserProfile.role !== 'member' && currentUserProfile.role !== 'admin')) {
         return (
-            <div className="flex flex-col items-center justify-center w-full md:h-[86vh] max-w-480 bg-[rgb(var(--color-background))] rounded-4xl text-center space-y-6 z-90">
+            <div className="pt-24 flex flex-col items-center justify-center w-full md:h-[86vh] max-w-480 bg-[rgb(var(--color-background))] rounded-4xl text-center space-y-6 z-90">
                 <SEO title="Access Restricted" noindex url={`/members/${id}`} />
                 <div className="bg-[rgb(var(--color-destructive)/0.9)] p-10 rounded-full mt-40 md:mt-0">
                     <div className="text-6xl">
@@ -178,13 +178,13 @@ export default function MemberDetails() {
     }
 
     if (loading) return (
-        <div className="flex justify-center items-center min-h-[50vh]">
+        <div className="pt-24 flex justify-center items-center min-h-[50vh]">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[rgb(var(--color-foreground))]"></div>
         </div>
     );
 
     if (!profile) return (
-        <div className="mx-auto px-4 py-20 text-center">
+        <div className="pt-24 mx-auto px-4 py-20 text-center">
             <SEO title="Member Not Found" noindex url={`/members/${id}`} />
             <h1 className="text-4xl font-black mb-4">Member Not Found</h1>
             <Link to="/members" className="text-blue-600 hover:underline">Back to Members</Link>
@@ -192,7 +192,7 @@ export default function MemberDetails() {
     );
 
     return (
-        <div className="mx-auto">
+        <div className="pt-24 mx-auto">
             <SEO
                 title={`${profile.full_name || 'Member'} — Typography Profile`}
                 description={profile.bio || `Browse fonts and typography contributions by ${profile.full_name} on NoBadFonts.`}

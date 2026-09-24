@@ -1103,7 +1103,7 @@ const Upload = () => {
     // Role Check
     if (!profile || (profile.role !== 'member' && profile.role !== 'admin')) {
         return (
-            <div className="flex flex-col items-center justify-center w-full md:h-[86vh] max-w-480 bg-[rgb(var(--color-background))] rounded-4xl text-center space-y-6 z-90">
+            <div className="pt-24 flex flex-col items-center justify-center w-full md:h-[86vh] max-w-480 bg-[rgb(var(--color-background))] rounded-4xl text-center space-y-6 z-90">
                 <div className="bg-[rgb(var(--color-destructive)/0.9)] p-10 rounded-full mt-40 md:mt-0">
                     <div className="text-6xl">
                         <CustomLock className='h-24 w-24' />
@@ -1123,7 +1123,7 @@ const Upload = () => {
     }
 
     return (
-        <div className="mx-auto max-w-5xl pb-16">
+        <div className="pt-24 mx-auto max-w-5xl pb-16">
             <SEO
                 title="Upload & Publish Typography | NoBadFonts"
                 description="Upload and distribute your open-source typeface on NoBadFonts. Multi-format packaging, glyph validation, and license compliance."

@@ -164,6 +164,23 @@ export default function Navbar() {
                                 </motion.button>
                             )}
 
+                            {/* Theme Switcher */}
+                            <motion.button
+                                whileTap={{ scale: 0.95 }}
+                                onClick={async () => {
+                                    await Haptics.impact({ style: ImpactStyle.Light });
+                                    toggleTheme();
+                                }}
+                                className="h-10 w-10 flex items-center justify-center rounded-full bg-[rgb(var(--color-foreground)/0.05)] backdrop-blur-3xl text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.1)] transition-all cursor-pointer group"
+                                title={`Switch Theme (Current: ${theme.charAt(0).toUpperCase() + theme.slice(1)})`}
+                            >
+                                <div className="">
+                                    {theme === 'light' && <Sun size={18} fill='black' className='transition-transform duration-700 group-hover:rotate-360 group-active:scale-90' />}
+                                    {theme === 'dark' && <Moon size={18} fill="white" className='transition-transform duration-700 group-hover:rotate-360 group-active:scale-90' />}
+                                    {theme === 'concrete' && <Building size={18} className='group-active:scale-90' />}
+                                </div>
+                            </motion.button>
+
                             {/* Bag Button */}
                             <motion.button
                                 whileTap={{ scale: 0.95 }}
@@ -188,23 +205,6 @@ export default function Navbar() {
                                 )}
                             </motion.button>
 
-                            {/* Theme Switcher */}
-                            <motion.button
-                                whileTap={{ scale: 0.95 }}
-                                onClick={async () => {
-                                    await Haptics.impact({ style: ImpactStyle.Light });
-                                    toggleTheme();
-                                }}
-                                className="h-10 w-10 flex items-center justify-center rounded-full bg-[rgb(var(--color-foreground)/0.05)] backdrop-blur-3xl text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.1)] transition-all cursor-pointer group"
-                                title={`Switch Theme (Current: ${theme.charAt(0).toUpperCase() + theme.slice(1)})`}
-                            >
-                                <div className="">
-                                    {theme === 'light' && <Sun size={18} fill='black' className='transition-transform duration-700 group-hover:rotate-360 group-active:scale-90' />}
-                                    {theme === 'dark' && <Moon size={18} fill="white" className='transition-transform duration-700 group-hover:rotate-360 group-active:scale-90' />}
-                                    {theme === 'concrete' && <Building size={18} className='group-active:scale-90' />}
-                                </div>
-                            </motion.button>
-
                             {user ? (
                                 <>
                                     {profile?.role === 'admin' && (
@@ -223,7 +223,7 @@ export default function Navbar() {
                                             onClick={async () => {
                                                 await Haptics.impact({ style: ImpactStyle.Light });
                                             }}
-                                            className="flex items-center gap-2 text-[rgb(var(--color-background))] px-4 py-2 text-sm font-medium">
+                                            className="flex items-center gap-2 text-[rgb(var(--color-background))] px-4 h-10 text-sm font-medium">
                                             <Plus size={16} />
                                             <span>Upload</span>
                                         </Link>

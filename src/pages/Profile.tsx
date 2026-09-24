@@ -8,7 +8,6 @@ import { motion } from 'framer-motion';
 import ProfileHeader from '../components/profile/ProfileHeader';
 import FontGrid from '../components/profile/FontGrid';
 import SettingsForm from '../components/profile/SettingsForm';
-import AnalyticsDashboard from '../components/profile/AnalyticsDashboard';
 import type { Font } from '../types/font';
 import SEO from '../components/shared/SEO';
 
@@ -19,7 +18,6 @@ export default function Profile() {
     const [requestLoading, setRequestLoading] = useState(false);
 
     const [favorites, setFavorites] = useState<Font[]>([]);
-    const [downloads, setDownloads] = useState<Font[]>([]);
     const [dataLoading, setDataLoading] = useState(false);
 
     const handleRequestAccess = useCallback(async () => {
@@ -57,17 +55,6 @@ export default function Profile() {
                     // Format data: Extract the font object from the joined response
                     const formattedFonts = data.map((item: any) => item.fonts) as Font[];
                     setFavorites(formattedFonts);
-                } else if (activeTab === 'downloads') {
-                    const { data, error } = await supabase
-                        .from('downloads')
-                        .select('font_id, fonts (*, font_variants(*))')
-                        .eq('user_id', user.id)
-                        .order('downloaded_at', { ascending: false });
-
-                    if (error) throw error;
-                    const fontsList = data.map((item: any) => item.fonts) as Font[];
-                    const uniqueFonts = Array.from(new Map(fontsList.map(item => [item['id'], item])).values());
-                    setDownloads(uniqueFonts);
                 }
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -92,7 +79,7 @@ export default function Profile() {
     if (!user) return <Navigate to="/auth" replace />;
 
     return (
-        <div className="relative flex flex-col gap-4 -mt-24 py-1 px-0 md:px-1">
+        <div className="relative flex flex-col gap-4 py-1 px-0 md:px-1">
             <SEO title="User Profile | NoBadFonts" noindex url="/profile" />
 
             <div className='absolute w-full aspect-3/4 md:aspect-21/7'>

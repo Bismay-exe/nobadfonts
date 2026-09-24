@@ -159,7 +159,7 @@ export default function DesignerFonts() {
                     1;
 
     return (
-        <div>
+        <div className="pt-24">
             <SEO
                 title={`${decodeURIComponent(designerName || '')} Fonts`}
                 description={`Browse all fonts designed by ${decodeURIComponent(designerName || '')}. High-quality typography for your next project.`}

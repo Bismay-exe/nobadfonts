@@ -2,8 +2,9 @@
 
 import { useLayoutEffect, useRef } from 'react';
 import gsap from 'gsap';
-import NeatGradient from '../components/NeatGradient';
 import { Link } from 'react-router-dom';
+import VariableProximity from '../components/VariableProximity';
+// import SkyGradient from '../components/SkyGradient';
 
 const Hero = () => {
     const containerRef = useRef<HTMLDivElement>(null);
@@ -40,54 +41,113 @@ const Hero = () => {
         <div ref={containerRef} className="@container max-w-480 min-h-screen text-[rgb(var(--color-foreground))] font-mono selection:bg-[rgb(var(--color-primary)/0)] selection:text-[rgb(var(--color-foreground))] overflow-hidden flex flex-col">
 
             {/* Main Content */}
-            <main className="flex-1 flex flex-col justify-center items-center relative overflow-hidden p-4 sm:p-8 md:p-26 py-14"
+            <main className="flex-1 flex flex-col justify-center items-center relative py-14 bg-blackz mt-14 md:mt-18 mx-2 mb-0 md:mb-2"
             >
-                {/* <NeatGradient /> */}
-
-                <div className='absolute w-full h-full'>
-                    <img src="https://images.unsplash.com/photo-1694868162090-382eae3ee23a?q=80&w=2060&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="" className='top-0 left-0 w-full h-full object-cover rounded-4xl p-0.5' />
-                    {/* <div className="absolute inset-0 w-full h-full bg-linear-to-b from-transparent via-[rgb(var(--color-background)/0.7)] to-[rgb(var(--color-background))]" /> */}
+                <div className='absolute w-full h-full rounded-4xl overflow-hidden'>
+                    {/* <SkyGradient /> */}
+                    {/* <HalftoneBloom /> */}
+                    {/* <div className="absolute inset-0 w-full h-full bg-linear-to-b from-transparent zvia-[rgb(var(--color-background)/0.5)] to-[rgb(var(--color-background))]" /> */}
                 </div>
 
-                <div className="relative z-10 text-center mx-auto">
+                <div className="relative z-10 text-center mx-auto w-full">
                     {/* Heading */}
-                    <h1 ref={titleRef} className="text-[10cqw] uppercase font-abc-gravity leading-[0.8]">
+                    <h1 ref={titleRef} className="text-[10cqw] uppercase font-abc-gravity leading-[0.8] text-whitez" style={{ fontFamily: "'Abc Gravity Variable', sans-serif" }}>
                         <div>
-                            <span className="hero-line block"><span className='font-thin'>No</span> <span className='font-black'>bad</span> <span className='italic font-extralight'>fonts</span></span>
+                            <span className="hero-line block whitespace-nowrap">
+                                <VariableProximity
+                                    label="No"
+                                    className="text-[10cqw]"
+                                    fromFontVariationSettings="'wght' 100, 'wdth' 59"
+                                    toFontVariationSettings="'wght' 900, 'wdth' 150"
+                                    containerRef={containerRef}
+                                    radius={120}
+                                    falloff="gaussian"
+                                />
+                                {' '}
+                                <VariableProximity
+                                    label="bad"
+                                    className=""
+                                    fromFontVariationSettings="'wght' 900, 'wdth' 150"
+                                    toFontVariationSettings="'wght' 100, 'wdth' 50"
+                                    containerRef={containerRef}
+                                    radius={120}
+                                    falloff="gaussian"
+                                />
+                                {' '}
+                                <VariableProximity
+                                    label="fonts"
+                                    className="italic"
+                                    fromFontVariationSettings="'wght' 200, 'wdth' 85"
+                                    toFontVariationSettings="'wght' 900, 'wdth' 150"
+                                    containerRef={containerRef}
+                                    radius={120}
+                                    falloff="gaussian"
+                                />
+                            </span>
                         </div>
                         <div>
-                            <span className="hero-line block">
-                                <span className='italic font-thin'>Only</span> <span className="font-bold tracking-tight">good</span> <span className='font-extralight'>Type.</span>
+                            <span className="hero-line block whitespace-nowrap">
+                                <VariableProximity
+                                    label="Only"
+                                    className="italic"
+                                    fromFontVariationSettings="'wght' 100, 'wdth' 59"
+                                    toFontVariationSettings="'wght' 900, 'wdth' 120"
+                                    containerRef={containerRef}
+                                    radius={120}
+                                    falloff="gaussian"
+                                />
+                                {' '}
+                                <VariableProximity
+                                    label="good"
+                                    className="tracking-tightz"
+                                    fromFontVariationSettings="'wght' 700, 'wdth' 115"
+                                    toFontVariationSettings="'wght' 900, 'wdth' 50"
+                                    containerRef={containerRef}
+                                    radius={120}
+                                    falloff="gaussian"
+                                />
+                                {' '}
+                                <VariableProximity
+                                    label="Type."
+                                    className=""
+                                    fromFontVariationSettings="'wght' 200, 'wdth' 85"
+                                    toFontVariationSettings="'wght' 900, 'wdth' 150"
+                                    containerRef={containerRef}
+                                    radius={120}
+                                    falloff="gaussian"
+                                />
                             </span>
                         </div>
                     </h1>
 
                     {/* Subtext & Actions */}
-                    <div className="hero-content mt-8 md:mt-12 max-w-xl mx-auto flex flex-col items-center gap-8">
-                        <p className="text-md md:text-xl text-[rgb(var(--color-muted-foreground))] leading-none font-medium">
-                            A curated directory of open-source typefaces that actually look good.
-                            No clutter, just type.
-                        </p>
+                    <div className='px-6 sm:px-8 md:px-26'>
+                        <div className="hero-content mt-8 md:mt-12 max-w-xl mx-auto flex flex-col items-center gap-8">
+                            <p className="text-md md:text-xl text-[rgb(var(--color-muted-foreground))] leading-none font-medium">
+                                A curated directory of open-source typefaces that actually look good.
+                                <br className='md:hidden'/>No clutter, just type.
+                            </p>
 
-                        {/* Search Bar / CTA */}
-                        <div className="w-full max-w-md relative group scale-75 md:scale-100 text-[rgb(var(--color-muted-foreground))] font-sans">
-                            <input
-                                type="text"
-                                placeholder="Try 'Inter' or 'Geist'..."
-                                className="w-full h-14 pl-6 pr-14 bg-[rgb(var(--color-background)/0.5)] rounded-2xl focus:border-none! focus:ring-0! outline-none transition-all placeholder:text-[rgb(var(--color-foreground)/0.8)] text-[rgb(var(--color-foreground))] font-medium font-inter-tight"
-                            />
-                            <button className="absolute right-2 top-2 h-10 w-10 bg-[rgb(var(--color-muted-foreground))] text-[rgb(var(--color-background))] rounded-xl flex items-center justify-center group-focus-within:bg-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out">
-                                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                                </svg>
-                            </button>
-                        </div>
+                            {/* Search Bar / CTA */}
+                            <div className="w-full max-w-md relative group scale-75 md:scale-100 text-[rgb(var(--color-muted-foreground))] font-sans">
+                                <input
+                                    type="text"
+                                    placeholder="Try 'Inter' or 'Geist'..."
+                                    className="w-full h-14 pl-6 pr-14 bg-[rgb(var(--color-foreground)/0.05)] backdrop-blur-sm rounded-2xl focus:border-none! focus:ring-0! outline-none transition-all placeholder:text-[rgb(var(--color-foreground)/0.8)] text-[rgb(var(--color-foreground))] font-medium font-inter-tight"
+                                />
+                                <button className="absolute right-2 top-2 h-10 w-10 bg-[rgb(var(--color-muted-foreground))] text-[rgb(var(--color-background))] rounded-xl flex items-center justify-center group-focus-within:bg-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out">
+                                    <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                    </svg>
+                                </button>
+                            </div>
 
-                        <div className="flex gap-4 text-sm text-[rgb(var(--color-muted-foreground))] font-inter font-bold">
-                            <span className='text-[rgb(var(--color-muted-foreground)/0.5)]'>Popular:</span>
-                            <Link to={`/fonts?query=thunder`} className="cursor-pointer hover:text-[rgb(var(--color-foreground))] transition-all duration-300 ease-in-out">Thunder</Link>
-                            <Link to={`/fonts?query=offbit`} className="cursor-pointer hover:text-[rgb(var(--color-foreground))] transition-all duration-300 ease-in-out">Offbit</Link>
-                            <Link to={`/fonts?query=pilowlava`} className="cursor-pointer hover:text-[rgb(var(--color-foreground))] transition-all duration-300 ease-in-out">Pilowlava</Link>
+                            <div className="flex gap-4 text-sm text-[rgb(var(--color-muted-foreground))] font-inter font-bold">
+                                <span className='text-[rgb(var(--color-muted-foreground)/0.5)]'>Popular:</span>
+                                <Link to={`/fonts?query=thunder`} className="cursor-pointer hover:text-[rgb(var(--color-foreground))] transition-all duration-300 ease-in-out">Thunder</Link>
+                                <Link to={`/fonts?query=offbit`} className="cursor-pointer hover:text-[rgb(var(--color-foreground))] transition-all duration-300 ease-in-out">Offbit</Link>
+                                <Link to={`/fonts?query=pilowlava`} className="cursor-pointer hover:text-[rgb(var(--color-foreground))] transition-all duration-300 ease-in-out">Pilowlava</Link>
+                            </div>
                         </div>
                     </div>
                 </div>

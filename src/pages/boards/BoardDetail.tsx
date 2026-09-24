@@ -262,7 +262,7 @@ export default function BoardDetail() {
   );
 
   return (
-    <div className="min-h-screen bg-[rgb(var(--color-background))]">
+    <div className="pt-24 min-h-screen bg-[rgb(var(--color-background))]">
       <SEO
         title={`${board.name} by ${owner.full_name} — NoBadFonts`}
         description={board.description || `A curated font board by ${owner.full_name} on NoBadFonts.`}
