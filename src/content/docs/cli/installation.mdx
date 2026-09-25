@@ -1,0 +1,65 @@
+---
+title: CLI Installation
+description: Install and authenticate nobadfonts-cli on Mac, Linux, or Windows.
+badge: v1.0
+---
+
+# CLI Installation
+
+The **NoBadFonts CLI** brings the entire curated font catalog straight to your command line. It automates finding, previewing, and downloading `.woff2` font bundles directly into your frontend project.
+
+---
+
+## Global Installation
+
+Install globally using your preferred package manager:
+
+```bash
+# Using npm
+npm install -g nobadfonts
+
+# Using pnpm
+pnpm add -g nobadfonts
+
+# Using yarn
+yarn global add nobadfonts
+
+# Using bun
+bun add -g nobadfonts
+```
+
+<Callout type="tip" title="No-Install Execution">
+You can also run commands on-the-fly without global installation using `npx`:
+```bash
+npx nobadfonts search "grotesk"
+```
+</Callout>
+
+---
+
+## System Requirements
+
+* **Node.js:** v18.0.0 or higher
+* **Operating Systems:** macOS (Intel & Apple Silicon), Linux (Ubuntu, Debian, Fedora, Arch), Windows 10/11 (PowerShell, CMD, WSL)
+
+---
+
+## Verifying Installation
+
+Verify the CLI is installed and check your current version:
+
+```bash
+nobadfonts --version
+```
+
+To see available command flags:
+
+```bash
+nobadfonts --help
+```
+
+---
+
+## Next Steps
+
+Now that you have the CLI ready, dive into the [Commands Reference](/docs/cli/commands) to learn how to search, inspect, and download font packages.

@@ -1,0 +1,51 @@
+---
+title: MCP Overview
+description: Connect AI agents (Cursor, Claude, Antigravity) to the curated font index.
+badge: AI
+---
+
+# NoBadFonts Model Context Protocol (MCP)
+
+The **NoBadFonts MCP Server** exposes the entire curated font database, typography taxonomy, and pairing engine to AI assistants through the open [Model Context Protocol](https://modelcontextprotocol.io).
+
+Instead of an AI hallucinating non-existent Google Font names or proposing broken CSS pairings, connecting NoBadFonts empowers your AI agent to recommend verified, high-performance typography in real time.
+
+---
+
+## Why Connect NoBadFonts to your AI?
+
+* **Contextual Typography Recommendations:** Ask your AI *"Recommend an editorial serif pairing for a luxury fintech landing page"*, and it queries live metadata.
+* **Accurate Open-Source Licensing:** Your AI validates commercial license rights before suggesting or downloading assets.
+* **Instant Code Generation:** The AI can generate ready-to-paste Tailwind CSS tokens and `@font-face` definitions verified against our glyph subsets.
+* **Automated Research & Metadata:** AI tools can research foundry links, identify license types, and propose catalog improvements.
+
+---
+
+## Architectural Architecture
+
+The NoBadFonts MCP server is deployed as a **high-availability Supabase Edge Function**:
+
+```text
+https://<SUPABASE_PROJECT_REF>.supabase.co/functions/v1/mcp
+```
+
+<Callout type="note" title="Domain Resilience">
+By running directly on Supabase's edge infrastructure, the MCP endpoint remains permanently accessible and independent of frontend domain configurations.
+</Callout>
+
+---
+
+## Supported AI Clients
+
+| Client | Connection Type | Supported Since |
+| :--- | :--- | :--- |
+| **Cursor IDE** | SSE / Remote MCP | v0.40+ |
+| **Claude Desktop** | SSE / Local Stdio Bridge | v1.0+ |
+| **Google Antigravity** | Remote MCP | All versions |
+| **Windsurf / Cascade** | Remote MCP | v1.1+ |
+
+---
+
+## Next Steps
+
+Follow our [Setup & Connection](/docs/mcp/setup) guide to configure your AI assistant in under 60 seconds.

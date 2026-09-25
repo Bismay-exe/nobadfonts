@@ -1,0 +1,55 @@
+---
+title: Font Pairing Guide
+description: Formulas and principles for pairing display and body typefaces.
+---
+
+# The Art & Science of Font Pairing
+
+Pairing typefaces is one of the highest-leverage design decisions in frontend development. The right combination establishes visual hierarchy, creates emotional resonance, and makes long-form text effortless to read.
+
+---
+
+## The Core Rule: Contrast, Not Conflict
+
+When combining two fonts, your goal is **intentional contrast**. If two typefaces are too similar (for example, pairing two slightly different geometric sans-serifs), the interface looks like an accidental CSS bug.
+
+<Callout type="warning" title="Avoid Conflict">
+Never pair two distinct geometric sans fonts together (e.g. Montserrat with Inter). Either choose fonts with distinct optical classifications, or use a single multi-weight type family.
+</Callout>
+
+---
+
+## 3 Proven Pairing Formulas
+
+### 1. The Editorial Classic (Display Serif + Clean Sans)
+* **Heading:** Characterful Serif with high stroke contrast.
+* **Body:** Neutral, highly legible Grotesk or Neo-Grotesk Sans.
+* **Mood:** Thoughtful, authoritative, literary, luxurious.
+
+<FontPlaygroundEmbed
+  primaryFont="'Playfair Display', serif"
+  secondaryFont="'Inter', sans-serif"
+  defaultText="Architecture is frozen music. Typography is thought made visible."
+  title="Editorial Classic"
+  category="Serif + Sans"
+/>
+
+### 2. The Modern Tech (Clean Sans + Geometric Accents)
+* **Heading:** Expressive Sans or Bold Neo-Grotesk.
+* **Body:** Neutral Sans with large x-height.
+* **Accent/Code:** Monospace with clear punctuation distinctions.
+* **Mood:** Fast, efficient, contemporary, professional.
+
+### 3. The Digital Artisan (Warm Humanist Sans + Warm Serif)
+* **Heading:** Humanist Sans (e.g. Outfit, Satoshi).
+* **Body:** Modern Transitional Serif (e.g. Source Serif, Merriweather).
+* **Mood:** Approachable, creative, human, editorial.
+
+---
+
+## Optical Hierarchy Checklist
+
+1. **Scale Jump:** Ensure your `h1` is at least **2.25x to 3x** the font size of your body text.
+2. **Weight Contrast:** If your heading is extra bold (`700` or `800`), keep your body text at regular (`400`).
+3. **x-Height Compatibility:** Ensure the lowercase letter heights (x-height) of both fonts visually harmonize when placed in proximity.
+4. **Letter-Spacing:** Tighten tracking slightly on large headings (`-0.02em`), and loosen tracking on small uppercase labels (`+0.05em`).

@@ -1,0 +1,41 @@
+---
+title: Configuration
+description: Configuring API keys, local cache directories, and export targets.
+---
+
+# CLI Configuration
+
+You can configure the NoBadFonts CLI globally or per-project using environment variables or a `.nobadfontsrc.json` configuration file.
+
+---
+
+## Configuration File
+
+Create a file named `.nobadfontsrc.json` in your project root to persist default settings across your team:
+
+```json
+{
+  "outputDirectory": "./public/fonts",
+  "defaultWeights": [400, 500, 700],
+  "format": "woff2",
+  "generateCss": true,
+  "cssPath": "./src/styles/fonts.css",
+  "framework": "tailwind"
+}
+```
+
+---
+
+## Environment Variables
+
+The CLI automatically reads the following environment variables:
+
+| Variable | Description |
+| :--- | :--- |
+| `NOBADFONTS_API_KEY` | Optional personal access token for higher rate limits |
+| `NOBADFONTS_CACHE_DIR` | Custom local cache path for downloaded `.woff2` files |
+| `NOBADFONTS_THEME` | Color scheme for terminal outputs (`auto`, `dark`, `light`) |
+
+<Callout type="tip" title="CI/CD Pipelines">
+In automated CI/CD pipelines, define `CI=true` to suppress interactive prompts and force non-interactive downloads.
+</Callout>

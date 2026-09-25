@@ -1,0 +1,63 @@
+---
+title: MCP Setup & Connection
+description: Step-by-step setup in Cursor, Claude Desktop, and custom MCP clients.
+---
+
+# MCP Setup & Connection
+
+Connecting your AI assistant to the NoBadFonts MCP Server takes less than a minute.
+
+---
+
+## 1. Cursor IDE Setup
+
+1. Open Cursor Settings (`Cmd + ,` on Mac or `Ctrl + ,` on Windows).
+2. Navigate to **Features** > **MCP**.
+3. Click **+ Add New MCP Server**.
+4. Configure with the following settings:
+
+```json
+{
+  "name": "nobadfonts",
+  "type": "sse",
+  "url": "https://mcp.nobadfonts.in/sse"
+}
+```
+
+<Callout type="tip" title="Self-Hosted or Edge Endpoint">
+If you are running against your own Supabase project, replace the URL with:
+`https://<YOUR_PROJECT_REF>.supabase.co/functions/v1/mcp`
+</Callout>
+
+---
+
+## 2. Claude Desktop Setup
+
+Open your Claude Desktop configuration file:
+* **macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
+* **Windows:** `%APPDATA%\Claude\claude_desktop_config.json`
+
+Add the `nobadfonts` server under `mcpServers`:
+
+```json
+{
+  "mcpServers": {
+    "nobadfonts": {
+      "command": "npx",
+      "args": ["-y", "nobadfonts", "mcp-proxy"]
+    }
+  }
+}
+```
+
+Restart Claude Desktop. You will see a small hammer icon indicating the NoBadFonts tools are available.
+
+---
+
+## 3. Testing the Connection
+
+Once connected, ask your AI assistant:
+
+> *"Use NoBadFonts to find a geometric sans-serif typeface with at least 5 weights, and show me the pairing recommendations."*
+
+If the server is active, your AI will invoke `search_fonts` and return verified results from the curated database.

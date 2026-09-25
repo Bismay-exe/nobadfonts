@@ -1,0 +1,62 @@
+---
+title: MCP Tool Reference
+description: "Available MCP tools: search_fonts, get_font_details, recommend_pairings."
+---
+
+# MCP Tool Reference
+
+The NoBadFonts MCP Server exposes the following standard tools to AI agents:
+
+---
+
+## `search_fonts`
+
+Searches the font repository by semantic query, classification, and stylistic attributes.
+
+### Arguments
+
+| Parameter | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `query` | `string` | No | Free-form semantic search term (e.g. "brutalist display", "clean editorial") |
+| `classification` | `string` | No | `sans`, `serif`, `mono`, `display` |
+| `min_weights` | `number` | No | Minimum count of available weights (e.g. 4) |
+| `limit` | `number` | No | Maximum items to return (default: 5, max: 20) |
+
+---
+
+## `get_font_details`
+
+Fetches in-depth metadata, license verification, foundry source, and CSS integration code for a specific typeface.
+
+### Arguments
+
+| Parameter | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `font_slug` | `string` | Yes | Unique identifier slug of the typeface |
+
+### Response Schema
+
+```json
+{
+  "name": "Satoshi",
+  "designer": "Indian Type Foundry",
+  "license": "SIL Open Font License 1.1",
+  "weights": [300, 400, 500, 700, 900],
+  "classification": "sans",
+  "variable": true,
+  "css_url": "https://api.nobadfonts.in/css2?family=Satoshi:wght@300..900"
+}
+```
+
+---
+
+## `recommend_pairings`
+
+Recommends harmonious typography pairings tailored to a target design aesthetic.
+
+### Arguments
+
+| Parameter | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `primary_font` | `string` | Yes | Name or slug of the primary headline font |
+| `aesthetic` | `string` | No | Mood target (e.g. `minimalist`, `editorial`, `high-tech`, `playful`) |

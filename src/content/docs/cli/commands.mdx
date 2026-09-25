@@ -1,0 +1,86 @@
+---
+title: Commands Reference
+description: "Full reference of CLI commands: search, pair, inspect, and download."
+---
+
+# Commands Reference
+
+The `nobadfonts` CLI provides commands for searching, downloading, and inspecting curated typefaces.
+
+---
+
+## `nobadfonts search`
+
+Search the curated catalog using keywords, font classifications, or mood tags.
+
+```bash
+nobadfonts search <query> [options]
+```
+
+### Options
+
+| Flag | Type | Description |
+| :--- | :--- | :--- |
+| `-c, --category <type>` | `string` | Filter by category: `sans`, `serif`, `mono`, `display` |
+| `-l, --limit <number>` | `number` | Maximum number of results to return (default: `10`) |
+| `-p, --preview` | `boolean` | Render ANSI terminal text preview of the typeface |
+| `--json` | `boolean` | Output raw JSON data for piping to other tools |
+
+### Example
+
+```bash
+# Search for modern editorial serif fonts
+nobadfonts search "editorial" --category serif --limit 5
+```
+
+---
+
+## `nobadfonts get` / `download`
+
+Download optimized `.woff2` font files directly into your project's asset directory.
+
+```bash
+nobadfonts get <font-name> [options]
+```
+
+### Options
+
+| Flag | Type | Description |
+| :--- | :--- | :--- |
+| `-o, --out <path>` | `string` | Target directory (default: `./public/fonts`) |
+| `-w, --weights <list>` | `string` | Comma-separated weights to download (e.g. `400,600,700`) |
+| `--css` | `boolean` | Automatically generate a `fonts.css` with `@font-face` blocks |
+| `--tailwind` | `boolean` | Print Tailwind CSS `theme.extend.fontFamily` snippet |
+
+### Example
+
+```bash
+nobadfonts get "Cabinet Grotesk" --weights 400,700 --out ./src/assets/fonts --css
+```
+
+---
+
+## `nobadfonts pair`
+
+Get AI and curated font pairing recommendations for any given typeface.
+
+```bash
+nobadfonts pair <font-name>
+```
+
+```bash
+# Output:
+# Recommended pairings for 'Satoshi':
+# 1. Satoshi (Sans) + Playfair Display (Serif) — Elegant Editorial
+# 2. Satoshi (Sans) + JetBrains Mono (Mono) — Modern Technical
+```
+
+---
+
+## `nobadfonts inspect`
+
+Inspect metadata, available glyph subsets, designer attribution, and license details for a specific font.
+
+```bash
+nobadfonts inspect <font-name>
+```

@@ -224,7 +224,7 @@ export default function UserBoards() {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 zgrid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-4">
             {boards.map(board => (
               <BoardCard 
                 key={board.id} 

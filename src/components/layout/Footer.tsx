@@ -68,6 +68,7 @@ const Footer: React.FC = memo(() => {
                         {/* Column 2: Platform & Tools */}
                         <div className="flex flex-col space-y-4">
                             <h3 className="text-[rgb(var(--color-foreground))] text-sm font-bold tracking-wider zuppercase mb-4">Platform</h3>
+                            <Link to="/docs" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out">Documentation</Link>
                             <Link to="/upload" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out">Submit a Font</Link>
                             <Link to="/fonts" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out">Type Tester</Link>
                             <Link to="/pairing" className="w-fit text-sm hover:text-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out">Font Pairing</Link>

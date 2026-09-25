@@ -1,0 +1,63 @@
+---
+title: Self-Hosting
+description: Run your own instance of NoBadFonts with Supabase and Vite.
+---
+
+# Self-Hosting NoBadFonts
+
+NoBadFonts can be run locally or deployed to your own cloud infrastructure using **Supabase** and **Vercel** / **Docker**.
+
+---
+
+## Prerequisites
+
+* **Node.js** >= 18.0.0
+* **Git**
+* A free or paid **Supabase** project (PostgreSQL + Auth + Storage)
+
+---
+
+## 1. Clone the Repository
+
+```bash
+git clone https://github.com/Bismay-exe/nobadfonts.git
+cd nobadfonts
+npm install
+```
+
+---
+
+## 2. Environment Setup
+
+Copy `.env.example` to `.env.local`:
+
+```bash
+cp .env.example .env.local
+```
+
+Fill in your Supabase credentials:
+
+```bash
+VITE_SUPABASE_URL=https://your-project-ref.supabase.co
+VITE_SUPABASE_ANON_KEY=your-anon-key-here
+```
+
+---
+
+## 3. Database Migration
+
+Run the Supabase migrations located in `supabase/migrations/` using the Supabase CLI:
+
+```bash
+npx supabase db push
+```
+
+---
+
+## 4. Run the Development Server
+
+```bash
+npm run dev
+```
+
+Your local instance is now live at `http://localhost:5173`!
