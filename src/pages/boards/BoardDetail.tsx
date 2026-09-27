@@ -5,7 +5,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import SEO from '../../components/shared/SEO';
 import { useBoards, type Board, type BoardFont } from '../../hooks/useBoards';
 import EditBoardModal from '../../components/boards/EditBoardModal';
-import { Trash2, Edit3, Lock, Globe } from 'lucide-react';
+import { Trash2, Edit3, Lock, Globe, Bookmark, BookmarkCheck } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useViewMode } from '../../hooks/useViewMode';
 import { useWindowSize } from '../../hooks/useWindowSize';
@@ -13,6 +13,7 @@ import { Filters } from '../../components/fonts/Filters';
 import FontCard from '../../components/fonts/FontCard';
 import type { FontFilterParams } from '../../types/font';
 import { Masonry } from "masonic";
+import { useSavedBoards } from '../../hooks/useSavedBoards';
 
 interface BoardOwner {
   id: string;
@@ -72,6 +73,8 @@ export default function BoardDetail() {
   const navigate = useNavigate();
 
   const { updateBoard, deleteBoard, removeFontsFromBoard } = useBoards();
+  const { isBoardSaved, toggleSaveBoard } = useSavedBoards();
+  const [savingBoard, setSavingBoard] = useState(false);
 
   // Board Edit State
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -317,6 +320,30 @@ export default function BoardDetail() {
                     {board.visibility === 'private' ? 'Share private link' : 'Share board'}</>
                 )}
               </button>
+
+              {/* Save Board button — shown to non-owners who are logged in */}
+              {user && !isOwner && !selectionMode && (
+                <button
+                  onClick={async () => {
+                    setSavingBoard(true);
+                    await toggleSaveBoard(board.id);
+                    setSavingBoard(false);
+                  }}
+                  disabled={savingBoard}
+                  title={isBoardSaved(board.id) ? 'Remove from saved boards' : 'Save this board'}
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-medium transition-all duration-300 ease-in-out disabled:opacity-60 ${
+                    isBoardSaved(board.id)
+                      ? 'border-[rgb(var(--color-highlight)/0.4)] bg-[rgb(var(--color-highlight)/0.08)] text-[rgb(var(--color-highlight))]'
+                      : 'border-[rgb(var(--color-foreground)/0.15)] text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.04)]'
+                  }`}
+                >
+                  {isBoardSaved(board.id) ? (
+                    <><BookmarkCheck size={16} className="fill-[rgb(var(--color-highlight))]" /> Saved</>
+                  ) : (
+                    <><Bookmark size={16} /> Save Board</>
+                  )}
+                </button>
+              )}
 
               {isOwner && (
                 <>

@@ -40,6 +40,10 @@ const BoardDetail = React.lazy(() => import('./pages/boards/BoardDetail'));
 const BoardShare = React.lazy(() => import('./pages/boards/BoardShare'));
 const DocsLayout = React.lazy(() => import('./components/layout/DocsLayout').then(m => ({ default: m.DocsLayout })));
 const DocRenderer = React.lazy(() => import('./pages/docs/DocRenderer'));
+const Moods = React.lazy(() => import('./pages/Moods'));
+const MoodDetail = React.lazy(() => import('./pages/MoodDetail'));
+const FontPlayground = React.lazy(() => import('./pages/FontPlayground'));
+const TypeSwap = React.lazy(() => import('./pages/TypeSwap'));
 import CookieConsent from './components/layout/CookieConsent';
 import { useAuth } from './contexts/AuthContext';
 
@@ -56,6 +60,9 @@ function OnboardingGuard({ children }: { children: React.ReactNode }) {
     '/onboarding',
     '/auth',
     '/docs',
+    '/moods',
+    '/playground',
+    '/type-swap',
   ];
   const isExempt = exempt.some(p => location.pathname.startsWith(p)) ||
     location.pathname.startsWith('/board-share/');
@@ -152,6 +159,12 @@ function AppContent() {
               <Route path="legal/dmca" element={<DmcaPolicy />} />
               <Route path="legal/cookies" element={<CookiePolicy />} />
               <Route path="bag" element={<Bag />} />
+              {/* Moods / Worlds */}
+              <Route path="moods" element={<Moods />} />
+              <Route path="moods/:slug" element={<MoodDetail />} />
+              {/* Font tools */}
+              <Route path="playground" element={<FontPlayground />} />
+              <Route path="type-swap" element={<TypeSwap />} />
               {/* User boards routes — must be after all known paths */}
               <Route path=":username" element={<UserBoards />} />
               <Route path=":username/:boardSlug" element={<BoardDetail />} />

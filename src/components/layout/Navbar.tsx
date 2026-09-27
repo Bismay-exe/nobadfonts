@@ -170,6 +170,21 @@ export default function Navbar() {
                     </svg>
                 ),
             },
+            {
+                name: "Moods",
+                path: "/moods",
+                icon: BookOpen,
+                svg: (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+                        <g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+                            <path d="M9 9h.01M15 9h.01"/>
+                        </g>
+                    </svg>
+                ),
+                badge: "NEW",
+            },
             ...(profile?.role === "member" || profile?.role === "admin"
                 ? [
                     {
