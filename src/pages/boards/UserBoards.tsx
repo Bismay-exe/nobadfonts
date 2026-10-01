@@ -149,8 +149,8 @@ export default function UserBoards() {
             </div>
           )}
           <div className="flex-1">
-            <h1 className="text-2xl font-black text-[rgb(var(--color-foreground))]">{ownerProfile.full_name}</h1>
-            <p className="text-sm text-[rgb(var(--color-muted-foreground))]">@{ownerProfile.username}</p>
+            <h1 className="text-2xl font-inter-tight font-bold tracking-wide text-[rgb(var(--color-foreground))]">{ownerProfile.full_name}</h1>
+            <p className="text-md font-inter-tight font-light tracking-wider text-[rgb(var(--color-foreground))]">nobadfonts.in/@{ownerProfile.username}</p>
             {ownerProfile.bio && <p className="text-sm text-[rgb(var(--color-foreground)/0.7)] mt-5">{ownerProfile.bio}</p>}
           </div>
           {isOwnProfile && (
@@ -247,7 +247,7 @@ export default function UserBoards() {
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 zgrid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 zgrid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-2 sm:gap-4">
                 {boards.map(board => (
                   <BoardCard 
                     key={board.id} 

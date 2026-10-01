@@ -11,6 +11,7 @@ import type { Database } from '../types/database.types';
 import { useAnalytics } from '../hooks/useAnalytics';
 import AnalyticsSection from '../components/admin/AnalyticsSection';
 import FontResearchPanel from '../components/admin/FontResearchPanel';
+import GitHubDiscoveryTab from '../components/admin/github/GitHubDiscoveryTab';
 import SEO from '../components/shared/SEO';
 
 type FontResearchRow = Database['public']['Tables']['font_research']['Row'];
@@ -22,7 +23,7 @@ type FontRow = Database['public']['Tables']['fonts']['Row'];
 
 export default function AdminDashboard() {
     const { user, profile, loading: authLoading } = useAuth();
-    const [activeTab, setActiveTab] = useState<'requests' | 'users' | 'files' | 'curation' | 'analytics' | 'research'>('requests');
+    const [activeTab, setActiveTab] = useState<'requests' | 'users' | 'files' | 'curation' | 'analytics' | 'research' | 'github'>('requests');
 
     // State for Requests
     const [pendingRequests, setPendingRequests] = useState<Profile[]>([]);
@@ -428,6 +429,17 @@ export default function AdminDashboard() {
                             }`}
                     >
                         AI Research
+                    </motion.button>
+                    <motion.button
+                        whileTap={{ scale: 0.95 }}
+                        onClick={async () => {
+                            await Haptics.impact({ style: ImpactStyle.Light });
+                            setActiveTab('github');
+                        }}
+                        className={`px-6 py-2 rounded-full font-bold border-2 border-[rgb(var(--color-foreground)/0.15)] transition-all ${activeTab === 'github' ? 'bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] shadow-[4px_4px_0px_0px_rgba(var(--color-foreground),1)]' : 'bg-[rgb(var(--color-card))] text-[rgb(var(--color-foreground))] hover:border-[rgb(var(--color-foreground)/0.5)]'
+                            }`}
+                    >
+                        GitHub Discovery
                     </motion.button>
                 </div>
             </div>
@@ -968,6 +980,13 @@ export default function AdminDashboard() {
                                         ))}
                                     </div>
                                 )}
+                            </div>
+                        )}
+
+                        {activeTab === 'github' && (
+                            <div>
+                                <h2 className="text-2xl font-bold mb-6">GitHub Font Discovery</h2>
+                                <GitHubDiscoveryTab />
                             </div>
                         )}
                     </>

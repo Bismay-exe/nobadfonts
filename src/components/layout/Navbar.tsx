@@ -4,34 +4,14 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { useState, useEffect, useMemo } from "react";
 import { cn } from "../../lib/utils";
-import {
-    Type,
-    Combine,
-    Terminal,
-    Users,
-    Shield,
-    Plus,
-    Sun,
-    Moon,
-    Building,
-    UserRound,
-    BookOpen,
-    Search,
-    X,
-    Menu,
-} from "lucide-react";
+import { Type, Combine, Terminal, Users, Shield, Plus, Sun, Moon, Building, UserRound, BookOpen, Search, X, Menu, } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "../../contexts/ThemeContext";
 import { Haptics, ImpactStyle } from "@capacitor/haptics";
 import { useUpdate } from "../../contexts/UpdateContext";
 import { Download } from "lucide-react";
 import Logo from "/logo/logo.png"; // Assuming white version exists or we filter it
-import {
-    CustomSerifA,
-    CustomTerminal,
-    CustomUpload,
-    CustomUsers,
-} from "../ui/CustomIcons";
+import { CustomSerifA, CustomTerminal, CustomUpload, CustomUsers, } from "../ui/CustomIcons";
 import { Squircle } from "react-ios-corners";
 import { useBag } from "../../contexts/BagContext";
 import { DocsSearchModal } from "../docs/DocsSearchModal";
@@ -170,21 +150,21 @@ export default function Navbar() {
                     </svg>
                 ),
             },
-            {
-                name: "Moods",
-                path: "/moods",
-                icon: BookOpen,
-                svg: (
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
-                        <g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2">
-                            <circle cx="12" cy="12" r="10"/>
-                            <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
-                            <path d="M9 9h.01M15 9h.01"/>
-                        </g>
-                    </svg>
-                ),
-                badge: "NEW",
-            },
+            // {
+            //     name: "Moods",
+            //     path: "/moods",
+            //     icon: BookOpen,
+            //     svg: (
+            //         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+            //             <g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2">
+            //                 <circle cx="12" cy="12" r="10" />
+            //                 <path d="M8 14s1.5 2 4 2 4-2 4-2" />
+            //                 <path d="M9 9h.01M15 9h.01" />
+            //             </g>
+            //         </svg>
+            //     ),
+            //     badge: "NEW",
+            // },
             ...(profile?.role === "member" || profile?.role === "admin"
                 ? [
                     {
@@ -500,7 +480,7 @@ export default function Navbar() {
                                             </g>
                                         </svg>
                                         {bagCount > 0 && (
-                                            <span className="absolute -top-1 -right-1 min-w-4.5 h-4.5 px-1 bg-[rgb(var(--color-primary))] text-[rgb(var(--color-background))] text-[10px] font-bold rounded-full flex items-center justify-center">
+                                            <span className="absolute -top-1 -right-1 min-w-4.5 h-4.5 px-1 bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] text-[12px] font-inter-tight font-semibold rounded-full flex items-center justify-center">
                                                 {bagCount > 99 ? "99+" : bagCount}
                                             </span>
                                         )}

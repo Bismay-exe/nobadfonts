@@ -1,9 +1,20 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { useParams, Link, useSearchParams, useLocation } from 'react-router-dom';
+import { useParams, Link, useSearchParams } from 'react-router-dom';
 import { MOOD_BY_SLUG, type MoodDefinition } from '../config/moods';
 import { useFonts } from '../hooks/useFonts';
 import FontCard from '../components/fonts/FontCard';
-import Filters from '../components/fonts/Filters';
+import WeddingFontCard from '../components/mood/WeddingFontCard';
+import CyberpunkFontCard from '../components/mood/CyberpunkFontCard';
+import Y2KFontCard from '../components/mood/Y2KFontCard';
+import EditorialFontCard from '../components/mood/EditorialFontCard';
+import RomanticFontCard from '../components/mood/RomanticFontCard';
+import SciFiFontCard from '../components/mood/SciFiFontCard';
+import RetroFontCard from '../components/mood/RetroFontCard';
+import HorrorFontCard from '../components/mood/HorrorFontCard';
+import MinimalFontCard from '../components/mood/MinimalFontCard';
+import LuxuryFontCard from '../components/mood/LuxuryFontCard';
+import KawaiiFontCard from '../components/mood/KawaiiFontCard';
+import PixelFontCard from '../components/mood/PixelFontCard';
 import { Masonry } from 'masonic';
 import { useWindowSize } from '../hooks/useWindowSize';
 import { useViewMode } from '../hooks/useViewMode';
@@ -12,41 +23,50 @@ import { supabase } from '../lib/supabase';
 import SEO from '../components/shared/SEO';
 import { motion } from 'framer-motion';
 import type { FontFilterParams } from '../types/font';
-import { useTheme } from '../contexts/ThemeContext';
 
-const MasonryCard = ({ data, width }: { data: any; width: number }) => (
-    <FontCard
-        font={data}
-        viewMode={data.viewMode}
-        customText={data.customText}
-        isExpanded={data.isExpanded}
-        onToggle={data.onToggle}
-        isFavorited={data.isFavorited}
-        onFavoriteChange={data.onFavoriteChange}
-        cardWidth={width}
-        moodCardStyle={data.moodCardStyle}
-        moodIndex={data.moodIndex}
-    />
-);
+const MasonryCard = ({ data, width }: { data: any; width: number }) => {
+    const props = {
+        font: data,
+        viewMode: data.viewMode,
+        customText: data.customText,
+        isExpanded: data.isExpanded,
+        onToggle: data.onToggle,
+        isFavorited: data.isFavorited,
+        onFavoriteChange: data.onFavoriteChange,
+        cardWidth: width,
+        moodCardStyle: data.moodCardStyle,
+        moodIndex: data.moodIndex,
+    };
+
+    switch (data.moodId) {
+        case 'wedding': return <WeddingFontCard {...props} />;
+        case 'cyberpunk': return <CyberpunkFontCard {...props} />;
+        case 'y2k': return <Y2KFontCard {...props} />;
+        case 'editorial': return <EditorialFontCard {...props} />;
+        case 'romantic': return <RomanticFontCard {...props} />;
+        case 'sci-fi': return <SciFiFontCard {...props} />;
+        case 'retro': return <RetroFontCard {...props} />;
+        case 'horror': return <HorrorFontCard {...props} />;
+        case 'minimal': return <MinimalFontCard {...props} />;
+        case 'luxury': return <LuxuryFontCard {...props} />;
+        case 'kawaii': return <KawaiiFontCard {...props} />;
+        case 'pixel': return <PixelFontCard {...props} />;
+        default: return <FontCard {...props} />;
+    }
+};
 
 export default function MoodDetail() {
     const { slug } = useParams<{ slug: string }>();
     const mood = slug ? MOOD_BY_SLUG[slug] : null;
 
     const [searchParams] = useSearchParams();
-    const location = useLocation();
 
     const [activeCategory, setActiveCategory] = useState<string | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
-    const [customText, setCustomText] = useState('');
-    const [globalExpanded, setGlobalExpanded] = useState(false);
-    const [bulkToggleVersion, setBulkToggleVersion] = useState(0);
-    const bulkToggleTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const [expandedFontId, setExpandedFontId] = useState<string | null>(null);
     const [viewMode] = useViewMode();
     const [userFavoriteIds, setUserFavoriteIds] = useState<Set<string>>(new Set());
     const { user } = useAuth();
-    const bottomRef = useRef<HTMLDivElement | null>(null);
 
     const filtersParams: FontFilterParams = useMemo(() => ({
         query: searchQuery,
@@ -95,14 +115,12 @@ export default function MoodDetail() {
             .map((f, index) => ({
                 ...f,
                 viewMode,
-                customText,
-                isExpanded: globalExpanded || expandedFontId === f.id,
-                bulkToggleVersion,
                 onToggle: () => setExpandedFontId(prev => prev === f.id ? null : f.id),
                 isFavorited: userFavoriteIds.has(f.id),
                 onFavoriteChange: handleFavoriteToggle,
                 moodCardStyle: mood?.cardStyle,
                 moodIndex: index,
+                moodId: mood?.id,
             })),
         [fonts, viewMode, expandedFontId, userFavoriteIds, handleFavoriteToggle, mood]
     );

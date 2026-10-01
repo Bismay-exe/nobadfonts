@@ -43,7 +43,7 @@ const Hero = () => {
             {/* Main Content */}
             <main className="flex-1 flex flex-col justify-center items-center relative py-14 bg-blackz mt-14 md:mt-18 mx-2 mb-0 md:mb-2"
             >
-                <div className='absolute w-full h-full rounded-4xl overflow-hidden'>
+                <div className='absolute w-full h-full rounded-4xl overflow-hidden zbg-[#0000FF]'>
                     {/* <SkyGradient /> */}
                     {/* <HalftoneBloom /> */}
                     {/* <div className="absolute inset-0 w-full h-full bg-linear-to-b from-transparent zvia-[rgb(var(--color-background)/0.5)] to-[rgb(var(--color-background))]" /> */}

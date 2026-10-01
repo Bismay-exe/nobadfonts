@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import SEO from '../components/shared/SEO';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Copy, Check, Share2, Plus, X, ChevronDown } from 'lucide-react';
+import { Check, Share2, Plus, X, ChevronDown } from 'lucide-react';
 
 interface PlaygroundFont {
     id: string;
@@ -96,7 +96,7 @@ function decodeState(encoded: string): Partial<FontSlot>[] | null {
 }
 
 export default function FontPlayground() {
-    const [searchParams, setSearchParams] = useSearchParams();
+    const [searchParams] = useSearchParams();
     const [fonts, setFonts] = useState<PlaygroundFont[]>([]);
     const [fontsLoading, setFontsLoading] = useState(true);
     const [slots, setSlots] = useState<FontSlot[]>([createDefaultSlot('slot-0')]);

@@ -21,6 +21,7 @@
 @import url("https://www.nobadfonts.in/css/lct-mogi");
 @import url("https://www.nobadfonts.in/css/gendy-npr2");
 @import url("https://www.nobadfonts.in/css/bold-mype-eeyq");
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 
 @theme {
   --font-bold-mype-eeyq: "BOLD MYPE", sans-serif;
@@ -407,4 +408,57 @@
 @theme {
   --font-abc-gravity: "Abc Gravity", sans-serif;
   --font-abc-gravity-var: "Abc Gravity Variable", sans-serif;
+}
+/* Font: Youth (Added via NoBadFonts CLI) */
+
+@font-face {
+  font-family: 'Youth';
+  src: url('/fonts/youth/youth-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+                
+
+@font-face {
+  font-family: 'Youth';
+  src: url('/fonts/youth/youth-Black.woff2') format('woff2');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+
+@theme {
+  --font-youth: "Youth", sans-serif;
+}
+    
+
+.space-mono-regular {
+  font-family: "Space Mono", monospace;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.space-mono-bold {
+  font-family: "Space Mono", monospace;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.space-mono-regular-italic {
+  font-family: "Space Mono", monospace;
+  font-weight: 400;
+  font-style: italic;
+}
+
+.space-mono-bold-italic {
+  font-family: "Space Mono", monospace;
+  font-weight: 700;
+  font-style: italic;
+}
+
+
+@theme {
+  --font-space-mono: "space mono", monospace;
 }

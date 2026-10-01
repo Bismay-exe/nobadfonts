@@ -545,7 +545,7 @@ export const Filters = React.memo(
                 {isSortOpen && (
                     <Squircle
                         radius={40}
-                        className="w-45 mb-2 ml-0 lg:ml-120 bg-[rgb(var(--color-foreground)/0.8)] backdrop-blur-sm animate-in fade-in slide-in-from-bottom-2 duration-300"
+                        className="w-45 mb-2 ml-0 lg:ml-102 bg-[rgb(var(--color-foreground)/0.8)] backdrop-blur-sm animate-in fade-in slide-in-from-bottom-2 duration-300"
                     >
                         <div className="flex flex-col zitems-center gap-2 px-4 py-4 lg:px-4 lg:py-4">
                             <h3 className="w-full text-xl sm:text-xl md:text-2xl font-medium tracking-wide text-[rgb(var(--color-background)/0.85)] px-3 py-2 cursor-default">

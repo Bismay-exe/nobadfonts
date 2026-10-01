@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Check, Handbag } from "lucide-react";
+import { X, Check } from "lucide-react";
 import { useBag } from "../contexts/BagContext";
 import type { BagItem } from "../contexts/BagContext";
 import type { Database } from "../types/database.types";
@@ -292,8 +292,8 @@ export default function BagPage() {
             <div>
                 {items.length === 0 ? (
                     <div className="flex flex-col items-center justify-center w-full h-[calc(100vh-184px)] text-center px-12">
-                        <Handbag size={48} className="text-[rgb(var(--color-foreground))] mb-4" />
-                        <h2 className="text-xl font-medium mb-2">Your bag is empty</h2>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path fill="currentColor" d="M3.977 9.84A2 2 0 0 1 5.971 8h12.058a2 2 0 0 1 1.994 1.84l.803 10A2 2 0 0 1 18.833 22H5.167a2 2 0 0 1-1.993-2.16z"/><path d="M16 11V6a4 4 0 0 0-4-4v0a4 4 0 0 0-4 4v5"/></g></svg>
+                        <h2 className="text-xl font-medium mt-4 mb-2">Your bag is empty</h2>
                         <p className="text-[rgb(var(--color-foreground)/0.4)] text-center">
                             Browse fonts and add them to your bag to see them here.
                         </p>

@@ -89,7 +89,7 @@ export default function BoardCard2({ board, username, selectionMode, isSelected,
                         return (
                             <div
                                 key={`empty-${idx}`}
-                                className={`bg-[rgb(var(--color-foreground)/0.04)] rounded-lg ${cornerRounding} flex items-center justify-center`}
+                                className={`bg-[rgb(var(--color-foreground)/0.04)] rounded-md md:rounded-lg ${cornerRounding} flex items-center justify-center`}
                             />
                         );
                     }
@@ -99,11 +99,12 @@ export default function BoardCard2({ board, username, selectionMode, isSelected,
                     return (
                         <div
                             key={font.id}
-                            className={`bg-[rgb(var(--color-foreground)/0.08)] rounded-lg flex items-center justify-center overflow-hidden p-2 transition-transform duration-500 ${cornerRounding}`}
+                            className={`@container bg-[rgb(var(--color-foreground)/0.08)] rounded-md md:rounded-lg flex items-center justify-center overflow-hidden p-2 transition-transform duration-500 ${cornerRounding}`}
                             style={{ fontFamily: fontFam }}
                         >
-                            <span className="text-3xl text-[rgb(var(--color-foreground))] font-normal text-center">
+                            <span className="text-[24cqw] text-[rgb(var(--color-foreground))] font-normal text-center leading-none">
                                 {font.name}
+                                {/* Aa */}
                             </span>
                         </div>
                     );
@@ -112,7 +113,7 @@ export default function BoardCard2({ board, username, selectionMode, isSelected,
 
             {/* Board Info placed below the grid[cite: 3] */}
             <div className="px-3 flex flex-col">
-                <h3 className="font-inter-tight font-medium text-xl md:text-2xl tracking-wide text-[rgb(var(--color-foreground)/0.8)] group-hover:text-[rgb(var(--color-foreground))] transition-colors duration-300 truncate">
+                <h3 className="font-inter-tight font-medium text-md md:text-xl tracking-wide text-[rgb(var(--color-foreground)/0.8)] group-hover:text-[rgb(var(--color-foreground))] transition-colors duration-300 truncate">
                     <span className={`${isSelected ? 'text-[rgb(var(--color-muted))] italic line-through decoration-3 decoration-current zdecoration-[rgb(var(--color-foreground))]' : ''}`}>{board.name}</span>
                 </h3>
                 <p className={`${isSelected ? 'text-[rgb(var(--color-muted))] italic line-through decoration-3 decoration-current zdecoration-[rgb(var(--color-foreground))]' : 'text-[rgb(var(--color-muted-foreground))]'} text-sm md:text-base mt-0.5 flex items-center gap-1.5`}>

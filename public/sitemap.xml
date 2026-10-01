@@ -82,12 +82,6 @@
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://nobadfonts.in/fonts/advine</loc>
-        <lastmod>2026-02-12T13:29:51.378Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.9</priority>
-    </url>
-    <url>
         <loc>https://nobadfonts.in/fonts/liquidasi</loc>
         <lastmod>2026-09-23T18:15:12.850Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -120,12 +114,6 @@
     <url>
         <loc>https://nobadfonts.in/fonts/sound-distortion</loc>
         <lastmod>2026-03-08T19:30:08.643Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.9</priority>
-    </url>
-    <url>
-        <loc>https://nobadfonts.in/fonts/pwsquared</loc>
-        <lastmod>2026-05-29T21:57:51.359Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
@@ -174,6 +162,18 @@
     <url>
         <loc>https://nobadfonts.in/fonts/moldin</loc>
         <lastmod>2026-02-08T23:14:28.148Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://nobadfonts.in/fonts/advine</loc>
+        <lastmod>2026-02-12T13:29:51.378Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://nobadfonts.in/fonts/pwsquared</loc>
+        <lastmod>2026-05-29T21:57:51.359Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
@@ -244,12 +244,6 @@
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://nobadfonts.in/fonts/monicho</loc>
-        <lastmod>2026-09-23T19:38:19.662Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.9</priority>
-    </url>
-    <url>
         <loc>https://nobadfonts.in/fonts/game-paused</loc>
         <lastmod>2026-02-12T13:03:52.598Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -310,6 +304,12 @@
         <priority>0.9</priority>
     </url>
     <url>
+        <loc>https://nobadfonts.in/fonts/offbit</loc>
+        <lastmod>2026-09-15T18:34:47.190Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
         <loc>https://nobadfonts.in/fonts/hagrid</loc>
         <lastmod>2026-03-08T19:09:30.129Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -334,14 +334,14 @@
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://nobadfonts.in/fonts/categories-elegant</loc>
-        <lastmod>2026-02-09T19:34:47.932Z</lastmod>
+        <loc>https://nobadfonts.in/fonts/cigra</loc>
+        <lastmod>2026-02-21T18:34:29.716Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://nobadfonts.in/fonts/cigra</loc>
-        <lastmod>2026-02-21T18:34:29.716Z</lastmod>
+        <loc>https://nobadfonts.in/fonts/categories-elegant</loc>
+        <lastmod>2026-02-09T19:34:47.932Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
@@ -396,12 +396,6 @@
     <url>
         <loc>https://nobadfonts.in/fonts/karuna</loc>
         <lastmod>2026-03-21T10:03:39.144Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.9</priority>
-    </url>
-    <url>
-        <loc>https://nobadfonts.in/fonts/moshra-aesthetic</loc>
-        <lastmod>2026-09-23T19:24:00.928Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
@@ -586,12 +580,6 @@
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://nobadfonts.in/fonts/aalto</loc>
-        <lastmod>2026-09-15T11:51:39.445Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.9</priority>
-    </url>
-    <url>
         <loc>https://nobadfonts.in/fonts/ut-boldonse</loc>
         <lastmod>2026-02-14T14:43:36.615Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -616,8 +604,8 @@
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://nobadfonts.in/fonts/lct-mogi</loc>
-        <lastmod>2026-09-23T18:31:10.123Z</lastmod>
+        <loc>https://nobadfonts.in/fonts/aalto</loc>
+        <lastmod>2026-09-15T11:51:39.445Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
@@ -653,7 +641,7 @@
     </url>
     <url>
         <loc>https://nobadfonts.in/fonts/jo-wrote-a-lovesong</loc>
-        <lastmod>2026-05-01T15:43:16.063Z</lastmod>
+        <lastmod>2026-09-26T21:48:41.314Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
@@ -706,6 +694,12 @@
         <priority>0.9</priority>
     </url>
     <url>
+        <loc>https://nobadfonts.in/fonts/monicho</loc>
+        <lastmod>2026-09-23T19:38:19.662Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
         <loc>https://nobadfonts.in/fonts/romans-story</loc>
         <lastmod>2026-09-07T20:36:33.051Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -726,6 +720,12 @@
     <url>
         <loc>https://nobadfonts.in/fonts/calcio</loc>
         <lastmod>2026-09-19T16:14:14.533Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://nobadfonts.in/fonts/moshra-aesthetic</loc>
+        <lastmod>2026-09-23T19:24:00.928Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
@@ -820,8 +820,8 @@
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://nobadfonts.in/fonts/offbit</loc>
-        <lastmod>2026-09-15T18:34:47.190Z</lastmod>
+        <loc>https://nobadfonts.in/fonts/lct-mogi</loc>
+        <lastmod>2026-09-23T18:31:10.123Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
@@ -867,11 +867,6 @@
         <priority>0.7</priority>
     </url>
     <url>
-        <loc>https://nobadfonts.in/designers/Craft%20Supply%20Co</loc>
-        <changefreq>weekly</changefreq>
-        <priority>0.7</priority>
-    </url>
-    <url>
         <loc>https://nobadfonts.in/designers/Jumiyo%20Oemar%20(JVMIYO)</loc>
         <changefreq>weekly</changefreq>
         <priority>0.7</priority>
@@ -898,11 +893,6 @@
     </url>
     <url>
         <loc>https://nobadfonts.in/designers/Ronny%20Studio</loc>
-        <changefreq>weekly</changefreq>
-        <priority>0.7</priority>
-    </url>
-    <url>
-        <loc>https://nobadfonts.in/designers/Peax%20Webdesign</loc>
         <changefreq>weekly</changefreq>
         <priority>0.7</priority>
     </url>
@@ -943,6 +933,16 @@
     </url>
     <url>
         <loc>https://nobadfonts.in/designers/Zarma%20Type%20Foundry</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://nobadfonts.in/designers/Craft%20Supply%20Co</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://nobadfonts.in/designers/Peax%20Webdesign</loc>
         <changefreq>weekly</changefreq>
         <priority>0.7</priority>
     </url>
@@ -997,11 +997,6 @@
         <priority>0.7</priority>
     </url>
     <url>
-        <loc>https://nobadfonts.in/designers/Dikas%20Studio</loc>
-        <changefreq>weekly</changefreq>
-        <priority>0.7</priority>
-    </url>
-    <url>
         <loc>https://nobadfonts.in/designers/Dharmas%20Foundry</loc>
         <changefreq>weekly</changefreq>
         <priority>0.7</priority>
@@ -1028,6 +1023,11 @@
     </url>
     <url>
         <loc>https://nobadfonts.in/designers/Lemonthe</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://nobadfonts.in/designers/Valerio%20Monopoli</loc>
         <changefreq>weekly</changefreq>
         <priority>0.7</priority>
     </url>
@@ -1063,11 +1063,6 @@
     </url>
     <url>
         <loc>https://nobadfonts.in/designers/Say%20Studio</loc>
-        <changefreq>weekly</changefreq>
-        <priority>0.7</priority>
-    </url>
-    <url>
-        <loc>https://nobadfonts.in/designers/Sigit%20Dwipa%20Raharjo</loc>
         <changefreq>weekly</changefreq>
         <priority>0.7</priority>
     </url>
@@ -1147,17 +1142,12 @@
         <priority>0.7</priority>
     </url>
     <url>
-        <loc>https://nobadfonts.in/designers/Hugo%20Alvar%20Henrik%20Aalto</loc>
-        <changefreq>weekly</changefreq>
-        <priority>0.7</priority>
-    </url>
-    <url>
         <loc>https://nobadfonts.in/designers/Universitype%20Foundry</loc>
         <changefreq>weekly</changefreq>
         <priority>0.7</priority>
     </url>
     <url>
-        <loc>https://nobadfonts.in/designers/Deni%20Anggara</loc>
+        <loc>https://nobadfonts.in/designers/Hugo%20Alvar%20Henrik%20Aalto</loc>
         <changefreq>weekly</changefreq>
         <priority>0.7</priority>
     </url>
@@ -1222,12 +1212,22 @@
         <priority>0.7</priority>
     </url>
     <url>
+        <loc>https://nobadfonts.in/designers/Dikas%20Studio</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
         <loc>https://nobadfonts.in/designers/f37foundry</loc>
         <changefreq>weekly</changefreq>
         <priority>0.7</priority>
     </url>
     <url>
         <loc>https://nobadfonts.in/designers/Graphicfresh</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://nobadfonts.in/designers/Sigit%20Dwipa%20Raharjo</loc>
         <changefreq>weekly</changefreq>
         <priority>0.7</priority>
     </url>
@@ -1287,7 +1287,7 @@
         <priority>0.7</priority>
     </url>
     <url>
-        <loc>https://nobadfonts.in/designers/Valerio%20Monopoli</loc>
+        <loc>https://nobadfonts.in/designers/Deni%20Anggara</loc>
         <changefreq>weekly</changefreq>
         <priority>0.7</priority>
     </url>

@@ -139,7 +139,7 @@ const AutoSizingText = React.memo(
                     }}
                 >
                     {text.split(/\s+/).map((word, i) => (
-                        <span key={i} className="block whitespace-nowrap">
+                        <span key={i} className="block whitespace-nowrap select-none">
                             {word}
                         </span>
                     ))}
@@ -164,7 +164,7 @@ function FontCard({
     isFavorited: propIsFavorited,
     onFavoriteChange,
     moodCardStyle,
-    moodIndex,
+    // moodIndex,
 }: FontCardProps) {
     const { user } = useAuth();
     const navigate = useNavigate();
@@ -376,22 +376,11 @@ function FontCard({
     return (
         <>
             <div
-                className="group relative -mb-2 sm:mb-0 overflow-hidden flex flex-col"
+                className="group relative -mb-2 sm:mb-0 overflow-hidden flex flex-col active:scale-95 transition-all duration-500 ease-in-out"
                 onClick={handleCardClick}
             >
                 <div
-                    className={`w-full h-full transition-all duration-300 ${!moodCardStyle ? "" : ""}`}
-                // style={
-                //     moodCardStyle
-                //         ? {
-                //             borderRadius: moodCardStyle.borderRadius || "32px",
-                //             background: moodCardStyle.background,
-                //             border: moodCardStyle.border,
-                //             boxShadow: moodCardStyle.shadow,
-                //         }
-                //         : {}
-                // }
-                >
+                    className={`w-full h-full transition-all duration-300 ${!moodCardStyle ? "" : ""}`} >
                     {moodCardStyle?.overlayGradient && (
                         <div
                             className="absolute inset-0 z-0 pointer-events-none rounded-[inherit]"
@@ -464,22 +453,7 @@ function FontCard({
                                     </div>
                                 </div>
                             ) : (
-                                <div className="py-4 sm:py-8 md:py-12 px-0 sm:px-2 md:px-4 relative z-10 bg-[rgb(var(--color-foreground)/0.05)] backdrop-blur-3xlz rounded-4xl"
-                                    style={
-                                        moodCardStyle
-                                            ? {
-                                                borderRadius: moodCardStyle.borderRadius || "32px",
-                                                background: moodCardStyle.background,
-                                                border: moodCardStyle.border,
-                                                boxShadow: moodCardStyle.shadow,
-                                            }
-                                            : {}
-                                    }>
-                                    {/* {moodIndex !== undefined && (
-                                        <div className="absolute top-4 left-5 text-[10px] font-mono tracking-widest opacity-40">
-                                            // {String(moodIndex + 1).padStart(3, "0")}
-                                        </div>
-                                    )} */}
+                                <div className="py-4 sm:py-8 md:py-12 px-0 sm:px-2 md:px-4 relative z-10 bg-[rgb(var(--color-foreground)/0.05)] backdrop-blur-3xlz rounded-4xl">
                                     <AutoSizingText
                                         text={customText || font.name}
                                         fontId={font.id}
@@ -729,7 +703,7 @@ function FontCard({
                                 </div>
 
                                 {/* Bottom Row: Tags */}
-                                <div className={`${moodCardStyle ? 'hidden' : 'flex'} flex-wrap gap-1.5 mt-1`}>
+                                <div className={`flex flex-wrap gap-1.5 mt-1`}>
                                     {displayTags.map((tag, i) => (
                                         <Link
                                             key={i}

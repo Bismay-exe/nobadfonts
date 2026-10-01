@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { supabase } from '../lib/supabase';
 import SEO from '../components/shared/SEO';
 import { ChevronDown, RefreshCw } from 'lucide-react';
