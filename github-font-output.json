@@ -1,0 +1,78 @@
+{
+    "identity": {
+        "name": null,
+        "family_name": null,
+        "slug": null,
+        "version": null,
+        "release_year": null
+    },
+    "creator": {
+        "designer": null,
+        "foundry": null,
+        "publisher": null
+    },
+    "classification": {
+        "category": null,
+        "subcategory": null,
+        "style": null,
+        "tags": [],
+        "mood": [],
+        "recommended_uses": []
+    },
+    "description": {
+        "description": null,
+        "history": null,
+        "characteristics": null
+    },
+    "license": {
+        "distribution_status": null,
+        "license_type": null,
+        "license_url": null,
+        "commercial_use": null,
+        "personal_use": null,
+        "modification_allowed": null,
+        "redistribution_allowed": null,
+        "license_evidence": null
+    },
+    "official_links": {
+        "official_website": null,
+        "official_font_page": null,
+        "purchase_url": null,
+        "free_download_url": null,
+        "github_url": null,
+        "google_fonts_url": null
+    },
+    "technical": {
+        "glyph_count": null,
+        "languages": [],
+        "opentype_features": []
+    },
+    "downloadable_variants": [
+        {
+            "name": "Regular",
+            "ttf": "https://raw.githubusercontent.com/...",
+            "otf": "https://raw.githubusercontent.com/..."
+        },
+        {
+            "name": "Bold Italic",
+            "woff2": "https://raw.githubusercontent.com/..."
+        },
+        {
+            "name": "Variable",
+            "woff2": "https://raw.githubusercontent.com/..."
+        },
+        {
+            "name": "Compressed",
+            "ttf": "https://raw.githubusercontent.com/...",
+            "woff2": "https://raw.githubusercontent.com/..."
+        },
+        {
+            "name": "Down Arrow",
+            "otf": "https://raw.githubusercontent.com/..."
+        },
+        {
+            "name": "101",
+            "woff2": "https://raw.githubusercontent.com/..."
+        }
+    ]
+}

@@ -96,6 +96,7 @@ export type Database = {
           researched_at: string | null
           created_at: string | null
           updated_at: string | null
+          github_url: string | null
         }
         Insert: {
           id?: string
@@ -153,6 +154,7 @@ export type Database = {
           font_metadata_extracted?: Json | null
           researched_at?: string | null
           updated_at?: string | null
+          github_url?: string | null
         }
         Relationships: [
           {
@@ -299,6 +301,7 @@ export type Database = {
           slug: string
           tags: string[] | null
           updated_at: string | null
+          github_url: string | null
           weights: number[] | null
           woff2_url: string
           woff_url: string | null
@@ -343,6 +346,7 @@ export type Database = {
           slug: string
           tags?: string[] | null
           updated_at?: string | null
+          github_url?: string | null
           weights?: number[] | null
           woff2_url: string
           zip_url: string

@@ -54,6 +54,15 @@ export interface FontFormState {
     formats?: string[];
     weights?: string[];
     styles?: string[];
+    
+    // AI Download Pipeline
+    downloadableVariants?: {
+        name: string;
+        ttf?: string;
+        otf?: string;
+        woff?: string;
+        woff2?: string;
+    }[];
 }
 
 /**
@@ -125,7 +134,14 @@ export const JSON_SCHEMA_TEMPLATE = {
         glyph_count: "number",
         languages: ["string"],
         opentype_features: ["string"]
-    }
+    },
+    downloadable_variants: [
+        {
+            name: "string (e.g. Regular, Bold Italic)",
+            format: "string (e.g. ttf, woff2, otf)",
+            url: "string (direct raw github download url)"
+        }
+    ]
 };
 
 export const CANONICAL_JSON_SAMPLE = {
@@ -176,7 +192,19 @@ export const CANONICAL_JSON_SAMPLE = {
         glyph_count: 482,
         languages: ["Latin", "Western European", "Central European"],
         opentype_features: ["liga", "kern", "calt", "ss01", "ss02", "case", "frac"]
-    }
+    },
+    downloadable_variants: [
+        {
+            name: "Regular",
+            format: "ttf",
+            url: "https://raw.githubusercontent.com/example/font/main/CabinetGrotesk-Regular.ttf"
+        },
+        {
+            name: "Bold",
+            format: "ttf",
+            url: "https://raw.githubusercontent.com/example/font/main/CabinetGrotesk-Bold.ttf"
+        }
+    ]
 };
 
 /**
@@ -358,6 +386,23 @@ export function normalizeFontJson(raw: any): { parsedState: Partial<FontFormStat
     if (techObj.opentype_features || techObj.opentypeFeatures) {
         const feats = toArr(techObj.opentype_features || techObj.opentypeFeatures);
         if (feats.length > 0) { state.opentypeFeatures = feats; count++; }
+    }
+
+    // 8. Downloadable Variants (AI Auto-Download)
+    const varsObj = raw.downloadable_variants || raw.downloadableVariants;
+    if (Array.isArray(varsObj)) {
+        const parsedVariants = varsObj.map(v => ({
+            name: toStr(v.name),
+            ttf: toUrl(v.ttf),
+            otf: toUrl(v.otf),
+            woff: toUrl(v.woff),
+            woff2: toUrl(v.woff2)
+        })).filter(v => v.name && (v.ttf || v.otf || v.woff || v.woff2));
+        
+        if (parsedVariants.length > 0) {
+            state.downloadableVariants = parsedVariants;
+            count++;
+        }
     }
 
     return { parsedState: state, fieldCount: count };

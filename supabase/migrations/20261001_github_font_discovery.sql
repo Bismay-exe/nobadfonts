@@ -237,6 +237,7 @@ CREATE INDEX IF NOT EXISTS idx_fsj_claim
     WHERE status = 'queued';
 
 CREATE INDEX IF NOT EXISTS idx_fsj_repository_id ON font_scan_jobs(repository_id);
+ALTER TABLE font_scan_jobs ADD CONSTRAINT fsj_repository_id_key UNIQUE (repository_id);
 
 ALTER TABLE font_scan_jobs ENABLE ROW LEVEL SECURITY;
 
@@ -420,7 +421,7 @@ BEGIN
         COALESCE(v_first_file->>'commit_pinned_url', v_first_file->>'raw_url', ''),
         false,
         'github_import',
-        p_published_by::text,
+        p_published_by,
         now(), now()
     )
     ON CONFLICT (slug) DO UPDATE SET description = EXCLUDED.description, updated_at = now()

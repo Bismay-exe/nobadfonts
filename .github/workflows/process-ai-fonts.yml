@@ -1,0 +1,34 @@
+name: Process AI Fonts Queue
+
+on:
+  schedule:
+    # Run every 10 minutes
+    - cron: '*/10 * * * *'
+  workflow_dispatch: # Allow manual triggering from GitHub UI
+
+jobs:
+  process-fonts:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install System Dependencies (woff2)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y woff2
+
+      - name: Install NPM Dependencies
+        run: npm ci
+
+      - name: Run Processing Script
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: node scripts/process-ai-fonts.js

@@ -834,9 +834,13 @@ const Upload = () => {
         // Validate variants
         if (variants.length === 0) return await Toast.show({ text: 'Please add at least one font variant.', duration: 'short' });
 
-        // Validate that at least one variant has files
-        const validVariants = variants.filter(v => Object.values(v.files).some(f => f !== null));
-        if (validVariants.length === 0) return await Toast.show({ text: 'Please upload files for at least one variant.', duration: 'short' });
+        // Validate that at least one variant has files OR downloadable variants are present
+        const hasManualFiles = variants.some(v => Object.values(v.files).some(f => f !== null));
+        const hasAutoDownload = formState.downloadableVariants && formState.downloadableVariants.length > 0;
+        
+        if (!hasManualFiles && !hasAutoDownload) {
+            return await Toast.show({ text: 'Please upload files or provide automated download URLs.', duration: 'short' });
+        }
 
         await Haptics.impact({ style: ImpactStyle.Medium });
         setLoading(true);
@@ -1084,6 +1088,22 @@ const Upload = () => {
                 }
             }
 
+            // 4. Queue automated background downloads for AI JSON imports
+            if (hasAutoDownload) {
+                const { error: queueError } = await supabase
+                    .from('font_processing_queue')
+                    .insert({
+                        font_id: insertedFont.id,
+                        slug: slug,
+                        download_urls: formState.downloadableVariants
+                    });
+                
+                if (queueError) {
+                    console.error('Failed to queue automated downloads:', queueError);
+                    await Toast.show({ text: 'Warning: Failed to queue automated background downloads.', duration: 'long' });
+                }
+            }
+
             // Queue background conversion for missing WOFF2
             if (variantsToConvert.length > 0) {
                 queueWoff2Conversion(insertedFont.id, slug, variantsToConvert);
@@ -1214,6 +1234,28 @@ const Upload = () => {
                             </div>
                         )}
                     </div>
+
+                    {formState.downloadableVariants && formState.downloadableVariants.length > 0 && (
+                        <div className="mb-6 p-4 rounded-2xl bg-[rgb(var(--color-highlight)/0.15)] border border-[rgb(var(--color-highlight)/0.3)]">
+                            <h3 className="font-bold text-sm text-[rgb(var(--color-foreground))] mb-2 flex items-center gap-2">
+                                <Sparkles size={16} className="text-[rgb(var(--color-highlight))]" />
+                                AI Automated Download Queued
+                            </h3>
+                            <p className="text-xs text-[rgb(var(--color-foreground)/0.8)] mb-3">
+                                {formState.downloadableVariants.length} variants will be automatically downloaded and processed in the background after submission.
+                            </p>
+                            <div className="flex flex-wrap gap-2">
+                                {formState.downloadableVariants.map((v, i) => (
+                                    <span key={i} className="text-[10px] font-mono px-2 py-1 rounded bg-[rgb(var(--color-foreground)/0.05)] border border-[rgb(var(--color-border))] flex items-center gap-1.5">
+                                        <strong className="text-[rgb(var(--color-foreground))]">{v.name}</strong>
+                                        <span className="text-[rgb(var(--color-muted-foreground))] uppercase">
+                                            {[v.ttf ? '.TTF' : '', v.otf ? '.OTF' : '', v.woff ? '.WOFF' : '', v.woff2 ? '.WOFF2' : ''].filter(Boolean).join(', ')}
+                                        </span>
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+                    )}
 
                     <div className="space-y-4">
                         {variants.map((variant) => (
