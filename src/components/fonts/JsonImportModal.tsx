@@ -56,12 +56,9 @@ export interface FontFormState {
     styles?: string[];
     
     // AI Download Pipeline
-    downloadableVariants?: {
-        name: string;
-        ttf?: string;
-        otf?: string;
-        woff?: string;
-        woff2?: string;
+    releaseZips?: {
+        url: string;
+        label: string;
     }[];
 }
 
@@ -135,11 +132,10 @@ export const JSON_SCHEMA_TEMPLATE = {
         languages: ["string"],
         opentype_features: ["string"]
     },
-    downloadable_variants: [
+    release_zips: [
         {
-            name: "string (e.g. Regular, Bold Italic)",
-            format: "string (e.g. ttf, woff2, otf)",
-            url: "string (direct raw github download url)"
+            url: "string (direct zip download URL from GitHub Releases)",
+            label: "string (e.g. complete, static, variable, webfonts)"
         }
     ]
 };
@@ -193,16 +189,14 @@ export const CANONICAL_JSON_SAMPLE = {
         languages: ["Latin", "Western European", "Central European"],
         opentype_features: ["liga", "kern", "calt", "ss01", "ss02", "case", "frac"]
     },
-    downloadable_variants: [
+    release_zips: [
         {
-            name: "Regular",
-            format: "ttf",
-            url: "https://raw.githubusercontent.com/example/font/main/CabinetGrotesk-Regular.ttf"
+            url: "https://github.com/github/mona-sans/releases/download/v2.0.27/mona-sans-complete-v2.0.27.zip",
+            label: "complete"
         },
         {
-            name: "Bold",
-            format: "ttf",
-            url: "https://raw.githubusercontent.com/example/font/main/CabinetGrotesk-Bold.ttf"
+            url: "https://github.com/github/mona-sans/releases/download/v2.0.27/mona-sans-variable-v2.0.27.zip",
+            label: "variable"
         }
     ]
 };
@@ -388,19 +382,16 @@ export function normalizeFontJson(raw: any): { parsedState: Partial<FontFormStat
         if (feats.length > 0) { state.opentypeFeatures = feats; count++; }
     }
 
-    // 8. Downloadable Variants (AI Auto-Download)
-    const varsObj = raw.downloadable_variants || raw.downloadableVariants;
-    if (Array.isArray(varsObj)) {
-        const parsedVariants = varsObj.map(v => ({
-            name: toStr(v.name),
-            ttf: toUrl(v.ttf),
-            otf: toUrl(v.otf),
-            woff: toUrl(v.woff),
-            woff2: toUrl(v.woff2)
-        })).filter(v => v.name && (v.ttf || v.otf || v.woff || v.woff2));
+    // 8. Release Zips (AI Auto-Download via zip extraction)
+    const zipsObj = raw.release_zips || raw.releaseZips;
+    if (Array.isArray(zipsObj)) {
+        const parsedZips = zipsObj.map(z => ({
+            url: toUrl(z.url) || '',
+            label: toStr(z.label) || 'zip'
+        })).filter(z => z.url);
         
-        if (parsedVariants.length > 0) {
-            state.downloadableVariants = parsedVariants;
+        if (parsedZips.length > 0) {
+            state.releaseZips = parsedZips;
             count++;
         }
     }

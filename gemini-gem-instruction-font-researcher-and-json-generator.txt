@@ -801,22 +801,23 @@ Do not duplicate family-level information unnecessarily.
 If files appear to belong to different families, identify that conflict rather than merging them.
 
 ==================================================
-14. DOWNLOADABLE VARIANTS (AUTO-DOWNLOAD)
+14. RELEASE ZIPS (AUTO-DOWNLOAD)
 ==================================================
 
-If the font is open-source and hosted on a public repository (like GitHub), you MUST provide direct, raw download links to the font files so our system can automatically fetch them.
+If the font is open-source and has a GitHub Releases page with downloadable zip files, you MUST provide the direct zip download URLs so our system can automatically fetch, extract, and process all font files.
 
-- Populate the `downloadable_variants` array.
-- For each variant (e.g., "Regular", "Bold", "Italic"), group all available file formats under a single object.
-- Provide:
-  - `name`: The variant name (e.g., "Regular", "Bold Italic").
-  - `ttf`: The DIRECT RAW URL to the .ttf file (if available).
-  - `otf`: The DIRECT RAW URL to the .otf file (if available).
-  - `woff`: The DIRECT RAW URL to the .woff file (if available).
-  - `woff2`: The DIRECT RAW URL to the .woff2 file (if available).
-- Do NOT link to the GitHub HTML page, link to the RAW file (e.g., "https://raw.githubusercontent.com/...").
-- Omit formats that are not available.
-- If no raw links are available at all, omit the array or return `[]`.
+- Populate the `release_zips` array.
+- For each zip available in the GitHub Releases section, add one object with:
+  - `url`: The DIRECT download URL to the zip file from the GitHub Releases page.
+    Example: "https://github.com/owner/repo/releases/download/v1.0/font-complete.zip"
+  - `label`: A short human-readable label describing the zip contents.
+    Examples: "complete", "static", "variable", "webfonts"
+- Include ALL available zips from the releases page (complete, static, variable, webfonts, etc.).
+  Our system will download all of them and intelligently merge everything.
+- Do NOT link to the GitHub HTML releases page. Link directly to the .zip file asset.
+- Do NOT provide raw file URLs — provide the release ZIP URLs only.
+- If no GitHub Releases zips are available (the font is only distributed via raw files), return `release_zips: []`.
+- NEVER guess or fabricate zip URLs. A null/empty list is always better than an incorrect URL.
 
 ==================================================
 15. NULL IS BETTER THAN A GUESS
@@ -910,12 +911,14 @@ CANONICAL JSON SCHEMA
     "languages": [],
     "opentype_features": []
   },
-  "downloadable_variants": [
+  "release_zips": [
     {
-      "name": "Regular",
-      "ttf": "https://raw.githubusercontent.com/...",
-      "otf": "https://raw.githubusercontent.com/...",
-      "woff2": "https://raw.githubusercontent.com/..."
+      "url": "https://github.com/owner/repo/releases/download/v1.0/font-complete.zip",
+      "label": "complete"
+    },
+    {
+      "url": "https://github.com/owner/repo/releases/download/v1.0/font-variable.zip",
+      "label": "variable"
     }
   ]
 }

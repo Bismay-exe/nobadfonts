@@ -834,12 +834,12 @@ const Upload = () => {
         // Validate variants
         if (variants.length === 0) return await Toast.show({ text: 'Please add at least one font variant.', duration: 'short' });
 
-        // Validate that at least one variant has files OR downloadable variants are present
+        // Validate that at least one variant has files OR release zips are present
         const hasManualFiles = variants.some(v => Object.values(v.files).some(f => f !== null));
-        const hasAutoDownload = formState.downloadableVariants && formState.downloadableVariants.length > 0;
+        const hasAutoDownload = formState.releaseZips && formState.releaseZips.length > 0;
         
         if (!hasManualFiles && !hasAutoDownload) {
-            return await Toast.show({ text: 'Please upload files or provide automated download URLs.', duration: 'short' });
+            return await Toast.show({ text: 'Please upload files or provide release zip URLs for auto-download.', duration: 'short' });
         }
 
         await Haptics.impact({ style: ImpactStyle.Medium });
@@ -1088,19 +1088,22 @@ const Upload = () => {
                 }
             }
 
-            // 4. Queue automated background downloads for AI JSON imports
+            // 4. Queue automated background downloads from release zips
             if (hasAutoDownload) {
+                console.log('Queuing release zip downloads:', formState.releaseZips);
                 const { error: queueError } = await supabase
                     .from('font_processing_queue')
                     .insert({
                         font_id: insertedFont.id,
                         slug: slug,
-                        download_urls: formState.downloadableVariants
+                        download_urls: formState.releaseZips
                     });
                 
                 if (queueError) {
-                    console.error('Failed to queue automated downloads:', queueError);
-                    await Toast.show({ text: 'Warning: Failed to queue automated background downloads.', duration: 'long' });
+                    console.error('Failed to queue release zip downloads:', queueError);
+                    await Toast.show({ text: `⚠️ Upload succeeded but auto-download queue failed: ${queueError.message}`, duration: 'long' });
+                } else {
+                    console.log('✅ Queued release zip downloads successfully');
                 }
             }
 
@@ -1235,22 +1238,20 @@ const Upload = () => {
                         )}
                     </div>
 
-                    {formState.downloadableVariants && formState.downloadableVariants.length > 0 && (
+                    {formState.releaseZips && formState.releaseZips.length > 0 && (
                         <div className="mb-6 p-4 rounded-2xl bg-[rgb(var(--color-highlight)/0.15)] border border-[rgb(var(--color-highlight)/0.3)]">
                             <h3 className="font-bold text-sm text-[rgb(var(--color-foreground))] mb-2 flex items-center gap-2">
                                 <Sparkles size={16} className="text-[rgb(var(--color-highlight))]" />
-                                AI Automated Download Queued
+                                AI Auto-Download Queued
                             </h3>
                             <p className="text-xs text-[rgb(var(--color-foreground)/0.8)] mb-3">
-                                {formState.downloadableVariants.length} variants will be automatically downloaded and processed in the background after submission.
+                                {formState.releaseZips.length} release zip{formState.releaseZips.length > 1 ? 's' : ''} will be downloaded, extracted, and processed automatically after submission.
                             </p>
                             <div className="flex flex-wrap gap-2">
-                                {formState.downloadableVariants.map((v, i) => (
+                                {formState.releaseZips.map((z, i) => (
                                     <span key={i} className="text-[10px] font-mono px-2 py-1 rounded bg-[rgb(var(--color-foreground)/0.05)] border border-[rgb(var(--color-border))] flex items-center gap-1.5">
-                                        <strong className="text-[rgb(var(--color-foreground))]">{v.name}</strong>
-                                        <span className="text-[rgb(var(--color-muted-foreground))] uppercase">
-                                            {[v.ttf ? '.TTF' : '', v.otf ? '.OTF' : '', v.woff ? '.WOFF' : '', v.woff2 ? '.WOFF2' : ''].filter(Boolean).join(', ')}
-                                        </span>
+                                        <span className="text-[rgb(var(--color-highlight))] uppercase font-bold">{z.label}</span>
+                                        <span className="text-[rgb(var(--color-muted-foreground))] truncate max-w-[180px]">{z.url.split('/').pop()}</span>
                                     </span>
                                 ))}
                             </div>
