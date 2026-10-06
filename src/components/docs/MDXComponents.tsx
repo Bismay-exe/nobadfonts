@@ -10,7 +10,7 @@ function slugify(text: string): string {
 }
 
 const headingBase: React.CSSProperties = {
-  color: 'rgb(var(--color-foreground))',
+  color: 'var(--color-foreground)',
   fontFamily: 'var(--font-bricolage-grotesque)',
 };
 
@@ -52,7 +52,7 @@ export const MDX_COMPONENTS = {
             href={`#${headingId}`}
             aria-label="Direct link to heading"
             className="opacity-0 group-hover:opacity-100 transition-opacity"
-            style={{ color: 'rgb(var(--color-muted-foreground))' }}
+            style={{ color: 'var(--color-muted)' }}
           >
             <Hash className="w-4 h-4" />
           </a>
@@ -87,7 +87,7 @@ export const MDX_COMPONENTS = {
             href={`#${headingId}`}
             aria-label="Direct link to heading"
             className="opacity-0 group-hover:opacity-100 transition-opacity"
-            style={{ color: 'rgb(var(--color-muted-foreground))' }}
+            style={{ color: 'var(--color-muted)' }}
           >
             <Hash className="w-3.5 h-3.5" />
           </a>
@@ -98,7 +98,7 @@ export const MDX_COMPONENTS = {
 
   p: ({ children, ...props }: React.HTMLAttributes<HTMLParagraphElement>) => (
     <p
-      style={{ color: 'rgb(var(--color-secondary))', lineHeight: 1.75, marginTop: '1rem', marginBottom: '1rem', fontSize: '15px' }}
+      style={{ color: 'var(--color-secondary)', lineHeight: 1.75, marginTop: '1rem', marginBottom: '1rem', fontSize: '15px' }}
       {...props}
     >
       {children}
@@ -107,7 +107,7 @@ export const MDX_COMPONENTS = {
 
   ul: ({ children, ...props }: React.HTMLAttributes<HTMLUListElement>) => (
     <ul
-      style={{ color: 'rgb(var(--color-secondary))', paddingLeft: '1.5rem', marginTop: '1rem', marginBottom: '1rem', fontSize: '15px', listStyleType: 'disc' }}
+      style={{ color: 'var(--color-secondary)', paddingLeft: '1.5rem', marginTop: '1rem', marginBottom: '1rem', fontSize: '15px', listStyleType: 'disc' }}
       {...props}
     >
       {children}
@@ -116,7 +116,7 @@ export const MDX_COMPONENTS = {
 
   ol: ({ children, ...props }: React.HTMLAttributes<HTMLOListElement>) => (
     <ol
-      style={{ color: 'rgb(var(--color-secondary))', paddingLeft: '1.5rem', marginTop: '1rem', marginBottom: '1rem', fontSize: '15px', listStyleType: 'decimal' }}
+      style={{ color: 'var(--color-secondary)', paddingLeft: '1.5rem', marginTop: '1rem', marginBottom: '1rem', fontSize: '15px', listStyleType: 'decimal' }}
       {...props}
     >
       {children}
@@ -130,7 +130,7 @@ export const MDX_COMPONENTS = {
   a: ({ href = '', children, ...props }: React.AnchorHTMLAttributes<HTMLAnchorElement>) => {
     const isInternal = href.startsWith('/') || href.startsWith('#');
     const linkStyle: React.CSSProperties = {
-      color: 'rgb(var(--color-foreground))',
+      color: 'var(--color-foreground)',
       fontWeight: 500,
       textDecoration: 'underline',
       textUnderlineOffset: '3px',
@@ -160,12 +160,12 @@ export const MDX_COMPONENTS = {
   blockquote: ({ children, ...props }: React.HTMLAttributes<HTMLQuoteElement>) => (
     <blockquote
       style={{
-        borderLeft: '3px solid rgb(var(--color-border))',
+        borderLeft: '3px solid var(--color-border)',
         paddingLeft: '1rem',
         marginTop: '1.5rem',
         marginBottom: '1.5rem',
         fontStyle: 'italic',
-        color: 'rgb(var(--color-muted-foreground))',
+        color: 'var(--color-muted)',
       }}
       {...props}
     >
@@ -196,9 +196,9 @@ export const MDX_COMPONENTS = {
             fontFamily: 'monospace',
             fontWeight: 500,
             borderRadius: '6px',
-            backgroundColor: 'rgb(var(--color-foreground)/0.07)',
-            color: 'rgb(var(--color-foreground))',
-            border: '1px solid rgb(var(--color-border))',
+            backgroundColor: 'color-mix(in srgb, var(--color-foreground) 7%, transparent)',
+            color: 'var(--color-foreground)',
+            border: '1px solid var(--color-border)',
           }}
           {...props}
         >
@@ -212,10 +212,10 @@ export const MDX_COMPONENTS = {
   table: ({ children, ...props }: React.HTMLAttributes<HTMLTableElement>) => (
     <div
       className="my-6 w-full overflow-x-auto rounded-xl not-prose"
-      style={{ border: '1px solid rgb(var(--color-border))' }}
+      style={{ border: '1px solid var(--color-border)' }}
     >
       <table
-        style={{ width: '100%', textAlign: 'left', fontSize: '14px', color: 'rgb(var(--color-secondary))' }}
+        style={{ width: '100%', textAlign: 'left', fontSize: '14px', color: 'var(--color-secondary)' }}
         {...props}
       >
         {children}
@@ -226,13 +226,13 @@ export const MDX_COMPONENTS = {
   thead: ({ children, ...props }: React.HTMLAttributes<HTMLTableSectionElement>) => (
     <thead
       style={{
-        backgroundColor: 'rgb(var(--color-card))',
-        borderBottom: '1px solid rgb(var(--color-border))',
+        backgroundColor: 'var(--color-card-background)',
+        borderBottom: '1px solid var(--color-border)',
         fontSize: '12px',
         fontWeight: 600,
         textTransform: 'uppercase',
         letterSpacing: '0.06em',
-        color: 'rgb(var(--color-muted-foreground))',
+        color: 'var(--color-muted)',
       }}
       {...props}
     >
@@ -248,7 +248,7 @@ export const MDX_COMPONENTS = {
     <td
       style={{
         padding: '10px 16px',
-        borderBottom: '1px solid rgb(var(--color-border)/0.5)',
+        borderBottom: '1px solid color-mix(in srgb, var(--color-border) 50%, transparent)',
         fontSize: '13px',
       }}
       {...props}
@@ -258,7 +258,7 @@ export const MDX_COMPONENTS = {
   ),
 
   hr: () => (
-    <hr style={{ marginTop: '2.5rem', marginBottom: '2.5rem', borderColor: 'rgb(var(--color-border))' }} />
+    <hr style={{ marginTop: '2.5rem', marginBottom: '2.5rem', borderColor: 'var(--color-border)' }} />
   ),
 
   // Globally available in MDX without import

@@ -148,72 +148,72 @@ export default function Onboarding() {
   const currentAvatar = avatarUrl || selectedDefault;
 
   return (
-    <div className="min-h-screen bg-[rgb(var(--color-background))] flex flex-col items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4 py-12">
       <SEO title="Welcome to NoBadFonts" description="Set up your profile to get started." />
 
       {/* Logo */}
       <div className="mb-8 text-center">
-        <span className="text-2xl font-black text-[rgb(var(--color-foreground))] tracking-tight">NoBadFonts</span>
-        <p className="text-sm text-[rgb(var(--color-muted-foreground))] mt-1">Let's set up your profile</p>
+        <span className="text-2xl font-black text-foreground tracking-tight">NoBadFonts</span>
+        <p className="text-sm text-muted mt-1">Let's set up your profile</p>
       </div>
 
       {/* Progress */}
       <div className="flex items-center gap-2 mb-8">
         {[1, 2].map(s => (
           <div key={s} className="flex items-center gap-2">
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-black transition-all ${step >= s ? 'bg-[rgb(var(--color-highlight))] text-[rgb(var(--color-background))]' : 'bg-[rgb(var(--color-foreground)/0.1)] text-[rgb(var(--color-muted-foreground))]'}`}>
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-black transition-all ${step >= s ? 'bg-accent text-background' : 'bg-foreground/10 text-muted'}`}>
               {step > s ? (
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                 </svg>
               ) : s}
             </div>
-            {s < 2 && <div className={`w-12 h-0.5 transition-all ${step > s ? 'bg-[rgb(var(--color-highlight))]' : 'bg-[rgb(var(--color-foreground)/0.1)]'}`} />}
+            {s < 2 && <div className={`w-12 h-0.5 transition-all ${step > s ? 'bg-accent' : 'bg-foreground/10'}`} />}
           </div>
         ))}
       </div>
 
       {/* Card */}
-      <div className="w-full max-w-md bg-[rgb(var(--color-card))] border border-[rgb(var(--color-foreground)/0.1)] rounded-2xl shadow-xl p-8">
+      <div className="w-full max-w-md bg-card-background border border-foreground/10 rounded-2xl shadow-xl p-8">
 
         {step === 1 && (
           <>
-            <h1 className="text-xl font-black text-[rgb(var(--color-foreground))] mb-1">What should we call you?</h1>
-            <p className="text-sm text-[rgb(var(--color-muted-foreground))] mb-6">Your name and username will appear on your public boards.</p>
+            <h1 className="text-xl font-black text-foreground mb-1">What should we call you?</h1>
+            <p className="text-sm text-muted mb-6">Your name and username will appear on your public boards.</p>
 
             <form onSubmit={handleStep1} className="space-y-4">
               <div>
-                <label className="block text-sm font-semibold text-[rgb(var(--color-foreground))] mb-1.5">Display Name</label>
+                <label className="block text-sm font-semibold text-foreground mb-1.5">Display Name</label>
                 <input
                   type="text"
                   autoFocus
                   placeholder="e.g. Alex Rivera"
                   value={name}
                   onChange={e => setName(e.target.value)}
-                  className="w-full bg-[rgb(var(--color-background))] border border-[rgb(var(--color-foreground)/0.15)] rounded-xl px-4 py-3 text-[rgb(var(--color-foreground))] placeholder-[rgb(var(--color-muted-foreground))] focus:outline-none focus:border-[rgb(var(--color-highlight))] transition-colors text-sm font-medium"
+                  className="w-full bg-background border border-foreground/15 rounded-xl px-4 py-3 text-foreground placeholder-muted focus:outline-none focus:border-accent transition-colors text-sm font-medium"
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-[rgb(var(--color-foreground))] mb-1.5">Username</label>
+                <label className="block text-sm font-semibold text-foreground mb-1.5">Username</label>
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[rgb(var(--color-muted-foreground))] text-sm select-none">nobadfonts.in/</span>
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted text-sm select-none">nobadfonts.in/</span>
                   <input
                     type="text"
                     placeholder="yourname"
                     value={username}
                     onChange={e => handleUsernameChange(e.target.value)}
-                    className={`w-full bg-[rgb(var(--color-background))] border rounded-xl pl-30 pr-10 py-3 text-[rgb(var(--color-foreground))] placeholder-[rgb(var(--color-muted-foreground))] focus:outline-none transition-colors text-sm font-mono font-semibold ${usernameStatus === 'taken' ? 'border-red-400 focus:border-red-400' : usernameStatus === 'available' ? 'border-green-400 focus:border-green-400' : 'border-[rgb(var(--color-foreground)/0.15)] focus:border-[rgb(var(--color-highlight))]'}`}
+                    className={`w-full bg-background border rounded-xl pl-30 pr-10 py-3 text-foreground placeholder-muted focus:outline-none transition-colors text-sm font-mono font-semibold ${usernameStatus === 'taken' ? 'border-red-400 focus:border-red-400' : usernameStatus === 'available' ? 'border-green-400 focus:border-green-400' : 'border-foreground/15 focus:border-accent'}`}
                   />
                   {/* Status indicator */}
                   <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                    {usernameStatus === 'checking' && <div className="w-4 h-4 rounded-full border-2 border-[rgb(var(--color-foreground)/0.2)] border-t-[rgb(var(--color-highlight))] animate-spin" />}
+                    {usernameStatus === 'checking' && <div className="w-4 h-4 rounded-full border-2 border-foreground/20 border-t-[var(--color-accent)] animate-spin" />}
                     {usernameStatus === 'available' && <svg className="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg>}
                     {usernameStatus === 'taken' && <svg className="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>}
                   </div>
                 </div>
                 {usernameStatus === 'taken' && <p className="text-xs text-red-400 mt-1">This username is taken. Try another.</p>}
                 {usernameStatus === 'available' && <p className="text-xs text-green-400 mt-1">✓ Username is available!</p>}
-                {usernameStatus === 'invalid' && <p className="text-xs text-[rgb(var(--color-muted-foreground))] mt-1">At least 3 characters. Letters, numbers, and underscores only.</p>}
+                {usernameStatus === 'invalid' && <p className="text-xs text-muted mt-1">At least 3 characters. Letters, numbers, and underscores only.</p>}
               </div>
 
               {step1Error && (
@@ -223,7 +223,7 @@ export default function Onboarding() {
               <button
                 type="submit"
                 disabled={step1Loading || usernameStatus === 'taken' || usernameStatus === 'checking' || !name.trim() || !username.trim()}
-                className="w-full py-3 rounded-xl bg-[rgb(var(--color-highlight))] text-[rgb(var(--color-background))] font-black text-sm uppercase tracking-wide hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-50 mt-2"
+                className="w-full py-3 rounded-xl bg-accent text-background font-black text-sm uppercase tracking-wide hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-50 mt-2"
               >
                 {step1Loading ? 'Saving...' : 'Next →'}
               </button>
@@ -233,13 +233,13 @@ export default function Onboarding() {
 
         {step === 2 && (
           <>
-            <h1 className="text-xl font-black text-[rgb(var(--color-foreground))] mb-1">Choose a profile picture</h1>
-            <p className="text-sm text-[rgb(var(--color-muted-foreground))] mb-6">Pick one of our defaults or upload your own. You can change it later.</p>
+            <h1 className="text-xl font-black text-foreground mb-1">Choose a profile picture</h1>
+            <p className="text-sm text-muted mb-6">Pick one of our defaults or upload your own. You can change it later.</p>
 
             {/* Current selection preview */}
             {currentAvatar && (
               <div className="flex justify-center mb-5">
-                <img src={currentAvatar} alt="Selected avatar" className="w-20 h-20 rounded-full border-4 border-[rgb(var(--color-highlight))] object-cover shadow-lg" />
+                <img src={currentAvatar} alt="Selected avatar" className="w-20 h-20 rounded-full border-4 border-accent object-cover shadow-lg" />
               </div>
             )}
 
@@ -249,7 +249,7 @@ export default function Onboarding() {
                 <button
                   key={url}
                   onClick={() => { setSelectedDefault(url); setAvatarUrl(null); }}
-                  className={`aspect-square rounded-xl overflow-hidden border-2 transition-all hover:scale-105 ${selectedDefault === url && !avatarUrl ? 'border-[rgb(var(--color-highlight))] shadow-[0_0_0_2px_rgb(var(--color-highlight)/0.3)]' : 'border-transparent hover:border-[rgb(var(--color-foreground)/0.3)]'}`}
+                  className={`aspect-square rounded-xl overflow-hidden border-2 transition-all hover:scale-105 ${selectedDefault === url && !avatarUrl ? 'border-accent shadow-[0_0_0_2px_color-mix(in srgb, var(--color-accent) 30%, transparent)]' : 'border-transparent hover:border-foreground/30'}`}
                 >
                   <img src={url} alt="Avatar option" className="w-full h-full object-cover" />
                 </button>
@@ -268,10 +268,10 @@ export default function Onboarding() {
               <button
                 onClick={() => fileInputRef.current?.click()}
                 disabled={uploading}
-                className="w-full py-2.5 rounded-xl border-2 border-dashed border-[rgb(var(--color-foreground)/0.2)] text-sm text-[rgb(var(--color-muted-foreground))] hover:border-[rgb(var(--color-highlight))] hover:text-[rgb(var(--color-highlight))] transition-all font-medium flex items-center justify-center gap-2"
+                className="w-full py-2.5 rounded-xl border-2 border-dashed border-foreground/20 text-sm text-muted hover:border-accent hover:text-accent transition-all font-medium flex items-center justify-center gap-2"
               >
                 {uploading ? (
-                  <><div className="w-4 h-4 rounded-full border-2 border-[rgb(var(--color-foreground)/0.15)] border-t-[rgb(var(--color-highlight))] animate-spin" /> Uploading...</>
+                  <><div className="w-4 h-4 rounded-full border-2 border-foreground/15 border-t-[var(--color-accent)] animate-spin" /> Uploading...</>
                 ) : (
                   <><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg> Upload your photo</>
                 )}
@@ -282,14 +282,14 @@ export default function Onboarding() {
               <button
                 onClick={handleSkipAvatar}
                 disabled={step2Loading}
-                className="flex-1 py-3 rounded-xl border border-[rgb(var(--color-foreground)/0.15)] text-sm font-semibold text-[rgb(var(--color-muted-foreground))] hover:bg-[rgb(var(--color-foreground)/0.04)] transition-all"
+                className="flex-1 py-3 rounded-xl border border-foreground/15 text-sm font-semibold text-muted hover:bg-foreground/4 transition-all"
               >
                 Skip for now
               </button>
               <button
                 onClick={handleStep2}
                 disabled={step2Loading || uploading}
-                className="flex-1 py-3 rounded-xl bg-[rgb(var(--color-highlight))] text-[rgb(var(--color-background))] font-black text-sm uppercase hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-50"
+                className="flex-1 py-3 rounded-xl bg-accent text-background font-black text-sm uppercase hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-50"
               >
                 {step2Loading ? 'Finishing...' : 'Finish 🎉'}
               </button>
@@ -298,7 +298,7 @@ export default function Onboarding() {
         )}
       </div>
 
-      <p className="mt-6 text-xs text-[rgb(var(--color-muted-foreground))] text-center">
+      <p className="mt-6 text-xs text-muted text-center">
         Step {step} of 2 · NoBadFonts
       </p>
     </div>

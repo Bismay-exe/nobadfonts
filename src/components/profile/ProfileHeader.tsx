@@ -91,7 +91,7 @@ export default memo(function ProfileHeading({ onEditClick, isEditing, fontsLiked
         <div className={`${!isEditing ? '' : 'zhidden'} relative z-10 w-full min-h-screen flex flex-col items-center justify-between px-6 py-24 sm:px-10 lg:px-16`}>
             <div className='@container w-full flex justify-center items-center'>
                 {profile?.username && (
-                        <p className={`${extendedProfile?.profession ? 'mt-1' : 'mt-4'} flex items-center gap-0.5 font-inter-tight text-center text-[6cqw] font-medium tracking-tightz text-[rgb(var(--color-foreground))]`}>
+                        <p className={`${extendedProfile?.profession ? 'mt-1' : 'mt-4'} flex items-center gap-0.5 font-inter-tight text-center text-[6cqw] font-medium tracking-tightz text-foreground`}>
                             nobadfonts.in/
                             <span className='font-interz zfont-bold'>@</span>
                             <span className='italic'>{profile.username}</span>
@@ -103,27 +103,27 @@ export default memo(function ProfileHeading({ onEditClick, isEditing, fontsLiked
             <div className="w-full max-w-4xl mx-auto flex flex-col items-center text-center">
 
                 {/* Avatar */}
-                <div className="w-32 h-32 sm:w-36 sm:h-36 rounded-full p-0.5 bg-[rgb(var(--color-foreground)/0.5)] shrink-0">
+                <div className="w-32 h-32 sm:w-36 sm:h-36 rounded-full p-0.5 bg-foreground/50 shrink-0">
                     <img src={profile?.avatar_url || '/profile/profile.png'} alt={profile?.full_name ? `${profile.full_name}'s avatar` : 'User profile avatar'} className="w-full h-full object-cover rounded-full" />
                 </div>
 
                 {/* Name */}
-                <h1 className="mt-5 text-4xl sm:text-4xl lg:text-4xl font-medium tracking-[-0.045em] leading-none text-[rgb(var(--color-foreground)/0.92)]">
+                <h1 className="mt-5 text-4xl sm:text-4xl lg:text-4xl font-medium tracking-[-0.045em] leading-none text-foreground/92">
                     {profile?.full_name || 'User'}
                 </h1>
 
                 {/* Description */}
                 {/* {profile?.bio && (
                     <>
-                        <div className="w-10 h-px mt-8 mb-6 bg-[rgb(var(--color-foreground)/0.25)]" />
+                        <div className="w-10 h-px mt-8 mb-6 bg-foreground/25" />
 
                         <div className="max-w-md my-5">
-                            <p className={`text-base sm:text-md leading-relaxed font-inter font-light tracking-wide text-[rgb(var(--color-foreground)/0.92)] whitespace-pre-wrap ${!isExpanded ? 'line-clamp-5' : 'line-camp-1'}`}>
+                            <p className={`text-base sm:text-md leading-relaxed font-inter font-light tracking-wide text-foreground/92 whitespace-pre-wrap ${!isExpanded ? 'line-clamp-5' : 'line-camp-1'}`}>
                                 {profile.bio}
                             </p>
 
                             {showReadMore && (
-                                <button onClick={() => setIsExpanded((prev) => !prev)} className="mt-2 text-sm text-[rgb(var(--color-foreground)/0.45)] hover:text-[rgb(var(--color-foreground)/0.8)] transition-colors">
+                                <button onClick={() => setIsExpanded((prev) => !prev)} className="mt-2 text-sm text-foreground/45 hover:text-foreground/80 transition-colors">
                                     {isExpanded ? 'Show less' : '...more'}
                                 </button>
                             )}
@@ -132,7 +132,7 @@ export default memo(function ProfileHeading({ onEditClick, isEditing, fontsLiked
                 )} */}
 
                 {/* Stats */}
-                <div className="flex flex-wrap items-center justify-center gap-x-7 gap-y-2 mt-4 font-light text-[rgb(var(--color-foreground)/0.92)]">
+                <div className="flex flex-wrap items-center justify-center gap-x-7 gap-y-2 mt-4 font-light text-foreground/92">
                     <span className="text-sm sm:text-base">{formatCount(fontsLiked)} Fonts Liked</span>
                     <span className="text-sm sm:text-base">{formatCount(boardsCount)} Boards</span>
                     <span className="text-sm sm:text-base">{formatCount(savedBoardsCount)} Saved Boards</span>
@@ -140,11 +140,11 @@ export default memo(function ProfileHeading({ onEditClick, isEditing, fontsLiked
 
                 {/* Profession */}
                 {extendedProfile?.profession && (
-                    <p className="mt-5 text-base sm:text-lg font-light tracking-wide text-[rgb(var(--color-foreground)/0.65)]">
+                    <p className="mt-5 text-base sm:text-lg font-light tracking-wide text-foreground/65">
                         {extendedProfile.profession}
                     </p>
                 )}
-                {/* <p className="mt-5 text-base sm:text-lg font-light tracking-wide text-[rgb(var(--color-foreground)/0.65)]">
+                {/* <p className="mt-5 text-base sm:text-lg font-light tracking-wide text-foreground/65">
                     designer / developer
                 </p> */}
 
@@ -152,7 +152,7 @@ export default memo(function ProfileHeading({ onEditClick, isEditing, fontsLiked
 
                     {/* Username */}
                     {profile?.username && (
-                        <p className={`${extendedProfile?.profession ? 'mt-1' : 'mt-4'} flex items-center gap-0.5 text-base font-light tracking-wide text-[rgb(var(--color-foreground)/0.62)]`}>
+                        <p className={`${extendedProfile?.profession ? 'mt-1' : 'mt-4'} flex items-center gap-0.5 text-base font-light tracking-wide text-foreground/62`}>
                             nobadfonts.in/
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
                                 <path fill="currentColor" d="M22.596 20.093a11.44 11.44 0 0 1-4.48 2.943l-.08.025c-1.634.594-3.52.938-5.486.938h-.1h.005l-.189.001c-1.766 0-3.456-.327-5.012-.923l.096.032a11.5 11.5 0 0 1-3.93-2.474l.004.003a11 11 0 0 1-2.502-3.719l-.026-.073a12.5 12.5 0 0 1-.895-4.676l.001-.152v.008l-.001-.113c0-1.686.361-3.288 1.01-4.733l-.029.073a12 12 0 0 1 2.669-3.808l.004-.004A12.5 12.5 0 0 1 7.535.938l.084-.03C9.024.334 10.655.001 12.363.001h.098h-.005h.041c1.52 0 2.986.234 4.363.668l-.103-.028a11.2 11.2 0 0 1 3.724 1.951l-.023-.017a9.55 9.55 0 0 1 2.552 3.17l.025.055A9.94 9.94 0 0 1 24 10.364v-.012l.002.187a10 10 0 0 1-.559 3.301l.021-.07a7.5 7.5 0 0 1-1.443 2.494l.007-.009a5.9 5.9 0 0 1-2.015 1.485l-.037.015a6 6 0 0 1-2.409.498h-.018h.001a3.3 3.3 0 0 1-2.099-.617l.01.007a1.9 1.9 0 0 1-.782-1.534v-.015v.001h-.16a5.3 5.3 0 0 1-1.48 1.456l-.02.012a4.26 4.26 0 0 1-2.487.697h.007a4.18 4.18 0 0 1-3.418-1.447l-.005-.005a5.68 5.68 0 0 1-1.205-3.79v.013c.001-.96.167-1.88.473-2.735l-.018.057a7.7 7.7 0 0 1 1.312-2.37l-.011.014a6.7 6.7 0 0 1 1.985-1.643l.035-.017a5.4 5.4 0 0 1 2.612-.626h-.004a3.96 3.96 0 0 1 2.109.525l-.019-.01c.503.281.89.717 1.103 1.242l.006.017h.032l.262-1.291h2.903l-1.28 6.101q-.064.448-.177 1.002c-.069.31-.11.666-.113 1.032v.002l-.001.063c0 .314.08.61.22.868l-.005-.01a.87.87 0 0 0 .834.369h-.004a2.44 2.44 0 0 0 2.099-1.341l.006-.014a6.86 6.86 0 0 0 .829-3.659l.001.016l.001-.155c0-1.183-.241-2.31-.676-3.335l.021.056a7.1 7.1 0 0 0-1.801-2.513l-.007-.006a7.75 7.75 0 0 0-2.698-1.517l-.055-.015a11.1 11.1 0 0 0-3.378-.515l-.115.001h.006l-.122-.001a9.55 9.55 0 0 0-3.707.744l.063-.024A8.6 8.6 0 0 0 5.715 5.34l-.003.003a9.1 9.1 0 0 0-1.854 2.938l-.021.062a10.5 10.5 0 0 0-.675 3.747c0 1.372.257 2.684.727 3.89l-.025-.073a8.4 8.4 0 0 0 1.968 2.917l.003.003a8.6 8.6 0 0 0 2.972 1.835l.06.019c1.114.406 2.4.641 3.741.641l.144-.001h-.007a11.1 11.1 0 0 0 4.62-.865l-.074.027a12.6 12.6 0 0 0 3.513-2.331l-.006.006zM12.391 8.356h-.038c-.504 0-.968.169-1.338.455l.005-.004a3.9 3.9 0 0 0-.987 1.128l-.01.019a5.8 5.8 0 0 0-.613 1.491l-.009.041a6.5 6.5 0 0 0-.214 1.609v.004q.004.44.085.854l-.005-.029c.057.306.171.578.331.817l-.005-.008a1.84 1.84 0 0 0 1.686.851h-.006l.078.001a2.53 2.53 0 0 0 1.431-.44l-.009.006a3.5 3.5 0 0 0 1.004-1.082l.009-.016c.248-.415.446-.895.567-1.405l.007-.035c.106-.421.171-.907.179-1.407v-.005q0-.541-.102-1.052l.006.034a2.7 2.7 0 0 0-.35-.917l.007.012a1.9 1.9 0 0 0-.661-.654l-.009-.005a1.9 1.9 0 0 0-.977-.262l-.066.001h.003z" />
@@ -163,7 +163,7 @@ export default memo(function ProfileHeading({ onEditClick, isEditing, fontsLiked
 
                     {/* Email */}
                     {user.email && (
-                        <div className="flex items-center gap-2 text-[rgb(var(--color-foreground)/0.62)]">
+                        <div className="flex items-center gap-2 text-foreground/62">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32">
                                 <path fill="currentColor" d="M2.004 9.303A4.5 4.5 0 0 1 6.5 5h19a4.5 4.5 0 0 1 4.496 4.303l-1.476.82L16 16.864L3.48 10.123zM2 11.588V22.5A4.5 4.5 0 0 0 6.5 27h19a4.5 4.5 0 0 0 4.5-4.5V11.588l-.526.293l-13 7a1 1 0 0 1-.948 0L2.514 11.874z" />
                             </svg>
@@ -174,7 +174,7 @@ export default memo(function ProfileHeading({ onEditClick, isEditing, fontsLiked
 
                     {/* Website */}
                     {profile?.website && (
-                        <a href={profile.website} target="_blank" rel="noopener noreferrer" className="relative group flex items-center gap-2 text-[rgb(var(--color-foreground)/0.62)] hover:text-[rgb(var(--color-foreground))] transition-colors">
+                        <a href={profile.website} target="_blank" rel="noopener noreferrer" className="relative group flex items-center gap-2 text-foreground/62 hover:text-foreground transition-colors">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32">
                                 <g fill="currentColor">
                                     <path d="M27.527 4.318c-3.09-3.09-8.12-3.09-11.21 0l-4 4q-.34.345-.63.72a9.1 9.1 0 0 1 3.84-.131q.387.068.77.17l.009.062l2.421-2.421a4.52 4.52 0 0 1 6.4 0c1.76 1.77 1.77 4.64 0 6.4l-4 4c-.76.76-1.73 1.17-2.72 1.28c-1.31.14-2.68-.27-3.68-1.28a4.5 4.5 0 0 1-1.24-2.417a3.25 3.25 0 0 0-1.886.91l-1.086 1.087a7.9 7.9 0 0 0 1.812 2.82a7.86 7.86 0 0 0 4.21 2.19a7.99 7.99 0 0 0 7-2.2l4-4c3.08-3.07 3.08-8.1-.01-11.19" />
@@ -195,10 +195,10 @@ export default memo(function ProfileHeading({ onEditClick, isEditing, fontsLiked
                 {/* Socials */}
                 {socials.length > 0 && (
                     <div className="flex justify-center mt-6">
-                        <div className="flex items-center rounded-full zbg-[rgb(var(--color-foreground)/0.08)] border border-[rgb(var(--color-border)/0.5)] p-1 backdrop-blur-xl">
+                        <div className="flex items-center rounded-full zbg-foreground/8 border border-border/50 p-1 backdrop-blur-xl">
                             <div className="flex -space-x-2">
                                 {socials.map((social) => (
-                                    <a key={social.label} href={social.href} target="_blank" rel="noopener noreferrer" aria-label={social.label} className="w-10 h-10 flex items-center justify-center rounded-full border border-[rgb(var(--color-background))] bg-[rgb(var(--color-foreground)/0.16)] overflow-hidden hover:z-10 hover:bg-[rgb(var(--color-foreground)/0.24)] hover:scale-105 transition-all duration-300">
+                                    <a key={social.label} href={social.href} target="_blank" rel="noopener noreferrer" aria-label={social.label} className="w-10 h-10 flex items-center justify-center rounded-full border border-background bg-foreground/16 overflow-hidden hover:z-10 hover:bg-foreground/24 hover:scale-105 transition-all duration-300">
                                         {social.image && (
                                             <img src={social.image} alt="" className="w-full h-full object-contain" />
                                         )}
@@ -210,7 +210,7 @@ export default memo(function ProfileHeading({ onEditClick, isEditing, fontsLiked
                                 ))}
                             </div>
 
-                            <span className="px-3 text-xs sm:text-sm text-[rgb(var(--color-foreground)/0.5)]">
+                            <span className="px-3 text-xs sm:text-sm text-foreground/50">
                                 socials
                             </span>
                         </div>
@@ -218,20 +218,20 @@ export default memo(function ProfileHeading({ onEditClick, isEditing, fontsLiked
                 )}
 
                 <div className="hiddenz flex gap-2">
-                    <button onClick={onEditClick} className="mt-3 flex justify-center items-center gap-2 bg-[rgb(var(--color-foreground)/0.05)] hover:bg-[rgb(var(--color-foreground)/0.1)] border border-[rgb(var(--color-foreground)/0.05)] w-fit px-4 py-3 rounded-full text-[rgb(var(--color-foreground)/0.65)] hover:text-[rgb(var(--color-foreground))] transition-all duration-300 ease-in-out">
+                    <button onClick={onEditClick} className="mt-3 flex justify-center items-center gap-2 bg-foreground/5 hover:bg-foreground/10 border border-foreground/5 w-fit px-4 py-3 rounded-full text-foreground/65 hover:text-foreground transition-all duration-300 ease-in-out">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 640 512">
                             <path fill="currentColor" d="M224 256c70.7 0 128-57.3 128-128S294.7 0 224 0S96 57.3 96 128s57.3 128 128 128m89.6 32h-16.7c-22.2 10.2-46.9 16-72.9 16s-50.6-5.8-72.9-16h-16.7C60.2 288 0 348.2 0 422.4V464c0 26.5 21.5 48 48 48h274.9c-2.4-6.8-3.4-14-2.6-21.3l6.8-60.9l1.2-11.1l7.9-7.9l77.3-77.3c-24.5-27.7-60-45.5-99.9-45.5m45.3 145.3l-6.8 61c-1.1 10.2 7.5 18.8 17.6 17.6l60.9-6.8l137.9-137.9l-71.7-71.7zM633 268.9L595.1 231c-9.3-9.3-24.5-9.3-33.8 0l-37.8 37.8l-4.1 4.1l71.8 71.7l41.8-41.8c9.3-9.4 9.3-24.5 0-33.9" />
                         </svg>
                         <span>{isEditing ? 'Cancel Edit' : 'Edit Profile'}</span>
                     </button>
-                    <button onClick={() => signOut()} className="mt-3 flex justify-center items-center gap-2 bg-[rgb(var(--color-foreground)/0.05)] hover:bg-[rgb(var(--color-destructive)/0.1)] border border-[rgb(var(--color-foreground)/0.05)] hover:border-[rgb(var(--color-destructive)/0.2)] w-fit px-4 rounded-full text-[rgb(var(--color-foreground)/0.65)] hover:text-[rgb(var(--color-destructive))] transition-all duration-300 ease-in-out active:scale-80">
+                    <button onClick={() => signOut()} className="mt-3 flex justify-center items-center gap-2 bg-foreground/5 hover:bg-warning/10 border border-foreground/5 hover:border-warning/20 w-fit px-4 rounded-full text-foreground/65 hover:text-warning transition-all duration-300 ease-in-out active:scale-80">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
                             <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.996 12h-10m3.976-6c-.046-1.093-.184-1.79-.596-2.326a3 3 0 0 0-.554-.554c-.808-.62-1.98-.62-4.326-.62s-3.518 0-4.326.62a3 3 0 0 0-.554.554c-.62.808-.62 1.98-.62 4.326v8c0 2.346 0 3.518.62 4.326a3 3 0 0 0 .554.554c.808.62 1.98.62 4.326.62s3.518 0 4.326-.62a3 3 0 0 0 .554-.554c.412-.536.55-1.233.596-2.326m3.524-2.5s3.5-2.578 3.5-3.5s-3.5-3.5-3.5-3.5" />
                         </svg>
 
                         {/* Sign out */}
                     </button>
-                    <button className="mt-3 flex justify-center items-center gap-2 bg-[rgb(var(--color-foreground)/0.05)] hover:bg-[rgb(var(--color-destructive)/0.1)] border border-[rgb(var(--color-foreground)/0.05)] hover:border-[rgb(var(--color-destructive)/0.2)] w-fit px-4 rounded-full text-[rgb(var(--color-foreground)/0.65)] hover:text-[rgb(var(--color-destructive))] transition-all duration-300 ease-in-out active:scale-80">
+                    <button className="mt-3 flex justify-center items-center gap-2 bg-foreground/5 hover:bg-warning/10 border border-foreground/5 hover:border-warning/20 w-fit px-4 rounded-full text-foreground/65 hover:text-warning transition-all duration-300 ease-in-out active:scale-80">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 12 12">
                             <path fill="currentColor" d="M5 3h2a1 1 0 0 0-2 0M4 3a2 2 0 1 1 4 0h2.5a.5.5 0 0 1 0 1h-.441l-.443 5.17A2 2 0 0 1 7.623 11H4.377a2 2 0 0 1-1.993-1.83L1.941 4H1.5a.5.5 0 0 1 0-1zm3.5 3a.5.5 0 0 0-1 0v2a.5.5 0 0 0 1 0zM5 5.5a.5.5 0 0 0-.5.5v2a.5.5 0 0 0 1 0V6a.5.5 0 0 0-.5-.5" />
                         </svg>

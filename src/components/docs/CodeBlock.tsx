@@ -49,17 +49,17 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
     <div
       className="relative my-5 overflow-hidden rounded-xl not-prose"
       style={{
-        backgroundColor: 'rgb(var(--color-foreground)/0.05)',
-        border: '1px solid rgb(var(--color-border))',
+        backgroundColor: 'color-mix(in srgb, var(--color-foreground) 5%, transparent)',
+        border: '1px solid var(--color-border)',
       }}
     >
       {/* Header Bar */}
       <div
         className="flex items-center justify-between px-4 py-2.5 border-b font-mono text-xs select-none"
         style={{
-          backgroundColor: 'rgb(var(--color-foreground)/0.03)',
-          borderColor: 'rgb(var(--color-border))',
-          color: 'rgb(var(--color-muted-foreground))',
+          backgroundColor: 'color-mix(in srgb, var(--color-foreground) 3%, transparent)',
+          borderColor: 'var(--color-border)',
+          color: 'var(--color-muted)',
         }}
       >
         <div className="flex items-center gap-2">
@@ -71,10 +71,10 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
           </div>
 
           {filename ? (
-            <span className="font-medium" style={{ color: 'rgb(var(--color-foreground))' }}>{filename}</span>
+            <span className="font-medium" style={{ color: 'var(--color-foreground)' }}>{filename}</span>
           ) : detectedLang ? (
             <span className="uppercase tracking-wider text-[10px] font-semibold flex items-center gap-1">
-              {isTerminal && <Terminal className="w-3 h-3" style={{ color: 'rgb(var(--color-success))' }} />}
+              {isTerminal && <Terminal className="w-3 h-3" style={{ color: 'var(--color-success)' }} />}
               {detectedLang}
             </span>
           ) : (
@@ -87,20 +87,20 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
           onClick={handleCopy}
           aria-label="Copy code to clipboard"
           className="flex items-center gap-1 px-2 py-1 rounded-md text-xs font-sans transition-colors"
-          style={{ color: 'rgb(var(--color-muted-foreground))' }}
+          style={{ color: 'var(--color-muted)' }}
           onMouseEnter={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'rgb(var(--color-foreground)/0.08)';
-            (e.currentTarget as HTMLButtonElement).style.color = 'rgb(var(--color-foreground))';
+            (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'color-mix(in srgb, var(--color-foreground) 8%, transparent)';
+            (e.currentTarget as HTMLButtonElement).style.color = 'var(--color-foreground)';
           }}
           onMouseLeave={(e) => {
             (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'transparent';
-            (e.currentTarget as HTMLButtonElement).style.color = 'rgb(var(--color-muted-foreground))';
+            (e.currentTarget as HTMLButtonElement).style.color = 'var(--color-muted)';
           }}
         >
           {copied ? (
             <>
-              <Check className="w-3.5 h-3.5" style={{ color: 'rgb(var(--color-success))' }} />
-              <span className="text-[11px] font-medium" style={{ color: 'rgb(var(--color-success))' }}>Copied!</span>
+              <Check className="w-3.5 h-3.5" style={{ color: 'var(--color-success)' }} />
+              <span className="text-[11px] font-medium" style={{ color: 'var(--color-success)' }}>Copied!</span>
             </>
           ) : (
             <>
@@ -114,7 +114,7 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
       {/* Code Body */}
       <div
         className="p-4 overflow-x-auto font-mono text-[13px] leading-relaxed"
-        style={{ color: 'rgb(var(--color-foreground))' }}
+        style={{ color: 'var(--color-foreground)' }}
       >
         <pre className="m-0 p-0 bg-transparent border-0">
           <code>{children}</code>

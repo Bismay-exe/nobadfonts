@@ -21,7 +21,7 @@ export default function FontGlyphMapSection({ font, isFontLoaded }: FontGlyphMap
     return (
         <div className="space-y-8 pt-12 mt-12">
             <div className="flex justify-center items-center gap-4 py-10">
-                <h2 className="text-4xl sm:text-6xl md:text-8xl font-inter-tight font-medium zuppercase ztracking-widest text-[rgb(var(--color-foreground))]">
+                <h2 className="text-4xl sm:text-6xl md:text-8xl font-inter-tight font-medium zuppercase ztracking-widest text-foreground">
                     256 Glyphs
                 </h2>
             </div>

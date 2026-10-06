@@ -109,16 +109,16 @@ export default function VariantList({
     return (
         <div className='overflow-hidden'>
             {reorderTrigger >= 0 && sortedVariants.map((variant: any, index: number) => (
-                <div key={variant.id} className="py-2 md:py-4 border-b md:border-b-2 border-[rgb(var(--color-foreground)/0.1)] transition-all group">
+                <div key={variant.id} className="py-2 md:py-4 border-b md:border-b-2 border-foreground/10 transition-all group">
                     <div className="flex justify-between items-center mb-6">
                         <div className="flex items-center gap-3">
-                            <span className="text-[10px] md:text-[12px] font-mono font-bold uppercase tracking-wider text-[rgb(var(--color-foreground)/0.6)] bg-[rgb(var(--color-foreground)/0.05)] px-3 py-1 rounded-full border border-[rgb(var(--color-foreground)/0.05)]">{variant.variant_name}</span>
+                            <span className="text-[10px] md:text-[12px] font-mono font-bold uppercase tracking-wider text-foreground/60 bg-foreground/5 px-3 py-1 rounded-full border border-foreground/5">{variant.variant_name}</span>
                             {profile?.role === 'admin' && (
                                 <div className="flex gap-1 opacity-100 group-hover:opacity-100 transition-opacity">
                                     <button
                                         onClick={() => handleMoveVariant(variant.id, 'up', sortedVariants)}
                                         disabled={index === 0}
-                                        className="p-1 bg-[rgb(var(--color-foreground)/0.05)] border border-[rgb(var(--color-foreground)/0.1)] rounded-md text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.9)] hover:text-[rgb(var(--color-background))] transition-colors duration-300 ease-in-out disabled:opacity-30 disabled:hover:bg-[rgb(var(--color-foreground)/0.5)] disabled:hover:text-[rgb(var(--color-foreground))]"
+                                        className="p-1 bg-foreground/5 border border-foreground/10 rounded-md text-foreground hover:bg-foreground/90 hover:text-background transition-colors duration-300 ease-in-out disabled:opacity-30 disabled:hover:bg-foreground/50 disabled:hover:text-foreground"
                                         title="Move Up"
                                     >
                                         <ArrowUp size={14} />
@@ -126,7 +126,7 @@ export default function VariantList({
                                     <button
                                         onClick={() => handleMoveVariant(variant.id, 'down', sortedVariants)}
                                         disabled={index === sortedVariants.length - 1}
-                                        className="p-1 bg-[rgb(var(--color-foreground)/0.05)] border border-[rgb(var(--color-foreground)/0.1)] rounded-md text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.9)] hover:text-[rgb(var(--color-background))] transition-colors duration-300 ease-in-out disabled:opacity-30 disabled:hover:bg-[rgb(var(--color-background)/0.5)] disabled:hover:text-[rgb(var(--color-foreground))]"
+                                        className="p-1 bg-foreground/5 border border-foreground/10 rounded-md text-foreground hover:bg-foreground/90 hover:text-background transition-colors duration-300 ease-in-out disabled:opacity-30 disabled:hover:bg-background/50 disabled:hover:text-foreground"
                                         title="Move Down"
                                     >
                                         <ArrowDown size={14} />
@@ -143,7 +143,7 @@ export default function VariantList({
                                             <button
                                                 key={format}
                                                 onClick={() => downloadFont(url, `${font.name}-${variant.variant_name}.${format}`)}
-                                                className="flex items-center gap-1.5 px-3 py-1.5 bg-[rgb(var(--color-background)/0.5)] border border-[rgb(var(--color-foreground)/0.2)] rounded-full text-[10px] font-bold uppercase hover:bg-[rgb(var(--color-foreground)/0.9)] hover:text-[rgb(var(--color-background))] transition-colors duration-300 ease-in-out cursor-pointer"
+                                                className="flex items-center gap-1.5 px-3 py-1.5 bg-background/50 border border-foreground/20 rounded-full text-[10px] font-bold uppercase hover:bg-foreground/90 hover:text-background transition-colors duration-300 ease-in-out cursor-pointer"
                                                 title={`Download ${format.toUpperCase()}`}
                                             >
                                                 <Download size={12} /> {format}
@@ -160,12 +160,12 @@ export default function VariantList({
                                         e.stopPropagation();
                                         setActiveDropdown(activeDropdown === variant.id ? null : variant.id);
                                     }}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-[rgb(var(--color-foreground)/0.05)] border border-[rgb(var(--color-foreground)/0.1)] rounded-full text-[10px] font-bold uppercase hover:bg-[rgb(var(--color-foreground)/0.9)] hover:text-[rgb(var(--color-background))] transition-colors duration-300 ease-in-out"
+                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-foreground/5 border border-foreground/10 rounded-full text-[10px] font-bold uppercase hover:bg-foreground/90 hover:text-background transition-colors duration-300 ease-in-out"
                                 >
                                     <Download size={12} /> <ChevronDown size={12} className={`transition-transform duration-200 ${activeDropdown === variant.id ? 'rotate-180' : ''}`} />
                                 </button>
 
-                                <div className={`absolute right-0 top-full mt-2 w-32 bg-[rgb(var(--color-background)/0.05)] backdrop-blur-2xl border border-[rgb(var(--color-foreground)/0.1)] divide-y divide-[rgb(var(--color-foreground)/0.1)] rounded-xl overflow-hidden transition-all shadow-xl z-20 flex flex-col origin-top-right transform ${activeDropdown === variant.id ? 'opacity-100 visible scale-100 pointer-events-auto' : 'opacity-0 invisible scale-95 pointer-events-none'}`}>
+                                <div className={`absolute right-0 top-full mt-2 w-32 bg-background/5 backdrop-blur-2xl border border-foreground/10 divide-y divide-foreground/10 rounded-xl overflow-hidden transition-all shadow-xl z-20 flex flex-col origin-top-right transform ${activeDropdown === variant.id ? 'opacity-100 visible scale-100 pointer-events-auto' : 'opacity-0 invisible scale-95 pointer-events-none'}`}>
                                     {(['ttf', 'otf', 'woff', 'woff2'] as const).map(format => {
                                         const url = variant[`${format}_url` as keyof typeof variant] as string;
                                         if (url) {
@@ -177,7 +177,7 @@ export default function VariantList({
                                                         downloadFont(url, `${font.name}-${variant.variant_name}.${format}`);
                                                         setActiveDropdown(null);
                                                     }}
-                                                    className="flex items-center justify-between w-full px-4 py-3 text-xs font-bold uppercase text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.1)] transition-colors duration-300 ease-in-out text-left"
+                                                    className="flex items-center justify-between w-full px-4 py-3 text-xs font-bold uppercase text-foreground hover:bg-foreground/10 transition-colors duration-300 ease-in-out text-left"
                                                 >
                                                     <span>{format}</span>
                                                     <Download size={14} className="opacity-50" />
@@ -197,7 +197,7 @@ export default function VariantList({
                             lineHeight: variantLineHeight !== undefined ? variantLineHeight : 1.2,
                             letterSpacing: variantLetterSpacing !== undefined ? `${variantLetterSpacing}px` : undefined,
                         }}
-                        className="wrap-break-word transition-all duration-200 w-full text-[rgb(var(--color-foreground))]"
+                        className="wrap-break-word transition-all duration-200 w-full text-foreground"
                     >
                         {variantPreviewText || `${font.name} ${variant.variant_name}`}
                     </p>

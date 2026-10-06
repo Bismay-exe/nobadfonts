@@ -26,8 +26,8 @@ export const FontPlaygroundEmbed: React.FC<FontPlaygroundEmbedProps> = ({
     <div
       className="my-8 rounded-2xl overflow-hidden not-prose transition-all"
       style={{
-        border: '1px solid rgb(var(--color-border))',
-        backgroundColor: 'rgb(var(--color-card)/0.5)',
+        border: '1px solid var(--color-border)',
+        backgroundColor: 'color-mix(in srgb, var(--color-card-background) 50%, transparent)',
         backdropFilter: 'blur(12px)',
       }}
     >
@@ -35,9 +35,9 @@ export const FontPlaygroundEmbed: React.FC<FontPlaygroundEmbedProps> = ({
       <div
         className="flex flex-wrap items-center justify-between gap-3 px-5 py-3.5 border-b font-inter-tight"
         style={{
-          backgroundColor: 'rgb(var(--color-foreground)/0.03)',
-          borderColor: 'rgb(var(--color-border))',
-          color: 'rgb(var(--color-muted-foreground))',
+          backgroundColor: 'color-mix(in srgb, var(--color-foreground) 3%, transparent)',
+          borderColor: 'var(--color-border)',
+          color: 'var(--color-muted)',
         }}
       >
         <div className="flex items-center gap-2">
@@ -53,9 +53,9 @@ export const FontPlaygroundEmbed: React.FC<FontPlaygroundEmbedProps> = ({
           type="button"
           onClick={resetAll}
           className="flex items-center gap-1 text-[11px] font-medium transition-colors"
-          style={{ color: 'rgb(var(--color-muted-foreground))' }}
-          onMouseEnter={(e) => (e.currentTarget as HTMLButtonElement).style.color = 'rgb(var(--color-foreground))'}
-          onMouseLeave={(e) => (e.currentTarget as HTMLButtonElement).style.color = 'rgb(var(--color-muted-foreground))'}
+          style={{ color: 'var(--color-muted)' }}
+          onMouseEnter={(e) => (e.currentTarget as HTMLButtonElement).style.color = 'var(--color-foreground)'}
+          onMouseLeave={(e) => (e.currentTarget as HTMLButtonElement).style.color = 'var(--color-muted)'}
         >
           <RotateCcw className="w-3 h-3" />
           Reset
@@ -66,9 +66,9 @@ export const FontPlaygroundEmbed: React.FC<FontPlaygroundEmbedProps> = ({
       <div
         className="px-3 py-3 border-b flex items-center gap-6 text-xs font-inter-tight"
         style={{
-          backgroundColor: 'rgb(var(--color-foreground)/0.02)',
-          borderColor: 'rgb(var(--color-border))',
-          color: 'rgb(var(--color-muted-foreground))',
+          backgroundColor: 'color-mix(in srgb, var(--color-foreground) 2%, transparent)',
+          borderColor: 'var(--color-border)',
+          color: 'var(--color-muted)',
         }}
       >
         {[
@@ -85,8 +85,8 @@ export const FontPlaygroundEmbed: React.FC<FontPlaygroundEmbedProps> = ({
               step={step}
               value={value}
               onChange={(e) => onChange(Number(e.target.value) as any)}
-              className="w-full h-0.5 bg-[rgb(var(--color-foreground)/0.2)] appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-2 sm:[&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-2 sm:[&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[rgb(var(--color-foreground))] [&::-webkit-slider-thumb]:cursor-grab [&::-moz-range-thumb]:w-2 sm:[::-moz-range-thumb]:w-3 [&::-moz-range-thumb]:h-2 sm:[::-moz-range-thumb]:h-3 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[rgb(var(--color-foreground))] [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:cursor-grab"
-              style={{ accentColor: 'rgb(var(--color-foreground))' }}
+              className="w-full h-0.5 bg-foreground/20 appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-2 sm:[&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-2 sm:[&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-foreground [&::-webkit-slider-thumb]:cursor-grab [&::-moz-range-thumb]:w-2 sm:[::-moz-range-thumb]:w-3 [&::-moz-range-thumb]:h-2 sm:[::-moz-range-thumb]:h-3 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-foreground [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:cursor-grab"
+              style={{ accentColor: 'var(--color-foreground)' }}
             />
             <span className="hidden sm:block font-mono text-[11px] text-right">
               {value}{unit}
@@ -109,7 +109,7 @@ export const FontPlaygroundEmbed: React.FC<FontPlaygroundEmbedProps> = ({
             letterSpacing: `${letterSpacing}px`,
             lineHeight: 1.4,
             backgroundColor: 'transparent',
-            color: 'rgb(var(--color-foreground))',
+            color: 'var(--color-foreground)',
             border: 'none',
             outline: 'none',
             resize: 'vertical',

@@ -129,11 +129,11 @@ export default function MoodDetail() {
 
     if (!mood) {
         return (
-            <div className="min-h-screen flex flex-col items-center justify-center bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))]">
+            <div className="min-h-screen flex flex-col items-center justify-center bg-background text-foreground">
                 <p className="text-5xl mb-4">🌍</p>
                 <h1 className="text-2xl font-black mb-2">Mood not found</h1>
-                <p className="text-[rgb(var(--color-muted-foreground))] mb-6">This design world doesn't exist yet.</p>
-                <Link to="/moods" className="text-[rgb(var(--color-foreground))] hover:underline font-medium">← Browse all moods</Link>
+                <p className="text-muted mb-6">This design world doesn't exist yet.</p>
+                <Link to="/moods" className="text-foreground hover:underline font-medium">← Browse all moods</Link>
             </div>
         );
     }
@@ -324,7 +324,7 @@ function MoodHero({ mood }: { mood: MoodDefinition }) {
 
             <div
                 className="relative pt-20 pb-0 zoverflow-hidden z-20 min-h-[60vh] flex flex-col items-center justify-center h-full w-full"
-                // style={{ background: mood.heroBackground, minHeight: '340px' }}
+            // style={{ background: mood.heroBackground, minHeight: '340px' }}
             >
                 {/* Image Banners */}
                 {/* {(mood.desktopBanner || mood.mobileBanner) && (

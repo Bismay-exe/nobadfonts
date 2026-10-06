@@ -14,7 +14,7 @@ const cardVariants: Variants = {
 
 export default function Moods() {
     return (
-        <div className="min-h-screen pt-24 bg-[rgb(var(--color-background))]">
+        <div className="min-h-screen pt-24 bg-background">
             <SEO
                 title="Moods — Explore Font Worlds on NoBadFonts"
                 description="Step into immersive font worlds. From Wedding elegance to Cyberpunk neon, discover typefaces through the lens of design moods."
@@ -22,13 +22,13 @@ export default function Moods() {
 
             {/* Hero */}
             <div className="px-6 md:px-10 pb-12 text-center max-w-3xl mx-auto">
-                <p className="text-xs uppercase tracking-[0.3em] text-[rgb(var(--color-muted-foreground))] mb-4 font-medium">
+                <p className="text-xs uppercase tracking-[0.3em] text-muted mb-4 font-medium">
                     — Explore —
                 </p>
-                <h1 className="text-5xl md:text-7xl font-black tracking-tighter text-[rgb(var(--color-foreground))] mb-5 leading-[0.95]">
+                <h1 className="text-5xl md:text-7xl font-black tracking-tighter text-foreground mb-5 leading-[0.95]">
                     Font Worlds
                 </h1>
-                <p className="text-[rgb(var(--color-muted-foreground))] text-lg max-w-xl mx-auto leading-relaxed">
+                <p className="text-muted text-lg max-w-xl mx-auto leading-relaxed">
                     Each mood transforms the entire font-discovery experience — colors, textures, imagery, copy and font recommendations — all tailored to a single design universe.
                 </p>
             </div>

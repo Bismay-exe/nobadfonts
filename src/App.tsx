@@ -129,8 +129,8 @@ function AppContent() {
       <BackHandler />
       <OnboardingGuard>
         <Suspense fallback={
-          <div className="fixed inset-0 flex items-center justify-center bg-[rgb(var(--color-background))] z-50">
-            <div className="animate-spin rounded-full h-12 w-12 border-4 border-[rgb(var(--color-foreground)/0.1)] border-t-[rgb(var(--color-foreground))]"></div>
+          <div className="fixed inset-0 flex items-center justify-center bg-background z-50">
+            <div className="animate-spin rounded-full h-12 w-12 border-4 border-foreground/10"></div>
           </div>
         }>
           <Routes location={location} key={location.pathname}>

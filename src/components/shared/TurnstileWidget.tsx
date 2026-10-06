@@ -109,8 +109,8 @@ export default function TurnstileWidget({ onVerify, onError, onExpire, className
 
     if (isDevMode) {
         return (
-            <div className={`flex items-center gap-2 p-3 rounded-xl bg-[rgb(var(--color-foreground)/0.03)] border border-[rgb(var(--color-foreground)/0.08)] text-xs text-[rgb(var(--color-muted-foreground))] ${className}`}>
-                <ShieldCheck size={16} className="text-[rgb(var(--color-highlight))] shrink-0" />
+            <div className={`flex items-center gap-2 p-3 rounded-xl bg-foreground/3 border border-foreground/8 text-xs text-muted ${className}`}>
+                <ShieldCheck size={16} className="text-accent shrink-0" />
                 <span>Protected by Bot Verification <em>(Auto-verified in local development)</em></span>
             </div>
         );

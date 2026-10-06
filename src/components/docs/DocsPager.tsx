@@ -12,8 +12,8 @@ export const DocsPager: React.FC<DocsPagerProps> = ({ prev, next }) => {
   if (!prev && !next) return null;
 
   const cardBase: React.CSSProperties = {
-    border: '1px solid rgb(var(--color-border))',
-    backgroundColor: 'rgb(var(--color-card)/0.5)',
+    border: '1px solid var(--color-border)',
+    backgroundColor: 'color-mix(in srgb, var(--color-card-background) 50%, transparent)',
     borderRadius: '12px',
     padding: '16px',
     display: 'flex',
@@ -26,7 +26,7 @@ export const DocsPager: React.FC<DocsPagerProps> = ({ prev, next }) => {
   return (
     <div
       className="mt-16 pt-8 grid grid-cols-2 gap-4 not-prose font-inter-tight"
-      style={{ borderTop: '1px solid rgb(var(--color-border))' }}
+      style={{ borderTop: '1px solid var(--color-border)' }}
     >
       {prev ? (
         <Link
@@ -35,25 +35,25 @@ export const DocsPager: React.FC<DocsPagerProps> = ({ prev, next }) => {
           style={cardBase}
           onMouseEnter={(e) => {
             const el = e.currentTarget as HTMLAnchorElement;
-            el.style.backgroundColor = 'rgb(var(--color-foreground)/0.04)';
-            el.style.borderColor = 'rgb(var(--color-foreground)/0.2)';
+            el.style.backgroundColor = 'color-mix(in srgb, var(--color-foreground) 4%, transparent)';
+            el.style.borderColor = 'color-mix(in srgb, var(--color-foreground) 20%, transparent)';
           }}
           onMouseLeave={(e) => {
             const el = e.currentTarget as HTMLAnchorElement;
-            el.style.backgroundColor = 'rgb(var(--color-card)/0.5)';
-            el.style.borderColor = 'rgb(var(--color-border))';
+            el.style.backgroundColor = 'color-mix(in srgb, var(--color-card-background) 50%, transparent)';
+            el.style.borderColor = 'var(--color-border)';
           }}
         >
           <span
             className="flex items-center gap-1.5 text-xs mb-1 transition-colors"
-            style={{ color: 'rgb(var(--color-muted-foreground))' }}
+            style={{ color: 'var(--color-muted)' }}
           >
             <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-1" />
             Previous
           </span>
           <span
             className="font-semibold text-sm transition-colors"
-            style={{ color: 'rgb(var(--color-foreground))' }}
+            style={{ color: 'var(--color-foreground)' }}
           >
             {prev.title}
           </span>
@@ -69,25 +69,25 @@ export const DocsPager: React.FC<DocsPagerProps> = ({ prev, next }) => {
           style={{ ...cardBase, textAlign: 'right', alignItems: 'flex-end' }}
           onMouseEnter={(e) => {
             const el = e.currentTarget as HTMLAnchorElement;
-            el.style.backgroundColor = 'rgb(var(--color-foreground)/0.04)';
-            el.style.borderColor = 'rgb(var(--color-foreground)/0.2)';
+            el.style.backgroundColor = 'color-mix(in srgb, var(--color-foreground) 4%, transparent)';
+            el.style.borderColor = 'color-mix(in srgb, var(--color-foreground) 20%, transparent)';
           }}
           onMouseLeave={(e) => {
             const el = e.currentTarget as HTMLAnchorElement;
-            el.style.backgroundColor = 'rgb(var(--color-card)/0.5)';
-            el.style.borderColor = 'rgb(var(--color-border))';
+            el.style.backgroundColor = 'color-mix(in srgb, var(--color-card-background) 50%, transparent)';
+            el.style.borderColor = 'var(--color-border)';
           }}
         >
           <span
             className="flex items-center justify-end gap-1.5 text-xs mb-1 transition-colors"
-            style={{ color: 'rgb(var(--color-muted-foreground))' }}
+            style={{ color: 'var(--color-muted)' }}
           >
             Next
             <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
           </span>
           <span
             className="font-semibold text-sm transition-colors"
-            style={{ color: 'rgb(var(--color-foreground))' }}
+            style={{ color: 'var(--color-foreground)' }}
           >
             {next.title}
           </span>

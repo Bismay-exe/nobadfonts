@@ -441,22 +441,22 @@ export default function AdminOgImageManager({ font, onFontUpdated, onVariantChan
     const isWorking = (status !== 'idle' && status !== 'success' && status !== 'error') || isDeleting;
 
     return (
-        <div className="rounded-3xl border-2 border-dashed border-[rgb(var(--color-primary)/0.4)] bg-[rgb(var(--color-foreground)/0.02)] p-6 md:p-8 space-y-6 mb-8">
-            
+        <div className="rounded-3xl border-2 border-dashed border-primary/40 bg-foreground/2 p-6 md:p-8 space-y-6 mb-8">
+
             {/* Header / Admin Pill */}
-            <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-[rgb(var(--color-foreground)/0.1)]">
+            <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-foreground/10">
                 <div className="flex items-center gap-2.5">
-                    <span className="flex items-center justify-center w-6 h-6 rounded-full bg-[rgb(var(--color-primary))] text-[rgb(var(--color-background))] text-xs font-bold font-mono">
+                    <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-background text-xs font-bold font-mono">
                         A
                     </span>
                     <div>
-                        <h3 className="text-sm font-bold uppercase tracking-widest text-[rgb(var(--color-foreground))] flex items-center gap-2">
+                        <h3 className="text-sm font-bold uppercase tracking-widest text-foreground flex items-center gap-2">
                             Admin · OG Social Card Manager
-                            <span className="text-[10px] px-2 py-0.5 rounded-full bg-[rgb(var(--color-primary)/0.1)] text-[rgb(var(--color-primary))] font-mono font-normal">
+                            <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary font-mono font-normal">
                                 ADMIN ONLY
                             </span>
                         </h3>
-                        <p className="text-xs text-[rgb(var(--color-muted-foreground))]">
+                        <p className="text-xs text-muted">
                             Generate and commit a custom 1200×630 specimen card to Supabase Storage for Twitter, Discord, and social crawlers.
                         </p>
                     </div>
@@ -491,10 +491,10 @@ export default function AdminOgImageManager({ font, onFontUpdated, onVariantChan
 
             {/* Main Control Grid */}
             <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
-                
+
                 {/* Left: Thumbnail Preview of current OG image */}
                 <div className="md:col-span-4">
-                    <div className="relative aspect-1200/630 rounded-2xl overflow-hidden border border-[rgb(var(--color-foreground)/0.15)] bg-[rgb(var(--color-background))] group shadow-sm">
+                    <div className="relative aspect-1200/630 rounded-2xl overflow-hidden border border-foreground/15 bg-background group shadow-sm">
                         {font.og_image_url ? (
                             <>
                                 <img
@@ -512,10 +512,10 @@ export default function AdminOgImageManager({ font, onFontUpdated, onVariantChan
                                 </a>
                             </>
                         ) : (
-                            <div className="w-full h-full flex flex-col items-center justify-center p-4 text-center text-xs font-mono text-[rgb(var(--color-muted-foreground))]">
+                            <div className="w-full h-full flex flex-col items-center justify-center p-4 text-center text-xs font-mono text-muted">
                                 <ImageIcon className="w-8 h-8 opacity-40 mb-2" />
                                 <span>No Custom OG Image</span>
-                                <span className="text-[10px] text-[rgb(var(--color-muted-foreground)/0.7)] mt-1">
+                                <span className="text-[10px] text-muted/70 mt-1">
                                     Crawlers fall back to 1st gallery image or site banner
                                 </span>
                             </div>
@@ -524,7 +524,7 @@ export default function AdminOgImageManager({ font, onFontUpdated, onVariantChan
 
                     {/* Metadata Subtext */}
                     {font.og_image_url && (
-                        <div className="mt-2.5 text-[11px] font-mono text-[rgb(var(--color-muted-foreground))] space-y-1">
+                        <div className="mt-2.5 text-[11px] font-mono text-muted space-y-1">
                             <div className="flex items-center gap-1.5">
                                 <Layers className="w-3.5 h-3.5" />
                                 <span>Generated from: <strong>{currentOgVariant?.variant_name || 'Variant'}</strong></span>
@@ -541,10 +541,10 @@ export default function AdminOgImageManager({ font, onFontUpdated, onVariantChan
 
                 {/* Right: Variant Selector & Generation Controls */}
                 <div className="md:col-span-8 space-y-5">
-                    
+
                     {/* Variant Selector Dropdown */}
                     <div className="space-y-2">
-                        <label className="text-xs font-mono font-bold uppercase tracking-wider text-[rgb(var(--color-foreground)/0.8)] block">
+                        <label className="text-xs font-mono font-bold uppercase tracking-wider text-foreground/80 block">
                             Choose Variant to Render on OG Card:
                         </label>
                         <div className="relative">
@@ -552,7 +552,7 @@ export default function AdminOgImageManager({ font, onFontUpdated, onVariantChan
                                 value={selectedVariantId}
                                 onChange={(e) => setSelectedVariantId(e.target.value)}
                                 disabled={isWorking}
-                                className="w-full h-12 px-4 pr-10 rounded-2xl border border-[rgb(var(--color-foreground)/0.2)] bg-[rgb(var(--color-background))] text-sm font-medium text-[rgb(var(--color-foreground))] outline-none focus:border-[rgb(var(--color-primary))] transition-all appearance-none cursor-pointer disabled:opacity-50"
+                                className="w-full h-12 px-4 pr-10 rounded-2xl border border-foreground/20 bg-background text-sm font-medium text-foreground outline-none focus:border-primary transition-all appearance-none cursor-pointer disabled:opacity-50"
                             >
                                 {variants.map((v) => (
                                     <option key={v.id} value={v.id}>
@@ -560,16 +560,16 @@ export default function AdminOgImageManager({ font, onFontUpdated, onVariantChan
                                     </option>
                                 ))}
                             </select>
-                            <ChevronDown className="w-4 h-4 text-[rgb(var(--color-muted-foreground))] absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+                            <ChevronDown className="w-4 h-4 text-muted absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
                         </div>
                     </div>
 
                     {/* Multi-Step Status Indicator */}
                     {statusMessage && (
-                        <div className="text-xs font-mono p-3 rounded-xl bg-[rgb(var(--color-foreground)/0.05)] border border-[rgb(var(--color-foreground)/0.1)] flex items-center gap-2">
-                            {isWorking && <RefreshCw className="w-3.5 h-3.5 animate-spin text-[rgb(var(--color-primary))]" />}
+                        <div className="text-xs font-mono p-3 rounded-xl bg-foreground/5 border border-foreground/10 flex items-center gap-2">
+                            {isWorking && <RefreshCw className="w-3.5 h-3.5 animate-spin text-primary" />}
                             {status === 'success' && <Check className="w-3.5 h-3.5 text-emerald-500" />}
-                            <span className={status === 'error' ? 'text-red-500' : 'text-[rgb(var(--color-foreground))]'}>
+                            <span className={status === 'error' ? 'text-red-500' : 'text-foreground'}>
                                 {statusMessage}
                             </span>
                         </div>
@@ -586,7 +586,7 @@ export default function AdminOgImageManager({ font, onFontUpdated, onVariantChan
                         <button
                             onClick={handleGenerateOgImage}
                             disabled={isWorking}
-                            className="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] font-bold text-xs uppercase tracking-wider hover:opacity-90 transition-all cursor-pointer disabled:opacity-50 shadow-sm"
+                            className="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-foreground text-background font-bold text-xs uppercase tracking-wider hover:opacity-90 transition-all cursor-pointer disabled:opacity-50 shadow-sm"
                         >
                             {isWorking ? (
                                 <>
@@ -595,7 +595,7 @@ export default function AdminOgImageManager({ font, onFontUpdated, onVariantChan
                                 </>
                             ) : (
                                 <>
-                                    <Sparkles className="w-4 h-4 text-[rgb(var(--color-primary))]" />
+                                    <Sparkles className="w-4 h-4 text-primary" />
                                     {font.og_image_url ? 'Regenerate & Update OG Image' : 'Generate & Save OG Image'}
                                 </>
                             )}
@@ -625,7 +625,7 @@ export default function AdminOgImageManager({ font, onFontUpdated, onVariantChan
                             </button>
                         )}
 
-                        <span className="text-xs font-mono text-[rgb(var(--color-muted-foreground))]">
+                        <span className="text-xs font-mono text-muted">
                             Auto-cleans obsolete images on upload
                         </span>
                     </div>

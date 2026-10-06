@@ -153,13 +153,13 @@ export default function GalleryEditor({ font, user, initialImages, initialSizes,
     };
 
     return (
-        <div className="bg-[rgb(var(--color-card))] border-t border-[rgb(var(--color-foreground)/0.1)] p-6">
+        <div className="bg-card-background border-t border-foreground/10 p-6">
             <div className="flex justify-between items-center mb-6">
-                <h3 className="font-bold text-xl text-[rgb(var(--color-foreground))]">Edit Gallery Images</h3>
+                <h3 className="font-bold text-xl text-foreground">Edit Gallery Images</h3>
                 <div className="flex gap-2">
                     <button
                         onClick={onClose}
-                        className="px-4 py-2 text-sm font-bold text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))]"
+                        className="px-4 py-2 text-sm font-bold text-muted hover:text-foreground"
                         disabled={isSaving}
                     >
                         Cancel
@@ -167,7 +167,7 @@ export default function GalleryEditor({ font, user, initialImages, initialSizes,
                     <button
                         onClick={handleSaveGallery}
                         disabled={isSaving}
-                        className="flex items-center gap-2 px-6 py-2 bg-[rgb(var(--color-highlight))] text-[rgb(var(--color-background))] rounded-full font-bold text-sm hover:scale-105 transition-transform disabled:opacity-50"
+                        className="flex items-center gap-2 px-6 py-2 bg-accent text-background rounded-full font-bold text-sm hover:scale-105 transition-transform disabled:opacity-50"
                     >
                         {isSaving ? 'Saving...' : <><Save size={16} /> Save Changes</>}
                     </button>
@@ -179,31 +179,31 @@ export default function GalleryEditor({ font, user, initialImages, initialSizes,
                     <div key={item.id} className="relative group aspect-square bg-black rounded-xl border border-white/10 overflow-hidden">
                         <img src={item.url} alt={`Gallery specimen preview ${index + 1}`} className="w-full h-full object-cover" />
 
-                        <div className="absolute inset-0 bg-[rgb(var(--color-background)/0.8)] opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2">
+                        <div className="absolute inset-0 bg-background/80 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2">
                             <div className="flex gap-2">
                                 <button
                                     onClick={() => handleMoveGalleryItem(index, 'left')}
                                     disabled={index === 0}
-                                    className="p-1.5 bg-[rgb(var(--color-muted))] text-[rgb(var(--color-foreground))] rounded-full hover:opacity-80 disabled:opacity-50"
+                                    className="p-1.5 bg-muted text-foreground rounded-full hover:opacity-80 disabled:opacity-50"
                                 >
                                     <MoveLeft size={14} />
                                 </button>
                                 <button
                                     onClick={() => handleMoveGalleryItem(index, 'right')}
                                     disabled={index === galleryState.length - 1}
-                                    className="p-1.5 bg-[rgb(var(--color-muted))] text-[rgb(var(--color-foreground))] rounded-full hover:opacity-80 disabled:opacity-50"
+                                    className="p-1.5 bg-muted text-foreground rounded-full hover:opacity-80 disabled:opacity-50"
                                 >
                                     <MoveRight size={14} />
                                 </button>
                             </div>
                             <button
                                 onClick={() => handleRemoveGalleryItem(index)}
-                                className="p-1.5 bg-[rgb(var(--color-destructive)/0.2)] text-[rgb(var(--color-destructive))] border border-[rgb(var(--color-destructive)/0.5)] rounded-full hover:bg-[rgb(var(--color-destructive))] hover:text-[rgb(var(--color-background))] mt-1 transition-all"
+                                className="p-1.5 bg-warning/20 text-warning border border-warning/50 rounded-full hover:bg-warning hover:text-background mt-1 transition-all"
                             >
                                 <Trash2 size={14} />
                             </button>
                             {index === 0 && (
-                                <span className="absolute top-2 left-2 bg-[rgb(var(--color-highlight))] text-[rgb(var(--color-background))] text-[10px] font-bold px-2 py-0.5 rounded-full">
+                                <span className="absolute top-2 left-2 bg-accent text-background text-[10px] font-bold px-2 py-0.5 rounded-full">
                                     PREVIEW
                                 </span>
                             )}
@@ -231,14 +231,14 @@ export default function GalleryEditor({ font, user, initialImages, initialSizes,
                                 value={urlInput}
                                 onChange={e => setUrlInput(e.target.value)}
                                 placeholder="https://..."
-                                className="flex-1 min-w-0 bg-[rgb(var(--color-background)/0.5)] border border-[rgb(var(--color-foreground)/0.2)] rounded-lg px-2 text-xs text-[rgb(var(--color-foreground))] focus:outline-none focus:border-[rgb(var(--color-highlight))]"
+                                className="flex-1 min-w-0 bg-background/50 border border-foreground/20 rounded-lg px-2 text-xs text-foreground focus:outline-none focus:border-accent"
                                 autoFocus
                                 onKeyDown={e => e.key === 'Enter' && handleAddGalleryUrl()}
                             />
-                            <button onClick={handleAddGalleryUrl} className="bg-[rgb(var(--color-highlight))] text-[rgb(var(--color-background))] px-2 rounded-lg hover:opacity-80">
+                            <button onClick={handleAddGalleryUrl} className="bg-accent text-background px-2 rounded-lg hover:opacity-80">
                                 <Check size={12} />
                             </button>
-                            <button onClick={() => setShowUrlInput(false)} className="bg-[rgb(var(--color-muted))] text-[rgb(var(--color-foreground))] px-2 rounded-lg hover:opacity-80">
+                            <button onClick={() => setShowUrlInput(false)} className="bg-muted text-foreground px-2 rounded-lg hover:opacity-80">
                                 <X size={12} />
                             </button>
                         </div>

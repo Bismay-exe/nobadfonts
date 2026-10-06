@@ -343,7 +343,7 @@ export default function TypeSwap() {
     );
 
     return (
-        <div className="min-h-screen bg-[rgb(var(--color-background))] pt-16">
+        <div className="min-h-screen bg-background pt-16">
             <SEO
                 title="Typography Swap — Preview Fonts on Real Layouts | NoBadFonts"
                 description="Paste a design template and instantly swap heading and body fonts from NoBadFonts to see how they look in context."
@@ -351,16 +351,16 @@ export default function TypeSwap() {
 
             <div className="flex flex-col lg:flex-row h-[calc(100vh-64px)]">
                 {/* Sidebar */}
-                <aside className="w-full lg:w-80 xl:w-96 shrink-0 border-r border-[rgb(var(--color-border)/0.5)] overflow-y-auto bg-[rgb(var(--color-card)/0.5)] backdrop-blur-sm">
-                    <div className="p-5 border-b border-[rgb(var(--color-border)/0.3)]">
-                        <h1 className="text-lg font-black text-[rgb(var(--color-foreground))]">Typography Swap</h1>
-                        <p className="text-xs text-[rgb(var(--color-muted-foreground))] mt-0.5">Preview fonts on real layouts</p>
+                <aside className="w-full lg:w-80 xl:w-96 shrink-0 border-r border-border/50 overflow-y-auto bg-card-background/50 backdrop-blur-sm">
+                    <div className="p-5 border-b border-border/30">
+                        <h1 className="text-lg font-black text-foreground">Typography Swap</h1>
+                        <p className="text-xs text-muted mt-0.5">Preview fonts on real layouts</p>
                     </div>
 
                     <div className="p-4 space-y-5">
                         {/* Template picker */}
                         <div>
-                            <label className="block text-xs font-semibold text-[rgb(var(--color-muted-foreground))] uppercase tracking-wider mb-2">Layout Template</label>
+                            <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-2">Layout Template</label>
                             <div className="grid grid-cols-2 gap-2">
                                 {SAMPLE_TEMPLATES.map(t => (
                                     <button
@@ -368,8 +368,8 @@ export default function TypeSwap() {
                                         onClick={() => setActiveTemplate(t.id)}
                                         className={`px-3 py-2.5 rounded-xl text-xs font-semibold text-left transition-all flex items-center gap-2 ${
                                             activeTemplate === t.id
-                                                ? 'bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))]'
-                                                : 'bg-[rgb(var(--color-foreground)/0.05)] text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.08)]'
+                                                ? 'bg-foreground text-background'
+                                                : 'bg-foreground/5 text-foreground hover:bg-foreground/8'
                                         }`}
                                     >
                                         <span>{t.emoji}</span>
@@ -409,10 +409,10 @@ export default function TypeSwap() {
 
                         {/* Quick swaps */}
                         <div>
-                            <label className="block text-xs font-semibold text-[rgb(var(--color-muted-foreground))] uppercase tracking-wider mb-2">Quick Swap</label>
+                            <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-2">Quick Swap</label>
                             <button
                                 onClick={() => { setHeadingFont(null); setBodyFont(null); }}
-                                className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-[rgb(var(--color-muted-foreground))] hover:bg-[rgb(var(--color-foreground)/0.05)] hover:text-[rgb(var(--color-foreground))] transition-colors"
+                                className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-muted hover:bg-foreground/5 hover:text-foreground transition-colors"
                             >
                                 <RefreshCw size={14} />
                                 Reset to defaults
@@ -421,21 +421,21 @@ export default function TypeSwap() {
                     </div>
 
                     {/* Info */}
-                    <div className="m-4 p-4 rounded-2xl bg-[rgb(var(--color-foreground)/0.03)] border border-[rgb(var(--color-border)/0.3)]">
-                        <p className="text-xs text-[rgb(var(--color-muted-foreground))] leading-relaxed">
-                            <strong className="text-[rgb(var(--color-foreground))]">How it works:</strong> Select a layout template and assign heading and body fonts. The iframe preview updates instantly — no page reload needed.
+                    <div className="m-4 p-4 rounded-2xl bg-foreground/3 border border-border/30">
+                        <p className="text-xs text-muted leading-relaxed">
+                            <strong className="text-foreground">How it works:</strong> Select a layout template and assign heading and body fonts. The iframe preview updates instantly — no page reload needed.
                         </p>
                     </div>
                 </aside>
 
                 {/* Preview */}
-                <main className="flex-1 overflow-hidden bg-[rgb(var(--color-card)/0.3)]">
+                <main className="flex-1 overflow-hidden bg-card-background/30">
                     <div className="h-full p-4">
                         <iframe
                             ref={iframeRef}
                             srcDoc={template.html}
                             title="Typography Preview"
-                            className="w-full h-full rounded-2xl border border-[rgb(var(--color-border)/0.3)] bg-white shadow-sm"
+                            className="w-full h-full rounded-2xl border border-border/30 bg-white shadow-sm"
                             sandbox="allow-same-origin"
                         />
                     </div>
@@ -473,11 +473,11 @@ function FontSelectorDropdown({
 
     return (
         <div ref={ref}>
-            <label className="block text-xs font-semibold text-[rgb(var(--color-muted-foreground))] uppercase tracking-wider mb-2">{label}</label>
+            <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-2">{label}</label>
             <div className="relative">
                 <button
                     onClick={onToggle}
-                    className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl bg-[rgb(var(--color-foreground)/0.05)] hover:bg-[rgb(var(--color-foreground)/0.08)] border border-[rgb(var(--color-border)/0.5)] transition-colors text-sm"
+                    className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl bg-foreground/5 hover:bg-foreground/8 border border-border/50 transition-colors text-sm"
                 >
                     <span
                         className="truncate"
@@ -489,7 +489,7 @@ function FontSelectorDropdown({
                         {selected && (
                             <button
                                 onClick={(e) => { e.stopPropagation(); onClear(); }}
-                                className="w-5 h-5 rounded-full flex items-center justify-center hover:bg-[rgb(var(--color-foreground)/0.1)] text-[rgb(var(--color-muted-foreground))]"
+                                className="w-5 h-5 rounded-full flex items-center justify-center hover:bg-foreground/10 text-muted"
                             >
                                 ✕
                             </button>
@@ -505,33 +505,33 @@ function FontSelectorDropdown({
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -8 }}
                             transition={{ duration: 0.15 }}
-                            className="absolute left-0 right-0 top-full mt-1 z-50 bg-[rgb(var(--color-background))] border border-[rgb(var(--color-border)/0.5)] rounded-2xl shadow-2xl overflow-hidden"
+                            className="absolute left-0 right-0 top-full mt-1 z-50 bg-background border border-border/50 rounded-2xl shadow-2xl overflow-hidden"
                             style={{ maxHeight: '280px' }}
                         >
-                            <div className="p-2 border-b border-[rgb(var(--color-border)/0.3)]">
+                            <div className="p-2 border-b border-border/30">
                                 <input
                                     autoFocus
                                     type="text"
                                     placeholder="Search..."
                                     value={search}
                                     onChange={e => onSearchChange(e.target.value)}
-                                    className="w-full px-3 py-2 rounded-xl bg-[rgb(var(--color-foreground)/0.05)] text-sm outline-none"
+                                    className="w-full px-3 py-2 rounded-xl bg-foreground/5 text-sm outline-none"
                                 />
                             </div>
                             <div className="overflow-y-auto" style={{ maxHeight: '220px' }}>
                                 {loading ? (
                                     <div className="flex justify-center py-6">
-                                        <div className="w-5 h-5 rounded-full border-2 border-[rgb(var(--color-foreground)/0.1)] border-t-[rgb(var(--color-foreground))] animate-spin" />
+                                        <div className="w-5 h-5 rounded-full border-2 border-foreground/10 border-t-[var(--color-foreground)] animate-spin" />
                                     </div>
                                 ) : fonts.map(font => (
                                     <button
                                         key={font.id}
                                         onClick={() => onSelect(font)}
-                                        className="w-full px-4 py-2.5 text-left text-sm hover:bg-[rgb(var(--color-foreground)/0.05)] transition-colors flex items-center gap-3"
+                                        className="w-full px-4 py-2.5 text-left text-sm hover:bg-foreground/5 transition-colors flex items-center gap-3"
                                     >
                                         <span className="text-lg" style={{ fontFamily: `'${font.name}', sans-serif` }}>Aa</span>
                                         <span>{font.name}</span>
-                                        {selected?.id === font.id && <span className="ml-auto text-[rgb(var(--color-highlight))]">✓</span>}
+                                        {selected?.id === font.id && <span className="ml-auto text-accent">✓</span>}
                                     </button>
                                 ))}
                             </div>

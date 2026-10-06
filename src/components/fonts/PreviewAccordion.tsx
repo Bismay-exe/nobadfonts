@@ -149,7 +149,7 @@ export const PreviewAccordion = memo(function PreviewAccordion({
     return (
         <div
             ref={containerRef}
-            className={`w-full h-full flex overflow-hidden bg-[rgb(var(--color-card))] group ${vertical ? 'flex-col rounded-4xl' : 'flex-col md:flex-row rounded-4xl border border-[rgb(var(--color-border)/0.5)]'}`}
+            className={`w-full h-full flex overflow-hidden bg-card-background group ${vertical ? 'flex-col rounded-4xl' : 'flex-col md:flex-row rounded-4xl border border-border/50'}`}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
             onTouchStart={handleTouchStart}
@@ -178,7 +178,7 @@ export const PreviewAccordion = memo(function PreviewAccordion({
                             // CSS contain hints to reduce layout thrashing
                             contain: 'layout style',
                         }}
-                        className={`relative flex cursor-pointer select-none transition-[flex-grow] duration-700 ease-in-out overflow-hidden border-[rgb(var(--color-border)/0.5)]
+                        className={`relative flex cursor-pointer select-none transition-[flex-grow] duration-700 ease-in-out overflow-hidden border-border/50
                             ${
                                 vertical
                                     ? images.length > 1
@@ -206,7 +206,7 @@ export const PreviewAccordion = memo(function PreviewAccordion({
                             <div
                                 className={`
                                 absolute inset-0 transition-colors ease-in-out duration-700
-                                ${isActive ? 'bg-transparent' : 'bg-[rgb(var(--color-background)/0.4)]'}
+                                ${isActive ? 'bg-transparent' : 'bg-background/40'}
                                 `}
                             />
                         )}

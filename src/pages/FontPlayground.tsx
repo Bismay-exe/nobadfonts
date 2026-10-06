@@ -195,7 +195,7 @@ export default function FontPlayground() {
     );
 
     return (
-        <div className="min-h-screen bg-[rgb(var(--color-background))] pt-16">
+        <div className="min-h-screen bg-background pt-16">
             <SEO
                 title="Font Playground — Live Typography Lab | NoBadFonts"
                 description="Experiment with any font in real-time. Adjust size, weight, spacing and variable axes. Share your typography experiments with a unique URL."
@@ -203,10 +203,10 @@ export default function FontPlayground() {
 
             <div className="flex flex-col lg:flex-row h-[calc(100vh-64px)]">
                 {/* Sidebar */}
-                <aside className="w-full lg:w-80 xl:w-96 shrink-0 border-r border-[rgb(var(--color-border)/0.5)] overflow-y-auto bg-[rgb(var(--color-card)/0.5)] backdrop-blur-sm">
-                    <div className="p-5 border-b border-[rgb(var(--color-border)/0.3)]">
-                        <h1 className="text-lg font-black text-[rgb(var(--color-foreground))]">Font Playground</h1>
-                        <p className="text-xs text-[rgb(var(--color-muted-foreground))] mt-0.5">Live typography lab</p>
+                <aside className="w-full lg:w-80 xl:w-96 shrink-0 border-r border-border/50 overflow-y-auto bg-card-background/50 backdrop-blur-sm">
+                    <div className="p-5 border-b border-border/30">
+                        <h1 className="text-lg font-black text-foreground">Font Playground</h1>
+                        <p className="text-xs text-muted mt-0.5">Live typography lab</p>
                     </div>
 
                     {/* Slot tabs */}
@@ -219,14 +219,14 @@ export default function FontPlayground() {
                                             onClick={() => setActiveSlot(slot.id)}
                                             className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                                                 activeSlot === slot.id
-                                                    ? 'bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))]'
-                                                    : 'bg-[rgb(var(--color-foreground)/0.07)] text-[rgb(var(--color-muted-foreground))] hover:bg-[rgb(var(--color-foreground)/0.12)]'
+                                                    ? 'bg-foreground text-background'
+                                                    : 'bg-foreground/7 text-muted hover:bg-foreground/12'
                                             }`}
                                         >
                                             Slot {i + 1}: {slot.font?.name || 'No font'}
                                         </button>
                                         {slots.length > 1 && (
-                                            <button onClick={() => removeSlot(slot.id)} className="w-5 h-5 rounded-full flex items-center justify-center text-[rgb(var(--color-muted-foreground))] hover:bg-[rgb(var(--color-destructive)/0.1)] hover:text-[rgb(var(--color-destructive))] transition-colors">
+                                            <button onClick={() => removeSlot(slot.id)} className="w-5 h-5 rounded-full flex items-center justify-center text-muted hover:bg-warning/10 hover:text-warning transition-colors">
                                                 <X size={12} />
                                             </button>
                                         )}
@@ -235,7 +235,7 @@ export default function FontPlayground() {
                                 {slots.length < 4 && (
                                     <button
                                         onClick={addSlot}
-                                        className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-[rgb(var(--color-foreground)/0.05)] text-[rgb(var(--color-muted-foreground))] hover:bg-[rgb(var(--color-foreground)/0.1)] transition-colors flex items-center gap-1"
+                                        className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-foreground/5 text-muted hover:bg-foreground/10 transition-colors flex items-center gap-1"
                                     >
                                         <Plus size={12} /> Add
                                     </button>
@@ -247,13 +247,13 @@ export default function FontPlayground() {
                     <div className="p-4 space-y-5">
                         {/* Font picker */}
                         <div>
-                            <label className="block text-xs font-semibold text-[rgb(var(--color-muted-foreground))] uppercase tracking-wider mb-2">
+                            <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-2">
                                 Font
                             </label>
                             <div ref={fontPickerRef} className="relative">
                                 <button
                                     onClick={() => setFontPickerOpen(v => !v)}
-                                    className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl bg-[rgb(var(--color-foreground)/0.05)] hover:bg-[rgb(var(--color-foreground)/0.08)] border border-[rgb(var(--color-border)/0.5)] transition-colors text-sm"
+                                    className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl bg-foreground/5 hover:bg-foreground/8 border border-border/50 transition-colors text-sm"
                                 >
                                     <span className="truncate" style={activeSlotData.font ? { fontFamily: `'${activeSlotData.font.name}', sans-serif` } : {}}>
                                         {activeSlotData.font?.name || 'Choose a font...'}
@@ -268,23 +268,23 @@ export default function FontPlayground() {
                                             animate={{ opacity: 1, y: 0, scale: 1 }}
                                             exit={{ opacity: 0, y: -8, scale: 0.97 }}
                                             transition={{ duration: 0.15 }}
-                                            className="absolute left-0 right-0 top-full mt-1 z-50 bg-[rgb(var(--color-background))] border border-[rgb(var(--color-border)/0.5)] rounded-2xl shadow-2xl overflow-hidden"
+                                            className="absolute left-0 right-0 top-full mt-1 z-50 bg-background border border-border/50 rounded-2xl shadow-2xl overflow-hidden"
                                             style={{ maxHeight: '300px' }}
                                         >
-                                            <div className="p-2 border-b border-[rgb(var(--color-border)/0.3)]">
+                                            <div className="p-2 border-b border-border/30">
                                                 <input
                                                     autoFocus
                                                     type="text"
                                                     placeholder="Search fonts..."
                                                     value={fontSearch}
                                                     onChange={e => setFontSearch(e.target.value)}
-                                                    className="w-full px-3 py-2 rounded-xl bg-[rgb(var(--color-foreground)/0.05)] text-sm outline-none"
+                                                    className="w-full px-3 py-2 rounded-xl bg-foreground/5 text-sm outline-none"
                                                 />
                                             </div>
                                             <div className="overflow-y-auto" style={{ maxHeight: '240px' }}>
                                                 {fontsLoading ? (
                                                     <div className="flex justify-center py-6">
-                                                        <div className="w-5 h-5 rounded-full border-2 border-[rgb(var(--color-foreground)/0.1)] border-t-[rgb(var(--color-foreground))] animate-spin" />
+                                                        <div className="w-5 h-5 rounded-full border-2 border-foreground/10 border-t-[var(--color-foreground)] animate-spin" />
                                                     </div>
                                                 ) : filteredFonts.map(font => (
                                                     <button
@@ -295,7 +295,7 @@ export default function FontPlayground() {
                                                             setFontPickerOpen(false);
                                                             setFontSearch('');
                                                         }}
-                                                        className="w-full px-4 py-2.5 text-left text-sm hover:bg-[rgb(var(--color-foreground)/0.05)] transition-colors flex items-center gap-3"
+                                                        className="w-full px-4 py-2.5 text-left text-sm hover:bg-foreground/5 transition-colors flex items-center gap-3"
                                                     >
                                                         <span
                                                             className="text-lg"
@@ -305,7 +305,7 @@ export default function FontPlayground() {
                                                         </span>
                                                         <span>{font.name}</span>
                                                         {activeSlotData.font?.id === font.id && (
-                                                            <Check size={14} className="ml-auto text-[rgb(var(--color-highlight))]" />
+                                                            <Check size={14} className="ml-auto text-accent" />
                                                         )}
                                                     </button>
                                                 ))}
@@ -318,14 +318,14 @@ export default function FontPlayground() {
 
                         {/* Text */}
                         <div>
-                            <label className="block text-xs font-semibold text-[rgb(var(--color-muted-foreground))] uppercase tracking-wider mb-2">
+                            <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-2">
                                 Sample Text
                             </label>
                             <textarea
                                 value={activeSlotData.text}
                                 onChange={e => updateSlot(activeSlot, { text: e.target.value })}
                                 rows={3}
-                                className="w-full px-3 py-2 rounded-xl bg-[rgb(var(--color-foreground)/0.05)] border border-[rgb(var(--color-border)/0.4)] text-sm outline-none resize-none transition-colors focus:border-[rgb(var(--color-foreground)/0.2)]"
+                                className="w-full px-3 py-2 rounded-xl bg-foreground/5 border border-border/40 text-sm outline-none resize-none transition-colors focus:border-foreground/20"
                             />
                         </div>
 
@@ -362,27 +362,27 @@ export default function FontPlayground() {
                         {/* Colors */}
                         <div className="flex gap-3">
                             <div className="flex-1">
-                                <label className="block text-xs font-semibold text-[rgb(var(--color-muted-foreground))] uppercase tracking-wider mb-2">Text</label>
-                                <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-[rgb(var(--color-foreground)/0.05)] border border-[rgb(var(--color-border)/0.4)]">
+                                <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-2">Text</label>
+                                <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-foreground/5 border border-border/40">
                                     <input type="color" value={activeSlotData.color} onChange={e => updateSlot(activeSlot, { color: e.target.value })} className="w-6 h-6 rounded cursor-pointer border-0 bg-transparent p-0" />
-                                    <span className="text-xs font-mono text-[rgb(var(--color-muted-foreground))]">{activeSlotData.color}</span>
+                                    <span className="text-xs font-mono text-muted">{activeSlotData.color}</span>
                                 </div>
                             </div>
                             <div className="flex-1">
-                                <label className="block text-xs font-semibold text-[rgb(var(--color-muted-foreground))] uppercase tracking-wider mb-2">BG</label>
-                                <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-[rgb(var(--color-foreground)/0.05)] border border-[rgb(var(--color-border)/0.4)]">
+                                <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-2">BG</label>
+                                <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-foreground/5 border border-border/40">
                                     <input type="color" value={activeSlotData.background} onChange={e => updateSlot(activeSlot, { background: e.target.value })} className="w-6 h-6 rounded cursor-pointer border-0 bg-transparent p-0" />
-                                    <span className="text-xs font-mono text-[rgb(var(--color-muted-foreground))]">{activeSlotData.background}</span>
+                                    <span className="text-xs font-mono text-muted">{activeSlotData.background}</span>
                                 </div>
                             </div>
                         </div>
 
                         {/* Italic toggle */}
                         <div className="flex items-center justify-between">
-                            <span className="text-xs font-semibold text-[rgb(var(--color-muted-foreground))] uppercase tracking-wider">Italic</span>
+                            <span className="text-xs font-semibold text-muted uppercase tracking-wider">Italic</span>
                             <button
                                 onClick={() => updateSlot(activeSlot, { italic: !activeSlotData.italic })}
-                                className={`relative w-10 h-5 rounded-full transition-colors duration-300 ${activeSlotData.italic ? 'bg-[rgb(var(--color-foreground))]' : 'bg-[rgb(var(--color-foreground)/0.15)]'}`}
+                                className={`relative w-10 h-5 rounded-full transition-colors duration-300 ${activeSlotData.italic ? 'bg-foreground' : 'bg-foreground/15'}`}
                             >
                                 <div className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform duration-300 ${activeSlotData.italic ? 'translate-x-5' : ''}`} />
                             </button>
@@ -390,17 +390,17 @@ export default function FontPlayground() {
                     </div>
 
                     {/* Actions */}
-                    <div className="p-4 border-t border-[rgb(var(--color-border)/0.3)] space-y-2">
+                    <div className="p-4 border-t border-border/30 space-y-2">
                         <button
                             onClick={shareUrl}
-                            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] text-sm font-semibold hover:opacity-90 transition-opacity"
+                            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-foreground text-background text-sm font-semibold hover:opacity-90 transition-opacity"
                         >
                             {copied ? <><Check size={16} /> Copied!</> : <><Share2 size={16} /> Share Experiment</>}
                         </button>
                         <button
                             onClick={() => { addSlot(); setCompareMode(true); }}
                             disabled={slots.length >= 4}
-                            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-[rgb(var(--color-border)/0.5)] text-sm font-medium text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.04)] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-border/50 text-sm font-medium text-foreground hover:bg-foreground/4 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                         >
                             <Plus size={16} /> Compare Another Font
                         </button>
@@ -469,8 +469,8 @@ function SliderControl({ label, value, min, max, step, display, onChange }: {
     return (
         <div>
             <div className="flex items-center justify-between mb-1.5">
-                <label className="text-xs font-semibold text-[rgb(var(--color-muted-foreground))] uppercase tracking-wider">{label}</label>
-                <span className="text-xs font-mono text-[rgb(var(--color-foreground)/0.6)]">{display}</span>
+                <label className="text-xs font-semibold text-muted uppercase tracking-wider">{label}</label>
+                <span className="text-xs font-mono text-foreground/60">{display}</span>
             </div>
             <input
                 type="range"
@@ -479,7 +479,7 @@ function SliderControl({ label, value, min, max, step, display, onChange }: {
                 step={step}
                 value={value}
                 onChange={e => onChange(parseFloat(e.target.value))}
-                className="w-full accent-[rgb(var(--color-foreground))] cursor-pointer"
+                className="w-full accent-foreground cursor-pointer"
             />
         </div>
     );

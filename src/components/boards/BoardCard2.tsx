@@ -63,18 +63,18 @@ export default function BoardCard2({ board, username, selectionMode, isSelected,
             {/* Selection Overlay */}
             {selectionMode && (
                 <div
-                    className={`absolute aspect-4/3 inset-0 z-20 rounded-3xl border-2 transition-all pointer-events-none ${isSelected ? 'border-[rgb(var(--color-foreground))] bg-[rgb(var(--color-background)/0.5)]' : 'border-transparent group-hover:border-[rgb(var(--color-foreground)/0.2)]'
+                    className={`absolute aspect-4/3 inset-0 z-20 rounded-3xl border-2 transition-all pointer-events-none ${isSelected ? 'border-foreground bg-background/50' : 'border-transparent group-hover:border-foreground/20'
                         }`}
                 >
-                    <div className={`absolute top-4 right-4 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors shadow-sm ${isSelected ? 'border-[rgb(var(--color-foreground))] bg-[rgb(var(--color-foreground))]' : 'border-[rgb(var(--color-foreground)/0.3)] bg-[rgb(var(--color-card))]'
+                    <div className={`absolute top-4 right-4 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors shadow-sm ${isSelected ? 'border-foreground bg-foreground' : 'border-foreground/30 bg-card-background'
                         }`}>
-                        {isSelected && <svg className="w-4 h-4 text-[rgb(var(--color-background))]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>}
+                        {isSelected && <svg className="w-4 h-4 text-background" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>}
                     </div>
                 </div>
             )}
 
             {/* 2x2 Grid Container matching the image design[cite: 3] */}
-            <div className={`w-full aspect-4/3 bg-[rgb(var(--color-foreground)/0.03)] rounded-3xl p-2 grid grid-cols-2 grid-rows-2 gap-1 overflow-hidden transition-all duration-300 ease-in-out ${isSelected ? 'scale-95' : ''} `}>
+            <div className={`w-full aspect-4/3 bg-foreground/3 rounded-3xl p-2 grid grid-cols-2 grid-rows-2 gap-1 overflow-hidden transition-all duration-300 ease-in-out ${isSelected ? 'scale-95' : ''} `}>
 
                 {displayFonts.map((font, idx) => {
 
@@ -89,7 +89,7 @@ export default function BoardCard2({ board, username, selectionMode, isSelected,
                         return (
                             <div
                                 key={`empty-${idx}`}
-                                className={`bg-[rgb(var(--color-foreground)/0.04)] rounded-md md:rounded-lg ${cornerRounding} flex items-center justify-center`}
+                                className={`bg-foreground/4 rounded-md md:rounded-lg ${cornerRounding} flex items-center justify-center`}
                             />
                         );
                     }
@@ -99,10 +99,10 @@ export default function BoardCard2({ board, username, selectionMode, isSelected,
                     return (
                         <div
                             key={font.id}
-                            className={`@container bg-[rgb(var(--color-foreground)/0.08)] rounded-md md:rounded-lg flex items-center justify-center overflow-hidden p-2 transition-transform duration-500 ${cornerRounding}`}
+                            className={`@container bg-foreground/8 rounded-md md:rounded-lg flex items-center justify-center overflow-hidden p-2 transition-transform duration-500 ${cornerRounding}`}
                             style={{ fontFamily: fontFam }}
                         >
-                            <span className="text-[24cqw] text-[rgb(var(--color-foreground))] font-normal text-center leading-none">
+                            <span className="text-[24cqw] text-foreground font-normal text-center leading-none">
                                 {font.name}
                                 {/* Aa */}
                             </span>
@@ -113,10 +113,10 @@ export default function BoardCard2({ board, username, selectionMode, isSelected,
 
             {/* Board Info placed below the grid[cite: 3] */}
             <div className="px-3 flex flex-col">
-                <h3 className="font-inter-tight font-medium text-md md:text-xl tracking-wide text-[rgb(var(--color-foreground)/0.8)] group-hover:text-[rgb(var(--color-foreground))] transition-colors duration-300 truncate">
-                    <span className={`${isSelected ? 'text-[rgb(var(--color-muted))] italic line-through decoration-3 decoration-current zdecoration-[rgb(var(--color-foreground))]' : ''}`}>{board.name}</span>
+                <h3 className="font-inter-tight font-medium text-md md:text-xl tracking-wide text-foreground/80 group-hover:text-foreground transition-colors duration-300 truncate">
+                    <span className={`${isSelected ? 'text-muted italic line-through decoration-3 decoration-current zdecoration-foreground' : ''}`}>{board.name}</span>
                 </h3>
-                <p className={`${isSelected ? 'text-[rgb(var(--color-muted))] italic line-through decoration-3 decoration-current zdecoration-[rgb(var(--color-foreground))]' : 'text-[rgb(var(--color-muted-foreground))]'} text-sm md:text-base mt-0.5 flex items-center gap-1.5`}>
+                <p className={`${isSelected ? 'text-muted italic line-through decoration-3 decoration-current zdecoration-foreground' : 'text-muted'} text-sm md:text-base mt-0.5 flex items-center gap-1.5`}>
                     {board.font_count} font{board.font_count !== 1 ? 's' : ''}
                     <span className="mx-1 opacity-50">·</span>
                     {board.visibility === 'private' ? <Lock size={14} /> : <Globe size={14} />}

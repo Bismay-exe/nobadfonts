@@ -425,7 +425,7 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
 
 
     return (
-        <div className="w-full bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))] rounded-4xl zborder border-[rgb(var(--color-border))]">
+        <div className="w-full bg-background text-foreground rounded-4xl zborder border-border">
 
             <div className="lg:flex items-start relative">
                 {/* Left: sticky ONLY inside this section */}
@@ -437,7 +437,7 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
                         lg:sticky
                         lg:top-[5vh]
                         self-start
-                        border border-[rgb(var(--color-border)/0.5)]
+                        border border-border/50
                     "
                 >
                     {/* Toolbar */}
@@ -445,21 +445,21 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
                         <div className='flex justify-between w-full md:w-auto'>
                             <div className="flex items-center gap-6">
                                 <h2 className="text-xl font-bold tracking-tight">{setMode === 'basic' ? 'Basic Set' : `${availableGlyphs.length} Glyphs`}</h2>
-                                <div className="flex items-center gap-2 text-xs font-mono text-[rgb(var(--color-muted-foreground))]">
+                                <div className="flex items-center gap-2 text-xs font-mono text-muted">
                                     <span>{selectedChar ? selectedChar.startsWith('U+') ? selectedChar : `U+${selectedChar.charCodeAt(0).toString(16).toUpperCase().padStart(4, '0')}` : ''}</span>
                                 </div>
                             </div>
                             {/* Set Toggle */}
-                            <div className="md:hidden flex items-center gap-4 text-sm font-medium text-[rgb(var(--color-muted-foreground))] border-l border-[rgb(var(--color-border)/0.5)] pl-8">
+                            <div className="md:hidden flex items-center gap-4 text-sm font-medium text-muted border-l border-border/50 pl-8">
                                 <button
                                     onClick={() => setSetMode('basic')}
-                                    className={`transition-colors duration-300 ease-in-out hover:text-[rgb(var(--color-foreground))] ${setMode === 'basic' ? 'text-[rgb(var(--color-foreground))]' : ''}`}
+                                    className={`transition-colors duration-300 ease-in-out hover:text-foreground ${setMode === 'basic' ? 'text-foreground' : ''}`}
                                 >
                                     Basic Set
                                 </button>
                                 <button
                                     onClick={() => setSetMode('full')}
-                                    className={`transition-colors duration-300 ease-in-out hover:text-[rgb(var(--color-foreground))] ${setMode === 'full' ? 'text-[rgb(var(--color-foreground))]' : ''}`}
+                                    className={`transition-colors duration-300 ease-in-out hover:text-foreground ${setMode === 'full' ? 'text-foreground' : ''}`}
                                 >
                                     Full Set
                                 </button>
@@ -469,7 +469,7 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
                         <div className="flex justify-between w-full md:w-auto items-center gap-0 md:gap-8 mt-4 md:mt-0">
                             {/* Variant Selector (if variants exist) */}
                             {variants.length > 0 && (
-                                <div className="border-r border-[rgb(var(--color-border)/0.5)] pr-8">
+                                <div className="border-r border-border/50 pr-8">
                                     <div className="relative" ref={variantDropdownRef}>
                                         <button
                                             type="button"
@@ -477,13 +477,13 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
                                                 setVariantDropdownOpen(!variantDropdownOpen);
                                                 Haptics.impact({ style: ImpactStyle.Light });
                                             }}
-                                            className="h-8 px-3 py-1 bg-[rgb(var(--color-muted)/0.1)] hover:bg-[rgb(var(--color-foreground)/0.9)] hover:text-[rgb(var(--color-background))] border border-[rgb(var(--color-border))] rounded-md text-xs font-medium whitespace-nowrap hover:border-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out flex items-center gap-2 cursor-pointer"
+                                            className="h-8 px-3 py-1 bg-muted/10 hover:bg-foreground/90 hover:text-background border border-border rounded-md text-xs font-medium whitespace-nowrap hover:border-foreground transition-colors duration-300 ease-in-out flex items-center gap-2 cursor-pointer"
                                         >
                                             {activeVariant?.name || (variants.some(v => v.url === fontUrl) ? variants.find(v => v.url === fontUrl)?.name : 'Regular') || 'Select Variant'}
                                             <ChevronDown size={14} className={`transition-transform ${variantDropdownOpen ? 'rotate-180' : ''}`} />
                                         </button>
 
-                                        <div className={`absolute left-0 top-full mt-2 w-48 bg-[rgb(var(--color-background)/0.8)] backdrop-blur-2xl border border-[rgb(var(--color-border))] divide-y divide-[rgb(var(--color-border)/0.5)] rounded-xl overflow-y-auto max-h-64 custom-scrollbar transition-all shadow-xl z-30 flex flex-col origin-top-left transform ${variantDropdownOpen ? 'opacity-100 visible scale-100 pointer-events-auto' : 'opacity-0 invisible scale-95 pointer-events-none'}`}>
+                                        <div className={`absolute left-0 top-full mt-2 w-48 bg-background/80 backdrop-blur-2xl border border-border divide-y divide-border/50 rounded-xl overflow-y-auto max-h-64 custom-scrollbar transition-all shadow-xl z-30 flex flex-col origin-top-left transform ${variantDropdownOpen ? 'opacity-100 visible scale-100 pointer-events-auto' : 'opacity-0 invisible scale-95 pointer-events-none'}`}>
                                             {sortedVariants.map(variant => {
                                                 const isSelected = activeVariant
                                                     ? activeVariant.name === variant.name
@@ -503,11 +503,11 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
                                                             setVariantDropdownOpen(false);
                                                             Haptics.impact({ style: ImpactStyle.Light });
                                                         }}
-                                                        className="px-4 py-3 text-xs font-bold text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-muted)/0.1)] transition-colors duration-300 ease-in-out text-left flex justify-between items-center cursor-pointer"
+                                                        className="px-4 py-3 text-xs font-bold text-foreground hover:bg-muted/10 transition-colors duration-300 ease-in-out text-left flex justify-between items-center cursor-pointer"
                                                     >
                                                         <span>{variant.name}</span>
                                                         {isSelected && (
-                                                            <span className="w-1.5 h-1.5 rounded-full bg-[rgb(var(--color-foreground))]"></span>
+                                                            <span className="w-1.5 h-1.5 rounded-full bg-foreground"></span>
                                                         )}
                                                     </button>
                                                 );
@@ -520,32 +520,32 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
 
 
                             {/* View Toggle */}
-                            <div className="flex items-center gap-4 text-sm font-medium text-[rgb(var(--color-muted-foreground))]">
+                            <div className="flex items-center gap-4 text-sm font-medium text-muted">
                                 <button
                                     onClick={() => setViewMode('solid')}
-                                    className={`transition-colors duration-300 ease-in-out hover:text-[rgb(var(--color-foreground))] ${viewMode === 'solid' ? 'text-[rgb(var(--color-foreground))]' : ''}`}
+                                    className={`transition-colors duration-300 ease-in-out hover:text-foreground ${viewMode === 'solid' ? 'text-foreground' : ''}`}
                                 >
                                     Solid
                                 </button>
                                 <button
                                     onClick={() => setViewMode('outline')}
-                                    className={`transition-colors duration-300 ease-in-out hover:text-[rgb(var(--color-foreground))] ${viewMode === 'outline' ? 'text-[rgb(var(--color-foreground))]' : ''}`}
+                                    className={`transition-colors duration-300 ease-in-out hover:text-foreground ${viewMode === 'outline' ? 'text-foreground' : ''}`}
                                 >
                                     Outlines
                                 </button>
                             </div>
 
                             {/* Set Toggle */}
-                            <div className="hidden md:flex items-center gap-4 text-sm font-medium text-[rgb(var(--color-muted-foreground))] border-l border-[rgb(var(--color-border)/0.5)] pl-8">
+                            <div className="hidden md:flex items-center gap-4 text-sm font-medium text-muted border-l border-border/50 pl-8">
                                 <button
                                     onClick={() => setSetMode('basic')}
-                                    className={`transition-colors duration-300 ease-in-out hover:text-[rgb(var(--color-foreground))] ${setMode === 'basic' ? 'text-[rgb(var(--color-foreground))]' : ''}`}
+                                    className={`transition-colors duration-300 ease-in-out hover:text-foreground ${setMode === 'basic' ? 'text-foreground' : ''}`}
                                 >
                                     Basic Set
                                 </button>
                                 <button
                                     onClick={() => setSetMode('full')}
-                                    className={`transition-colors duration-300 ease-in-out hover:text-[rgb(var(--color-foreground))] ${setMode === 'full' ? 'text-[rgb(var(--color-foreground))]' : ''}`}
+                                    className={`transition-colors duration-300 ease-in-out hover:text-foreground ${setMode === 'full' ? 'text-foreground' : ''}`}
                                 >
 
                                     Full Set
@@ -561,7 +561,7 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
                 </div>
 
                 {/* Right: must be taller than viewport */}
-                <div className="lg:w-1/2 p-8 pb-32 md:border border-[rgb(var(--color-border)/0.5)]">
+                <div className="lg:w-1/2 p-8 pb-32 md:border border-border/50">
 
                     {setMode === 'basic' ? (
                         <CategoryView
@@ -582,22 +582,22 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
                                         const range = RANGES.find(r => r.name === e.target.value);
                                         if (range) setSelectedRange(range);
                                     }}
-                                    className="bg-[rgb(var(--color-muted)/0.1)] border border-[rgb(var(--color-border))] text-[rgb(var(--color-foreground))] text-sm px-4 py-2 rounded-lg focus:outline-none focus:border-[rgb(var(--color-foreground))]"
+                                    className="bg-muted/10 border border-border text-foreground text-sm px-4 py-2 rounded-lg focus:outline-none focus:border-foreground"
                                 >
                                     {RANGES.map(r => <option key={r.name} value={r.name}>{r.name}</option>)}
                                 </select>
                             </div>
 
                             {isScanning ? (
-                                <div className="w-full h-full flex justify-center items-center bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))]">Loading...</div>
+                                <div className="w-full h-full flex justify-center items-center bg-background text-foreground">Loading...</div>
                             ) : (
-                                <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-px bg-[rgb(var(--color-muted)/0.1)] border border-[rgb(var(--color-border)/0.5)]">
+                                <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-px bg-muted/10 border border-border/50">
                                     {availableGlyphs.length > 0 ? availableGlyphs.map(char => (
                                         <button
                                             key={char}
                                             onClick={() => setSelectedChar(char)}
                                             aria-label={`Inspect glyph ${char}`}
-                                            className={`aspect-square flex items-center justify-center bg-[rgb(var(--color-background))] hover:bg-[rgb(var(--color-muted)/0.05)] border border-transparent hover:border-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out ${selectedChar === char ? 'ring-1 ring-[rgb(var(--color-foreground))] z-10' : ''}`}
+                                            className={`aspect-square flex items-center justify-center bg-background hover:bg-muted/5 border border-transparent hover:border-foreground transition-colors duration-300 ease-in-out ${selectedChar === char ? 'ring-1 ring-foreground z-10' : ''}`}
                                         >
                                             <span style={{ fontFamily: `"${fontFamily}"` }} className="text-2xl">{char}</span>
                                         </button>
@@ -620,12 +620,12 @@ function CategoryView({ fontFamily, basicUppercase, basicLowercase, basicNumeral
     return (
         <div className="space-y-6 md:space-y-12">
             {/* Mobile Tabs */}
-            <div className="flex justify-center gap-4 md:hidden border-b border-[rgb(var(--color-border)/0.5)] pb-4">
+            <div className="flex justify-center gap-4 md:hidden border-b border-border/50 pb-4">
                 {(['Uppercase', 'Lowercase', 'Numerals'] as const).map(tab => (
                     <button
                         key={tab}
                         onClick={() => setActiveTab(tab)}
-                        className={`text-sm font-medium transition-colors duration-300 ease-in-out ${activeTab === tab ? 'text-[rgb(var(--color-foreground))]' : 'text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))]'}`}
+                        className={`text-sm font-medium transition-colors duration-300 ease-in-out ${activeTab === tab ? 'text-foreground' : 'text-muted hover:text-foreground'}`}
                     >
                         {tab}
                     </button>
@@ -634,14 +634,14 @@ function CategoryView({ fontFamily, basicUppercase, basicLowercase, basicNumeral
 
             {/* Uppercase */}
             <div className={activeTab === 'Uppercase' ? 'block' : 'hidden md:block'}>
-                <h3 className="hidden md:block text-xs font-mono text-[rgb(var(--color-muted-foreground))] uppercase mb-4 text-right">Uppercase</h3>
-                <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-px bg-[rgb(var(--color-muted)/0.1)] border border-[rgb(var(--color-border)/0.5)]">
+                <h3 className="hidden md:block text-xs font-mono text-muted uppercase mb-4 text-right">Uppercase</h3>
+                <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-px bg-muted/10 border border-border/50">
                     {basicUppercase.map((char: string) => (
                         <button
                             key={char}
                             onClick={() => setSelectedChar(char)}
                             aria-label={`Inspect glyph ${char}`}
-                            className={`aspect-square flex items-center justify-center bg-[rgb(var(--color-background))] hover:bg-[rgb(var(--color-muted)/0.05)] border border-transparent hover:border-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out ${selectedChar === char ? 'ring-1 ring-[rgb(var(--color-foreground))] z-10' : ''}`}
+                            className={`aspect-square flex items-center justify-center bg-background hover:bg-muted/5 border border-transparent hover:border-foreground transition-colors duration-300 ease-in-out ${selectedChar === char ? 'ring-1 ring-foreground z-10' : ''}`}
                         >
                             <span style={{ fontFamily: `"${fontFamily}"` }} className="text-2xl">{char}</span>
                         </button>
@@ -651,14 +651,14 @@ function CategoryView({ fontFamily, basicUppercase, basicLowercase, basicNumeral
 
             {/* Lowercase */}
             <div className={activeTab === 'Lowercase' ? 'block' : 'hidden md:block'}>
-                <h3 className="hidden md:block text-xs font-mono text-[rgb(var(--color-muted-foreground))] uppercase mb-4 text-right">Lowercase</h3>
-                <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-px bg-[rgb(var(--color-muted)/0.1)] border border-[rgb(var(--color-border)/0.5)]">
+                <h3 className="hidden md:block text-xs font-mono text-muted uppercase mb-4 text-right">Lowercase</h3>
+                <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-px bg-muted/10 border border-border/50">
                     {basicLowercase.map((char: string) => (
                         <button
                             key={char}
                             onClick={() => setSelectedChar(char)}
                             aria-label={`Inspect glyph ${char}`}
-                            className={`aspect-square flex items-center justify-center bg-[rgb(var(--color-background))] hover:bg-[rgb(var(--color-muted)/0.05)] border border-transparent hover:border-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out ${selectedChar === char ? 'ring-1 ring-[rgb(var(--color-foreground))] z-10' : ''}`}
+                            className={`aspect-square flex items-center justify-center bg-background hover:bg-muted/5 border border-transparent hover:border-foreground transition-colors duration-300 ease-in-out ${selectedChar === char ? 'ring-1 ring-foreground z-10' : ''}`}
                         >
                             <span style={{ fontFamily: `"${fontFamily}"` }} className="text-2xl">{char}</span>
                         </button>
@@ -668,14 +668,14 @@ function CategoryView({ fontFamily, basicUppercase, basicLowercase, basicNumeral
 
             {/* Numerals */}
             <div className={activeTab === 'Numerals' ? 'block' : 'hidden md:block'}>
-                <h3 className="hidden md:block text-xs font-mono text-[rgb(var(--color-muted-foreground))] uppercase mb-4 text-right">Numerals</h3>
-                <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-px bg-[rgb(var(--color-muted)/0.1)] border border-[rgb(var(--color-border)/0.5)]">
+                <h3 className="hidden md:block text-xs font-mono text-muted uppercase mb-4 text-right">Numerals</h3>
+                <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-px bg-muted/10 border border-border/50">
                     {basicNumerals.map((char: string) => (
                         <button
                             key={char}
                             onClick={() => setSelectedChar(char)}
                             aria-label={`Inspect glyph ${char}`}
-                            className={`aspect-square flex items-center justify-center bg-[rgb(var(--color-background))] hover:bg-[rgb(var(--color-muted)/0.05)] border border-transparent hover:border-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out ${selectedChar === char ? 'ring-1 ring-[rgb(var(--color-foreground))] z-10' : ''}`}
+                            className={`aspect-square flex items-center justify-center bg-background hover:bg-muted/5 border border-transparent hover:border-foreground transition-colors duration-300 ease-in-out ${selectedChar === char ? 'ring-1 ring-foreground z-10' : ''}`}
                         >
                             <span style={{ fontFamily: `"${fontFamily}"` }} className="text-2xl">{char}</span>
                         </button>

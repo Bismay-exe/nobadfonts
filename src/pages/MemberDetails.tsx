@@ -157,19 +157,19 @@ export default function MemberDetails() {
     // Role Check
     if (!currentUserProfile || (currentUserProfile.role !== 'member' && currentUserProfile.role !== 'admin')) {
         return (
-            <div className="pt-24 flex flex-col items-center justify-center w-full md:h-[86vh] max-w-480 bg-[rgb(var(--color-background))] rounded-4xl text-center space-y-6 z-90">
+            <div className="pt-24 flex flex-col items-center justify-center w-full md:h-[86vh] max-w-480 bg-background rounded-4xl text-center space-y-6 z-90">
                 <SEO title="Access Restricted" noindex url={`/members/${id}`} />
-                <div className="bg-[rgb(var(--color-destructive)/0.9)] p-10 rounded-full mt-40 md:mt-0">
+                <div className="bg-warning/90 p-10 rounded-full mt-40 md:mt-0">
                     <div className="text-6xl">
                         <CustomLock className='h-24 w-24' />
                     </div>
                 </div>
                 <h1 className="text-2xl md:text-4xl font-black uppercase">Access Restricted</h1>
-                <p className="text-md md:text-xl text-[rgb(var(--color-muted-foreground))] max-w-sm">
+                <p className="text-md md:text-xl text-muted max-w-sm">
                     Viewing members is currently restricted to approved <strong>Members</strong> and <strong>Admins</strong>.
                 </p>
                 <div className="flex gap-4">
-                    <button onClick={() => navigate('/fonts')} className="px-6 py-3 bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] rounded-2xl font-bold hover:scale-105 transition-transform">
+                    <button onClick={() => navigate('/fonts')} className="px-6 py-3 bg-foreground text-background rounded-2xl font-bold hover:scale-105 transition-transform">
                         Explore Fonts
                     </button>
                 </div>
@@ -179,7 +179,7 @@ export default function MemberDetails() {
 
     if (loading) return (
         <div className="pt-24 flex justify-center items-center min-h-[50vh]">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[rgb(var(--color-foreground))]"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-foreground"></div>
         </div>
     );
 
@@ -200,16 +200,16 @@ export default function MemberDetails() {
                 url={`/members/${id}`}
             />
             {/* Header Profile Section */}
-            <div className="border-b border-[rgb(var(--color-border))] rounded-4xl md:px-8 pt-24 pb-8 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden">
-                <button onClick={goBack} className="absolute top-8 left-2 md:left-4 flex items-center text-sm font-bold text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))] mb-8 transition-colors duration-300 ease-in-out">
+            <div className="border-b border-border rounded-4xl md:px-8 pt-24 pb-8 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden">
+                <button onClick={goBack} className="absolute top-8 left-2 md:left-4 flex items-center text-sm font-bold text-muted hover:text-foreground mb-8 transition-colors duration-300 ease-in-out">
                     <ArrowLeft size={20} className="mr-2" />
                     Back to Members
                 </button>
-                <div className="w-48 h-48 bg-[rgb(var(--color-muted))] rounded-full border-2 border-[rgb(var(--color-border))] overflow-hidden shrink-0 z-10">
+                <div className="w-48 h-48 bg-muted rounded-full border-2 border-border overflow-hidden shrink-0 z-10">
                     {profile.avatar_url ? (
                         <img src={profile.avatar_url} alt={profile.full_name} loading="lazy" decoding="async" className="w-full h-full object-cover" />
                     ) : (
-                        <div className="w-full h-full flex items-center justify-center font-black text-4xl text-[rgb(var(--color-muted-foreground)/0.4)] uppercase">
+                        <div className="w-full h-full flex items-center justify-center font-black text-4xl text-muted/40 uppercase">
                             {profile.full_name.charAt(0)}
                         </div>
                     )}
@@ -219,12 +219,12 @@ export default function MemberDetails() {
                     <h1 className="text-4xl md:text-5xl font-black uppercase mb-3">{profile.full_name}</h1>
                     <div className="flex flex-wrap gap-2 justify-center md:justify-start items-center">
                         <span className={`
-                            px-4 py-1.5 rounded-full font-bold text-sm uppercase border border-[rgb(var(--color-border))]
-                            ${profile.role === 'admin' ? 'bg-[rgb(var(--color-accent))] text-[rgb(var(--color-background))]' : 'bg-[rgb(var(--color-highlight))] text-[rgb(var(--color-background))]'}
+                            px-4 py-1.5 rounded-full font-bold text-sm uppercase border border-border
+                            ${profile.role === 'admin' ? 'bg-accent text-background' : 'bg-accent text-background'}
                         `}>
                             {profile.role}
                         </span>
-                        <span className="text-[rgb(var(--color-muted-foreground))] font-mono text-sm">
+                        <span className="text-muted font-mono text-sm">
                             Uploaded {fonts.length} Font{fonts.length !== 1 ? 's' : ''}
                         </span>
                     </div>
@@ -232,27 +232,27 @@ export default function MemberDetails() {
                     {/* Social Links */}
                     <div className="flex flex-wrap gap-3 mt-4 justify-center md:justify-start">
                         {profile.website && (
-                            <a href={profile.website} target="_blank" rel="noopener noreferrer" className="p-2 bg-[rgb(var(--color-card))] rounded-full border border-[rgb(var(--color-border))] hover:border-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))] hover:-translate-y-1 hover:shadow-md">
+                            <a href={profile.website} target="_blank" rel="noopener noreferrer" className="p-2 bg-card-background rounded-full border border-border hover:border-foreground transition-colors duration-300 ease-in-out text-muted hover:text-foreground hover:-translate-y-1 hover:shadow-md">
                                 <Globe size={20} />
                             </a>
                         )}
                         {profile.behance && (
-                            <a href={profile.behance} target="_blank" rel="noopener noreferrer" className="p-2 bg-[rgb(var(--color-card))] rounded-full border border-[rgb(var(--color-border))] hover:border-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out text-[rgb(var(--color-muted-foreground))] hover:text-[#1769ff] hover:-translate-y-1 hover:shadow-md">
+                            <a href={profile.behance} target="_blank" rel="noopener noreferrer" className="p-2 bg-card-background rounded-full border border-border hover:border-foreground transition-colors duration-300 ease-in-out text-muted hover:text-[#1769ff] hover:-translate-y-1 hover:shadow-md">
                                 <Palette size={20} />
                             </a>
                         )}
                         {profile.twitter && (
-                            <a href={profile.twitter} target="_blank" rel="noopener noreferrer" className="p-2 bg-[rgb(var(--color-card))] rounded-full border border-[rgb(var(--color-border))] hover:border-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out text-[rgb(var(--color-muted-foreground))] hover:text-[#1DA1F2] hover:-translate-y-1 hover:shadow-md">
+                            <a href={profile.twitter} target="_blank" rel="noopener noreferrer" className="p-2 bg-card-background rounded-full border border-border hover:border-foreground transition-colors duration-300 ease-in-out text-muted hover:text-[#1DA1F2] hover:-translate-y-1 hover:shadow-md">
                                 <Twitter size={20} />
                             </a>
                         )}
                         {profile.instagram && (
-                            <a href={profile.instagram} target="_blank" rel="noopener noreferrer" className="p-2 bg-[rgb(var(--color-card))] rounded-full border border-[rgb(var(--color-border))] hover:border-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out text-[rgb(var(--color-muted-foreground))] hover:text-[#E1306C] hover:-translate-y-1 hover:shadow-md">
+                            <a href={profile.instagram} target="_blank" rel="noopener noreferrer" className="p-2 bg-card-background rounded-full border border-border hover:border-foreground transition-colors duration-300 ease-in-out text-muted hover:text-[#E1306C] hover:-translate-y-1 hover:shadow-md">
                                 <Instagram size={20} />
                             </a>
                         )}
                         {profile.linkedin && (
-                            <a href={profile.linkedin} target="_blank" rel="noopener noreferrer" className="p-2 bg-[rgb(var(--color-card))] rounded-full border border-[rgb(var(--color-border))] hover:border-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out text-[rgb(var(--color-muted-foreground))] hover:text-[#0077b5] hover:-translate-y-1 hover:shadow-md">
+                            <a href={profile.linkedin} target="_blank" rel="noopener noreferrer" className="p-2 bg-card-background rounded-full border border-border hover:border-foreground transition-colors duration-300 ease-in-out text-muted hover:text-[#0077b5] hover:-translate-y-1 hover:shadow-md">
                                 <Linkedin size={20} />
                             </a>
                         )}
@@ -260,13 +260,13 @@ export default function MemberDetails() {
 
                     {profile.bio && (
                         <div>
-                            <p className={`mt-4 text-[rgb(var(--color-muted-foreground))] max-w-lg font-medium whitespace-pre-wrap ${!isExpanded ? 'line-clamp-5' : ''}`}>
+                            <p className={`mt-4 text-muted max-w-lg font-medium whitespace-pre-wrap ${!isExpanded ? 'line-clamp-5' : ''}`}>
                                 {profile.bio}
                             </p>
                             {(profile.bio.length > 150 || profile.bio.split('\n').length > 5) && (
                                 <button
                                     onClick={() => setIsExpanded(!isExpanded)}
-                                    className="text-sm font-bold text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))] mt-1"
+                                    className="text-sm font-bold text-muted hover:text-foreground mt-1"
                                 >
                                     {isExpanded ? 'Show less' : '...more'}
                                 </button>
@@ -281,7 +281,7 @@ export default function MemberDetails() {
                                 href={`https://paypal.me/${profile.paypal_me}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center gap-2 px-6 py-3 bg-[rgb(var(--color-primary))] text-[rgb(var(--color-background))] font-bold rounded-xl hover:opacity-90 transition-all hover:shadow-[4px_4px_0px_0px_rgb(var(--color-foreground))] hover:-translate-y-1"
+                                className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-background font-bold rounded-xl hover:opacity-90 transition-all hover:shadow-[4px_4px_0px_0px_var(--color-foreground)] hover:-translate-y-1"
                             >
                                 <Coffee size={20} />
                                 Buy me a coffee
@@ -319,8 +319,8 @@ export default function MemberDetails() {
                     />
                 </div>
             ) : (
-                <div className="text-center py-24 bg-[rgb(var(--color-muted)/0.3)] rounded-4xl border-2 border-dashed border-[rgb(var(--color-border))]">
-                    <p className="text-xl font-bold text-[rgb(var(--color-muted-foreground))]">This member hasn't uploaded any fonts yet.</p>
+                <div className="text-center py-24 bg-muted/30 rounded-4xl border-2 border-dashed border-border">
+                    <p className="text-xl font-bold text-muted">This member hasn't uploaded any fonts yet.</p>
                 </div>
             )}
         </div >

@@ -16,18 +16,18 @@ export default function FontSimilarSection({ similarFonts }: FontSimilarSectionP
         <div className="space-y-8 pt-12 mt-12">
             <div className="flex justify-between items-center gap-2">
                 <div className="flex justify-center items-center gap-4 py-10">
-                    <h2 className="text-4xl sm:text-6xl md:text-8xl font-inter-tight font-medium zuppercase ztracking-widest text-[rgb(var(--color-foreground))]">
+                    <h2 className="text-4xl sm:text-6xl md:text-8xl font-inter-tight font-medium zuppercase ztracking-widest text-foreground">
                         You might also like
                     </h2>
                 </div>
 
                 <div className="flex items-center">
-                    <div className="flex bg-[rgb(var(--color-foreground)/0.05)] backdrop-blur-md h-10 p-1 w-auto rounded-full border border-[rgb(var(--color-foreground)/0.1)]">
+                    <div className="flex bg-foreground/5 backdrop-blur-md h-10 p-1 w-auto rounded-full border border-foreground/10">
                         <button
                             onClick={() => setViewMode('font')}
                             className={`p-1.5 aspect-square rounded-full transition-all cursor-pointer ${viewMode === 'font'
-                                    ? 'bg-[rgb(var(--color-highlight))] text-[rgb(var(--color-background))] shadow-[0_0_15px_rgba(var(--color-highlight),0.3)]'
-                                    : 'text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))]'
+                                ? 'bg-accent text-background shadow-[0_0_15px_rgba(var(--color-highlight),0.3)]'
+                                : 'text-muted hover:text-foreground'
                                 }`}
                             title="Font View"
                         >
@@ -36,8 +36,8 @@ export default function FontSimilarSection({ similarFonts }: FontSimilarSectionP
                         <button
                             onClick={() => setViewMode('image')}
                             className={`p-1.5 aspect-square rounded-full transition-all cursor-pointer ${viewMode === 'image'
-                                    ? 'bg-[rgb(var(--color-highlight))] text-[rgb(var(--color-background))] shadow-[0_0_15px_rgba(var(--color-highlight),0.3)]'
-                                    : 'text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))]'
+                                ? 'bg-accent text-background shadow-[0_0_15px_rgba(var(--color-highlight),0.3)]'
+                                : 'text-muted hover:text-foreground'
                                 }`}
                             title="Image View"
                         >

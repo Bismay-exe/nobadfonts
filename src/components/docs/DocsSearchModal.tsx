@@ -62,7 +62,7 @@ export const DocsSearchModal: React.FC<DocsSearchModalProps> = ({ isOpen, onClos
       {/* Backdrop */}
       <div
         className="fixed inset-0 transition-opacity"
-        style={{ backgroundColor: 'rgb(var(--color-foreground)/0.5)', backdropFilter: 'blur(6px)' }}
+        style={{ backgroundColor: 'color-mix(in srgb, var(--color-foreground) 50%, transparent)', backdropFilter: 'blur(6px)' }}
         onClick={onClose}
       />
 
@@ -73,19 +73,19 @@ export const DocsSearchModal: React.FC<DocsSearchModalProps> = ({ isOpen, onClos
         aria-label="Search documentation"
         className="relative w-full max-w-xl rounded-2xl border shadow-2xl overflow-hidden z-10 font-inter-tight"
         style={{
-          backgroundColor: 'rgb(var(--color-background))',
-          borderColor: 'rgb(var(--color-border))',
+          backgroundColor: 'var(--color-background)',
+          borderColor: 'var(--color-border)',
         }}
       >
         {/* Search Input */}
         <div
           className="flex items-center gap-3 px-4 py-3.5 border-b"
           style={{
-            backgroundColor: 'rgb(var(--color-card)/0.5)',
-            borderColor: 'rgb(var(--color-border))',
+            backgroundColor: 'color-mix(in srgb, var(--color-card-background) 50%, transparent)',
+            borderColor: 'var(--color-border)',
           }}
         >
-          <Search className="w-5 h-5 shrink-0" style={{ color: 'rgb(var(--color-muted-foreground))' }} />
+          <Search className="w-5 h-5 shrink-0" style={{ color: 'var(--color-muted)' }} />
           <input
             ref={inputRef}
             type="text"
@@ -94,13 +94,13 @@ export const DocsSearchModal: React.FC<DocsSearchModalProps> = ({ isOpen, onClos
             onKeyDown={handleKeyDown}
             placeholder="Search documentation, guides, CLI commands..."
             className="w-full bg-transparent text-sm focus:outline-none"
-            style={{ color: 'rgb(var(--color-foreground))' }}
+            style={{ color: 'var(--color-foreground)' }}
           />
           {query ? (
             <button
               onClick={() => setQuery('')}
               className="p-1 rounded-md transition-colors"
-              style={{ color: 'rgb(var(--color-muted-foreground))' }}
+              style={{ color: 'var(--color-muted)' }}
             >
               <X className="w-4 h-4" />
             </button>
@@ -108,8 +108,8 @@ export const DocsSearchModal: React.FC<DocsSearchModalProps> = ({ isOpen, onClos
             <kbd
               className="hidden sm:inline-block px-1.5 py-0.5 text-[10px] font-mono rounded"
               style={{
-                backgroundColor: 'rgb(var(--color-muted))',
-                color: 'rgb(var(--color-muted-foreground))',
+                backgroundColor: 'var(--color-muted)',
+                color: 'var(--color-muted)',
               }}
             >
               ESC
@@ -120,9 +120,9 @@ export const DocsSearchModal: React.FC<DocsSearchModalProps> = ({ isOpen, onClos
         {/* Results */}
         <div className="max-h-96 overflow-y-auto p-2 space-y-1">
           {filteredItems.length === 0 ? (
-            <div className="p-8 text-center text-sm" style={{ color: 'rgb(var(--color-muted-foreground))' }}>
+            <div className="p-8 text-center text-sm" style={{ color: 'var(--color-muted)' }}>
               No documentation pages found for{' '}
-              <span className="font-semibold" style={{ color: 'rgb(var(--color-foreground))' }}>
+              <span className="font-semibold" style={{ color: 'var(--color-foreground)' }}>
                 "{query}"
               </span>
             </div>
@@ -139,8 +139,8 @@ export const DocsSearchModal: React.FC<DocsSearchModalProps> = ({ isOpen, onClos
                   onMouseEnter={() => setSelectedIndex(index)}
                   className="flex items-center justify-between p-3 rounded-xl cursor-pointer transition-colors"
                   style={{
-                    backgroundColor: isSelected ? 'rgb(var(--color-foreground)/0.06)' : 'transparent',
-                    color: 'rgb(var(--color-foreground))',
+                    backgroundColor: isSelected ? 'color-mix(in srgb, var(--color-foreground) 6%, transparent)' : 'transparent',
+                    color: 'var(--color-foreground)',
                   }}
                 >
                   <div className="flex items-start gap-3 min-w-0">
@@ -148,9 +148,9 @@ export const DocsSearchModal: React.FC<DocsSearchModalProps> = ({ isOpen, onClos
                       className="p-2 rounded-lg mt-0.5 shrink-0"
                       style={{
                         backgroundColor: isSelected
-                          ? 'rgb(var(--color-foreground)/0.1)'
-                          : 'rgb(var(--color-card))',
-                        color: 'rgb(var(--color-muted-foreground))',
+                          ? 'color-mix(in srgb, var(--color-foreground) 10%, transparent)'
+                          : 'var(--color-card-background)',
+                        color: 'var(--color-muted)',
                       }}
                     >
                       <Hash className="w-4 h-4" />
@@ -159,7 +159,7 @@ export const DocsSearchModal: React.FC<DocsSearchModalProps> = ({ isOpen, onClos
                       <div className="flex items-center gap-2 mb-0.5">
                         <span
                           className="text-xs font-semibold uppercase tracking-wider"
-                          style={{ color: 'rgb(var(--color-muted-foreground))' }}
+                          style={{ color: 'var(--color-muted)' }}
                         >
                           {item.category}
                         </span>
@@ -167,8 +167,8 @@ export const DocsSearchModal: React.FC<DocsSearchModalProps> = ({ isOpen, onClos
                           <span
                             className="text-[10px] font-bold px-1.5 rounded"
                             style={{
-                              backgroundColor: 'rgb(var(--color-muted))',
-                              color: 'rgb(var(--color-muted-foreground))',
+                              backgroundColor: 'var(--color-muted)',
+                              color: 'var(--color-muted)',
                             }}
                           >
                             {item.badge}
@@ -178,7 +178,7 @@ export const DocsSearchModal: React.FC<DocsSearchModalProps> = ({ isOpen, onClos
                       <div className="text-sm font-medium truncate">{item.title}</div>
                       <div
                         className="text-xs truncate"
-                        style={{ color: 'rgb(var(--color-muted-foreground))' }}
+                        style={{ color: 'var(--color-muted)' }}
                       >
                         {item.description}
                       </div>
@@ -187,7 +187,7 @@ export const DocsSearchModal: React.FC<DocsSearchModalProps> = ({ isOpen, onClos
                   {isSelected && (
                     <CornerDownLeft
                       className="w-4 h-4 shrink-0 ml-2"
-                      style={{ color: 'rgb(var(--color-muted-foreground))' }}
+                      style={{ color: 'var(--color-muted)' }}
                     />
                   )}
                 </div>
@@ -200,9 +200,9 @@ export const DocsSearchModal: React.FC<DocsSearchModalProps> = ({ isOpen, onClos
         <div
           className="px-4 py-2.5 border-t flex items-center justify-between text-[11px] select-none"
           style={{
-            backgroundColor: 'rgb(var(--color-card)/0.5)',
-            borderColor: 'rgb(var(--color-border))',
-            color: 'rgb(var(--color-muted-foreground))',
+            backgroundColor: 'color-mix(in srgb, var(--color-card-background) 50%, transparent)',
+            borderColor: 'var(--color-border)',
+            color: 'var(--color-muted)',
           }}
         >
           <div className="flex items-center gap-3">
@@ -211,7 +211,7 @@ export const DocsSearchModal: React.FC<DocsSearchModalProps> = ({ isOpen, onClos
                 <kbd
                   key={k}
                   className="px-1 py-0.5 font-mono text-[9px] rounded"
-                  style={{ backgroundColor: 'rgb(var(--color-muted))', color: 'rgb(var(--color-muted-foreground))' }}
+                  style={{ backgroundColor: 'var(--color-muted)', color: 'var(--color-muted)' }}
                 >
                   {k}
                 </kbd>
@@ -221,7 +221,7 @@ export const DocsSearchModal: React.FC<DocsSearchModalProps> = ({ isOpen, onClos
             <span className="flex items-center gap-1">
               <kbd
                 className="px-1 py-0.5 font-mono text-[9px] rounded"
-                style={{ backgroundColor: 'rgb(var(--color-muted))', color: 'rgb(var(--color-muted-foreground))' }}
+                style={{ backgroundColor: 'var(--color-muted)', color: 'var(--color-muted)' }}
               >
                 ↵
               </kbd>

@@ -27,30 +27,30 @@ const CONFIG: Record<
     Icon: Info,
   },
   tip: {
-    borderColor: 'rgb(var(--color-success))',
-    bgVar: 'rgb(var(--color-success)/0.06)',
-    iconColor: 'rgb(var(--color-success))',
+    borderColor: 'var(--color-success)',
+    bgVar: 'color-mix(in srgb, var(--color-success) 6%, transparent)',
+    iconColor: 'var(--color-success)',
     defaultTitle: 'Tip',
     Icon: Lightbulb,
   },
   warning: {
-    borderColor: 'rgb(var(--color-warning))',
-    bgVar: 'rgb(var(--color-warning)/0.06)',
-    iconColor: 'rgb(var(--color-warning))',
+    borderColor: 'var(--color-warning)',
+    bgVar: 'color-mix(in srgb, var(--color-warning) 6%, transparent)',
+    iconColor: 'var(--color-warning)',
     defaultTitle: 'Warning',
     Icon: AlertTriangle,
   },
   danger: {
-    borderColor: 'rgb(var(--color-destructive))',
-    bgVar: 'rgb(var(--color-destructive)/0.06)',
-    iconColor: 'rgb(var(--color-destructive))',
+    borderColor: 'var(--color-warning)',
+    bgVar: 'color-mix(in srgb, var(--color-warning) 6%, transparent)',
+    iconColor: 'var(--color-warning)',
     defaultTitle: 'Important',
     Icon: AlertOctagon,
   },
   success: {
-    borderColor: 'rgb(var(--color-success))',
-    bgVar: 'rgb(var(--color-success)/0.06)',
-    iconColor: 'rgb(var(--color-success))',
+    borderColor: 'var(--color-success)',
+    bgVar: 'color-mix(in srgb, var(--color-success) 6%, transparent)',
+    iconColor: 'var(--color-success)',
     defaultTitle: 'Success',
     Icon: CheckCircle2,
   },
@@ -74,11 +74,11 @@ export const Callout: React.FC<CalloutProps> = ({ type = 'note', title, children
     >
       <div className="flex items-start gap-3">
         <Icon className="w-5 h-5 mt-0.5 shrink-0" style={{ color: cfg.iconColor }} />
-        <div className="flex-1 text-sm leading-relaxed" style={{ color: 'rgb(var(--color-foreground))' }}>
+        <div className="flex-1 text-sm leading-relaxed" style={{ color: 'var(--color-foreground)' }}>
           <div className="font-semibold mb-1" style={{ color: cfg.iconColor }}>
             {title || cfg.defaultTitle}
           </div>
-          <div style={{ color: 'rgb(var(--color-secondary))' }}>{children}</div>
+          <div style={{ color: 'var(--color-secondary)' }}>{children}</div>
         </div>
       </div>
     </div>

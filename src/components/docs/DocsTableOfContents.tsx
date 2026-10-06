@@ -83,20 +83,20 @@ export const DocsTableOfContents: React.FC = () => {
     <div className="space-y-3 font-inter-tight">
       <div
         className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider"
-        style={{ color: 'rgb(var(--color-muted-foreground))' }}
+        style={{ color: 'var(--color-muted)' }}
       >
         <AlignLeft className="w-3.5 h-3.5" />
         On this page
       </div>
 
       {headings.length === 0 ? (
-        <p className="text-xs italic" style={{ color: 'rgb(var(--color-muted-foreground))' }}>
+        <p className="text-xs italic" style={{ color: 'var(--color-muted)' }}>
           No sections on this page
         </p>
       ) : (
         <nav
           className="space-y-0.5 text-[13px] border-l ml-1 pl-3"
-          style={{ borderColor: 'rgb(var(--color-border))' }}
+          style={{ borderColor: 'var(--color-border)' }}
         >
           {headings.map((h) => {
             const isActive = activeId === h.id;
@@ -109,17 +109,17 @@ export const DocsTableOfContents: React.FC = () => {
                 style={{
                   paddingLeft: h.level === 3 ? '12px' : '0',
                   fontSize: h.level === 3 ? '11px' : '13px',
-                  color: isActive ? 'rgb(var(--color-foreground))' : 'rgb(var(--color-muted-foreground))',
+                  color: isActive ? 'var(--color-foreground)' : 'var(--color-muted)',
                   fontWeight: isActive ? '600' : '400',
-                  borderLeft: isActive ? '2px solid rgb(var(--color-foreground))' : '2px solid transparent',
+                  borderLeft: isActive ? '2px solid var(--color-foreground)' : '2px solid transparent',
                   marginLeft: isActive ? '-13px' : '0',
                   paddingRight: '4px',
                 }}
                 onMouseEnter={(e) => {
-                  if (!isActive) (e.currentTarget as HTMLAnchorElement).style.color = 'rgb(var(--color-foreground))';
+                  if (!isActive) (e.currentTarget as HTMLAnchorElement).style.color = 'var(--color-foreground)';
                 }}
                 onMouseLeave={(e) => {
-                  if (!isActive) (e.currentTarget as HTMLAnchorElement).style.color = 'rgb(var(--color-muted-foreground))';
+                  if (!isActive) (e.currentTarget as HTMLAnchorElement).style.color = 'var(--color-muted)';
                 }}
               >
                 {h.text}

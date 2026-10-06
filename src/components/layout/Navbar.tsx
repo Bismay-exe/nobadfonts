@@ -215,8 +215,8 @@ export default function Navbar() {
                 className={cn(
                     "fixed top-0 w-full left-1/2 -translate-x-1/2 z-50 transition-all duration-300",
                     isScrolled
-                        ? "max-w-full md:rounded-none bg-linear-to-b from-[rgb(var(--color-background))] via-[rgb(var(--color-background)/0.6)] to-[rgb(var(--color-background)/0)] py-2 md:py-4 px-6 md:px-10"
-                        : "max-w-full md:rounded-none zbg-linear-to-b from-[rgb(var(--color-background))] via-[rgb(var(--color-background)/0.6)] to-[rgb(var(--color-background)/0)] py-2 md:py-4 px-6 md:px-10",
+                        ? "max-w-full md:rounded-none bg-linear-to-b from-background via-background/60 to-background/0 py-2 md:py-4 px-6 md:px-10"
+                        : "max-w-full md:rounded-none zbg-linear-to-b from-background via-background/60 to-background/0 py-2 md:py-4 px-6 md:px-10",
                     // : "md:top-4 max-w-7xl md:rounded-3xl bg-transparent border-none py-4 px-4"
                 )}
             >
@@ -228,8 +228,8 @@ export default function Navbar() {
                                     <button
                                         type="button"
                                         onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                                        className="md:hidden relative h-10 w-10 flex items-center justify-center gap-1 rounded-xl bg-[rgb(var(--color-foreground)/0.05)] backdrop-blur-3xl text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.1)] transition-all  duration-300 ease-in-out cursor-pointer group"
-                                        style={{ color: "rgb(var(--color-muted-foreground))" }}
+                                        className="md:hidden relative h-10 w-10 flex items-center justify-center gap-1 rounded-xl bg-foreground/5 backdrop-blur-3xl text-foreground hover:bg-foreground/10 transition-all  duration-300 ease-in-out cursor-pointer group"
+                                        style={{ color: "var(--color-muted)" }}
                                         aria-label="Toggle docs navigation"
                                     >
                                         {mobileMenuOpen ? (
@@ -248,7 +248,7 @@ export default function Navbar() {
                                     className={`items-center gap-2 group ${inDocs ? "hidde flex" : "flex"}`}
                                 >
                                     <div
-                                        className={`${inDocs ? "hidden sm:block" : ""} w-10 h-10 bg-[rgb(var(--color-foreground)/0.1)] rounded-xl group-hover:bg-[rgb(var(--color-foreground)/0.2)] transition-colors duration-300 ease-in-out backdrop-blur-sm border border-[rgb(var(--color-foreground)/0.05)]`}
+                                        className={`${inDocs ? "hidden sm:block" : ""} w-10 h-10 bg-foreground/10 rounded-xl group-hover:bg-foreground/20 transition-colors duration-300 ease-in-out backdrop-blur-sm border border-foreground/5`}
                                     >
                                         <img
                                             src={Logo}
@@ -260,7 +260,7 @@ export default function Navbar() {
                                         className={cn(
                                             `${inDocs ? "" : "hidden sm:block"}`,
                                             "font-advine text-3xl transition-all duration-300 ease-in-out",
-                                            "text-[rgb(var(--color-foreground))]",
+                                            "text-foreground",
                                         )}
                                     >
                                         NoBadFonts
@@ -285,8 +285,8 @@ export default function Navbar() {
                                             className={cn(
                                                 "relative px-4 py-2 rounded-full text-sm font-inter-tight font-medium tracking-wider transition-all duration-200 flex items-center gap-2",
                                                 isActive
-                                                    ? "text-[rgb(var(--color-foreground))]"
-                                                    : "text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))]",
+                                                    ? "text-foreground"
+                                                    : "text-muted hover:text-foreground",
                                             )}
                                         >
                                             {/* <Icon size={16} className={isActive ? 'fill-current transition-all duration-1000z ease-in-out' : 'fill-current/0'} /> */}
@@ -308,7 +308,7 @@ export default function Navbar() {
                                         await Haptics.impact({ style: ImpactStyle.Light });
                                         isModalOpen ? closeModal() : openModal();
                                     }}
-                                    className="relative h-10 w-10 flex items-center justify-center rounded-full bg-[rgb(var(--color-foreground)/0.05)] border border-[rgb(var(--color-border)/0.2)] text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.1)] transition-all cursor-pointer group"
+                                    className="relative h-10 w-10 flex items-center justify-center rounded-full bg-foreground/5 border border-border/20 text-foreground hover:bg-foreground/10 transition-all cursor-pointer group"
                                     title="Software Update Available"
                                 >
                                     {isDownloading && (
@@ -321,7 +321,7 @@ export default function Navbar() {
                                                 cy="20"
                                                 r="18"
                                                 fill="none"
-                                                stroke="rgb(var(--color-foreground) / 0.1)"
+                                                stroke="color-mix(in srgb, var(--color-foreground) 10%, transparent)"
                                                 strokeWidth="2"
                                             />
                                             <motion.circle
@@ -367,7 +367,7 @@ export default function Navbar() {
                                     await Haptics.impact({ style: ImpactStyle.Light });
                                     toggleTheme();
                                 }}
-                                className="h-10 w-10 flex items-center justify-center rounded-full bg-[rgb(var(--color-foreground)/0.05)] backdrop-blur-3xl text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.1)] transition-all cursor-pointer group"
+                                className="h-10 w-10 flex items-center justify-center rounded-full bg-foreground/5 backdrop-blur-3xl text-foreground hover:bg-foreground/10 transition-all cursor-pointer group"
                                 title={`Switch Theme (Current: ${theme.charAt(0).toUpperCase() + theme.slice(1)})`}
                             >
                                 <div className="">
@@ -393,7 +393,7 @@ export default function Navbar() {
                                 <button
                                     type="button"
                                     onClick={() => setSearchOpen(true)}
-                                    className="relative h-10 px-4 flex items-center justify-center gap-1 rounded-xl bg-[rgb(var(--color-foreground)/0.05)] backdrop-blur-3xl text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.1)] transition-all duration-300 ease-in-out cursor-pointer group"
+                                    className="relative h-10 px-4 flex items-center justify-center gap-1 rounded-xl bg-foreground/5 backdrop-blur-3xl text-muted hover:text-foreground hover:bg-foreground/10 transition-all duration-300 ease-in-out cursor-pointer group"
                                 >
                                     <Search size={18} strokeWidth={3} />
                                     <span className="text-sm font-inter-tight tracking-wider">
@@ -402,8 +402,8 @@ export default function Navbar() {
                                     <kbd
                                         className="hidden sm:flex text-[10px] font-mono px-1 py-0.5 rounded-md"
                                         style={{
-                                            backgroundColor: "rgb(var(--color-muted))",
-                                            color: "rgb(var(--color-muted-foreground))",
+                                            backgroundColor: "var(--color-muted)",
+                                            color: "var(--color-muted)",
                                         }}
                                     >
                                         <svg
@@ -452,7 +452,7 @@ export default function Navbar() {
                                             await Haptics.impact({ style: ImpactStyle.Light });
                                             navigate("/bag");
                                         }}
-                                        className="relative h-10 w-10 flex items-center justify-center rounded-full bg-[rgb(var(--color-foreground)/0.05)] backdrop-blur-3xl text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.1)] transition-all cursor-pointer group"
+                                        className="relative h-10 w-10 flex items-center justify-center rounded-full bg-foreground/5 backdrop-blur-3xl text-foreground hover:bg-foreground/10 transition-all cursor-pointer group"
                                         title="Font Bag"
                                         aria-label={`Font Bag — ${bagCount} font${bagCount !== 1 ? "s" : ""}`}
                                     >
@@ -477,7 +477,7 @@ export default function Navbar() {
                                             </g>
                                         </svg>
                                         {bagCount > 0 && (
-                                            <span className="absolute -top-1 -right-1 min-w-4.5 h-4.5 px-1 bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] text-[12px] font-inter-tight font-semibold rounded-full flex items-center justify-center">
+                                            <span className="absolute -top-1 -right-1 min-w-4.5 h-4.5 px-1 bg-foreground text-background text-[12px] font-inter-tight font-semibold rounded-full flex items-center justify-center">
                                                 {bagCount > 99 ? "99+" : bagCount}
                                             </span>
                                         )}
@@ -488,7 +488,7 @@ export default function Navbar() {
                                             {profile?.role === "admin" && (
                                                 <Squircle
                                                     radius={20}
-                                                    className="hidden sm:block bg-[rgb(var(--color-accent)/0.2)] backdrop-blur-3xl hover:bg-[rgb(var(--color-accent)/0.3)] transition-all duration-300 ease-in-out"
+                                                    className="hidden sm:block bg-accent/20 backdrop-blur-3xl hover:bg-accent/30 transition-all duration-300 ease-in-out"
                                                 >
                                                     <Link
                                                         to="/admin"
@@ -497,25 +497,25 @@ export default function Navbar() {
                                                                 style: ImpactStyle.Light,
                                                             });
                                                         }}
-                                                        className="flex items-center justify-center h-10 w-10 text-[rgb(var(--color-accent))]"
+                                                        className="flex items-center justify-center h-10 w-10 text-accent"
                                                     >
                                                         <Shield
                                                             size={18}
-                                                            className="fill-[rgb(var(--color-accent))]"
+                                                            className="fill-accent"
                                                         />
                                                     </Link>
                                                 </Squircle>
                                             )}
                                             <Squircle
                                                 radius={20}
-                                                className="hidden sm:block bg-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-muted-foreground))] transition-colors duration-300 ease-in-out"
+                                                className="hidden sm:block bg-foreground hover:bg-muted transition-colors duration-300 ease-in-out"
                                             >
                                                 <Link
                                                     to="/upload"
                                                     onClick={async () => {
                                                         await Haptics.impact({ style: ImpactStyle.Light });
                                                     }}
-                                                    className="flex items-center gap-2 text-[rgb(var(--color-background))] px-4 h-10 text-sm font-medium"
+                                                    className="flex items-center gap-2 text-background px-4 h-10 text-sm font-medium"
                                                 >
                                                     <Plus size={16} />
                                                     <span>Upload</span>
@@ -526,7 +526,7 @@ export default function Navbar() {
                                                 onClick={async () => {
                                                     await Haptics.impact({ style: ImpactStyle.Light });
                                                 }}
-                                                className="h-10 w-10 rounded-full bg-[rgb(var(--color-foreground)/0.1)] backdrop-blur-3xl border border-[rgb(var(--color-border)/0.2)] flex items-center justify-center text-[rgb(var(--color-foreground))] overflow-hidden hover:bg-[rgb(var(--color-foreground)/0.2)] hover:scale-105 transition-transform duration-300 ease-in-out"
+                                                className="h-10 w-10 rounded-full bg-foreground/10 backdrop-blur-3xl border border-border/20 flex items-center justify-center text-foreground overflow-hidden hover:bg-foreground/20 hover:scale-105 transition-transform duration-300 ease-in-out"
                                             >
                                                 {profile?.avatar_url ? (
                                                     <img
@@ -546,11 +546,11 @@ export default function Navbar() {
                                     ) : (
                                         <Squircle
                                             radius={20}
-                                            className="bg-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-muted-foreground))] transition-colors duration-300 ease-in-out"
+                                            className="bg-foreground hover:bg-muted transition-colors duration-300 ease-in-out"
                                         >
                                             <Link
                                                 to="/auth"
-                                                className="flex items-center justify-center text-[rgb(var(--color-background))] px-5 py-2 rounded-full font-bold text-sm"
+                                                className="flex items-center justify-center text-background px-5 py-2 rounded-full font-bold text-sm"
                                             >
                                                 Login
                                             </Link>
@@ -565,7 +565,7 @@ export default function Navbar() {
 
             {/* Mobile Bottom Dock */}
             <div className="md:hidden fixed bottom-0 left-1/2 -translate-x-1/2 z-100">
-                <nav className="flex items-center justify-evenly gap-1 w-screen px-2 pt-2.5 pb-[calc(0.625rem+env(safe-area-inset-bottom))] bg-[rgb(var(--color-background)/0.6)] backdrop-blur-3xl border-t border-[rgb(var(--color-border)/0.3)]">
+                <nav className="flex items-center justify-evenly gap-1 w-screen px-2 pt-2.5 pb-[calc(0.625rem+env(safe-area-inset-bottom))] bg-background/60 backdrop-blur-3xl border-t border-border/30">
                     {mobileNavLinks.map((link) => {
                         const Icon = link.icon;
                         const isActive = activeTab === link.path;
@@ -590,8 +590,8 @@ export default function Navbar() {
                                 className={cn(
                                     "relative flex items-center justify-center min-h-10 max-h-12 rounded-full transition-all duration-300 ease-in-out",
                                     isActive
-                                        ? "bg-[rgb(var(--color-foreground)/0.8)] text-[rgb(var(--color-background))] px-4 shadow-sm"
-                                        : "bg-[rgb(var(--color-foreground)/0.05)] text-[rgb(var(--color-foreground))] hover:text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.1)] px-3",
+                                        ? "bg-foreground/80 text-background px-4 shadow-sm"
+                                        : "bg-foreground/5 text-foreground hover:text-foreground hover:bg-foreground/10 px-3",
                                 )}
                                 style={{ WebkitTapHighlightColor: "transparent" }}
                             >
@@ -600,8 +600,8 @@ export default function Navbar() {
                                     className={cn(
                                         "shrink-0 w-4.5 h-4.5",
                                         isActive
-                                            ? "fill-[rgb(var(--color-background))]"
-                                            : "text-[rgb(var(--color-foreground))]",
+                                            ? "fill-background"
+                                            : "text-foreground",
                                     )}
                                 />
 
@@ -622,8 +622,8 @@ export default function Navbar() {
 
                                 {link.badge && (
                                     <span className="absolute top-0 right-0 flex h-2.5 w-2.5 transform translate-x-1/2 -translate-y-1/2">
-                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[rgb(var(--color-success)/0.75)]"></span>
-                                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[rgb(var(--color-success))]"></span>
+                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-success/75"></span>
+                                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-success"></span>
                                     </span>
                                 )}
                             </motion.button>

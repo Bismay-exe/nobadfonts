@@ -187,43 +187,43 @@ export default function FontEditorialDetails({ font, research }: FontEditorialDe
     const officialLinks = rawLinks.filter(l => Boolean(l.url));
 
     return (
-        <section className="w-full zmax-w-6xl mx-auto space-y-0 font-inter-tight text-[rgb(var(--color-foreground))]">
+        <section className="w-full zmax-w-6xl mx-auto space-y-0 font-inter-tight text-foreground">
             <div className="flex justify-center items-center gap-4 py-10">
-                <h2 className="text-4xl sm:text-6xl md:text-8xl font-inter-tight font-medium zuppercase ztracking-widest text-[rgb(var(--color-foreground))]">
+                <h2 className="text-4xl sm:text-6xl md:text-8xl font-inter-tight font-medium zuppercase ztracking-widest text-foreground">
                     Details
                 </h2>
             </div>
 
             {/* Top Identity / Personality Intro */}
-            <div className="md:border-b border-[rgb(var(--color-foreground)/0.08)] py-12 md:py-16">
+            <div className="md:border-b border-foreground/8 py-12 md:py-16">
                 <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-8 md:gap-0">
                     <div className="w-full md:w-1/3 shrink-0 md:sticky md:top-28">
-                        <span className="text-3xl md:text-4xl font-normal text-[rgb(var(--color-foreground))]">
+                        <span className="text-3xl md:text-4xl font-normal text-foreground">
                             Identity
                         </span>
                     </div>
                     <div className="w-full md:w-1/2 zmax-w-3xl space-y-2">
-                        <h2 className="text-3xl md:text-5xl font-normal tracking-tight text-[rgb(var(--color-foreground))] leading-tight">
+                        <h2 className="text-3xl md:text-5xl font-normal tracking-tight text-foreground leading-tight">
                             {fontName}
                         </h2>
-                        <p className="text-[22px] md:text-2xl font-light text-[rgb(var(--color-muted-foreground))]">
-                            Designed by <span className="text-[rgb(var(--color-foreground))] font-normal">{designer}</span>
-                            {foundry && <span> · Published by <span className="text-[rgb(var(--color-foreground))] font-normal">{foundry}</span></span>}
+                        <p className="text-[22px] md:text-2xl font-light text-muted">
+                            Designed by <span className="text-foreground font-normal">{designer}</span>
+                            {foundry && <span> · Published by <span className="text-foreground font-normal">{foundry}</span></span>}
                         </p>
                     </div>
                 </div>
             </div>
 
             {/* DESCRIPTION */}
-            <div className="md:border-b border-[rgb(var(--color-foreground)/0.08)] py-12 md:py-16">
+            <div className="md:border-b border-foreground/8 py-12 md:py-16">
                 <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-8 md:gap-0">
                     <div className="w-full md:w-1/3 shrink-0 md:sticky md:top-28">
-                        <h3 className="text-3xl md:text-4xl font-normal text-[rgb(var(--color-foreground))]">
+                        <h3 className="text-3xl md:text-4xl font-normal text-foreground">
                             Description
                         </h3>
                     </div>
                     <div className="w-full md:w-1/2 zmax-w-3xl space-y-6">
-                        <p className="text-[22px] md:text-2xl font-light leading-relaxed text-[rgb(var(--color-muted-foreground)/0.9)] whitespace-pre-line">
+                        <p className="text-[22px] md:text-2xl font-light leading-relaxed text-muted/90 whitespace-pre-line">
                             {descriptionText}
                         </p>
                     </div>
@@ -232,15 +232,15 @@ export default function FontEditorialDetails({ font, research }: FontEditorialDe
 
             {/* HISTORY & BACKGROUND */}
             {historyText && (
-                <div className="md:border-b border-[rgb(var(--color-foreground)/0.08)] py-12 md:py-16">
+                <div className="md:border-b border-foreground/8 py-12 md:py-16">
                     <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-8 md:gap-0">
                         <div className="w-full md:w-1/3 shrink-0 md:sticky md:top-28">
-                            <h3 className="text-3xl md:text-4xl font-normal text-[rgb(var(--color-foreground))]">
+                            <h3 className="text-3xl md:text-4xl font-normal text-foreground">
                                 History &amp; Background
                             </h3>
                         </div>
                         <div className="w-full md:w-1/2 zmax-w-3xl">
-                            <p className="text-[22px] md:text-2xl font-light leading-relaxed text-[rgb(var(--color-muted-foreground)/0.9)] whitespace-pre-line">
+                            <p className="text-[22px] md:text-2xl font-light leading-relaxed text-muted/90 whitespace-pre-line">
                                 {historyText}
                             </p>
                         </div>
@@ -250,15 +250,15 @@ export default function FontEditorialDetails({ font, research }: FontEditorialDe
 
             {/* DESIGN CHARACTERISTICS */}
             {characteristicsText && (
-                <div className="md:border-b border-[rgb(var(--color-foreground)/0.08)] py-12 md:py-16">
+                <div className="md:border-b border-foreground/8 py-12 md:py-16">
                     <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-8 md:gap-0">
                         <div className="w-full md:w-1/3 shrink-0 md:sticky md:top-28">
-                            <h3 className="text-3xl md:text-4xl font-normal text-[rgb(var(--color-foreground))]">
+                            <h3 className="text-3xl md:text-4xl font-normal text-foreground">
                                 Design Characteristics
                             </h3>
                         </div>
                         <div className="w-full md:w-1/2 zmax-w-3xl">
-                            <p className="text-[22px] md:text-2xl font-light leading-relaxed text-[rgb(var(--color-muted-foreground)/0.9)] whitespace-pre-line">
+                            <p className="text-[22px] md:text-2xl font-light leading-relaxed text-muted/90 whitespace-pre-line">
                                 {characteristicsText}
                             </p>
                         </div>
@@ -267,10 +267,10 @@ export default function FontEditorialDetails({ font, research }: FontEditorialDe
             )}
 
             {/* CHARACTER TRAITS GRID */}
-            <div className="md:border-b border-[rgb(var(--color-foreground)/0.08)] py-12 md:py-16">
+            <div className="md:border-b border-foreground/8 py-12 md:py-16">
                 <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-8 md:gap-0">
                     <div className="w-full md:w-1/3 shrink-0 md:sticky md:top-28">
-                        <h3 className="text-3xl md:text-4xl font-normal text-[rgb(var(--color-foreground))]">
+                        <h3 className="text-3xl md:text-4xl font-normal text-foreground">
                             Character Traits
                         </h3>
                     </div>
@@ -279,7 +279,7 @@ export default function FontEditorialDetails({ font, research }: FontEditorialDe
                             {traits.map((trait, idx) => (
                                 <div
                                     key={idx}
-                                    className="py-3 px-4 flex justify-center items-center border border-[rgb(var(--color-foreground)/0.1)] rounded-lg text-center md:text-left bg-[rgb(var(--color-foreground)/0.02)] transition-colors duration-300 ease-in-out text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))]"
+                                    className="py-3 px-4 flex justify-center items-center border border-foreground/10 rounded-lg text-center md:text-left bg-foreground/2 transition-colors duration-300 ease-in-out text-muted hover:text-foreground"
                                 >
                                     <span className="text-sm md:text-lg font-light tracking-wide">
                                         {trait}
@@ -292,74 +292,74 @@ export default function FontEditorialDetails({ font, research }: FontEditorialDe
             </div>
 
             {/* DETAILS (SPECS TABLE) */}
-            <div className="md:border-b border-[rgb(var(--color-foreground)/0.08)] py-12 md:py-16">
+            <div className="md:border-b border-foreground/8 py-12 md:py-16">
                 <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-8 md:gap-0">
                     <div className="w-full md:w-1/3 shrink-0 md:sticky md:top-28">
-                        <h3 className="text-3xl md:text-4xl font-normal text-[rgb(var(--color-foreground))]">
+                        <h3 className="text-3xl md:text-4xl font-normal text-foreground">
                             DETAILS
                         </h3>
                     </div>
                     <div className="w-full md:w-1/2 zmax-w-3xl">
                         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-y-8 gap-x-12">
                             <div>
-                                <span className="block font-mono text-xs font-bold uppercase tracking-widest text-[rgb(var(--color-muted-foreground))] mb-1.5">
+                                <span className="block font-mono text-xs font-bold uppercase tracking-widest text-muted mb-1.5">
                                     CATEGORY
                                 </span>
-                                <span className="text-[22px] md:text-2xl font-light text-[rgb(var(--color-foreground))]">
+                                <span className="text-[22px] md:text-2xl font-light text-foreground">
                                     {category}
                                 </span>
                             </div>
 
                             <div>
-                                <span className="block font-mono text-xs font-bold uppercase tracking-widest text-[rgb(var(--color-muted-foreground))] mb-1.5">
+                                <span className="block font-mono text-xs font-bold uppercase tracking-widest text-muted mb-1.5">
                                     STYLE
                                 </span>
-                                <span className="text-[22px] md:text-2xl font-light text-[rgb(var(--color-foreground))]">
+                                <span className="text-[22px] md:text-2xl font-light text-foreground">
                                     {style}
                                 </span>
                             </div>
 
                             <div>
-                                <span className="block font-mono text-xs font-bold uppercase tracking-widest text-[rgb(var(--color-muted-foreground))] mb-1.5">
+                                <span className="block font-mono text-xs font-bold uppercase tracking-widest text-muted mb-1.5">
                                     VERSION
                                 </span>
-                                <span className="text-[22px] md:text-2xl font-light text-[rgb(var(--color-foreground))]">
+                                <span className="text-[22px] md:text-2xl font-light text-foreground">
                                     {version}
                                 </span>
                             </div>
 
                             <div>
-                                <span className="block font-mono text-xs font-bold uppercase tracking-widest text-[rgb(var(--color-muted-foreground))] mb-1.5">
+                                <span className="block font-mono text-xs font-bold uppercase tracking-widest text-muted mb-1.5">
                                     RELEASED
                                 </span>
-                                <span className="text-[22px] md:text-2xl font-light text-[rgb(var(--color-foreground))]">
+                                <span className="text-[22px] md:text-2xl font-light text-foreground">
                                     {releaseYear || 'Recent'}
                                 </span>
                             </div>
 
                             <div>
-                                <span className="block font-mono text-xs font-bold uppercase tracking-widest text-[rgb(var(--color-muted-foreground))] mb-1.5">
+                                <span className="block font-mono text-xs font-bold uppercase tracking-widest text-muted mb-1.5">
                                     FORMAT
                                 </span>
-                                <span className="text-[22px] md:text-2xl font-light text-[rgb(var(--color-foreground))]">
+                                <span className="text-[22px] md:text-2xl font-light text-foreground">
                                     {formatsString}
                                 </span>
                             </div>
 
                             <div>
-                                <span className="block font-mono text-xs font-bold uppercase tracking-widest text-[rgb(var(--color-muted-foreground))] mb-1.5">
+                                <span className="block font-mono text-xs font-bold uppercase tracking-widest text-muted mb-1.5">
                                     GLYPHS
                                 </span>
-                                <span className="text-[22px] md:text-2xl font-light text-[rgb(var(--color-foreground))]">
+                                <span className="text-[22px] md:text-2xl font-light text-foreground">
                                     {glyphCount}
                                 </span>
                             </div>
 
                             <div className="col-span-2 md:col-span-3">
-                                <span className="block font-mono text-xs font-bold uppercase tracking-widest text-[rgb(var(--color-muted-foreground))] mb-1.5">
+                                <span className="block font-mono text-xs font-bold uppercase tracking-widest text-muted mb-1.5">
                                     LANGUAGE COVERAGE
                                 </span>
-                                <span className="text-[22px] md:text-2xl font-light text-[rgb(var(--color-foreground))]">
+                                <span className="text-[22px] md:text-2xl font-light text-foreground">
                                     {languageString}
                                 </span>
                             </div>
@@ -369,15 +369,15 @@ export default function FontEditorialDetails({ font, research }: FontEditorialDe
             </div>
 
             {/* CLASSIFICATION */}
-            <div className="md:border-b border-[rgb(var(--color-foreground)/0.08)] py-12 md:py-16">
+            <div className="md:border-b border-foreground/8 py-12 md:py-16">
                 <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-8 md:gap-0">
                     <div className="w-full md:w-1/3 shrink-0 md:sticky md:top-28">
-                        <h3 className="text-3xl md:text-4xl font-normal text-[rgb(var(--color-foreground))]">
+                        <h3 className="text-3xl md:text-4xl font-normal text-foreground">
                             Classification
                         </h3>
                     </div>
                     <div className="w-full md:w-1/2 zmax-w-3xl">
-                        <p className="text-[22px] md:text-2xl font-light text-[rgb(var(--color-muted-foreground))]">
+                        <p className="text-[22px] md:text-2xl font-light text-muted">
                             {classificationItems.join(' · ')}
                         </p>
                     </div>
@@ -386,10 +386,10 @@ export default function FontEditorialDetails({ font, research }: FontEditorialDe
 
             {/* TAGS */}
             {tagsList.length > 0 && (
-                <div className="md:border-b border-[rgb(var(--color-foreground)/0.08)] py-12 md:py-16">
+                <div className="md:border-b border-foreground/8 py-12 md:py-16">
                     <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-8 md:gap-0">
                         <div className="w-full md:w-1/3 shrink-0 md:sticky md:top-28">
-                            <h3 className="text-3xl md:text-4xl font-normal text-[rgb(var(--color-foreground))]">
+                            <h3 className="text-3xl md:text-4xl font-normal text-foreground">
                                 Tags
                             </h3>
                         </div>
@@ -398,7 +398,7 @@ export default function FontEditorialDetails({ font, research }: FontEditorialDe
                                 {tagsList.map((tag, idx) => (
                                     <span
                                         key={idx}
-                                        className="inline-flex items-center px-4 py-2 rounded-full border border-[rgb(var(--color-foreground)/0.10)] text-sm md:text-lg font-light tracking-wide text-[rgb(var(--color-muted-foreground))] bg-[rgb(var(--color-foreground)/0.03)] hover:bg-[rgb(var(--color-foreground)/0.07)] transition-colors duration-300 ease-in-out"
+                                        className="inline-flex items-center px-4 py-2 rounded-full border border-foreground/10 text-sm md:text-lg font-light tracking-wide text-muted bg-foreground/3 hover:bg-foreground/7 transition-colors duration-300 ease-in-out"
                                     >
                                         #{tag.replace(/^#/, '')}
                                     </span>
@@ -411,15 +411,15 @@ export default function FontEditorialDetails({ font, research }: FontEditorialDe
 
             {/* MOOD */}
             {moodItems.length > 0 && (
-                <div className="md:border-b border-[rgb(var(--color-foreground)/0.08)] py-12 md:py-16">
+                <div className="md:border-b border-foreground/8 py-12 md:py-16">
                     <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-8 md:gap-0">
                         <div className="w-full md:w-1/3 shrink-0 md:sticky md:top-28">
-                            <h3 className="text-3xl md:text-4xl font-normal text-[rgb(var(--color-foreground))]">
+                            <h3 className="text-3xl md:text-4xl font-normal text-foreground">
                                 Mood
                             </h3>
                         </div>
                         <div className="w-full md:w-1/2 zmax-w-3xl">
-                            <p className="text-[22px] md:text-2xl font-light leading-relaxed text-[rgb(var(--color-muted-foreground))]">
+                            <p className="text-[22px] md:text-2xl font-light leading-relaxed text-muted">
                                 {moodItems.join(' · ')}
                             </p>
                         </div>
@@ -429,15 +429,15 @@ export default function FontEditorialDetails({ font, research }: FontEditorialDe
 
             {/* RECOMMENDED USES */}
             {usesList.length > 0 && (
-                <div className="md:border-b border-[rgb(var(--color-foreground)/0.08)] py-12 md:py-16">
+                <div className="md:border-b border-foreground/8 py-12 md:py-16">
                     <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-8 md:gap-0">
                         <div className="w-full md:w-1/3 shrink-0 md:sticky md:top-28">
-                            <h3 className="text-3xl md:text-4xl font-normal text-[rgb(var(--color-foreground))]">
+                            <h3 className="text-3xl md:text-4xl font-normal text-foreground">
                                 Recommended Uses
                             </h3>
                         </div>
                         <div className="w-full md:w-1/2 zmax-w-3xl">
-                            <p className="text-[22px] md:text-2xl font-light leading-relaxed text-[rgb(var(--color-muted-foreground))]">
+                            <p className="text-[22px] md:text-2xl font-light leading-relaxed text-muted">
                                 {usesList.join(' · ')}
                             </p>
                         </div>
@@ -446,24 +446,24 @@ export default function FontEditorialDetails({ font, research }: FontEditorialDe
             )}
 
             {/* LICENSING & PERMISSIONS MATRIX */}
-            <div className="md:border-b border-[rgb(var(--color-foreground)/0.08)] py-12 md:py-16">
+            <div className="md:border-b border-foreground/8 py-12 md:py-16">
                 <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-8 md:gap-0">
                     <div className="w-full md:w-1/3 shrink-0 md:sticky md:top-28">
-                        <h3 className="text-3xl md:text-4xl font-normal text-[rgb(var(--color-foreground))]">
+                        <h3 className="text-3xl md:text-4xl font-normal text-foreground">
                             Licensing
                         </h3>
                     </div>
                     <div className="w-full md:w-1/2 zmax-w-3xl space-y-6">
                         <div className="flex flex-wrap items-center gap-3">
-                            <h4 className="text-2xl md:text-3xl font-light tracking-tight text-[rgb(var(--color-foreground))]">
+                            <h4 className="text-2xl md:text-3xl font-light tracking-tight text-foreground">
                                 {licenseType}
                             </h4>
-                            <span className="font-mono text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full border border-[rgb(var(--color-foreground)/0.15)] bg-[rgb(var(--color-foreground)/0.04)] text-[rgb(var(--color-muted-foreground))]">
+                            <span className="font-mono text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full border border-foreground/15 bg-foreground/4 text-muted">
                                 {distributionStatus}
                             </span>
                         </div>
 
-                        <p className="text-[22px] md:text-2xl font-light text-[rgb(var(--color-muted-foreground))]">
+                        <p className="text-[22px] md:text-2xl font-light text-muted">
                             {isCommercialAllowed
                                 ? 'Authorized for personal and commercial projects under license terms.'
                                 : 'Personal use authorized. Commercial use requires a commercial tier or verified license.'}
@@ -471,8 +471,8 @@ export default function FontEditorialDetails({ font, research }: FontEditorialDe
 
                         {/* 4-point usage permissions matrix */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                            <div className="flex items-center justify-between p-3.5 rounded-xl border border-[rgb(var(--color-foreground)/0.08)] bg-[rgb(var(--color-foreground)/0.02)]">
-                                <span className="font-normal text-sm text-[rgb(var(--color-foreground))]">Personal Use</span>
+                            <div className="flex items-center justify-between p-3.5 rounded-xl border border-foreground/8 bg-foreground/2">
+                                <span className="font-normal text-sm text-foreground">Personal Use</span>
                                 <div className="flex items-center gap-1.5 font-mono text-xs font-bold">
                                     {isPersonalAllowed ? (
                                         <span className="inline-flex items-center gap-1 text-emerald-500 font-semibold">
@@ -486,8 +486,8 @@ export default function FontEditorialDetails({ font, research }: FontEditorialDe
                                 </div>
                             </div>
 
-                            <div className="flex items-center justify-between p-3.5 rounded-xl border border-[rgb(var(--color-foreground)/0.08)] bg-[rgb(var(--color-foreground)/0.02)]">
-                                <span className="font-normal text-sm text-[rgb(var(--color-foreground))]">Commercial Use</span>
+                            <div className="flex items-center justify-between p-3.5 rounded-xl border border-foreground/8 bg-foreground/2">
+                                <span className="font-normal text-sm text-foreground">Commercial Use</span>
                                 <div className="flex items-center gap-1.5 font-mono text-xs font-bold">
                                     {isCommercialAllowed ? (
                                         <span className="inline-flex items-center gap-1 text-emerald-500 font-semibold">
@@ -501,8 +501,8 @@ export default function FontEditorialDetails({ font, research }: FontEditorialDe
                                 </div>
                             </div>
 
-                            <div className="flex items-center justify-between p-3.5 rounded-xl border border-[rgb(var(--color-foreground)/0.08)] bg-[rgb(var(--color-foreground)/0.02)]">
-                                <span className="font-normal text-sm text-[rgb(var(--color-foreground))]">Modification &amp; Derivs</span>
+                            <div className="flex items-center justify-between p-3.5 rounded-xl border border-foreground/8 bg-foreground/2">
+                                <span className="font-normal text-sm text-foreground">Modification &amp; Derivs</span>
                                 <div className="flex items-center gap-1.5 font-mono text-xs font-bold">
                                     {isModificationAllowed ? (
                                         <span className="inline-flex items-center gap-1 text-emerald-500 font-semibold">
@@ -516,8 +516,8 @@ export default function FontEditorialDetails({ font, research }: FontEditorialDe
                                 </div>
                             </div>
 
-                            <div className="flex items-center justify-between p-3.5 rounded-xl border border-[rgb(var(--color-foreground)/0.08)] bg-[rgb(var(--color-foreground)/0.02)]">
-                                <span className="font-normal text-sm text-[rgb(var(--color-foreground))]">Redistribution</span>
+                            <div className="flex items-center justify-between p-3.5 rounded-xl border border-foreground/8 bg-foreground/2">
+                                <span className="font-normal text-sm text-foreground">Redistribution</span>
                                 <div className="flex items-center gap-1.5 font-mono text-xs font-bold">
                                     {isRedistributionAllowed ? (
                                         <span className="inline-flex items-center gap-1 text-emerald-500 font-semibold">
@@ -533,7 +533,7 @@ export default function FontEditorialDetails({ font, research }: FontEditorialDe
                         </div>
 
                         {licenseEvidence && (
-                            <p className="text-xs text-[rgb(var(--color-muted-foreground))] italic">
+                            <p className="text-xs text-muted italic">
                                 Evidence note: {licenseEvidence}
                             </p>
                         )}
@@ -544,7 +544,7 @@ export default function FontEditorialDetails({ font, research }: FontEditorialDe
                                     href={licenseUrl}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="inline-flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-[rgb(var(--color-foreground))] hover:underline underline-offset-4"
+                                    className="inline-flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-foreground hover:underline underline-offset-4"
                                 >
                                     View Official License Terms <ExternalLink size={14} />
                                 </a>
@@ -560,7 +560,7 @@ export default function FontEditorialDetails({ font, research }: FontEditorialDe
                     <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-10 md:gap-0">
                         {/* Section title */}
                         <div className="w-full md:w-1/3 shrink-0 md:sticky md:top-28">
-                            <h3 className="text-3xl md:text-4xl font-normal text-[rgb(var(--color-foreground))]">
+                            <h3 className="text-3xl md:text-4xl font-normal text-foreground">
                                 Official Links
                             </h3>
                         </div>
@@ -575,38 +575,38 @@ export default function FontEditorialDetails({ font, research }: FontEditorialDe
                                             href={cleanedUrl}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="group block py-5 md:py-6 border-t border-[rgb(var(--color-foreground)/0.1)] first:border-none"
+                                            className="group block py-5 md:py-6 border-t border-foreground/10 first:border-none"
                                         >
                                             <div className="flex items-start justify-between gap-6">
                                                 <div className="min-w-0">
                                                     {/* Label */}
                                                     <div className="flex flex-wrap items-center gap-3">
-                                                        <span className="text-2xl md:text-3xl font-normal text-[rgb(var(--color-foreground))] transition-all duration-300 ease-in-out group-hover:text-[rgb(var(--color-foreground))] group-hover:translate-x-1">
+                                                        <span className="text-2xl md:text-3xl font-normal text-foreground transition-all duration-300 ease-in-out group-hover:text-foreground group-hover:translate-x-1">
                                                             {link.label}
                                                         </span>
-                                                        <span className="hidden md:block mt-2 ml-0 group-hover:ml-3 text-xs md:text-sm font-mono text-[rgb(var(--color-muted-foreground)/0.8)] truncate
+                                                        <span className="hidden md:block mt-2 ml-0 group-hover:ml-3 text-xs md:text-sm font-mono text-muted/80 truncate
                                                         opacity-0 group-hover:opacity-100 transition-all duration-300 ease-in-out
-                                                        w-fit px-3.5 py-3.5 rounded-xl border border-[rgb(var(--color-foreground)/0.08)] bg-[rgb(var(--color-foreground)/0.02)]">
+                                                        w-fit px-3.5 py-3.5 rounded-xl border border-foreground/8 bg-foreground/2">
                                                             {formatUrlForDisplay(link.url!)}
                                                         </span>
                                                     </div>
 
                                                     {/* Description */}
                                                     {link.desc && (
-                                                        <p className="mt-2 text-xl font-light leading-relaxed text-[rgb(var(--color-muted-foreground)/0.8)]">
+                                                        <p className="mt-2 text-xl font-light leading-relaxed text-muted/80">
                                                             {link.desc}
                                                         </p>
                                                     )}
 
                                                     {/* URL */}
-                                                    {/* <span className="mt-2 text-xs md:text-sm font-mono text-[rgb(var(--color-muted-foreground))] truncate
-                                                    w-fit inline-block px-3.5 py-3.5 rounded-xl border border-[rgb(var(--color-foreground)/0.08)] bg-[rgb(var(--color-foreground)/0.02)]">
+                                                    {/* <span className="mt-2 text-xs md:text-sm font-mono text-muted truncate
+                                                    w-fit inline-block px-3.5 py-3.5 rounded-xl border border-foreground/8 bg-foreground/2">
                                                         {formatUrlForDisplay(link.url!)}
                                                     </span> */}
                                                 </div>
 
                                                 {/* Arrow */}
-                                                <span className="shrink-0 mt-1 text-xl text-[rgb(var(--color-muted-foreground)/0.5)] transition-all duration-300 group-hover:text-[rgb(var(--color-foreground))] group-hover:translate-x-1 group-hover:-translate-y-1">
+                                                <span className="shrink-0 mt-1 text-xl text-muted/50 transition-all duration-300 group-hover:text-foreground group-hover:translate-x-1 group-hover:-translate-y-1">
                                                     ↗
                                                 </span>
                                             </div>

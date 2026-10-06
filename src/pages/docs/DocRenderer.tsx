@@ -81,10 +81,10 @@ export const DocRenderer: React.FC<DocRendererProps> = ({ defaultSlug }) => {
           <div
             key={i}
             className={`${h} ${w} ${mb} rounded`}
-            style={{ backgroundColor: 'rgb(var(--color-card))' }}
+            style={{ backgroundColor: 'var(--color-card-background)' }}
           />
         ))}
-        <div className="h-32 rounded-xl mt-6" style={{ backgroundColor: 'rgb(var(--color-card))' }} />
+        <div className="h-32 rounded-xl mt-6" style={{ backgroundColor: 'var(--color-card-background)' }} />
       </div>
     );
   }
@@ -109,8 +109,8 @@ export const DocRenderer: React.FC<DocRendererProps> = ({ defaultSlug }) => {
       <div
         className="lg:hidden my-6 p-4 rounded-xl not-prose"
         style={{
-          border: '1px solid rgb(var(--color-border))',
-          backgroundColor: 'rgb(var(--color-card)/0.5)',
+          border: '1px solid var(--color-border)',
+          backgroundColor: 'color-mix(in srgb, var(--color-card-background) 50%, transparent)',
         }}
       >
         <DocsTableOfContents />

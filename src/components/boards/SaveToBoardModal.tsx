@@ -106,21 +106,21 @@ export default function SaveToBoardModal({ fontId, isOpen, onClose }: SaveToBoar
       onClick={(e) => { if (e.target === overlayRef.current) onClose(); }}
     >
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-[rgb(var(--color-foreground)/0.05)] backdrop-blur-sm" />
+      <div className="absolute inset-0 bg-foreground/5 backdrop-blur-sm" />
 
       {/* Panel */}
-      <div className="relative w-full max-w-md bg-[rgb(var(--color-background)/0.8)] backdrop-blur-2xl rounded-4xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
+      <div className="relative w-full max-w-md bg-background/80 backdrop-blur-2xl rounded-4xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
 
         {/* Header */}
         <div className="px-5 pt-5 pb-4">
           <div className="flex items-center justify-between text-3xl font-inter-tight font-medium tracking-wide">
             <div>
-              <h2 className="text-[rgb(var(--color-foreground))] ml-3">Save to Board</h2>
-              {/* <p className="text-xs text-[rgb(var(--color-muted-foreground))] mt-0.5 truncate max-w-65">{fontName}</p> */}
+              <h2 className="text-foreground ml-3">Save to Board</h2>
+              {/* <p className="text-xs text-muted mt-0.5 truncate max-w-65">{fontName}</p> */}
             </div>
             <button
               onClick={onClose}
-              className="p-2 flex items-center justify-center rounded-full hover:bg-[rgb(var(--color-foreground)/0.08)] transition-colors duration-300 ease-in-out text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))]"
+              className="p-2 flex items-center justify-center rounded-full hover:bg-foreground/8 transition-colors duration-300 ease-in-out text-muted hover:text-foreground"
             >
               <X />
             </button>
@@ -131,10 +131,10 @@ export default function SaveToBoardModal({ fontId, isOpen, onClose }: SaveToBoar
         <div className="max-h-[75dvh] overflow-y-auto px-5 py-3">
           {loading ? (
             <div className="flex justify-center py-8">
-              <div className="w-6 h-6 rounded-full border-2 border-[rgb(var(--color-foreground)/0.15)] border-t-[rgb(var(--color-foreground))] animate-spin" />
+              <div className="w-6 h-6 rounded-full border-2 border-foreground/15 border-t-foreground animate-spin" />
             </div>
           ) : boards.length === 0 ? (
-            <p className="text-sm text-center text-[rgb(var(--color-muted-foreground))] py-6">
+            <p className="text-sm text-center text-muted py-6">
               You don't have any boards yet.<br />Create one below to get started.
             </p>
           ) : (
@@ -144,14 +144,14 @@ export default function SaveToBoardModal({ fontId, isOpen, onClose }: SaveToBoar
                 return (
                   <li key={board.id}>
                     <div className={`flex items-center gap-3 p-3 rounded-2xl transition-all duration-200 ease-in-out cursor-pointer group ${isSelected
-                      ? 'bg-[rgb(var(--color-foreground)/0.1)]'
-                      : 'bg-[rgb(var(--color-foreground)/0.02)] hover:bg-[rgb(var(--color-foreground)/0.05)]'}`}
+                      ? 'bg-foreground/10'
+                      : 'bg-foreground/2 hover:bg-foreground/5'}`}
                       onClick={() => toggle(board.id)}
                     >
                       {/* Checkbox */}
                       <div className={`w-5 h-5 rounded-md flex items-center justify-center shrink-0 transition-all duration-300 ease-in-out ${isSelected
-                        ? 'text-[rgb(var(--color-foreground))] translate-x-0 scale-100'
-                        : 'text-[rgb(var(--color-foreground)/0.25)] -translate-x-5 scale-0'}`}
+                        ? 'text-foreground translate-x-0 scale-100'
+                        : 'text-foreground/25 -translate-x-5 scale-0'}`}
                       >
                         {isSelected ? (
                           <Check />
@@ -161,8 +161,8 @@ export default function SaveToBoardModal({ fontId, isOpen, onClose }: SaveToBoar
                       </div>
                       {/* Info */}
                       <div className={`min-w-0 w-full flex items-center gap-4 ${isSelected ? 'translate-x-0' : '-translate-x-5'} transition-all duration-300 ease-in-out`}>
-                        <span className="text-sm font-normal tracking-wider text-[rgb(var(--color-foreground))] block truncate">{board.name}</span>
-                        <span className="text-xs text-[rgb(var(--color-muted-foreground))] flex items-center gap-1">
+                        <span className="text-sm font-normal tracking-wider text-foreground block truncate">{board.name}</span>
+                        <span className="text-xs text-muted flex items-center gap-1">
                           {board.font_count} font{board.font_count !== 1 ? 's' : ''} · {board.visibility === 'private' ? <Lock size={12} /> : <Globe size={12} />} {board.visibility === 'private' ? 'Private' : 'Public'}
                         </span>
                       </div>
@@ -170,10 +170,10 @@ export default function SaveToBoardModal({ fontId, isOpen, onClose }: SaveToBoar
                       <button
                         onClick={(e) => { e.stopPropagation(); copyShareLink(board); }}
                         title={`Copy share link (${board.visibility === 'private' ? 'private link' : 'public'})`}
-                        className="opacity-0 group-hover:opacity-100 w-7 h-7 flex items-center justify-center rounded-lg hover:bg-[rgb(var(--color-foreground)/0.08)] transition-all duration-300 ease-in-out text-[rgb(var(--color-muted-foreground))]"
+                        className="opacity-0 group-hover:opacity-100 w-7 h-7 flex items-center justify-center rounded-lg hover:bg-foreground/8 transition-all duration-300 ease-in-out text-muted"
                       >
                         {copied === board.id ? (
-                          <CheckCheck className='w-3.5 h-3.5 text-[rgb(var(--color-foreground))]' />
+                          <CheckCheck className='w-3.5 h-3.5 text-foreground' />
                         ) : (
                           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
@@ -199,25 +199,25 @@ export default function SaveToBoardModal({ fontId, isOpen, onClose }: SaveToBoar
                 value={newBoardName}
                 onChange={e => setNewBoardName(e.target.value)}
                 onKeyDown={e => { if (e.key === 'Enter') handleCreateBoard(); if (e.key === 'Escape') setIsCreating(false); }}
-                className="w-full bg-[rgb(var(--color-background))] border border-[rgb(var(--color-foreground)/0.15)] rounded-xl px-3 py-2 text-sm text-[rgb(var(--color-foreground))] placeholder-[rgb(var(--color-muted-foreground))] focus:outline-none focus:border-[rgb(var(--color-highlight))] transition-colors"
+                className="w-full bg-background border border-foreground/15 rounded-xl px-3 py-2 text-sm text-foreground placeholder-muted focus:outline-none focus:border-accent transition-colors"
               />
               <div className="flex gap-2 items-center">
                 <button
                   onClick={() => setNewBoardVisibility(v => v === 'public' ? 'private' : 'public')}
                   className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border font-medium transition-all ${newBoardVisibility === 'private'
-                    ? 'border-[rgb(var(--color-foreground)/0.3)] bg-[rgb(var(--color-foreground)/0.06)] text-[rgb(var(--color-foreground))]'
-                    : 'border-[rgb(var(--color-foreground)/0.15)] text-[rgb(var(--color-muted-foreground))]'}`}
+                    ? 'border-foreground/30 bg-foreground/6 text-foreground'
+                    : 'border-foreground/15 text-muted'}`}
                 >
                   {newBoardVisibility === 'private' ? '🔒 Private' : '🌐 Public'}
                 </button>
                 <button
                   onClick={() => { setIsCreating(false); setNewBoardName(''); }}
-                  className="text-xs px-3 py-1.5 rounded-lg text-[rgb(var(--color-muted-foreground))] hover:bg-[rgb(var(--color-foreground)/0.06)] transition-colors"
+                  className="text-xs px-3 py-1.5 rounded-lg text-muted hover:bg-foreground/6 transition-colors"
                 >Cancel</button>
                 <button
                   onClick={handleCreateBoard}
                   disabled={!newBoardName.trim() || createLoading}
-                  className="ml-auto text-xs px-4 py-1.5 rounded-lg bg-[rgb(var(--color-highlight))] text-[rgb(var(--color-background))] font-bold disabled:opacity-50 transition-all hover:opacity-90"
+                  className="ml-auto text-xs px-4 py-1.5 rounded-lg bg-accent text-background font-bold disabled:opacity-50 transition-all hover:opacity-90"
                 >
                   {createLoading ? 'Creating...' : 'Create'}
                 </button>
@@ -226,7 +226,7 @@ export default function SaveToBoardModal({ fontId, isOpen, onClose }: SaveToBoar
           ) : (
             <button
               onClick={() => setIsCreating(true)}
-              className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm text-[rgb(var(--color-muted-foreground))] hover:bg-[rgb(var(--color-foreground)/0.05)] hover:text-[rgb(var(--color-foreground))] transition-all"
+              className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm text-muted hover:bg-foreground/5 hover:text-foreground transition-all"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -240,14 +240,14 @@ export default function SaveToBoardModal({ fontId, isOpen, onClose }: SaveToBoar
         <div className="px-5 pb-5 pt-3 flex gap-4">
           {/* <button
             onClick={onClose}
-            className="flex-1 py-2.5 rounded-xl border border-[rgb(var(--color-foreground)/0.15)] text-sm font-semibold text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.05)] transition-all"
+            className="flex-1 py-2.5 rounded-xl border border-foreground/15 text-sm font-semibold text-foreground hover:bg-foreground/5 transition-all"
           >
             Cancel
           </button> */}
           <button
             onClick={handleSave}
             disabled={saving}
-            className={`zflex-1 px-5 py-2.5 rounded-xl bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] text-lg font-inter-tight font-medium tracking-wider transition-all duration-300 ease-in-out hover:opacity-90 disabled:opacity-60 ${isCreating ? 'hidden' : 'block'}`}
+            className={`zflex-1 px-5 py-2.5 rounded-xl bg-foreground text-background text-lg font-inter-tight font-medium tracking-wider transition-all duration-300 ease-in-out hover:opacity-90 disabled:opacity-60 ${isCreating ? 'hidden' : 'block'}`}
           >
             {saving ? 'Saving...' : 'Save'}
           </button>
@@ -263,26 +263,26 @@ export default function SaveToBoardModal({ fontId, isOpen, onClose }: SaveToBoar
                   value={newBoardName}
                   onChange={e => setNewBoardName(e.target.value)}
                   onKeyDown={e => { if (e.key === 'Enter') handleCreateBoard(); if (e.key === 'Escape') setIsCreating(false); }}
-                  className="w-full bg-[rgb(var(--color-background))] border border-[rgb(var(--color-foreground)/0.1)] rounded-xl px-3 py-2 text-xl text-[rgb(var(--color-foreground))] placeholder-[rgb(var(--color-muted-foreground)/0.5)] focus:outline-none!"
+                  className="w-full bg-background border border-foreground/10 rounded-xl px-3 py-2 text-xl text-foreground placeholder-muted/50 focus:outline-none!"
                 />
                 <div className="flex w-full justify-between gap-2 items-center">
                   <button
                     onClick={() => setNewBoardVisibility(v => v === 'public' ? 'private' : 'public')}
                     className={`flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-xl border tracking-wider transition-all duration-300 ease-in-out ${newBoardVisibility === 'private'
-                      ? 'border-[rgb(var(--color-foreground)/0.1)] bg-[rgb(var(--color-foreground)/0.06)] text-[rgb(var(--color-foreground))]'
-                      : 'border-[rgb(var(--color-foreground)/0.1)] text-[rgb(var(--color-muted-foreground))]'}`}
+                      ? 'border-foreground/10 bg-foreground/6 text-foreground'
+                      : 'border-foreground/10 text-muted'}`}
                   >
                     {newBoardVisibility === 'private' ? <Lock size={16} /> : <Globe size={16} />}
                     {newBoardVisibility === 'private' ? 'Private' : 'Public'}
                   </button>
                   <button
                     onClick={() => { setIsCreating(false); setNewBoardName(''); }}
-                    className="ml-auto text-md tracking-wider font-medium px-3 py-1.5 rounded-xl text-[rgb(var(--color-muted-foreground))] hover:bg-[rgb(var(--color-foreground)/0.06)] transition-colors"
+                    className="ml-auto text-md tracking-wider font-medium px-3 py-1.5 rounded-xl text-muted hover:bg-foreground/6 transition-colors"
                   >Cancel</button>
                   <button
                     onClick={handleCreateBoard}
                     disabled={!newBoardName.trim() || createLoading}
-                    className="text-md tracking-wider px-4 py-1.5 rounded-xl bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] font-medium disabled:opacity-50 transition-all hover:opacity-90"
+                    className="text-md tracking-wider px-4 py-1.5 rounded-xl bg-foreground text-background font-medium disabled:opacity-50 transition-all hover:opacity-90"
                   >
                     {createLoading ? 'Creating...' : 'Create'}
                   </button>
@@ -291,7 +291,7 @@ export default function SaveToBoardModal({ fontId, isOpen, onClose }: SaveToBoar
             ) : (
               <button
                 onClick={() => setIsCreating(true)}
-                className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-lg text-[rgb(var(--color-muted-foreground))] bg-[rgb(var(--color-foreground)/0.05)] hover:bg-[rgb(var(--color-foreground)/0.1)] hover:text-[rgb(var(--color-foreground))] transition-all duration-300 ease-in-out"
+                className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-lg text-muted bg-foreground/5 hover:bg-foreground/10 hover:text-foreground transition-all duration-300 ease-in-out"
               >
                 <Plus />
                 <span className="font-inter-tight font-normal tracking-wider">New Board</span>

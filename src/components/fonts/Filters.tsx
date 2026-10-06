@@ -224,17 +224,17 @@ export const Filters = React.memo(
         return (
             <div className="fixed bottom-20 inset-x-4 md:bottom-6 lg:bottom-8 lg:inset-auto lg:left-1/2 lg:-translate-x-1/2 flex flex-col-reverse items-center z-50 font-inter-tight">
                 {/* Main Filter Dock */}
-                {/* <Squircle className='w-full h-full bg-[rgb(var(--color-foreground)/0.05)]' radius={70}></Squircle> */}
+                {/* <Squircle className='w-full h-full bg-foreground/5' radius={70}></Squircle> */}
                 <Squircle
                     radius={40}
-                    className="pointer-events-auto bg-[rgb(var(--color-foreground)/0.7)] backdrop-blur-3xl border border-[rgb(var(--color-background)/0.3)] transition-all duration-300"
+                    className="pointer-events-auto bg-foreground/70 backdrop-blur-3xl border border-background/30 transition-all duration-300"
                 >
                     <div className="flex items-center gap-1 lg:gap-2 px-1 py-1 lg:px-2 lg:py-1.5">
                         {/* 1. Search Icon (Toggle on Mobile, Static on Desktop) */}
                         <Squircle
                             radius={40}
                             className={`transition-all duration-300 xl:hiddenz flex
-                        ${isSearchOpen && window.innerWidth < 768 ? "bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))]" : "text-[rgb(var(--color-background))] hover:bg-[rgb(var(--color-background)/0.2)] bg-[rgb(var(--color-background)/0.1)]"}`}
+                        ${isSearchOpen && window.innerWidth < 768 ? "bg-background text-foreground" : "text-background hover:bg-background/20 bg-background/10"}`}
                         >
                             <button
                                 onClick={async () => {
@@ -251,19 +251,19 @@ export const Filters = React.memo(
                             </button>
 
                             {/* 2. Search Input (Desktop Only) */}
-                            <div className="hidden lg:block h-full bg-[rgb(var(--color-background)/0)]">
+                            <div className="hidden lg:block h-full bg-background/0">
                                 <input
                                     type="text"
                                     placeholder="Search fonts..."
                                     value={localQuery}
                                     onChange={(e) => handleQueryChange(e.target.value)}
-                                    className="flex-1 w-0 min-w-40 lg:min-w-64 border-none! outline-none! text-[rgb(var(--color-background))] text-lg font-inter-tight font-medium placeholder:text-[rgb(var(--color-background)/0.5)] px-2 lg:px-4 h-11 selection:text-[rgb(var(--color-accent))]"
+                                    className="flex-1 w-0 min-w-40 lg:min-w-64 border-none! outline-none! text-background text-lg font-inter-tight font-medium placeholder:text-background/50 px-2 lg:px-4 h-11 selection:text-accent"
                                 />
                             </div>
                         </Squircle>
 
                         {/* Divider (Desktop Only) */}
-                        {/* <div className="w-px h-6 bg-[rgb(var(--color-background)/0.1)] mx-1 hidden lg:block"></div> */}
+                        {/* <div className="w-px h-6 bg-background/10 mx-1 hidden lg:block"></div> */}
 
                         {/* 3. Custom Text Toggle (Moved Here) */}
                         {onCustomTextChange && (
@@ -271,8 +271,8 @@ export const Filters = React.memo(
                                 radius={40}
                                 className={`transition-all duration-300 ease-in-out
                                     ${isCustomTextOpen || customText
-                                        ? "bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))]"
-                                        : "text-[rgb(var(--color-background))] hover:bg-[rgb(var(--color-background)/0.2)] bg-[rgb(var(--color-background)/0.1)]"
+                                        ? "bg-background text-foreground"
+                                        : "text-background hover:bg-background/20 bg-background/10"
                                     }
                                 `}
                             >
@@ -299,8 +299,8 @@ export const Filters = React.memo(
                             radius={40}
                             className={`group transition-all duration-300 cursor-pointer ease-in-out
                                 ${isCategoriesOpen
-                                    ? "bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))]"
-                                    : "text-[rgb(var(--color-background))] hover:bg-[rgb(var(--color-background)/0.2)] bg-[rgb(var(--color-background)/0.1)]"
+                                    ? "bg-background text-foreground"
+                                    : "text-background hover:bg-background/20 bg-background/10"
                                 }
                             `}
                         >
@@ -325,8 +325,8 @@ export const Filters = React.memo(
                             radius={40}
                             className={`group transition-all duration-300 cursor-pointer ease-in-out
                                 ${isSortOpen
-                                    ? "bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))]"
-                                    : "text-[rgb(var(--color-background))] hover:bg-[rgb(var(--color-background)/0.2)] bg-[rgb(var(--color-background)/0.1)]"
+                                    ? "bg-background text-foreground"
+                                    : "text-background hover:bg-background/20 bg-background/10"
                                 }
                             `}
                         >
@@ -356,10 +356,10 @@ export const Filters = React.memo(
                         {/* 6. View Toggle Group */}
                         {onViewModeChange && (
                             <>
-                                {/* <div className="w-px h-6 bg-[rgb(var(--color-background)/0.1)] mx-1 hidden lg:block"></div> */}
+                                {/* <div className="w-px h-6 bg-background/10 mx-1 hidden lg:block"></div> */}
                                 <Squircle
                                     radius={40}
-                                    className="bg-[rgb(var(--color-background)/0.15)]"
+                                    className="bg-background/15"
                                 >
                                     <div className="flex justify-center items-center h-10 xl:h-11 py-1 px-1.5">
                                         <Squircle
@@ -369,8 +369,8 @@ export const Filters = React.memo(
                                                 onViewModeChange("font");
                                             }}
                                             className={`p-2 transition-all duration-300 ${viewMode === "font"
-                                                    ? "bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))] shadow-sm"
-                                                    : "text-[rgb(var(--color-background))] hover:text-[rgb(var(--color-background))] hover:bg-[rgb(var(--color-background)/0.1)]"
+                                                ? "bg-background text-foreground shadow-sm"
+                                                : "text-background hover:text-background hover:bg-background/10"
                                                 }`}
                                             title="Font View"
                                         >
@@ -383,8 +383,8 @@ export const Filters = React.memo(
                                                 onViewModeChange("image");
                                             }}
                                             className={`p-2 transition-all duration-300 ${viewMode === "image"
-                                                    ? "bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))] shadow-sm"
-                                                    : "text-[rgb(var(--color-background))] hover:text-[rgb(var(--color-background))] hover:bg-[rgb(var(--color-background)/0.1)]"
+                                                ? "bg-background text-foreground shadow-sm"
+                                                : "text-background hover:text-background hover:bg-background/10"
                                                 }`}
                                             title="Image View"
                                         >
@@ -394,7 +394,7 @@ export const Filters = React.memo(
                                         {/* Separator & Expand Toggle */}
                                         {showExpandToggle && onToggleAll && (
                                             <>
-                                                <div className="w-px h-6 bg-[rgb(var(--color-background)/0.1)] mx-1"></div>
+                                                <div className="w-px h-6 bg-background/10 mx-1"></div>
                                                 <Squircle
                                                     radius={40}
                                                     onClick={async () => {
@@ -403,7 +403,7 @@ export const Filters = React.memo(
                                                         window.scrollTo({ top: 0, behavior: "smooth" });
                                                         onToggleAll();
                                                     }}
-                                                    className="p-2 text-[rgb(var(--color-background))] hover:text-[rgb(var(--color-background))] hover:bg-[rgb(var(--color-background)/0.1)] transition-all duration-300"
+                                                    className="p-2 text-background hover:text-background hover:bg-background/10 transition-all duration-300"
                                                     title={allExpanded ? "Collapse All" : "Expand All"}
                                                 >
                                                     {allExpanded ? (
@@ -427,15 +427,15 @@ export const Filters = React.memo(
                 {isSearchOpen && (
                     <Squircle
                         radius={40}
-                        className="pointer-events-auto bg-[rgb(var(--color-foreground)/0.8)] backdrop-blur-2xl mb-2 w-full max-w-sm animate-in fade-in slide-in-from-bottom-2 duration-300"
+                        className="pointer-events-auto bg-foreground/80 backdrop-blur-2xl mb-2 w-full max-w-sm animate-in fade-in slide-in-from-bottom-2 duration-300"
                     >
                         <div className="flex flex-col gap-1 p-4 w-full max-w-sm">
-                            <h3 className="text-xl sm:text-xl md:text-2xl font-medium tracking-wide text-[rgb(var(--color-background)/0.85)] px-3 py-2 cursor-default">
+                            <h3 className="text-xl sm:text-xl md:text-2xl font-medium tracking-wide text-background/85 px-3 py-2 cursor-default">
                                 Search
                             </h3>
                             <Squircle
                                 radius={40}
-                                className="bg-[rgb(var(--color-background)/0.1)]"
+                                className="bg-background/10"
                             >
                                 <div className="flex items-center gap-2 px-4 py-2">
                                     <input
@@ -444,12 +444,12 @@ export const Filters = React.memo(
                                         placeholder="Search fonts..."
                                         value={localQuery}
                                         onChange={(e) => handleQueryChange(e.target.value)}
-                                        className="bg-transparent border-none! outline-none! text-[rgb(var(--color-background))] text-lg font-inter-tight font-medium placeholder:text-[rgb(var(--color-background)/0.4)] w-full"
+                                        className="bg-transparent border-none! outline-none! text-background text-lg font-inter-tight font-medium placeholder:text-background/40 w-full"
                                     />
                                     {localQuery && (
                                         <button
                                             onClick={() => handleQueryChange("")}
-                                            className="text-[rgb(var(--color-background)/0.6)]"
+                                            className="text-background/60"
                                         >
                                             <X size={16} strokeWidth={3} />
                                         </button>
@@ -464,15 +464,15 @@ export const Filters = React.memo(
                 {isCustomTextOpen && onCustomTextChange && (
                     <Squircle
                         radius={40}
-                        className="pointer-events-auto bg-[rgb(var(--color-foreground)/0.8)] backdrop-blur-2xl mb-2 w-full max-w-sm animate-in fade-in slide-in-from-bottom-2 duration-300"
+                        className="pointer-events-auto bg-foreground/80 backdrop-blur-2xl mb-2 w-full max-w-sm animate-in fade-in slide-in-from-bottom-2 duration-300"
                     >
                         <div className="flex flex-col gap-1 p-4 w-full max-w-sm">
-                            <h3 className="text-xl sm:text-xl md:text-2xl font-medium tracking-wide text-[rgb(var(--color-background)/0.85)] px-3 py-2 cursor-default">
+                            <h3 className="text-xl sm:text-xl md:text-2xl font-medium tracking-wide text-background/85 px-3 py-2 cursor-default">
                                 Your text
                             </h3>
                             <Squircle
                                 radius={40}
-                                className="bg-[rgb(var(--color-background)/0.1)]"
+                                className="bg-background/10"
                             >
                                 <div className="flex items-center gap-2 px-4 py-2">
                                     <input
@@ -481,12 +481,12 @@ export const Filters = React.memo(
                                         placeholder="Type something..."
                                         value={localCustomText}
                                         onChange={(e) => handleCustomTextChange(e.target.value)}
-                                        className="bg-transparent border-none! outline-none! text-[rgb(var(--color-background))] text-lg font-inter-tight font-medium placeholder:text-[rgb(var(--color-background)/0.4)] w-full"
+                                        className="bg-transparent border-none! outline-none! text-background text-lg font-inter-tight font-medium placeholder:text-background/40 w-full"
                                     />
                                     {localCustomText && (
                                         <button
                                             onClick={() => handleCustomTextChange("")}
-                                            className="text-[rgb(var(--color-background)/0.6)] hover:text-[rgb(var(--color-background))]"
+                                            className="text-background/60 hover:text-background"
                                         >
                                             <X size={16} strokeWidth={3} />
                                         </button>
@@ -501,12 +501,12 @@ export const Filters = React.memo(
                 {isCategoriesOpen && (
                     <Squircle
                         radius={80}
-                        className="max-h-[67vh] overflow-y-auto bg-[rgb(var(--color-foreground)/0.8)] backdrop-blur-2xl mb-2"
+                        className="max-h-[67vh] overflow-y-auto bg-foreground/80 backdrop-blur-2xl mb-2"
                     >
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-6 p-4 lg:p-6">
                             {CATEGORIES.map((group, groupIndex) => (
                                 <div key={groupIndex} className="flex flex-col gap-0 md:gap-3">
-                                    <h3 className="text-xl sm:text-xl md:text-2xl font-medium tracking-wide text-[rgb(var(--color-background)/0.85)] px-3 py-2 cursor-default">
+                                    <h3 className="text-xl sm:text-xl md:text-2xl font-medium tracking-wide text-background/85 px-3 py-2 cursor-default">
                                         {group.group}
                                     </h3>
                                     <div className="flex gap-1.5 md:gap-2 flex-wrap">
@@ -525,8 +525,8 @@ export const Filters = React.memo(
                                                     }}
                                                     className={`
                                                 px-3 py-1.5 md:px-3 md:py-2 font-medium rounded-full zborder text-[14px] md:text-sm whitespace-nowrap transition-all duration-200 text-left cursor-pointer ${isSelected
-                                                            ? "bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))] border-[rgb(var(--color-background)/0.1)]"
-                                                            : "bg-[rgb(var(--color-background)/0.05)] text-[rgb(var(--color-background)/0.8)] border-[rgb(var(--color-background)/0.1)] hover:bg-[rgb(var(--color-background)/0.1)] zhover:text-[rgb(var(--color-foreground))]"
+                                                            ? "bg-background text-foreground border-background/10"
+                                                            : "bg-background/5 text-background/80 border-background/10 hover:bg-background/10 zhover:text-foreground"
                                                         }
                                             `}
                                                 >
@@ -545,10 +545,10 @@ export const Filters = React.memo(
                 {isSortOpen && (
                     <Squircle
                         radius={40}
-                        className="w-45 mb-2 ml-0 lg:ml-102 bg-[rgb(var(--color-foreground)/0.8)] backdrop-blur-sm animate-in fade-in slide-in-from-bottom-2 duration-300"
+                        className="w-45 mb-2 ml-0 lg:ml-102 bg-foreground/80 backdrop-blur-sm animate-in fade-in slide-in-from-bottom-2 duration-300"
                     >
                         <div className="flex flex-col zitems-center gap-2 px-4 py-4 lg:px-4 lg:py-4">
-                            <h3 className="w-full text-xl sm:text-xl md:text-2xl font-medium tracking-wide text-[rgb(var(--color-background)/0.85)] px-3 py-2 cursor-default">
+                            <h3 className="w-full text-xl sm:text-xl md:text-2xl font-medium tracking-wide text-background/85 px-3 py-2 cursor-default">
                                 Sort By
                             </h3>
                             <div className="flex flex-col gap-1">
@@ -560,8 +560,8 @@ export const Filters = React.memo(
                                             className={`
                                     w-full px-4 py-3 text-left text-sm transition-all duration-300 tracking-wider
                                     ${(filters.sortBy || "trending") === opt.id
-                                                    ? "bg-[rgb(var(--color-background)/0.9)] text-[rgb(var(--color-foreground))]"
-                                                    : "bg-transparent text-[rgb(var(--color-background))] hover:bg-[rgb(var(--color-background)/0.05)] hover:text-[rgb(var(--color-background))]"
+                                                    ? "bg-background/90 text-foreground"
+                                                    : "bg-transparent text-background hover:bg-background/5 hover:text-background"
                                                 }
                                 `}
                                         >

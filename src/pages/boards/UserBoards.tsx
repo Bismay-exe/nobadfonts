@@ -108,19 +108,19 @@ export default function UserBoards() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[rgb(var(--color-background))]">
-        <div className="w-8 h-8 rounded-full border-2 border-[rgb(var(--color-foreground)/0.1)] border-t-[rgb(var(--color-highlight))] animate-spin" />
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="w-8 h-8 rounded-full border-2 border-foreground/10 border-t-[var(--color-accent)] animate-spin" />
       </div>
     );
   }
 
   if (notFound || !ownerProfile) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))]">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-background text-foreground">
         <p className="text-5xl mb-4">🔍</p>
         <h1 className="text-2xl font-black mb-2">User not found</h1>
-        <p className="text-[rgb(var(--color-muted-foreground))] mb-6">No user with username <strong>@{username}</strong> exists.</p>
-        <Link to="/" className="text-[rgb(var(--color-highlight))] hover:underline text-sm font-semibold">← Back to home</Link>
+        <p className="text-muted mb-6">No user with username <strong>@{username}</strong> exists.</p>
+        <Link to="/" className="text-accent hover:underline text-sm font-semibold">← Back to home</Link>
       </div>
     );
   }
@@ -131,32 +131,32 @@ export default function UserBoards() {
     .filter(Boolean) as Board[];
 
   return (
-    <div className="pt-24 min-h-screen bg-[rgb(var(--color-background))]">
+    <div className="pt-24 min-h-screen bg-background">
       <SEO
         title={`${ownerProfile.full_name}'s Boards — NoBadFonts`}
         description={`Font boards curated by ${ownerProfile.full_name} on NoBadFonts.`}
       />
 
       {/* Profile header */}
-      <div className="relative bg-[rgb(var(--color-card)/0.5)] backdrop-blur-sm">
-        <div className='h-px w-full bg-linear-to-r from-transparent via-[rgb(var(--color-foreground)/0.08)] to-transparent absolute bottom-0 left-0 right-0' />
+      <div className="relative bg-card-background/50 backdrop-blur-sm">
+        <div className='h-px w-full bg-linear-to-r from-transparent via-foreground/8 to-transparent absolute bottom-0 left-0 right-0' />
         <div className="max-w-5xl mx-auto px-4 py-8 flex md:flex-row flex-col md:items-center gap-5">
           {ownerProfile.avatar_url ? (
-            <img src={ownerProfile.avatar_url} alt={ownerProfile.full_name} className="w-24 h-24 md:w-20 md:h-20 rounded-full object-cover border-2 border-[rgb(var(--color-foreground)/0.1)]" />
+            <img src={ownerProfile.avatar_url} alt={ownerProfile.full_name} className="w-24 h-24 md:w-20 md:h-20 rounded-full object-cover border-2 border-foreground/10" />
           ) : (
-            <div className="w-16 h-16 rounded-full bg-linear-to-br from-[rgb(var(--color-highlight))] to-[rgb(var(--color-accent))] flex items-center justify-center text-white text-xl font-black">
+            <div className="w-16 h-16 rounded-full bg-linear-to-br from-accent to-accent flex items-center justify-center text-white text-xl font-black">
               {ownerProfile.full_name?.[0]?.toUpperCase() || '?'}
             </div>
           )}
           <div className="flex-1">
-            <h1 className="text-2xl font-inter-tight font-bold tracking-wide text-[rgb(var(--color-foreground))]">{ownerProfile.full_name}</h1>
-            <p className="text-md font-inter-tight font-light tracking-wider text-[rgb(var(--color-foreground))]">nobadfonts.in/@{ownerProfile.username}</p>
-            {ownerProfile.bio && <p className="text-sm text-[rgb(var(--color-foreground)/0.7)] mt-5">{ownerProfile.bio}</p>}
+            <h1 className="text-2xl font-inter-tight font-bold tracking-wide text-foreground">{ownerProfile.full_name}</h1>
+            <p className="text-md font-inter-tight font-light tracking-wider text-foreground">nobadfonts.in/@{ownerProfile.username}</p>
+            {ownerProfile.bio && <p className="text-sm text-foreground/70 mt-5">{ownerProfile.bio}</p>}
           </div>
           {isOwnProfile && (
             <Link
               to="/profile"
-              className="w-fit text-sm font-semibold text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))] border border-[rgb(var(--color-foreground)/0.15)] px-4 py-2 rounded-xl hover:bg-[rgb(var(--color-foreground)/0.04)] transition-all"
+              className="w-fit text-sm font-semibold text-muted hover:text-foreground border border-foreground/15 px-4 py-2 rounded-xl hover:bg-foreground/4 transition-all"
             >
               Edit Profile
             </Link>
@@ -169,15 +169,15 @@ export default function UserBoards() {
 
         {/* Tabs — only show "Saved" tab on own profile */}
         {isOwnProfile && (
-          <div className="flex items-center gap-1 mb-6 border-b border-[rgb(var(--color-foreground)/0.08)]">
+          <div className="flex items-center gap-1 mb-6 border-b border-foreground/8">
             {(['boards', 'saved'] as Tab[]).map((tab) => (
               <button
                 key={tab}
                 onClick={() => { setActiveTab(tab); setSelectionMode(false); setSelectedBoards(new Set()); }}
                 className={`px-4 py-2.5 text-sm font-semibold capitalize transition-all duration-200 border-b-2 -mb-px flex items-center gap-2 ${
                   activeTab === tab
-                    ? 'border-[rgb(var(--color-foreground))] text-[rgb(var(--color-foreground))]'
-                    : 'border-transparent text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))]'
+                    ? 'border-foreground text-foreground'
+                    : 'border-transparent text-muted hover:text-foreground'
                 }`}
               >
                 {tab === 'saved' && <Bookmark size={14} />}
@@ -193,8 +193,8 @@ export default function UserBoards() {
         {activeTab === 'boards' && (
           <>
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-black text-[rgb(var(--color-foreground))] flex items-center gap-2">
-                Boards <span className="text-[rgb(var(--color-muted-foreground))] font-normal text-sm">{boards.length}</span>
+              <h2 className="text-lg font-black text-foreground flex items-center gap-2">
+                Boards <span className="text-muted font-normal text-sm">{boards.length}</span>
               </h2>
               {isOwnProfile && boards.length > 0 && (
                 <button
@@ -203,7 +203,7 @@ export default function UserBoards() {
                     setSelectedBoards(new Set());
                   }}
                   className={`text-sm font-semibold px-3 py-1.5 rounded-lg transition-colors ${
-                    selectionMode ? 'bg-[rgb(var(--color-foreground)/0.1)] text-[rgb(var(--color-foreground))]' : 'text-[rgb(var(--color-highlight))] hover:bg-[rgb(var(--color-highlight)/0.1)]'
+                    selectionMode ? 'bg-foreground/10 text-foreground' : 'text-accent hover:bg-accent/10'
                   }`}
                 >
                   {selectionMode ? 'Cancel' : 'Manage Boards'}
@@ -212,7 +212,7 @@ export default function UserBoards() {
             </div>
 
             {selectionMode && (
-              <div className="mb-6 p-4 rounded-2xl bg-[rgb(var(--color-foreground)/0.03)] border border-[rgb(var(--color-foreground)/0.08)] flex items-center justify-between">
+              <div className="mb-6 p-4 rounded-2xl bg-foreground/3 border border-foreground/8 flex items-center justify-between">
                 <span className="font-semibold text-sm">
                   {selectedBoards.size} board{selectedBoards.size !== 1 ? 's' : ''} selected
                 </span>
@@ -222,14 +222,14 @@ export default function UserBoards() {
                       if (selectedBoards.size === boards.length) setSelectedBoards(new Set());
                       else setSelectedBoards(new Set(boards.map(b => b.id)));
                     }}
-                    className="text-xs font-semibold text-[rgb(var(--color-foreground)/0.6)] hover:text-[rgb(var(--color-foreground))] transition-colors"
+                    className="text-xs font-semibold text-foreground/60 hover:text-foreground transition-colors"
                   >
                     {selectedBoards.size === boards.length ? 'Deselect All' : 'Select All'}
                   </button>
                   <button
                     onClick={handleDeleteSelected}
                     disabled={selectedBoards.size === 0}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[rgb(var(--color-destructive)/0.1)] text-[rgb(var(--color-destructive))] text-xs font-bold hover:bg-[rgb(var(--color-destructive)/0.2)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-warning/10 text-warning text-xs font-bold hover:bg-warning/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <Trash2 size={14} />
                     Delete Selected
@@ -239,9 +239,9 @@ export default function UserBoards() {
             )}
 
             {boards.length === 0 ? (
-              <div className="text-center py-16 text-[rgb(var(--color-muted-foreground))]">
+              <div className="text-center py-16 text-muted">
                 <p className="text-4xl mb-3">📋</p>
-                <p className="font-semibold text-[rgb(var(--color-foreground))]">{isOwnProfile ? "You don't have any boards yet" : "No public boards yet"}</p>
+                <p className="font-semibold text-foreground">{isOwnProfile ? "You don't have any boards yet" : "No public boards yet"}</p>
                 <p className="text-sm mt-1">
                   {isOwnProfile ? 'Save fonts to boards from any font page.' : 'This user hasn\'t created any public boards.'}
                 </p>
@@ -266,21 +266,21 @@ export default function UserBoards() {
         {activeTab === 'saved' && isOwnProfile && (
           <>
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-black text-[rgb(var(--color-foreground))] flex items-center gap-2">
-                Saved Boards <span className="text-[rgb(var(--color-muted-foreground))] font-normal text-sm">{savedBoardList.length}</span>
+              <h2 className="text-lg font-black text-foreground flex items-center gap-2">
+                Saved Boards <span className="text-muted font-normal text-sm">{savedBoardList.length}</span>
               </h2>
             </div>
 
             {savedLoading ? (
               <div className="flex justify-center py-16">
-                <div className="w-8 h-8 rounded-full border-2 border-[rgb(var(--color-foreground)/0.1)] border-t-[rgb(var(--color-highlight))] animate-spin" />
+                <div className="w-8 h-8 rounded-full border-2 border-foreground/10 border-t-[var(--color-accent)] animate-spin" />
               </div>
             ) : savedBoardList.length === 0 ? (
-              <div className="text-center py-16 text-[rgb(var(--color-muted-foreground))]">
+              <div className="text-center py-16 text-muted">
                 <p className="text-4xl mb-3">🔖</p>
-                <p className="font-semibold text-[rgb(var(--color-foreground))]">No saved boards yet</p>
+                <p className="font-semibold text-foreground">No saved boards yet</p>
                 <p className="text-sm mt-1">Browse other users' boards and save the ones you love.</p>
-                <Link to="/fonts" className="inline-block mt-4 text-sm font-semibold text-[rgb(var(--color-highlight))] hover:underline">
+                <Link to="/fonts" className="inline-block mt-4 text-sm font-semibold text-accent hover:underline">
                   Discover fonts →
                 </Link>
               </div>
@@ -300,7 +300,7 @@ export default function UserBoards() {
                         onToggleSelect={() => {}}
                       />
                       {/* Owner attribution */}
-                      <p className="text-[10px] text-[rgb(var(--color-muted-foreground))] mt-1 px-1">
+                      <p className="text-[10px] text-muted mt-1 px-1">
                         by @{ownerUsername}
                       </p>
                     </div>

@@ -28,13 +28,13 @@ export default function FontGalleryHero({ font, isFontLoaded }: FontGalleryHeroP
                     <PreviewAccordion images={galleryImages} />
                 </div>
             ) : (
-                <div className="relative w-full h-full min-h-[60vh] bg-[rgb(var(--color-card))] rounded-4xl flex items-center justify-center p-8">
+                <div className="relative w-full h-full min-h-[60vh] bg-card-background rounded-4xl flex items-center justify-center p-8">
                     <h2
                         style={{
                             fontFamily: isFontLoaded ? `font-${font.id}` : 'sans-serif',
                             opacity: isFontLoaded ? 1 : 0
                         }}
-                        className="text-[15vw] leading-none text-[rgb(var(--color-foreground)/0.9)] text-center wrap-break-word transition-opacity duration-500 drop-shadow-[0_0_30px_rgba(var(--color-foreground),0.2)]"
+                        className="text-[15vw] leading-none text-foreground/90 text-center wrap-break-word transition-opacity duration-500 drop-shadow-[0_0_30px_rgba(var(--color-foreground),0.2)]"
                     >
                         {font.name}
                     </h2>

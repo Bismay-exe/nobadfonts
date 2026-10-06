@@ -39,13 +39,13 @@ export default function AnalyticsDashboard() {
         favorites: acc.favorites + (curr.favorites_count || 0)
     }), { views: 0, downloads: 0, favorites: 0 }), [stats]);
 
-    if (loading) return <div className="p-8 text-center text-[rgb(var(--color-muted-foreground))]">Loading stats...</div>;
+    if (loading) return <div className="p-8 text-center text-muted">Loading stats...</div>;
 
     if (stats.length === 0) return (
-        <div className="flex flex-col items-center justify-center py-16 bg-[rgb(var(--color-card))] border border-dashed border-[rgb(var(--color-border))] rounded-4xl">
-            <BarChart3 className="text-[rgb(var(--color-muted-foreground)/0.3)]" size={48} />
-            <h3 className="text-xl font-bold text-[rgb(var(--color-foreground))]">No Data Yet</h3>
-            <p className="text-[rgb(var(--color-muted-foreground))]">Upload your first font to start tracking analytics.</p>
+        <div className="flex flex-col items-center justify-center py-16 bg-card-background border border-dashed border-border rounded-4xl">
+            <BarChart3 className="text-muted/30" size={48} />
+            <h3 className="text-xl font-bold text-foreground">No Data Yet</h3>
+            <p className="text-muted">Upload your first font to start tracking analytics.</p>
         </div>
     );
 
@@ -53,34 +53,34 @@ export default function AnalyticsDashboard() {
         <div className="space-y-8 animate-in fade-in duration-500">
             {/* Overview Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] p-6 rounded-4xl relative overflow-hidden group">
+                <div className="bg-foreground text-background p-6 rounded-4xl relative overflow-hidden group">
                     <div className="absolute top-0 right-0 p-6 opacity-20 group-hover:scale-110 transition-transform">
                         <Eye size={48} />
                     </div>
-                    <p className="text-[rgb(var(--color-muted-foreground)/0.4)] text-sm font-bold uppercase tracking-wider mb-1">Total Views</p>
+                    <p className="text-muted/40 text-sm font-bold uppercase tracking-wider mb-1">Total Views</p>
                     <h3 className="text-5xl font-black">{totals.views.toLocaleString()}</h3>
                 </div>
 
-                <div className="bg-[rgb(var(--color-highlight))] text-[rgb(var(--color-background))] p-6 rounded-4xl border-2 border-[rgb(var(--color-foreground))] relative overflow-hidden group">
+                <div className="bg-accent text-background p-6 rounded-4xl border-2 border-foreground relative overflow-hidden group">
                     <div className="absolute top-0 right-0 p-6 opacity-20 group-hover:scale-110 transition-transform">
                         <Download size={48} />
                     </div>
-                    <p className="text-[rgb(var(--color-muted-foreground)/0.6)] text-sm font-bold uppercase tracking-wider mb-1">Downloads</p>
+                    <p className="text-muted/60 text-sm font-bold uppercase tracking-wider mb-1">Downloads</p>
                     <h3 className="text-5xl font-black">{totals.downloads.toLocaleString()}</h3>
                 </div>
 
-                <div className="bg-[rgb(var(--color-card))] text-[rgb(var(--color-foreground))] p-6 rounded-4xl border-2 border-[rgb(var(--color-foreground))] relative overflow-hidden group">
+                <div className="bg-card-background text-foreground p-6 rounded-4xl border-2 border-foreground relative overflow-hidden group">
                     <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:scale-110 transition-transform">
                         <Heart size={48} />
                     </div>
-                    <p className="text-[rgb(var(--color-muted-foreground))] text-sm font-bold uppercase tracking-wider mb-1">Favorites</p>
+                    <p className="text-muted text-sm font-bold uppercase tracking-wider mb-1">Favorites</p>
                     <h3 className="text-5xl font-black">{totals.favorites.toLocaleString()}</h3>
                 </div>
             </div>
 
             {/* Detailed Table */}
-            <div className="bg-[rgb(var(--color-card))] border-2 border-[rgb(var(--color-foreground))] rounded-4xl overflow-hidden">
-                <div className="p-6 border-b border-[rgb(var(--color-border)/0.5)] flex items-center justify-between">
+            <div className="bg-card-background border-2 border-foreground rounded-4xl overflow-hidden">
+                <div className="p-6 border-b border-border/50 flex items-center justify-between">
                     <h3 className="text-xl font-black flex items-center gap-2">
                         <TrendingUp size={20} />
                         Font Performance
@@ -88,7 +88,7 @@ export default function AnalyticsDashboard() {
                 </div>
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">
-                        <thead className="bg-[rgb(var(--color-muted)/0.05)] text-xs uppercase text-[rgb(var(--color-muted-foreground))]">
+                        <thead className="bg-muted/5 text-xs uppercase text-muted">
                             <tr>
                                 <th className="px-6 py-4 font-bold">Font Name</th>
                                 <th className="px-6 py-4 font-bold text-right">Views</th>
@@ -97,24 +97,24 @@ export default function AnalyticsDashboard() {
                                 <th className="px-6 py-4 font-bold text-right">Conversion</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-[rgb(var(--color-border)/0.5)]">
+                        <tbody className="divide-y divide-border/50">
                             {stats.map(font => {
                                 const conversionRate = font.views > 0
                                     ? ((font.downloads / font.views) * 100).toFixed(1) + '%'
                                     : '0%';
 
                                 return (
-                                    <tr key={font.id} className="hover:bg-[rgb(var(--color-muted)/0.05)] transition-colors duration-300 ease-in-out">
+                                    <tr key={font.id} className="hover:bg-muted/5 transition-colors duration-300 ease-in-out">
                                         <td className="px-6 py-4 font-bold flex items-center gap-2">
                                             {font.name}
-                                            <a href={`/font/${font.slug}`} target="_blank" rel="noreferrer" className="text-[rgb(var(--color-muted-foreground)/0.3)] hover:text-[rgb(var(--color-foreground))]">
+                                            <a href={`/font/${font.slug}`} target="_blank" rel="noreferrer" className="text-muted/30 hover:text-foreground">
                                                 <ArrowUpRight size={14} />
                                             </a>
                                         </td>
                                         <td className="px-6 py-4 text-right font-mono">{font.views.toLocaleString()}</td>
                                         <td className="px-6 py-4 text-right font-mono">{font.downloads.toLocaleString()}</td>
                                         <td className="px-6 py-4 text-right font-mono">{font.favorites_count.toLocaleString()}</td>
-                                        <td className="px-6 py-4 text-right font-mono text-[rgb(var(--color-highlight))] font-bold">{conversionRate}</td>
+                                        <td className="px-6 py-4 text-right font-mono text-accent font-bold">{conversionRate}</td>
                                     </tr>
                                 );
                             })}

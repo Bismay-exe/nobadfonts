@@ -7,8 +7,8 @@ interface AnalyticsChartsProps {
 
 export default function AnalyticsChart({ type, data }: AnalyticsChartsProps) {
     const isFavorites = type === 'favorites';
-    const color = isFavorites ? 'rgb(var(--color-accent))' : 'rgb(var(--color-foreground))';
-    const activeDotColor = isFavorites ? 'rgb(var(--color-foreground))' : 'rgb(var(--color-accent))';
+    const color = isFavorites ? 'var(--color-accent)' : 'var(--color-foreground)';
+    const activeDotColor = isFavorites ? 'var(--color-foreground)' : 'var(--color-accent)';
 
     return (
         <div className="h-64 w-full -translate-x-5 md:-translate-x-8">
@@ -21,17 +21,17 @@ export default function AnalyticsChart({ type, data }: AnalyticsChartsProps) {
                             const date = new Date(str);
                             return `${date.getMonth() + 1}/${date.getDate()}`;
                         }}
-                        tick={{ fontSize: 12, fill: 'rgb(var(--color-muted-foreground))' }}
+                        tick={{ fontSize: 12, fill: 'var(--color-muted)' }}
                         interval={4}
                     />
-                    <YAxis allowDecimals={false} tick={{ fontSize: 12, fill: 'rgb(var(--color-muted-foreground))' }} />
+                    <YAxis allowDecimals={false} tick={{ fontSize: 12, fill: 'var(--color-muted)' }} />
                     <Tooltip
                         contentStyle={{ 
                             borderRadius: '12px', 
-                            border: '2px solid rgb(var(--color-border))', 
+                            border: '2px solid var(--color-border)', 
                             fontWeight: 'bold', 
-                            backgroundColor: 'rgb(var(--color-card))',
-                            borderColor: isFavorites ? 'rgb(var(--color-accent))' : 'rgb(var(--color-border))'
+                            backgroundColor: 'var(--color-card-background)',
+                            borderColor: isFavorites ? 'var(--color-accent)' : 'var(--color-border)'
                         }}
                     />
                     <Line

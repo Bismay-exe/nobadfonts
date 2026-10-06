@@ -189,7 +189,7 @@ const SocialShareCard = forwardRef<HTMLDivElement, SocialShareCardProps>(({
                         className={`${titleFontSizeClass} font-normal text-center text-align-middle leading-none text-white mix-blend-screen px-4`}
                         style={{ fontFamily: fontStack }}
                     >
-                        
+
                         {font.name}
                         {/* {licenseLabel && (
                             <span className={`${isOg ? 'px-3.5 py-1.5 text-lg' : 'px-4 py-2 text-xl'} absolute -ml-4 rotate-18 rounded-full bg-[#492FA7] font-inter font-medium tracking-wider text-white`}>
@@ -209,7 +209,7 @@ const SocialShareCard = forwardRef<HTMLDivElement, SocialShareCardProps>(({
             {/* FOOTER: REAL METADATA CHIPS & ATTRIBUTION */}
             <div className="relative z-10 flex justify-between items-end gap-6">
                 <div>
-                    <p className={`text-[rgb(var(--color-muted-foreground))] ${isOg ? 'text-xl' : 'text-2xl'} font-inter-tight lowercase tracking-wider mb-2`}>Designed By</p>
+                    <p className={`text-muted ${isOg ? 'text-xl' : 'text-2xl'} font-inter-tight lowercase tracking-wider mb-2`}>Designed By</p>
                     <p className={`opacity-80 ${isOg ? 'text-3xl' : 'text-4xl'} font-inter-tight`}>{font.designer || 'Unknown Designer'}</p>
                 </div>
 

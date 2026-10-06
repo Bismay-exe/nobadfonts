@@ -30,8 +30,8 @@ export const DocsLayout: React.FC = () => {
     <div
       className="min-h-screen flex flex-col font-bricolage-grotesque"
       style={{
-        backgroundColor: 'rgb(var(--color-background))',
-        color: 'rgb(var(--color-foreground))',
+        backgroundColor: 'var(--color-background)',
+        color: 'var(--color-foreground)',
       }}
     >
       {/* Reuse existing app Navbar for visual consistency */}
@@ -41,8 +41,8 @@ export const DocsLayout: React.FC = () => {
       {/* <div
         className="sticky top-0 z-30 flex zmd:hidden items-center justify-between px-4 py-3 border-b font-inter-tight"
         style={{
-          backgroundColor: 'rgb(var(--color-background)/0.9)',
-          borderColor: 'rgb(var(--color-border))',
+          backgroundColor: 'color-mix(in srgb, var(--color-background) 90%, transparent)',
+          borderColor: 'var(--color-border)',
           backdropFilter: 'blur(12px)',
           marginTop: '60px',
         }}
@@ -51,7 +51,7 @@ export const DocsLayout: React.FC = () => {
           type="button"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           className="flex items-center gap-2 text-sm font-medium transition-colors"
-          style={{ color: 'rgb(var(--color-muted-foreground))' }}
+          style={{ color: 'var(--color-muted)' }}
           aria-label="Toggle docs navigation"
         >
           {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
@@ -63,16 +63,16 @@ export const DocsLayout: React.FC = () => {
           onClick={() => setSearchOpen(true)}
           className="flex items-center gap-2 px-3 py-1.5 text-xs rounded-xl border transition-all"
           style={{
-            color: 'rgb(var(--color-muted-foreground))',
-            borderColor: 'rgb(var(--color-border))',
-            backgroundColor: 'rgb(var(--color-card))',
+            color: 'var(--color-muted)',
+            borderColor: 'var(--color-border)',
+            backgroundColor: 'var(--color-card-background)',
           }}
         >
           <Search className="w-3.5 h-3.5" />
           <span>Search</span>
           <kbd
             className="text-[10px] font-mono px-1 rounded"
-            style={{ backgroundColor: 'rgb(var(--color-muted))', color: 'rgb(var(--color-muted-foreground))' }}
+            style={{ backgroundColor: 'var(--color-muted)', color: 'var(--color-muted)' }}
           >
             ⌘K
           </kbd>
@@ -88,8 +88,8 @@ export const DocsLayout: React.FC = () => {
           className="hidden md:flex flex-col w-64 shrink-0 sticky h-[calc(100vh-72px)] overflow-y-auto border-r"
           style={{
             top: '72px',
-            borderColor: 'rgb(var(--color-border))',
-            backgroundColor: 'rgb(var(--color-background))',
+            borderColor: 'var(--color-border)',
+            backgroundColor: 'var(--color-background)',
           }}
         >
           <DocsSidebar onOpenSearch={() => setSearchOpen(true)} />
@@ -100,14 +100,14 @@ export const DocsLayout: React.FC = () => {
           <div className="fixed inset-0 z-40 md:hidden flex">
             <div
               className="fixed inset-0 transition-opacity"
-              style={{ backgroundColor: 'rgb(var(--color-foreground)/0.4)', backdropFilter: 'blur(4px)' }}
+              style={{ backgroundColor: 'color-mix(in srgb, var(--color-foreground) 40%, transparent)', backdropFilter: 'blur(4px)' }}
               onClick={() => setMobileMenuOpen(false)}
             />
             <div
               className="relative w-72 max-w-[85vw] h-full border-r shadow-2xl z-10 flex flex-col pt-4"
               style={{
-                backgroundColor: 'rgb(var(--color-background))',
-                borderColor: 'rgb(var(--color-border))',
+                backgroundColor: 'var(--color-background)',
+                borderColor: 'var(--color-border)',
               }}
             >
               <DocsSidebar
@@ -133,8 +133,8 @@ export const DocsLayout: React.FC = () => {
           className="hidden lg:flex flex-col w-56 xl:w-64 shrink-0 sticky h-[calc(100vh-72px)] overflow-y-auto py-8 px-5 border-l"
           style={{
             top: '72px',
-            borderColor: 'rgb(var(--color-border))',
-            backgroundColor: 'rgb(var(--color-background))',
+            borderColor: 'var(--color-border)',
+            backgroundColor: 'var(--color-background)',
           }}
         >
           <DocsTableOfContents />

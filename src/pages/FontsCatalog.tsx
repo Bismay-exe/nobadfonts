@@ -210,8 +210,8 @@ export default function FontsCatalog() {
             <div className="relative px-1 sm:px-2 md:px-4 pt-0 md:pt-6 w-full">
                 {/* Header */}
                 <div className="mb-8 text-center px-8">
-                    <h1 className="text-4xl md:text-6xl font-bold tracking-tighter text-[rgb(var(--color-foreground)/0.85)] mb-4">Catalog</h1>
-                    <p className="text-[rgb(var(--color-muted-foreground))] max-w-xl mx-auto">
+                    <h1 className="text-4xl md:text-6xl font-bold tracking-tighter text-foreground/85 mb-4">Catalog</h1>
+                    <p className="text-muted max-w-xl mx-auto">
                         Discover the perfect typeface for your next project from our extensive collection of premium fonts.
                     </p>
                 </div>
@@ -241,7 +241,7 @@ export default function FontsCatalog() {
                 {/* Content */}
                 <div className="w-full h-full">
                     {error && (
-                        <div className="bg-[rgb(var(--color-destructive)/0.1)] border border-[rgb(var(--color-destructive)/0.2)] text-[rgb(var(--color-destructive))] p-6 rounded-2xl text-center max-w-2xl mx-auto">
+                        <div className="bg-warning/10 border border-warning/20 text-warning p-6 rounded-2xl text-center max-w-2xl mx-auto">
                             Error loading fonts: {error}
                         </div>
                     )}
@@ -253,7 +253,7 @@ export default function FontsCatalog() {
                             }}
                         >
                             {[...Array(16)].map((_, i) => (
-                                <div key={i} className="bg-[rgb(var(--color-card)/0.6)] mb-4 sm:mb-6 rounded-4xl zborder border-[rgb(var(--color-foreground)/0.2)] h-64 animate-pulse" />
+                                <div key={i} className="bg-card-background/60 mb-4 sm:mb-6 rounded-4xl zborder border-foreground/20 h-64 animate-pulse" />
                             ))}
                         </div>
                     ) : fonts.length > 0 ? (

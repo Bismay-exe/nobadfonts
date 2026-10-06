@@ -14,7 +14,7 @@ type ProgressiveBlurProps = {
  */
 const ProgressiveBlur = ({
   className = "",
-  backgroundColor = "rgb(var(--color-background))",
+  backgroundColor = "var(--color-background)",
   position = "top",
   height = "120px",
   blurAmount = "12px",

@@ -107,7 +107,7 @@ export default function DmcaPolicy() {
                             DMCA Takedown Notice - [Font Name]
                         </code>
                     </p>
-                    <p className="text-xs text-[rgb(var(--color-muted-foreground))]">
+                    <p className="text-xs text-muted">
                         Attn: NoBadFonts Legal Compliance & Copyright Agent. We review all notices promptly and confirm receipt within 24–48 hours.
                     </p>
                 </section>

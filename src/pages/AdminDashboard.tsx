@@ -350,13 +350,13 @@ export default function AdminDashboard() {
     }), [allFonts]);
 
 
-    if (authLoading) <div className="w-screen h-screen flex justify-center items-center bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))]">Loading...</div>;
+    if (authLoading) <div className="w-screen h-screen flex justify-center items-center bg-background text-foreground">Loading...</div>;
     if (!user || profile?.role !== 'admin') return <Navigate to="/" replace />;
 
     return (
         <div className="pt-24 mx-auto bg-transparent rounded-4xl">
             <SEO title="Admin Dashboard | NoBadFonts" noindex url="/admin" />
-            <h1 className="text-4xl md:text-6xl text-center md:text-left font-inter-tight font-medium uppercase text-[rgb(var(--color-foreground))] pt-8 pb-4">Admin Dashboard</h1>
+            <h1 className="text-4xl md:text-6xl text-center md:text-left font-inter-tight font-medium uppercase text-foreground pt-8 pb-4">Admin Dashboard</h1>
 
             {/* Tabs */}
             <div className=''>
@@ -367,12 +367,12 @@ export default function AdminDashboard() {
                             await Haptics.impact({ style: ImpactStyle.Light });
                             setActiveTab('requests');
                         }}
-                        className={`px-6 py-2 rounded-full font-bold border-2 border-[rgb(var(--color-foreground)/0.15)] transition-all ${activeTab === 'requests' ? 'bg-[rgb(var(--color-highlight))] text-black shadow-[4px_4px_0px_0px_rgba(var(--color-foreground),1)]' : 'bg-[rgb(var(--color-card))] text-[rgb(var(--color-foreground))] hover:border-[rgb(var(--color-highlight))]'
+                        className={`px-6 py-2 rounded-full font-bold border-2 border-foreground/15 transition-all ${activeTab === 'requests' ? 'bg-accent text-black shadow-[4px_4px_0px_0px_rgba(var(--color-foreground),1)]' : 'bg-card-background text-foreground hover:border-accent'
                             }`}
                     >
                         Requests
                         {pendingRequests.length > 0 && (
-                            <span className="ml-2 bg-[rgb(var(--color-destructive))] text-[rgb(var(--color-background))] text-xs px-2 py-0.5 rounded-full">{pendingRequests.length}</span>
+                            <span className="ml-2 bg-warning text-background text-xs px-2 py-0.5 rounded-full">{pendingRequests.length}</span>
                         )}
                     </motion.button>
                     <motion.button
@@ -381,7 +381,7 @@ export default function AdminDashboard() {
                             await Haptics.impact({ style: ImpactStyle.Light });
                             setActiveTab('users');
                         }}
-                        className={`px-6 py-2 rounded-full font-bold border-2 border-[rgb(var(--color-foreground)/0.15)] transition-all ${activeTab === 'users' ? 'bg-[rgb(var(--color-accent))] text-black shadow-[4px_4px_0px_0px_rgba(var(--color-foreground),1)]' : 'bg-[rgb(var(--color-card))] text-[rgb(var(--color-foreground))] hover:border-[rgb(var(--color-accent))]'
+                        className={`px-6 py-2 rounded-full font-bold border-2 border-foreground/15 transition-all ${activeTab === 'users' ? 'bg-accent text-black shadow-[4px_4px_0px_0px_rgba(var(--color-foreground),1)]' : 'bg-card-background text-foreground hover:border-accent'
                             }`}
                     >
                         User Management
@@ -392,7 +392,7 @@ export default function AdminDashboard() {
                             await Haptics.impact({ style: ImpactStyle.Light });
                             setActiveTab('files');
                         }}
-                        className={`px-6 py-2 rounded-full font-bold border-2 border-[rgb(var(--color-foreground)/0.15)] transition-all ${activeTab === 'files' ? 'bg-[rgb(var(--color-success,var(--color-highlight)))] text-black shadow-[4px_4px_0px_0px_rgba(var(--color-foreground),1)]' : 'bg-[rgb(var(--color-card))] text-[rgb(var(--color-foreground))] hover:border-[rgb(var(--color-success,var(--color-highlight)))]'
+                        className={`px-6 py-2 rounded-full font-bold border-2 border-foreground/15 transition-all ${activeTab === 'files' ? 'bg-success text-black shadow-[4px_4px_0px_0px_rgba(var(--color-foreground),1)]' : 'bg-card-background text-foreground hover:border-success'
                             }`}
                     >
                         Storage & Files
@@ -403,7 +403,7 @@ export default function AdminDashboard() {
                             await Haptics.impact({ style: ImpactStyle.Light });
                             setActiveTab('curation');
                         }}
-                        className={`px-6 py-2 rounded-full font-bold border-2 border-[rgb(var(--color-foreground)/0.15)] transition-all ${activeTab === 'curation' ? 'bg-[rgb(var(--color-warning))] text-black shadow-[4px_4px_0px_0px_rgba(var(--color-foreground),1)]' : 'bg-[rgb(var(--color-card))] text-[rgb(var(--color-foreground))] hover:border-[rgb(var(--color-warning))]'
+                        className={`px-6 py-2 rounded-full font-bold border-2 border-foreground/15 transition-all ${activeTab === 'curation' ? 'bg-warning text-black shadow-[4px_4px_0px_0px_rgba(var(--color-foreground),1)]' : 'bg-card-background text-foreground hover:border-warning'
                             }`}
                     >
                         Site Curation
@@ -414,7 +414,7 @@ export default function AdminDashboard() {
                             await Haptics.impact({ style: ImpactStyle.Light });
                             setActiveTab('analytics');
                         }}
-                        className={`px-6 py-2 rounded-full font-bold border-2 border-[rgb(var(--color-foreground)/0.15)] transition-all ${activeTab === 'analytics' ? 'bg-[rgb(var(--color-accent))] text-black shadow-[4px_4px_0px_0px_rgba(var(--color-foreground),1)]' : 'bg-[rgb(var(--color-card))] text-[rgb(var(--color-foreground))] hover:border-[rgb(var(--color-accent))]'
+                        className={`px-6 py-2 rounded-full font-bold border-2 border-foreground/15 transition-all ${activeTab === 'analytics' ? 'bg-accent text-black shadow-[4px_4px_0px_0px_rgba(var(--color-foreground),1)]' : 'bg-card-background text-foreground hover:border-accent'
                             }`}
                     >
                         Analytics
@@ -425,7 +425,7 @@ export default function AdminDashboard() {
                             await Haptics.impact({ style: ImpactStyle.Light });
                             setActiveTab('research');
                         }}
-                        className={`px-6 py-2 rounded-full font-bold border-2 border-[rgb(var(--color-foreground)/0.15)] transition-all ${activeTab === 'research' ? 'bg-[rgb(var(--color-highlight))] text-black shadow-[4px_4px_0px_0px_rgba(var(--color-foreground),1)]' : 'bg-[rgb(var(--color-card))] text-[rgb(var(--color-foreground))] hover:border-[rgb(var(--color-highlight))]'
+                        className={`px-6 py-2 rounded-full font-bold border-2 border-foreground/15 transition-all ${activeTab === 'research' ? 'bg-accent text-black shadow-[4px_4px_0px_0px_rgba(var(--color-foreground),1)]' : 'bg-card-background text-foreground hover:border-accent'
                             }`}
                     >
                         AI Research
@@ -436,7 +436,7 @@ export default function AdminDashboard() {
                             await Haptics.impact({ style: ImpactStyle.Light });
                             setActiveTab('github');
                         }}
-                        className={`px-6 py-2 rounded-full font-bold border-2 border-[rgb(var(--color-foreground)/0.15)] transition-all ${activeTab === 'github' ? 'bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] shadow-[4px_4px_0px_0px_rgba(var(--color-foreground),1)]' : 'bg-[rgb(var(--color-card))] text-[rgb(var(--color-foreground))] hover:border-[rgb(var(--color-foreground)/0.5)]'
+                        className={`px-6 py-2 rounded-full font-bold border-2 border-foreground/15 transition-all ${activeTab === 'github' ? 'bg-foreground text-background shadow-[4px_4px_0px_0px_rgba(var(--color-foreground),1)]' : 'bg-card-background text-foreground hover:border-foreground/50'
                             }`}
                     >
                         GitHub Discovery
@@ -444,10 +444,10 @@ export default function AdminDashboard() {
                 </div>
             </div>
 
-            <div className="bg-[rgb(var(--color-card))] border-2 border-[rgb(var(--color-foreground)/0.15)] rounded-4xl px-4 md:px-8 pt-8 md:pt-8 pb-4 md:pb-8 min-h-[50vh]">
+            <div className="bg-card-background border-2 border-foreground/15 rounded-4xl px-4 md:px-8 pt-8 md:pt-8 pb-4 md:pb-8 min-h-[50vh]">
                 {loading ? (
                     <div className="flex justify-center p-8">
-                        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[rgb(var(--color-foreground)/0.15)]"></div>
+                        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-foreground/15"></div>
                     </div>
                 ) : (
                     <>
@@ -457,26 +457,26 @@ export default function AdminDashboard() {
                                     Pending Member Requests
                                 </h2>
                                 {pendingRequests.length === 0 ? (
-                                    <div className="text-center py-12 text-[rgb(var(--color-muted-foreground))] font-bold border-2 border-dashed border-[rgb(var(--color-foreground)/0.1)] rounded-2xl">
+                                    <div className="text-center py-12 text-muted font-bold border-2 border-dashed border-foreground/10 rounded-2xl">
                                         No pending requests
                                     </div>
                                 ) : (
                                     <div className="space-y-4">
                                         {pendingRequests.map(request => (
-                                            <div key={request.id} className="flex flex-col md:flex-row items-center justify-between p-4 bg-[rgb(var(--color-foreground)/0.03)] border-2 border-[rgb(var(--color-border))] rounded-2xl gap-4">
+                                            <div key={request.id} className="flex flex-col md:flex-row items-center justify-between p-4 bg-foreground/3 border-2 border-border rounded-2xl gap-4">
                                                 <div className="flex items-center gap-4 w-full md:w-auto">
-                                                    <div className="w-12 h-12 bg-[rgb(var(--color-foreground)/0.1)] rounded-full border-2 border-[rgb(var(--color-border))] overflow-hidden shrink-0">
+                                                    <div className="w-12 h-12 bg-foreground/10 rounded-full border-2 border-border overflow-hidden shrink-0">
                                                         {request.avatar_url ? (
                                                             <img src={request.avatar_url} alt={request.full_name} className="w-full h-full object-cover" />
                                                         ) : (
-                                                            <div className="w-full h-full flex items-center justify-center font-black text-lg text-[rgb(var(--color-muted-foreground))]">
+                                                            <div className="w-full h-full flex items-center justify-center font-black text-lg text-muted">
                                                                 {request.full_name?.charAt(0)}
                                                             </div>
                                                         )}
                                                     </div>
                                                     <div>
-                                                        <h3 className="font-bold text-lg leading-tight text-[rgb(var(--color-foreground))]">{request.full_name}</h3>
-                                                        <p className="text-sm text-[rgb(var(--color-muted-foreground))]">{request.email}</p>
+                                                        <h3 className="font-bold text-lg leading-tight text-foreground">{request.full_name}</h3>
+                                                        <p className="text-sm text-muted">{request.email}</p>
                                                     </div>
                                                 </div>
 
@@ -487,7 +487,7 @@ export default function AdminDashboard() {
                                                             await Haptics.impact({ style: ImpactStyle.Medium });
                                                             handleRequestAction(request.id, 'reject');
                                                         }}
-                                                        className="flex-1 md:flex-none px-6 py-2 bg-transparent text-[rgb(var(--color-destructive))] font-bold uppercase rounded-xl border-2 border-[rgb(var(--color-border))] hover:border-[rgb(var(--color-destructive))] hover:bg-[rgb(var(--color-destructive)/0.1)] transition-colors duration-300 ease-in-out"
+                                                        className="flex-1 md:flex-none px-6 py-2 bg-transparent text-warning font-bold uppercase rounded-xl border-2 border-border hover:border-warning hover:bg-warning/10 transition-colors duration-300 ease-in-out"
                                                     >
                                                         Reject
                                                     </motion.button>
@@ -497,7 +497,7 @@ export default function AdminDashboard() {
                                                             await Haptics.impact({ style: ImpactStyle.Medium });
                                                             handleRequestAction(request.id, 'approve');
                                                         }}
-                                                        className="flex-1 md:flex-none px-6 py-2 bg-[rgb(var(--color-highlight))] text-[rgb(var(--color-background))] font-bold uppercase rounded-xl border-2 border-[rgb(var(--color-border))] hover:opacity-80 transition-colors duration-300 ease-in-out"
+                                                        className="flex-1 md:flex-none px-6 py-2 bg-accent text-background font-bold uppercase rounded-xl border-2 border-border hover:opacity-80 transition-colors duration-300 ease-in-out"
                                                     >
                                                         Approve
                                                     </motion.button>
@@ -519,62 +519,62 @@ export default function AdminDashboard() {
                                             placeholder="Search users..."
                                             value={searchUsers}
                                             onChange={(e) => setSearchUsers(e.target.value)}
-                                            className="w-full pl-10 pr-4 py-2 border-2 border-[rgb(var(--color-border))] rounded-full focus:outline-none focus:bg-[rgb(var(--color-foreground)/0.03)] transition-all font-bold text-sm bg-transparent text-[rgb(var(--color-foreground))]"
+                                            className="w-full pl-10 pr-4 py-2 border-2 border-border rounded-full focus:outline-none focus:bg-foreground/3 transition-all font-bold text-sm bg-transparent text-foreground"
                                         />
-                                        <Search className="absolute left-3 top-2.5 text-[rgb(var(--color-muted-foreground))]" size={18} />
+                                        <Search className="absolute left-3 top-2.5 text-muted" size={18} />
                                     </div>
                                 </div>
                                 <div className="overflow-x-auto">
                                     <table className="w-full text-left border-collapse">
                                         <thead>
-                                            <tr className="border-b-2 border-[rgb(var(--color-border))] text-sm uppercase text-[rgb(var(--color-muted-foreground))]">
+                                            <tr className="border-b-2 border-border text-sm uppercase text-muted">
                                                 <th className="py-4 px-4">User</th>
                                                 <th className="py-4 px-4">Role</th>
                                                 <th className="py-4 px-4">Joined</th>
                                                 <th className="py-4 px-4 text-right">Actions</th>
                                             </tr>
                                         </thead>
-                                        <tbody className="divide-y divide-[rgb(var(--color-border)/0.5)]">
+                                        <tbody className="divide-y divide-border/50">
                                             {allUsers.filter(u =>
                                                 u.full_name?.toLowerCase().includes(searchUsers.toLowerCase()) ||
                                                 u.email?.toLowerCase().includes(searchUsers.toLowerCase())
                                             ).map(u => (
-                                                <tr key={u.id} className="hover:bg-[rgb(var(--color-foreground)/0.03)] transition-colors duration-300 ease-in-out">
+                                                <tr key={u.id} className="hover:bg-foreground/3 transition-colors duration-300 ease-in-out">
                                                     <td className="py-4 px-4">
                                                         <div className="flex items-center gap-3">
-                                                            <div className="w-10 h-10 bg-[rgb(var(--color-foreground)/0.1)] rounded-full border border-[rgb(var(--color-border))] overflow-hidden shrink-0">
+                                                            <div className="w-10 h-10 bg-foreground/10 rounded-full border border-border overflow-hidden shrink-0">
                                                                 {u.avatar_url ? (
                                                                     <img src={u.avatar_url} alt={u.full_name} className="w-full h-full object-cover" />
                                                                 ) : (
-                                                                    <div className="w-full h-full flex items-center justify-center font-black text-sm text-[rgb(var(--color-muted-foreground))]">
+                                                                    <div className="w-full h-full flex items-center justify-center font-black text-sm text-muted">
                                                                         {u.full_name?.charAt(0)}
                                                                     </div>
                                                                 )}
                                                             </div>
                                                             <div>
-                                                                <div className="font-bold text-[rgb(var(--color-foreground))]">{u.full_name}</div>
-                                                                <div className="text-sm text-[rgb(var(--color-muted-foreground))]">{u.email}</div>
+                                                                <div className="font-bold text-foreground">{u.full_name}</div>
+                                                                <div className="text-sm text-muted">{u.email}</div>
                                                             </div>
                                                         </div>
                                                     </td>
                                                     <td className="py-4 px-4">
                                                         <span className={`
-                                                            inline-block px-3 py-1 rounded-full text-xs font-bold uppercase border border-[rgb(var(--color-border))]
-                                                            ${u.role === 'admin' ? 'bg-[rgb(var(--color-accent))] text-[rgb(var(--color-background))]' :
-                                                                u.role === 'member' ? 'bg-[rgb(var(--color-highlight))] text-[rgb(var(--color-background))]' :
-                                                                    'bg-[rgb(var(--color-card))] text-[rgb(var(--color-muted-foreground))]'}
+                                                            inline-block px-3 py-1 rounded-full text-xs font-bold uppercase border border-border
+                                                            ${u.role === 'admin' ? 'bg-accent text-background' :
+                                                                u.role === 'member' ? 'bg-accent text-background' :
+                                                                    'bg-card-background text-muted'}
                                                         `}>
                                                             {u.role}
                                                         </span>
                                                     </td>
-                                                    <td className="py-4 px-4 text-sm text-[rgb(var(--color-muted-foreground))] font-mono">
+                                                    <td className="py-4 px-4 text-sm text-muted font-mono">
                                                         {new Date(u.created_at || '').toLocaleDateString()}
                                                     </td>
                                                     <td className="py-4 px-4 text-right">
                                                         <select
                                                             value={u.role}
                                                             onChange={(e) => handleRoleChange(u.id, e.target.value as any)}
-                                                            className="border-2 border-[rgb(var(--color-border))] bg-[rgb(var(--color-card))] text-[rgb(var(--color-foreground))] rounded-lg px-2 py-1 text-sm font-bold focus:border-[rgb(var(--color-highlight))] focus:ring-0 cursor-pointer"
+                                                            className="border-2 border-border bg-card-background text-foreground rounded-lg px-2 py-1 text-sm font-bold focus:border-accent focus:ring-0 cursor-pointer"
                                                             disabled={u.id === user?.id}
                                                         >
                                                             <option value="user">User</option>
@@ -600,37 +600,37 @@ export default function AdminDashboard() {
                                             placeholder="Search files..."
                                             value={searchFiles}
                                             onChange={(e) => setSearchFiles(e.target.value)}
-                                            className="w-full pl-10 pr-4 py-2 border-2 border-[rgb(var(--color-border))] rounded-full focus:outline-none focus:bg-[rgb(var(--color-foreground)/0.03)] transition-all font-bold text-sm bg-transparent text-[rgb(var(--color-foreground))]"
+                                            className="w-full pl-10 pr-4 py-2 border-2 border-border rounded-full focus:outline-none focus:bg-foreground/3 transition-all font-bold text-sm bg-transparent text-foreground"
                                         />
-                                        <Search className="absolute left-3 top-2.5 text-[rgb(var(--color-muted-foreground))]" size={18} />
+                                        <Search className="absolute left-3 top-2.5 text-muted" size={18} />
                                     </div>
                                 </div>
 
                                 {/* Summary Cards */}
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                                    <div className="bg-[rgb(var(--color-foreground)/0.03)] rounded-2xl p-6 border-2 border-[rgb(var(--color-border))]">
-                                        <h3 className="font-bold text-[rgb(var(--color-muted-foreground))] uppercase text-sm mb-2">Total Fonts</h3>
-                                        <p className="text-4xl font-black text-[rgb(var(--color-foreground))]">{totalFonts}</p>
+                                    <div className="bg-foreground/3 rounded-2xl p-6 border-2 border-border">
+                                        <h3 className="font-bold text-muted uppercase text-sm mb-2">Total Fonts</h3>
+                                        <p className="text-4xl font-black text-foreground">{totalFonts}</p>
                                     </div>
-                                    <div className="bg-[rgb(var(--color-foreground)/0.03)] rounded-2xl p-6 border-2 border-[rgb(var(--color-border))]">
-                                        <h3 className="font-bold text-[rgb(var(--color-muted-foreground))] uppercase text-sm mb-2">Fonts Storage</h3>
-                                        <p className="text-4xl font-black text-[rgb(var(--color-foreground))]">{formatBytes(totalStorageSize)}</p>
+                                    <div className="bg-foreground/3 rounded-2xl p-6 border-2 border-border">
+                                        <h3 className="font-bold text-muted uppercase text-sm mb-2">Fonts Storage</h3>
+                                        <p className="text-4xl font-black text-foreground">{formatBytes(totalStorageSize)}</p>
                                     </div>
-                                    <div className="bg-[rgb(var(--color-foreground)/0.03)] rounded-2xl p-6 border-2 border-[rgb(var(--color-border))]">
-                                        <h3 className="font-bold text-[rgb(var(--color-muted-foreground))] uppercase text-sm mb-2">Images Storage</h3>
-                                        <p className="text-4xl font-black text-[rgb(var(--color-foreground))]">{formatBytes(allFonts.reduce((acc, font) => {
+                                    <div className="bg-foreground/3 rounded-2xl p-6 border-2 border-border">
+                                        <h3 className="font-bold text-muted uppercase text-sm mb-2">Images Storage</h3>
+                                        <p className="text-4xl font-black text-foreground">{formatBytes(allFonts.reduce((acc, font) => {
                                             const previewSize = font.file_size_image_preview || 0;
                                             const gallerySize = (font.gallery_image_sizes || []).reduce((a, b) => a + b, 0);
                                             return acc + previewSize + gallerySize;
                                         }, 0))}</p>
                                     </div>
-                                    <div className="bg-[rgb(var(--color-foreground)/0.03)] rounded-2xl p-6 border-2 border-[rgb(var(--color-border))]">
-                                        <h3 className="font-bold text-[rgb(var(--color-muted-foreground))] uppercase text-sm mb-2">Files Count</h3>
+                                    <div className="bg-foreground/3 rounded-2xl p-6 border-2 border-border">
+                                        <h3 className="font-bold text-muted uppercase text-sm mb-2">Files Count</h3>
                                         <div className="flex flex-wrap gap-2 text-sm font-bold">
-                                            <span className="px-2 py-1 bg-[rgb(var(--color-card))] border border-[rgb(var(--color-border))] rounded text-[rgb(var(--color-foreground))]">WOFF2: {formatCounts.woff2}</span>
-                                            <span className="px-2 py-1 bg-[rgb(var(--color-card))] border border-[rgb(var(--color-border))] rounded text-[rgb(var(--color-foreground))]">WOFF: {formatCounts.woff}</span>
-                                            <span className="px-2 py-1 bg-[rgb(var(--color-card))] border border-[rgb(var(--color-border))] rounded text-[rgb(var(--color-foreground))]">TTF: {formatCounts.ttf}</span>
-                                            <span className="px-2 py-1 bg-[rgb(var(--color-card))] border border-[rgb(var(--color-border))] rounded text-[rgb(var(--color-foreground))]">OTF: {formatCounts.otf}</span>
+                                            <span className="px-2 py-1 bg-card-background border border-border rounded text-foreground">WOFF2: {formatCounts.woff2}</span>
+                                            <span className="px-2 py-1 bg-card-background border border-border rounded text-foreground">WOFF: {formatCounts.woff}</span>
+                                            <span className="px-2 py-1 bg-card-background border border-border rounded text-foreground">TTF: {formatCounts.ttf}</span>
+                                            <span className="px-2 py-1 bg-card-background border border-border rounded text-foreground">OTF: {formatCounts.otf}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -638,68 +638,68 @@ export default function AdminDashboard() {
                                 <div className="overflow-x-auto">
                                     <table className="w-full text-left border-collapse">
                                         <thead>
-                                            <tr className="border-b-2 border-[rgb(var(--color-border))] text-sm uppercase text-[rgb(var(--color-muted-foreground))]">
-                                                <th className="py-4 px-4 rounded-tl-xl hover:bg-[rgb(var(--color-foreground)/0.03)]">Font</th>
-                                                <th className="py-4 px-4 hover:bg-[rgb(var(--color-foreground)/0.03)]">Formats</th>
-                                                <th className="py-4 px-4 hover:bg-[rgb(var(--color-foreground)/0.03)]">File Sizes</th>
-                                                <th className="py-4 px-4 hover:bg-[rgb(var(--color-foreground)/0.03)]">Uploaded</th>
+                                            <tr className="border-b-2 border-border text-sm uppercase text-muted">
+                                                <th className="py-4 px-4 rounded-tl-xl hover:bg-foreground/3">Font</th>
+                                                <th className="py-4 px-4 hover:bg-foreground/3">Formats</th>
+                                                <th className="py-4 px-4 hover:bg-foreground/3">File Sizes</th>
+                                                <th className="py-4 px-4 hover:bg-foreground/3">Uploaded</th>
                                             </tr>
                                         </thead>
-                                        <tbody className="divide-y divide-[rgb(var(--color-border)/0.5)]">
+                                        <tbody className="divide-y divide-border/50">
                                             {allFonts.filter(f =>
                                                 f.name?.toLowerCase().includes(searchFiles.toLowerCase())
                                             ).map(font => (
-                                                <tr key={font.id} className="hover:bg-[rgb(var(--color-foreground)/0.03)] transition-colors duration-300 ease-in-out">
+                                                <tr key={font.id} className="hover:bg-foreground/3 transition-colors duration-300 ease-in-out">
                                                     <td className="py-4 px-4">
                                                         <div className="flex items-center gap-3">
-                                                            <div className="w-10 h-10 bg-[rgb(var(--color-foreground)/0.05)] rounded-lg border border-[rgb(var(--color-border))] overflow-hidden shrink-0">
+                                                            <div className="w-10 h-10 bg-foreground/5 rounded-lg border border-border overflow-hidden shrink-0">
                                                                 {font.preview_image_url ? (
                                                                     <img src={font.preview_image_url} alt={font.name} className="w-full h-full object-cover" />
                                                                 ) : (
-                                                                    <div className="w-full h-full flex items-center justify-center font-bold text-xs text-[rgb(var(--color-muted-foreground))]">Aa</div>
+                                                                    <div className="w-full h-full flex items-center justify-center font-bold text-xs text-muted">Aa</div>
                                                                 )}
                                                             </div>
-                                                            <Link to={`/fonts/${font.slug || font.id}`} className="font-bold text-[rgb(var(--color-foreground))] hover:underline">
+                                                            <Link to={`/fonts/${font.slug || font.id}`} className="font-bold text-foreground hover:underline">
                                                                 {font.name}
                                                             </Link>
                                                         </div>
                                                     </td>
                                                     <td className="py-4 px-4">
                                                         <div className="flex flex-wrap gap-1">
-                                                            {font.woff2_url && <span className="px-1.5 py-0.5 bg-[rgb(var(--color-success)/0.1)] text-[rgb(var(--color-success))] text-[10px] font-bold uppercase rounded border border-[rgb(var(--color-success)/0.2)]">WOFF2</span>}
-                                                            {font.woff_url && <span className="px-1.5 py-0.5 bg-[rgb(var(--color-accent)/0.1)] text-[rgb(var(--color-accent))] text-[10px] font-bold uppercase rounded border border-[rgb(var(--color-accent)/0.2)]">WOFF</span>}
-                                                            {font.ttf_url && <span className="px-1.5 py-0.5 bg-[rgb(var(--color-highlight)/0.1)] text-[rgb(var(--color-highlight))] text-[10px] font-bold uppercase rounded border border-[rgb(var(--color-highlight)/0.2)]">TTF</span>}
-                                                            {font.otf_url && <span className="px-1.5 py-0.5 bg-[rgb(var(--color-warning)/0.1)] text-[rgb(var(--color-warning))] text-[10px] font-bold uppercase rounded border border-[rgb(var(--color-warning)/0.2)]">OTF</span>}
+                                                            {font.woff2_url && <span className="px-1.5 py-0.5 bg-success/10 text-success text-[10px] font-bold uppercase rounded border border-success/20">WOFF2</span>}
+                                                            {font.woff_url && <span className="px-1.5 py-0.5 bg-accent/10 text-accent text-[10px] font-bold uppercase rounded border border-accent/20">WOFF</span>}
+                                                            {font.ttf_url && <span className="px-1.5 py-0.5 bg-accent/10 text-accent text-[10px] font-bold uppercase rounded border border-accent/20">TTF</span>}
+                                                            {font.otf_url && <span className="px-1.5 py-0.5 bg-warning/10 text-warning text-[10px] font-bold uppercase rounded border border-warning/20">OTF</span>}
                                                         </div>
                                                     </td>
                                                     <td className="py-4 px-4 text-xs font-mono space-y-1">
-                                                        {font.file_size_woff2 && <div className="text-[rgb(var(--color-success))]">WOFF2: {formatBytes(font.file_size_woff2)}</div>}
-                                                        {font.file_size_woff && <div className="text-[rgb(var(--color-accent))]">WOFF: {formatBytes(font.file_size_woff)}</div>}
-                                                        {font.file_size_ttf && <div className="text-[rgb(var(--color-highlight))]">TTF: {formatBytes(font.file_size_ttf)}</div>}
-                                                        {font.file_size_otf && <div className="text-[rgb(var(--color-warning))]">OTF: {formatBytes(font.file_size_otf)}</div>}
+                                                        {font.file_size_woff2 && <div className="text-success">WOFF2: {formatBytes(font.file_size_woff2)}</div>}
+                                                        {font.file_size_woff && <div className="text-accent">WOFF: {formatBytes(font.file_size_woff)}</div>}
+                                                        {font.file_size_ttf && <div className="text-accent">TTF: {formatBytes(font.file_size_ttf)}</div>}
+                                                        {font.file_size_otf && <div className="text-warning">OTF: {formatBytes(font.file_size_otf)}</div>}
 
                                                         {(font as any).font_variants?.length > 0 && (
-                                                            <div className="mt-2 pt-1 border-t border-[rgb(var(--color-border)/0.2)]">
-                                                                <div className="text-[10px] text-[rgb(var(--color-muted-foreground))] italic mb-1">
+                                                            <div className="mt-2 pt-1 border-t border-border/20">
+                                                                <div className="text-[10px] text-muted italic mb-1">
                                                                     + {(font as any).font_variants.length} Variants
                                                                 </div>
-                                                                <div className="space-y-1 pl-1 border-l-2 border-[rgb(var(--color-border)/0.3)]">
+                                                                <div className="space-y-1 pl-1 border-l-2 border-border/30">
                                                                     {(font as any).font_variants.map((v: any, idx: number) => (
-                                                                        <div key={idx} className="bg-[rgb(var(--color-foreground)/0.02)] p-1 rounded">
-                                                                            <div className="font-bold text-[10px] text-[rgb(var(--color-foreground))] uppercase mb-0.5">{v.variant_name}</div>
-                                                                            {v.file_size_woff2 && <div className="text-[rgb(var(--color-success))] text-[9px] pl-1">WOFF2: {formatBytes(v.file_size_woff2)}</div>}
-                                                                            {v.file_size_woff && <div className="text-[rgb(var(--color-accent))] text-[9px] pl-1">WOFF: {formatBytes(v.file_size_woff)}</div>}
-                                                                            {v.file_size_ttf && <div className="text-[rgb(var(--color-highlight))] text-[9px] pl-1">TTF: {formatBytes(v.file_size_ttf)}</div>}
-                                                                            {v.file_size_otf && <div className="text-[rgb(var(--color-warning))] text-[9px] pl-1">OTF: {formatBytes(v.file_size_otf)}</div>}
+                                                                        <div key={idx} className="bg-foreground/2 p-1 rounded">
+                                                                            <div className="font-bold text-[10px] text-foreground uppercase mb-0.5">{v.variant_name}</div>
+                                                                            {v.file_size_woff2 && <div className="text-success text-[9px] pl-1">WOFF2: {formatBytes(v.file_size_woff2)}</div>}
+                                                                            {v.file_size_woff && <div className="text-accent text-[9px] pl-1">WOFF: {formatBytes(v.file_size_woff)}</div>}
+                                                                            {v.file_size_ttf && <div className="text-accent text-[9px] pl-1">TTF: {formatBytes(v.file_size_ttf)}</div>}
+                                                                            {v.file_size_otf && <div className="text-warning text-[9px] pl-1">OTF: {formatBytes(v.file_size_otf)}</div>}
                                                                         </div>
                                                                     ))}
                                                                 </div>
                                                             </div>
                                                         )}
 
-                                                        {!font.file_size_woff2 && !font.file_size_woff && !font.file_size_ttf && !font.file_size_otf && !(font as any).font_variants?.length && <span className="text-[rgb(var(--color-muted-foreground))]">-</span>}
+                                                        {!font.file_size_woff2 && !font.file_size_woff && !font.file_size_ttf && !font.file_size_otf && !(font as any).font_variants?.length && <span className="text-muted">-</span>}
                                                     </td>
-                                                    <td className="py-4 px-4 text-sm text-[rgb(var(--color-muted-foreground))] font-mono">
+                                                    <td className="py-4 px-4 text-sm text-muted font-mono">
                                                         {new Date(font.created_at || '').toLocaleDateString()}
                                                     </td>
                                                 </tr>
@@ -722,78 +722,78 @@ export default function AdminDashboard() {
                                             placeholder="Search fonts..."
                                             value={searchCuration}
                                             onChange={(e) => setSearchCuration(e.target.value)}
-                                            className="w-full pl-10 pr-4 py-2 border-2 border-[rgb(var(--color-border))] rounded-full focus:outline-none focus:bg-[rgb(var(--color-foreground)/0.03)] transition-all font-bold text-sm bg-transparent text-[rgb(var(--color-foreground))]"
+                                            className="w-full pl-10 pr-4 py-2 border-2 border-border rounded-full focus:outline-none focus:bg-foreground/3 transition-all font-bold text-sm bg-transparent text-foreground"
                                         />
-                                        <Search className="absolute left-3 top-2.5 text-[rgb(var(--color-muted-foreground))]" size={18} />
+                                        <Search className="absolute left-3 top-2.5 text-muted" size={18} />
                                     </div>
                                 </div>
-                                <div className="bg-[rgb(var(--color-card))] rounded-2xl border-2 border-[rgb(var(--color-border))] overflow-hidden">
+                                <div className="bg-card-background rounded-2xl border-2 border-border overflow-hidden">
                                     <table className="w-full text-left border-collapse">
-                                        <thead className="bg-[rgb(var(--color-foreground)/0.03)] border-b-2 border-[rgb(var(--color-border))]">
+                                        <thead className="bg-foreground/3 border-b-2 border-border">
                                             <tr>
-                                                <th className="p-4 border-r-2 border-[rgb(var(--color-border))] w-2/3 text-[rgb(var(--color-foreground))]">Font</th>
-                                                <th className="p-4 border-r-2 border-[rgb(var(--color-border))] text-center w-1/6 text-[rgb(var(--color-foreground))]">Statuses</th>
-                                                <th className="p-4 text-center w-1/6 text-[rgb(var(--color-foreground))]">Actions</th>
+                                                <th className="p-4 border-r-2 border-border w-2/3 text-foreground">Font</th>
+                                                <th className="p-4 border-r-2 border-border text-center w-1/6 text-foreground">Statuses</th>
+                                                <th className="p-4 text-center w-1/6 text-foreground">Actions</th>
                                             </tr>
                                         </thead>
-                                        <tbody className="divide-y-2 divide-[rgb(var(--color-border)/0.1)]">
+                                        <tbody className="divide-y-2 divide-border/10">
                                             {allFonts.filter(f =>
                                                 f.name?.toLowerCase().includes(searchCuration.toLowerCase()) ||
                                                 f.designer?.toLowerCase().includes(searchCuration.toLowerCase())
                                             ).map(font => (
-                                                <tr key={font.id} className="hover:bg-[rgb(var(--color-foreground)/0.03)] transition-colors duration-300 ease-in-out">
-                                                    <td className="p-4 border-r-2 border-[rgb(var(--color-border)/0.5)]">
+                                                <tr key={font.id} className="hover:bg-foreground/3 transition-colors duration-300 ease-in-out">
+                                                    <td className="p-4 border-r-2 border-border/50">
                                                         <div className="flex items-center gap-4">
-                                                            <div className="w-12 h-12 bg-[rgb(var(--color-foreground)/0.1)] border-2 border-[rgb(var(--color-border))] rounded-lg overflow-hidden shrink-0">
+                                                            <div className="w-12 h-12 bg-foreground/10 border-2 border-border rounded-lg overflow-hidden shrink-0">
                                                                 {font.preview_image_url ? (
                                                                     <img src={font.preview_image_url} alt={font.name} className="w-full h-full object-cover" />
                                                                 ) : (
-                                                                    <div className="w-full h-full flex items-center justify-center font-bold text-[rgb(var(--color-muted-foreground))]">Aa</div>
+                                                                    <div className="w-full h-full flex items-center justify-center font-bold text-muted">Aa</div>
                                                                 )}
                                                             </div>
                                                             <div>
-                                                                <div className="font-bold text-lg text-[rgb(var(--color-foreground))]">{font.name}</div>
-                                                                <div className="text-xs text-[rgb(var(--color-muted-foreground))]">by {font.designer}</div>
+                                                                <div className="font-bold text-lg text-foreground">{font.name}</div>
+                                                                <div className="text-xs text-muted">by {font.designer}</div>
                                                             </div>
                                                         </div>
                                                     </td>
-                                                    <td className="p-4 border-r-2 border-[rgb(var(--color-border)/0.5)]">
+                                                    <td className="p-4 border-r-2 border-border/50">
                                                         <div className="flex flex-col gap-2">
-                                                            <label className="flex items-center gap-2 cursor-pointer p-2 rounded hover:bg-[rgb(var(--color-foreground)/0.05)] transition-colors duration-300 ease-in-out">
+                                                            <label className="flex items-center gap-2 cursor-pointer p-2 rounded hover:bg-foreground/5 transition-colors duration-300 ease-in-out">
                                                                 <input
                                                                     type="checkbox"
                                                                     checked={font.is_featured || false}
                                                                     onChange={() => handleToggleCuration(font.id, 'is_featured')}
-                                                                    className="w-4 h-4 accent-[rgb(var(--color-highlight))] rounded border-2 border-[rgb(var(--color-border))] cursor-pointer"
+                                                                    className="w-4 h-4 accent-accent rounded border-2 border-border cursor-pointer"
                                                                 />
-                                                                <span className={`text-sm font-bold ${font.is_featured ? 'text-[rgb(var(--color-foreground))]' : 'text-[rgb(var(--color-muted-foreground))]'}`}>Featured</span>
+                                                                <span className={`text-sm font-bold ${font.is_featured ? 'text-foreground' : 'text-muted'}`}>Featured</span>
                                                             </label>
 
-                                                            <label className="flex items-center gap-2 cursor-pointer p-2 rounded hover:bg-[rgb(var(--color-foreground)/0.05)] transition-colors duration-300 ease-in-out">
+                                                            <label className="flex items-center gap-2 cursor-pointer p-2 rounded hover:bg-foreground/5 transition-colors duration-300 ease-in-out">
                                                                 <input
                                                                     type="checkbox"
                                                                     checked={font.is_trending || false}
                                                                     onChange={() => handleToggleCuration(font.id, 'is_trending')}
-                                                                    className="w-4 h-4 accent-[rgb(var(--color-accent))] rounded border-2 border-[rgb(var(--color-border))] cursor-pointer"
+                                                                    className="w-4 h-4 accent-accent rounded border-2 border-border cursor-pointer"
                                                                 />
-                                                                <span className={`text-sm font-bold ${font.is_trending ? 'text-[rgb(var(--color-foreground))]' : 'text-[rgb(var(--color-muted-foreground))]'}`}>Trending</span>
+                                                                <span className={`text-sm font-bold ${font.is_trending ? 'text-foreground' : 'text-muted'}`}>Trending</span>
                                                             </label>
 
-                                                            <label className="flex items-center gap-2 cursor-pointer p-2 rounded hover:bg-[rgb(var(--color-foreground)/0.05)] transition-colors duration-300 ease-in-out">
+                                                            <label className="flex items-center gap-2 cursor-pointer p-2 rounded hover:bg-foreground/5 transition-colors duration-300 ease-in-out">
                                                                 <input
                                                                     type="checkbox"
                                                                     checked={font.is_editors_pick || false}
                                                                     onChange={() => handleToggleCuration(font.id, 'is_editors_pick')}
-                                                                    className="w-4 h-4 accent-[rgb(var(--color-success,var(--color-highlight)))] rounded border-2 border-[rgb(var(--color-border))] cursor-pointer"
+                                                                    className="w-4 h-4 accent-success rounded border-2 border-border cursor-pointer"
                                                                 />
-                                                                <span className={`text-sm font-bold ${font.is_editors_pick ? 'text-[rgb(var(--color-foreground))]' : 'text-[rgb(var(--color-muted-foreground))]'}`}>Editor's Pick</span>
+                                                                <span className={`text-sm font-bold ${font.is_editors_pick ? 'text-foreground' : 'text-muted'}`}>Editor's Pick</span>
                                                             </label>
                                                         </div>
                                                     </td>
                                                     <td className="p-4 text-center">
                                                         <Link
                                                             to={`/fonts/${font.slug || font.id}`}
-                                                            className="inline-block px-4 py-2 bg-[rgb(var(--color-card))] border-2 border-[rgb(var(--color-border))] rounded-lg font-bold hover:bg-[rgb(var(--color-foreground)/0.05)] text-sm text-[rgb(var(--color-foreground))]"
+                                                            className="inline-block px-4 py-2 bg-card-background border-2 border-border rounded-lg font-bold hover:bg-foreground/5 text-sm text-foreground"
                                                         >
                                                             View
                                                         </Link>
@@ -814,7 +814,7 @@ export default function AdminDashboard() {
 
                                 {analyticsLoading && !downloadStats.length ? (
                                     <div className="flex items-center justify-center py-20">
-                                        <div className="animate-spin rounded-full h-12 w-12 border-4 border-[rgb(var(--color-foreground)/0.1)] border-t-[rgb(var(--color-foreground))]"></div>
+                                        <div className="animate-spin rounded-full h-12 w-12 border-4 border-foreground/10 border-t-[var(--color-foreground)]"></div>
                                     </div>
                                 ) : (
                                     <>
@@ -843,20 +843,20 @@ export default function AdminDashboard() {
                                         <h2 className="text-2xl font-bold flex items-center gap-3">
                                             AI Font Research
                                         </h2>
-                                        <span className="text-xs font-mono text-[rgb(var(--color-muted-foreground))] uppercase tracking-wider bg-[rgb(var(--color-foreground)/0.05)] px-2.5 py-1 rounded-full border border-[rgb(var(--color-foreground)/0.08)]">
+                                        <span className="text-xs font-mono text-muted uppercase tracking-wider bg-foreground/5 px-2.5 py-1 rounded-full border border-foreground/8">
                                             Manual · 1 at a time
                                         </span>
                                     </div>
                                     <div className="flex items-center gap-2">
                                         {activeResearchingFontId ? (
-                                            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-[rgb(var(--color-accent)/0.1)] border border-[rgb(var(--color-accent)/0.25)] text-xs font-bold text-[rgb(var(--color-foreground))]">
-                                                <div className="h-2 w-2 rounded-full bg-[rgb(var(--color-accent))] animate-pulse" />
+                                            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 border border-accent/25 text-xs font-bold text-foreground">
+                                                <div className="h-2 w-2 rounded-full bg-accent animate-pulse" />
                                                 <span>Research in progress (1 at a time)...</span>
                                             </div>
                                         ) : researchStats.activeJobs > 0 ? (
                                             <button
                                                 onClick={handleClearStuckJobs}
-                                                className="px-4 py-2 text-xs font-bold rounded-full bg-[rgb(var(--color-destructive)/0.1)] hover:bg-[rgb(var(--color-destructive)/0.2)] text-[rgb(var(--color-destructive))] border border-[rgb(var(--color-destructive)/0.3)] transition-colors duration-300 ease-in-out cursor-pointer flex items-center gap-1.5"
+                                                className="px-4 py-2 text-xs font-bold rounded-full bg-warning/10 hover:bg-warning/20 text-warning border border-warning/30 transition-colors duration-300 ease-in-out cursor-pointer flex items-center gap-1.5"
                                             >
                                                 <XCircle size={14} /> Clear Stuck Jobs ({researchStats.activeJobs})
                                             </button>
@@ -873,25 +873,25 @@ export default function AdminDashboard() {
                                         { label: 'Review', value: researchStats.needsReview, color: 'var(--color-warning)' },
                                         { label: 'Failed', value: researchStats.failed, color: 'var(--color-destructive)' },
                                     ].map(s => (
-                                        <div key={s.label} className="p-3 rounded-2xl bg-[rgb(var(--color-foreground)/0.03)] border border-[rgb(var(--color-foreground)/0.05)] text-center">
+                                        <div key={s.label} className="p-3 rounded-2xl bg-foreground/3 border border-foreground/5 text-center">
                                             <p className="text-2xl font-black" style={{ color: `rgb(${s.color})` }}>{s.value}</p>
-                                            <p className="text-xs text-[rgb(var(--color-muted-foreground))] font-mono uppercase">{s.label}</p>
+                                            <p className="text-xs text-muted font-mono uppercase">{s.label}</p>
                                         </div>
                                     ))}
                                 </div>
 
                                 {/* Active Jobs Indicator */}
                                 {researchStats.activeJobs > 0 && (
-                                    <div className="mb-4 p-3 rounded-xl bg-[rgb(var(--color-accent)/0.1)] border border-[rgb(var(--color-accent)/0.2)] flex items-center justify-between gap-2">
+                                    <div className="mb-4 p-3 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-between gap-2">
                                         <div className="flex items-center gap-2">
-                                            <div className="h-2 w-2 rounded-full bg-[rgb(var(--color-accent))] animate-pulse" />
-                                            <span className="text-xs font-bold text-[rgb(var(--color-foreground))]">
+                                            <div className="h-2 w-2 rounded-full bg-accent animate-pulse" />
+                                            <span className="text-xs font-bold text-foreground">
                                                 {researchStats.activeJobs} job{researchStats.activeJobs !== 1 ? 's' : ''} active in background
                                             </span>
                                         </div>
                                         <button
                                             onClick={handleClearStuckJobs}
-                                            className="px-3 py-1 text-xs font-bold rounded-lg bg-[rgb(var(--color-foreground)/0.08)] hover:bg-[rgb(var(--color-foreground)/0.15)] text-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out cursor-pointer"
+                                            className="px-3 py-1 text-xs font-bold rounded-lg bg-foreground/8 hover:bg-foreground/15 text-foreground transition-colors duration-300 ease-in-out cursor-pointer"
                                         >
                                             Clear Stuck Jobs
                                         </button>
@@ -901,13 +901,13 @@ export default function AdminDashboard() {
                                 {/* Filters + Search */}
                                 <div className="flex flex-col md:flex-row gap-3 mb-6">
                                     <div className="relative flex-1">
-                                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[rgb(var(--color-muted-foreground))]" size={16} />
+                                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" size={16} />
                                         <input
                                             type="text"
                                             placeholder="Search fonts..."
                                             value={searchResearch}
                                             onChange={(e) => setSearchResearch(e.target.value)}
-                                            className="w-full pl-10 pr-4 py-2 bg-[rgb(var(--color-background))] border-2 border-[rgb(var(--color-foreground)/0.1)] rounded-full text-sm focus:outline-none focus:border-[rgb(var(--color-foreground)/0.15)]"
+                                            className="w-full pl-10 pr-4 py-2 bg-background border-2 border-foreground/10 rounded-full text-sm focus:outline-none focus:border-foreground/15"
                                         />
                                     </div>
                                     <div className="flex gap-2 flex-wrap">
@@ -916,8 +916,8 @@ export default function AdminDashboard() {
                                                 key={filter}
                                                 onClick={() => setResearchFilter(filter)}
                                                 className={`px-3 py-1.5 text-xs font-bold rounded-full border transition-all cursor-pointer ${researchFilter === filter
-                                                        ? 'bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] border-[rgb(var(--color-foreground)/0.15)]'
-                                                        : 'bg-transparent text-[rgb(var(--color-foreground))] border-[rgb(var(--color-foreground)/0.2)] hover:border-[rgb(var(--color-foreground)/0.5)]'
+                                                        ? 'bg-foreground text-background border-foreground/15'
+                                                        : 'bg-transparent text-foreground border-foreground/20 hover:border-foreground/50'
                                                     }`}
                                             >
                                                 {filter === 'needs_review' ? 'Needs Review' : filter === 'unresearched' ? 'Unresearched' : filter.charAt(0).toUpperCase() + filter.slice(1)}
@@ -928,22 +928,22 @@ export default function AdminDashboard() {
 
                                 {/* Font List */}
                                 {filteredResearchFonts.length === 0 ? (
-                                    <div className="text-center py-12 text-[rgb(var(--color-muted-foreground))] font-bold border-2 border-dashed border-[rgb(var(--color-foreground)/0.1)] rounded-2xl">
+                                    <div className="text-center py-12 text-muted font-bold border-2 border-dashed border-foreground/10 rounded-2xl">
                                         No fonts match your filter
                                     </div>
                                 ) : (
                                     <div className="space-y-3">
                                         {filteredResearchFonts.map(font => (
-                                            <div key={font.id} className="border border-[rgb(var(--color-foreground)/0.08)] rounded-2xl overflow-hidden">
+                                            <div key={font.id} className="border border-foreground/8 rounded-2xl overflow-hidden">
                                                 {/* Row */}
                                                 <div
-                                                    className="flex items-center justify-between p-4 cursor-pointer hover:bg-[rgb(var(--color-foreground)/0.02)] transition-colors duration-300 ease-in-out"
+                                                    className="flex items-center justify-between p-4 cursor-pointer hover:bg-foreground/2 transition-colors duration-300 ease-in-out"
                                                     onClick={() => setExpandedResearchId(expandedResearchId === font.id ? null : font.id)}
                                                 >
                                                     <div className="flex items-center gap-3 flex-1 min-w-0">
                                                         <div className="flex-1 min-w-0">
-                                                            <p className="font-bold text-sm text-[rgb(var(--color-foreground))] truncate">{font.name}</p>
-                                                            <p className="text-xs text-[rgb(var(--color-muted-foreground))]">{font.designer}</p>
+                                                            <p className="font-bold text-sm text-foreground truncate">{font.name}</p>
+                                                            <p className="text-xs text-muted">{font.designer}</p>
                                                         </div>
                                                     </div>
                                                     <FontResearchPanel
@@ -962,7 +962,7 @@ export default function AdminDashboard() {
 
                                                 {/* Expanded Panel */}
                                                 {expandedResearchId === font.id && (
-                                                    <div className="border-t border-[rgb(var(--color-foreground)/0.05)] p-4">
+                                                    <div className="border-t border-foreground/5 p-4">
                                                         <FontResearchPanel
                                                             fontId={font.id}
                                                             fontName={font.name}

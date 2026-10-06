@@ -39,25 +39,25 @@ const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, imageSrc, font
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             {/* Backdrop */}
             <div
-                className="absolute inset-0 bg-[rgb(var(--color-background)/0.6)] backdrop-blur-md transition-opacity"
+                className="absolute inset-0 bg-background/60 backdrop-blur-md transition-opacity"
                 onClick={onClose}
             ></div>
 
             {/* Modal Content */}
-            <div className="relative z-10 bg-[rgb(var(--color-background))] rounded-4xl p-6 md:p-8 max-w-4xl w-full shadow-2xl flex flex-col gap-6 animate-in fade-in zoom-in duration-200">
+            <div className="relative z-10 bg-background rounded-4xl p-6 md:p-8 max-w-4xl w-full shadow-2xl flex flex-col gap-6 animate-in fade-in zoom-in duration-200">
                 {/* Header */}
                 <div className="flex justify-between items-center">
                     <h2 className="text-2xl font-black uppercase">Share Font</h2>
                     <button
                         onClick={onClose}
-                        className="p-2 hover:bg-[rgb(var(--color-muted)/0.1)] rounded-full transition-colors duration-300 ease-in-out"
+                        className="p-2 hover:bg-muted/10 rounded-full transition-colors duration-300 ease-in-out"
                     >
                         <X />
                     </button>
                 </div>
 
                 {/* Image Preview */}
-                <div className="relative rounded-2xl overflow-hidden border-2 border-[rgb(var(--color-border))] bg-[rgb(var(--color-muted)/0.05)] aspect-1200/800 group">
+                <div className="relative rounded-2xl overflow-hidden border-2 border-border bg-muted/5 aspect-1200/800 group">
                     <img
                         src={imageSrc}
                         alt={`${fontName} Social Share Card Preview`}
@@ -71,7 +71,7 @@ const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, imageSrc, font
                     <motion.button
                         whileTap={{ scale: 0.98 }}
                         onClick={handleDownload}
-                        className="scale-100 w-full py-4 bg-[rgb(var(--color-highlight))] hover:brightness-110 text-[rgb(var(--color-background))] font-black uppercase rounded-xl border-2 border-[rgb(var(--color-foreground))] transition-all hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgb(var(--color-foreground))] flex items-center justify-center gap-2 text-lg"
+                        className="scale-100 w-full py-4 bg-accent hover:brightness-110 text-background font-black uppercase rounded-xl border-2 border-foreground transition-all hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_var(--color-foreground)] flex items-center justify-center gap-2 text-lg"
                     >
                         <Download size={24} />
                         Download Image
@@ -83,7 +83,7 @@ const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, imageSrc, font
                             href={`https://wa.me/?text=${encodedText}%20${encodedUrl}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border-2 border-transparent hover:border-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-muted)/0.05)] transition-all text-[rgb(var(--color-muted-foreground))] hover:text-green-600"
+                            className="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border-2 border-transparent hover:border-foreground hover:bg-muted/5 transition-all text-muted hover:text-green-600"
                         >
                             <MessageCircle size={24} />
                             <span className="text-xs font-bold uppercase">WhatsApp</span>
@@ -92,7 +92,7 @@ const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, imageSrc, font
                             href={`https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border-2 border-transparent hover:border-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-muted)/0.05)] transition-all text-[rgb(var(--color-muted-foreground))] hover:text-blue-400"
+                            className="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border-2 border-transparent hover:border-foreground hover:bg-muted/5 transition-all text-muted hover:text-blue-400"
                         >
                             <Twitter size={24} />
                             <span className="text-xs font-bold uppercase">Twitter</span>
@@ -101,7 +101,7 @@ const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, imageSrc, font
                             href={`https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border-2 border-transparent hover:border-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-muted)/0.05)] transition-all text-[rgb(var(--color-muted-foreground))] hover:text-blue-700"
+                            className="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border-2 border-transparent hover:border-foreground hover:bg-muted/5 transition-all text-muted hover:text-blue-700"
                         >
                             <Facebook size={24} />
                             <span className="text-xs font-bold uppercase">Facebook</span>
@@ -110,7 +110,7 @@ const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, imageSrc, font
                             href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border-2 border-transparent hover:border-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-muted)/0.05)] transition-all text-[rgb(var(--color-muted-foreground))] hover:text-blue-600"
+                            className="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border-2 border-transparent hover:border-foreground hover:bg-muted/5 transition-all text-muted hover:text-blue-600"
                         >
                             <Linkedin size={24} />
                             <span className="text-xs font-bold uppercase">LinkedIn</span>
@@ -119,7 +119,7 @@ const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, imageSrc, font
                             href={`https://pinterest.com/pin/create/button/?url=${encodedUrl}&description=${encodedText}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border-2 border-transparent hover:border-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-muted)/0.05)] transition-all text-[rgb(var(--color-muted-foreground))] hover:text-red-600"
+                            className="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border-2 border-transparent hover:border-foreground hover:bg-muted/5 transition-all text-muted hover:text-red-600"
                         >
                             <PinIcon size={24} />
                             <span className="text-xs font-bold uppercase">Pinterest</span>
@@ -128,7 +128,7 @@ const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, imageSrc, font
                             href={`https://reddit.com/submit?url=${encodedUrl}&title=${encodedText}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border-2 border-transparent hover:border-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-muted)/0.05)] transition-all text-[rgb(var(--color-muted-foreground))] hover:text-orange-600"
+                            className="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border-2 border-transparent hover:border-foreground hover:bg-muted/5 transition-all text-muted hover:text-orange-600"
                         >
                             <MessageSquare size={24} />
                             <span className="text-xs font-bold uppercase">Reddit</span>
@@ -137,7 +137,7 @@ const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, imageSrc, font
                         <motion.button
                             whileTap={{ scale: 0.9 }}
                             onClick={handleCopyLink}
-                            className="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border-2 border-transparent hover:border-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-muted)/0.05)] transition-all text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))]"
+                            className="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border-2 border-transparent hover:border-foreground hover:bg-muted/5 transition-all text-muted hover:text-foreground"
                         >
                             <LinkIcon size={24} />
                             <span className="text-xs font-bold uppercase">Copy Link</span>

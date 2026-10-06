@@ -54,7 +54,7 @@ export interface FontFormState {
     formats?: string[];
     weights?: string[];
     styles?: string[];
-    
+
     // AI Download Pipeline
     releaseZips?: {
         url: string;
@@ -389,7 +389,7 @@ export function normalizeFontJson(raw: any): { parsedState: Partial<FontFormStat
             url: toUrl(z.url) || '',
             label: toStr(z.label) || 'zip'
         })).filter(z => z.url);
-        
+
         if (parsedZips.length > 0) {
             state.releaseZips = parsedZips;
             count++;
@@ -533,39 +533,39 @@ ${baseJson}`;
                     initial={{ scale: 0.95, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     exit={{ scale: 0.95, opacity: 0 }}
-                    className="relative w-full max-w-2xl bg-[rgb(var(--color-card))] border-2 border-[rgb(var(--color-border))] rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+                    className="relative w-full max-w-2xl bg-card-background border-2 border-border rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
                 >
                     {/* Header */}
-                    <div className="flex items-center justify-between p-6 border-b border-[rgb(var(--color-border))]">
+                    <div className="flex items-center justify-between p-6 border-b border-border">
                         <div className="flex items-center gap-3">
-                            <div className="p-2 rounded-xl bg-[rgb(var(--color-highlight)/0.15)] text-[rgb(var(--color-foreground))]">
+                            <div className="p-2 rounded-xl bg-accent/15 text-foreground">
                                 <FileJson size={24} />
                             </div>
                             <div>
-                                <h2 className="text-xl font-bold uppercase tracking-tight text-[rgb(var(--color-foreground))]">
+                                <h2 className="text-xl font-bold uppercase tracking-tight text-foreground">
                                     Auto-fill from JSON
                                 </h2>
-                                <p className="text-xs text-[rgb(var(--color-muted-foreground))]">
+                                <p className="text-xs text-muted">
                                     Drop a file or paste structured metadata to populate all options instantly.
                                 </p>
                             </div>
                         </div>
                         <button
                             onClick={onClose}
-                            className="p-2 rounded-full hover:bg-[rgb(var(--color-foreground)/0.1)] text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out"
+                            className="p-2 rounded-full hover:bg-foreground/10 text-muted hover:text-foreground transition-colors duration-300 ease-in-out"
                         >
                             <X size={20} />
                         </button>
                     </div>
 
                     {/* Mode Tabs */}
-                    <div className="flex items-center justify-between px-6 pt-4 border-b border-[rgb(var(--color-border))] bg-[rgb(var(--color-background)/0.5)]">
+                    <div className="flex items-center justify-between px-6 pt-4 border-b border-border bg-background/50">
                         <div className="flex gap-2">
                             <button
                                 onClick={() => setTab('paste')}
                                 className={`flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-t-xl transition-colors duration-300 ease-in-out border-b-2 ${tab === 'paste'
-                                        ? 'border-[rgb(var(--color-foreground))] text-[rgb(var(--color-foreground))] bg-[rgb(var(--color-card))]'
-                                        : 'border-transparent text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))]'
+                                    ? 'border-foreground text-foreground bg-card-background'
+                                    : 'border-transparent text-muted hover:text-foreground'
                                     }`}
                             >
                                 <FileText size={14} /> Paste JSON
@@ -573,8 +573,8 @@ ${baseJson}`;
                             <button
                                 onClick={() => setTab('upload')}
                                 className={`flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-t-xl transition-colors duration-300 ease-in-out border-b-2 ${tab === 'upload'
-                                        ? 'border-[rgb(var(--color-foreground))] text-[rgb(var(--color-foreground))] bg-[rgb(var(--color-card))]'
-                                        : 'border-transparent text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))]'
+                                    ? 'border-foreground text-foreground bg-card-background'
+                                    : 'border-transparent text-muted hover:text-foreground'
                                     }`}
                             >
                                 <UploadIcon size={14} /> Drop / Upload File
@@ -585,17 +585,17 @@ ${baseJson}`;
                             <button
                                 type="button"
                                 onClick={copyAiPrompt}
-                                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-medium rounded-xl bg-[rgb(var(--color-highlight)/0.15)] hover:bg-[rgb(var(--color-highlight)/0.25)] text-[rgb(var(--color-foreground))] border border-[rgb(var(--color-highlight)/0.3)] transition-colors duration-300 ease-in-out cursor-pointer"
+                                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-medium rounded-xl bg-accent/15 hover:bg-accent/25 text-foreground border border-accent/30 transition-colors duration-300 ease-in-out cursor-pointer"
                                 title="Copy AI prompt with original font JSON and strict schema constraints for Claude / ChatGPT / Gemini"
                             >
-                                {copiedPrompt ? <Check size={13} className="text-green-500" /> : <Sparkles size={13} className="text-[rgb(var(--color-highlight))]" />}
+                                {copiedPrompt ? <Check size={13} className="text-green-500" /> : <Sparkles size={13} className="text-accent" />}
                                 <span>{copiedPrompt ? 'Prompt Copied!' : 'Copy AI Prompt'}</span>
                             </button>
 
                             <button
                                 type="button"
                                 onClick={copySchemaFormat}
-                                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-medium rounded-xl bg-[rgb(var(--color-foreground)/0.06)] hover:bg-[rgb(var(--color-foreground)/0.12)] text-[rgb(var(--color-foreground))] border border-[rgb(var(--color-foreground)/0.1)] transition-colors duration-300 ease-in-out cursor-pointer"
+                                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-medium rounded-xl bg-foreground/6 hover:bg-foreground/12 text-foreground border border-foreground/10 transition-colors duration-300 ease-in-out cursor-pointer"
                                 title="Copy structured JSON format template with type specifications"
                             >
                                 {copied ? <Check size={13} className="text-green-500" /> : <Copy size={13} />}
@@ -612,18 +612,18 @@ ${baseJson}`;
                                 onDragLeave={() => setDragActive(false)}
                                 onDrop={handleDrop}
                                 className={`relative border-2 border-dashed rounded-2xl p-10 flex flex-col items-center justify-center text-center transition-all ${dragActive
-                                        ? 'border-[rgb(var(--color-highlight))] bg-[rgb(var(--color-highlight)/0.08)] scale-[0.99]'
-                                        : 'border-[rgb(var(--color-border))] hover:border-[rgb(var(--color-foreground)/0.4)] bg-[rgb(var(--color-background))]'
+                                    ? 'border-accent bg-accent/8 scale-[0.99]'
+                                    : 'border-border hover:border-foreground/40 bg-background'
                                     }`}
                             >
-                                <div className="p-4 rounded-full bg-[rgb(var(--color-foreground)/0.05)] mb-3 text-[rgb(var(--color-foreground))]">
+                                <div className="p-4 rounded-full bg-foreground/5 mb-3 text-foreground">
                                     <FileJson size={32} />
                                 </div>
                                 <h3 className="font-bold text-sm uppercase mb-1">Drag & Drop your .json file here</h3>
-                                <p className="text-xs text-[rgb(var(--color-muted-foreground))] mb-4">
+                                <p className="text-xs text-muted mb-4">
                                     Supports both nested font taxonomy and flat metadata JSON.
                                 </p>
-                                <label className="px-5 py-2 rounded-full font-bold text-xs uppercase cursor-pointer bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] hover:opacity-90 transition-opacity">
+                                <label className="px-5 py-2 rounded-full font-bold text-xs uppercase cursor-pointer bg-foreground text-background hover:opacity-90 transition-opacity">
                                     Browse Computer
                                     <input
                                         type="file"
@@ -643,7 +643,7 @@ ${baseJson}`;
                                         onChange={(e) => setJsonText(e.target.value)}
                                         placeholder="Paste your JSON configuration here..."
                                         rows={12}
-                                        className="w-full p-4 font-mono text-xs bg-[rgb(var(--color-background))] border-2 border-[rgb(var(--color-border))] rounded-2xl focus:outline-none focus:border-[rgb(var(--color-foreground))] resize-y text-[rgb(var(--color-foreground))]"
+                                        className="w-full p-4 font-mono text-xs bg-background border-2 border-border rounded-2xl focus:outline-none focus:border-foreground resize-y text-foreground"
                                         spellCheck={false}
                                     />
                                 </div>
@@ -651,8 +651,8 @@ ${baseJson}`;
                                 {/* Status bar */}
                                 {parseResult && (
                                     <div className={`p-3 rounded-xl flex items-center justify-between text-xs font-mono border ${parseResult.valid
-                                            ? 'bg-green-500/10 border-green-500/30 text-green-700 dark:text-green-300'
-                                            : 'bg-red-500/10 border-red-500/30 text-red-600 dark:text-red-400'
+                                        ? 'bg-green-500/10 border-green-500/30 text-green-700 dark:text-green-300'
+                                        : 'bg-red-500/10 border-red-500/30 text-red-600 dark:text-red-400'
                                         }`}>
                                         <div className="flex items-center gap-2">
                                             {parseResult.valid ? <Check size={16} /> : <AlertCircle size={16} />}
@@ -674,11 +674,11 @@ ${baseJson}`;
                     </div>
 
                     {/* Footer */}
-                    <div className="flex items-center justify-between p-6 border-t border-[rgb(var(--color-border))] bg-[rgb(var(--color-background)/0.5)]">
+                    <div className="flex items-center justify-between p-6 border-t border-border bg-background/50">
                         <button
                             type="button"
                             onClick={onClose}
-                            className="px-5 py-2 text-xs font-bold uppercase rounded-full hover:bg-[rgb(var(--color-foreground)/0.1)] text-[rgb(var(--color-muted-foreground))] transition-colors duration-300 ease-in-out"
+                            className="px-5 py-2 text-xs font-bold uppercase rounded-full hover:bg-foreground/10 text-muted transition-colors duration-300 ease-in-out"
                         >
                             Cancel
                         </button>
@@ -688,8 +688,8 @@ ${baseJson}`;
                             disabled={!parseResult?.valid}
                             onClick={handleApply}
                             className={`px-6 py-2.5 text-xs font-bold uppercase rounded-full transition-all flex items-center gap-2 ${parseResult?.valid
-                                    ? 'bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] hover:opacity-90 cursor-pointer shadow-md'
-                                    : 'bg-[rgb(var(--color-muted))] text-[rgb(var(--color-muted-foreground))] opacity-50 cursor-not-allowed'
+                                ? 'bg-foreground text-background hover:opacity-90 cursor-pointer shadow-md'
+                                : 'bg-muted text-muted opacity-50 cursor-not-allowed'
                                 }`}
                         >
                             <Check size={14} /> {applyLabel} {parseResult?.valid ? `(${parseResult.count} Fields)` : ''}

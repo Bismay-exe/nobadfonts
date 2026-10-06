@@ -38,7 +38,7 @@ const Hero = () => {
     }, []);
 
     return (
-        <div ref={containerRef} className="@container max-w-480 min-h-screen text-[rgb(var(--color-foreground))] font-mono selection:bg-[rgb(var(--color-primary)/0)] selection:text-[rgb(var(--color-foreground))] overflow-hidden flex flex-col">
+        <div ref={containerRef} className="@container max-w-480 min-h-screen text-foreground font-mono selection:bg-primary/0 selection:text-foreground overflow-hidden flex flex-col">
 
             {/* Main Content */}
             <main className="flex-1 flex flex-col justify-center items-center relative py-14 bg-blackz mt-14 md:mt-18 mx-2 mb-0 md:mb-2"
@@ -46,7 +46,7 @@ const Hero = () => {
                 <div className='absolute w-full h-full rounded-4xl overflow-hidden zbg-[#0000FF]'>
                     {/* <SkyGradient /> */}
                     {/* <HalftoneBloom /> */}
-                    {/* <div className="absolute inset-0 w-full h-full bg-linear-to-b from-transparent zvia-[rgb(var(--color-background)/0.5)] to-[rgb(var(--color-background))]" /> */}
+                    {/* <div className="absolute inset-0 w-full h-full bg-linear-to-b from-transparent zvia-background/50 to-background" /> */}
                 </div>
 
                 <div className="relative z-10 text-center mx-auto w-full">
@@ -123,30 +123,30 @@ const Hero = () => {
                     {/* Subtext & Actions */}
                     <div className='px-6 sm:px-8 md:px-26'>
                         <div className="hero-content mt-8 md:mt-12 max-w-xl mx-auto flex flex-col items-center gap-8">
-                            <p className="text-md md:text-xl text-[rgb(var(--color-muted-foreground))] leading-none font-medium">
+                            <p className="text-md md:text-xl text-muted leading-none font-medium">
                                 A curated directory of open-source typefaces that actually look good.
                                 <br className='md:hidden'/>No clutter, just type.
                             </p>
 
                             {/* Search Bar / CTA */}
-                            <div className="w-full max-w-md relative group scale-75 md:scale-100 text-[rgb(var(--color-muted-foreground))] font-sans">
+                            <div className="w-full max-w-md relative group scale-75 md:scale-100 text-muted font-sans">
                                 <input
                                     type="text"
                                     placeholder="Try 'Inter' or 'Geist'..."
-                                    className="w-full h-14 pl-6 pr-14 bg-[rgb(var(--color-foreground)/0.05)] backdrop-blur-sm rounded-2xl focus:border-none! focus:ring-0! outline-none transition-all placeholder:text-[rgb(var(--color-foreground)/0.8)] text-[rgb(var(--color-foreground))] font-medium font-inter-tight"
+                                    className="w-full h-14 pl-6 pr-14 bg-foreground/5 backdrop-blur-sm rounded-2xl focus:border-none! focus:ring-0! outline-none transition-all placeholder:text-foreground/80 text-foreground font-medium font-inter-tight"
                                 />
-                                <button className="absolute right-2 top-2 h-10 w-10 bg-[rgb(var(--color-muted-foreground))] text-[rgb(var(--color-background))] rounded-xl flex items-center justify-center group-focus-within:bg-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out">
+                                <button className="absolute right-2 top-2 h-10 w-10 bg-muted text-background rounded-xl flex items-center justify-center group-focus-within:bg-foreground transition-colors duration-300 ease-in-out">
                                     <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                                     </svg>
                                 </button>
                             </div>
 
-                            <div className="flex gap-4 text-sm text-[rgb(var(--color-muted-foreground))] font-inter font-bold">
-                                <span className='text-[rgb(var(--color-muted-foreground)/0.5)]'>Popular:</span>
-                                <Link to={`/fonts?query=thunder`} className="cursor-pointer hover:text-[rgb(var(--color-foreground))] transition-all duration-300 ease-in-out">Thunder</Link>
-                                <Link to={`/fonts?query=offbit`} className="cursor-pointer hover:text-[rgb(var(--color-foreground))] transition-all duration-300 ease-in-out">Offbit</Link>
-                                <Link to={`/fonts?query=pilowlava`} className="cursor-pointer hover:text-[rgb(var(--color-foreground))] transition-all duration-300 ease-in-out">Pilowlava</Link>
+                            <div className="flex gap-4 text-sm text-muted font-inter font-bold">
+                                <span className='text-muted/50'>Popular:</span>
+                                <Link to={`/fonts?query=thunder`} className="cursor-pointer hover:text-foreground transition-all duration-300 ease-in-out">Thunder</Link>
+                                <Link to={`/fonts?query=offbit`} className="cursor-pointer hover:text-foreground transition-all duration-300 ease-in-out">Offbit</Link>
+                                <Link to={`/fonts?query=pilowlava`} className="cursor-pointer hover:text-foreground transition-all duration-300 ease-in-out">Pilowlava</Link>
                             </div>
                         </div>
                     </div>

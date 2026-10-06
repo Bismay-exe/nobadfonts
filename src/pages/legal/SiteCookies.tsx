@@ -29,7 +29,7 @@ export default function SiteCookies() {
                         <strong>UI & theme preferences (functional).</strong>{' '}
                         We store non-identifying client-side preferences in LocalStorage under specific keys:
                     </p>
-                    <ul className="list-disc pl-6 space-y-2 text-[rgb(var(--color-foreground)/0.8)]">
+                    <ul className="list-disc pl-6 space-y-2 text-foreground/80">
                         <li>
                             <code>theme</code>: Stores your chosen visual contrast mode (Dark, Light) so your eyes aren't blinded by sudden light flashes when you reopen the site.
                         </li>
@@ -75,7 +75,7 @@ export default function SiteCookies() {
                         <strong>Mozilla Firefox.</strong>{' '}
                         Open Settings → Privacy & Security → Cookies and Site Data → Clear Data. Alternatively, open DevTools (<code>F12</code>), go to the <em>Storage</em> tab, select <em>Local Storage</em>, and clear all entries.
                     </p>
-                    <p className="text-xs text-[rgb(var(--color-muted-foreground))]">
+                    <p className="text-xs text-muted">
                         Clearing site storage will reset your UI theme to the default, clear any cached specimen text, and sign you out if you were authenticated.
                     </p>
                 </section>

@@ -132,7 +132,7 @@ const AutoSizingText = React.memo(
             >
                 <div
                     ref={textRef}
-                    className="max-w-full text-[rgb(var(--color-card-foreground)/0.8)] ztext-color-card-foreground/10 text-center leading-[1.2] transition-opacity duration-300 m-0 flex flex-col items-center justify-center py-2"
+                    className="max-w-full text-card-foreground/80 ztext-color-card-foreground/10 text-center leading-[1.2] transition-opacity duration-300 m-0 flex flex-col items-center justify-center py-2"
                     style={{
                         fontFamily: isLoaded ? `'font-${fontId}'` : "sans-serif",
                         opacity: isLoaded ? 1 : 0,
@@ -407,7 +407,7 @@ function CyberpunkFontCard({
                                     className={`w-full h-full flex items-center justify-center transition-all duration-300 ease-in-out min-h-50
                                     ${isExpanded ? "p-0" : "p-0"}`}
                                 >
-                                    <div className="border border-[rgba(var(--color-foreground)/0.1)] rounded-4xl overflow-hidden">
+                                    <div className="border border-foreground/10 rounded-4xl overflow-hidden">
                                         <img
                                             src={font.preview_image_url || font.gallery_images?.[0]}
                                             alt={`${font.name} font preview specimen`}
@@ -419,9 +419,9 @@ function CyberpunkFontCard({
                                 </div>
                             ) : (
                                 <div className="py-4 sm:py-8 md:py-12 px-0 sm:px-2 md:px-4 relative z-10 bg-neutral-800 backdrop-blur-3xlz rounded-4xl"
-                                style={{ clipPath: 'shape(from 95.24% 6.96%, line to 4.76% 6.96%, line to 4.76% 93.04%, line to 95.24% 93.04%, line to 95.24% 6.96%, close, move to 95.24% 0%, line to 95.24% 6.96%, line to 100% 6.96%, line to 95.24% 0%, close, move to 100% 93.04%, line to 95.24% 93.04%, line to 95.24% 100%, line to 100% 93.04%, close, move to 4.76% 0%, line to 0% 6.96%, line to 4.76% 6.96%, line to 4.76% 0%, close, move to 4.76% 93.04%, line to 0% 93.04%, line to 4.76% 100%, line to 4.76% 93.04%, close, move to 4.76% 0%, line to 16.07% 0%, line to 17.26% 1.74%, line to 37.5% 1.74%, line to 38.69% 0%, line to 95.24% 0%, line to 95.24% 6.96%, line to 4.76% 6.96%, line to 4.76% 0%, close, move to 95.24% 100%, line to 85.71% 100%, line to 84.52% 98.26%, line to 15.48% 98.26%, line to 14.29% 100%, line to 4.76% 100%, line to 4.76% 93.04%, line to 95.24% 93.04%, line to 95.24% 100%, close, move to 100% 6.96%, line to 95.24% 6.96%, line to 95.24% 93.04%, line to 100% 93.04%, line to 100% 50%, line to 98.81% 48.37%, line to 98.81% 19.35%, line to 100% 17.72%, line to 100% 6.96%, close, move to 0% 6.96%, line to 4.76% 6.96%, line to 4.76% 93.04%, line to 0% 93.04%, line to 0% 6.96%, close)'}}
+                                    style={{ clipPath: 'shape(from 95.24% 6.96%, line to 4.76% 6.96%, line to 4.76% 93.04%, line to 95.24% 93.04%, line to 95.24% 6.96%, close, move to 95.24% 0%, line to 95.24% 6.96%, line to 100% 6.96%, line to 95.24% 0%, close, move to 100% 93.04%, line to 95.24% 93.04%, line to 95.24% 100%, line to 100% 93.04%, close, move to 4.76% 0%, line to 0% 6.96%, line to 4.76% 6.96%, line to 4.76% 0%, close, move to 4.76% 93.04%, line to 0% 93.04%, line to 4.76% 100%, line to 4.76% 93.04%, close, move to 4.76% 0%, line to 16.07% 0%, line to 17.26% 1.74%, line to 37.5% 1.74%, line to 38.69% 0%, line to 95.24% 0%, line to 95.24% 6.96%, line to 4.76% 6.96%, line to 4.76% 0%, close, move to 95.24% 100%, line to 85.71% 100%, line to 84.52% 98.26%, line to 15.48% 98.26%, line to 14.29% 100%, line to 4.76% 100%, line to 4.76% 93.04%, line to 95.24% 93.04%, line to 95.24% 100%, close, move to 100% 6.96%, line to 95.24% 6.96%, line to 95.24% 93.04%, line to 100% 93.04%, line to 100% 50%, line to 98.81% 48.37%, line to 98.81% 19.35%, line to 100% 17.72%, line to 100% 6.96%, close, move to 0% 6.96%, line to 4.76% 6.96%, line to 4.76% 93.04%, line to 0% 93.04%, line to 0% 6.96%, close)' }}
                                 >
-                                        {/* style={ moodCardStyle
+                                    {/* style={ moodCardStyle
                                                 ? {
                                                     borderRadius: moodCardStyle.borderRadius || "32px",
                                                     background: moodCardStyle.background,
@@ -444,7 +444,7 @@ function CyberpunkFontCard({
 
                             {/* Hover overlay gradient for collapsed state */}
                             <div
-                                className={`absolute inset-0 flex flex-col justify-between items-end w-full p-5 rounded-4xl z-10 transition-all duration-300 ease-in-out pointer-events-none ${isExpanded ? "opacity-100" : "bg-linear-to-t opacity-0 group-hover:opacity-100"} ${viewMode === 'image' ? 'text-white from-black/50 via-transparent via-100% to-transparent' : 'text-[rgb(var(--color-foreground))]'}`}
+                                className={`absolute inset-0 flex flex-col justify-between items-end w-full p-5 rounded-4xl z-10 transition-all duration-300 ease-in-out pointer-events-none ${isExpanded ? "opacity-100" : "bg-linear-to-t opacity-0 group-hover:opacity-100"} ${viewMode === 'image' ? 'text-white from-black/50 via-transparent via-100% to-transparent' : 'text-foreground'}`}
                             >
                                 <div className="w-full flex justify-between items-start gap-3">
                                     <div className="flex items-center justify-end gap-2 font-inter-tight tracking-wider">
@@ -579,7 +579,7 @@ function CyberpunkFontCard({
                                             {font.name}
                                         </p>
                                         <p className={`text-sm transition-transform duration-300 delay-75 ${isExpanded ? "translate-y-2" : "translate-y-2 group-hover:translate-y-0"}
-                                        ${viewMode === 'image' ? 'text-white/60' : 'text-[rgb(var(--color-muted-foreground))]'}`}
+                                        ${viewMode === 'image' ? 'text-white/60' : 'text-muted'}`}
                                         >
                                             {font.designer}
                                         </p>
@@ -638,13 +638,13 @@ function CyberpunkFontCard({
                                             <h1 className="text-2xl font-bold tracking-tight mb-0.5 group/title">
                                                 {font.name}
                                             </h1>
-                                            <p className="text-sm text-[rgb(var(--color-muted-foreground))] tracking-wide">
+                                            <p className="text-sm text-muted tracking-wide">
                                                 by{" "}
                                                 <Link
                                                     to={`/designers/${encodeURIComponent(font.designer || "")}`}
                                                     state={{ from: location }}
                                                     onClick={(e) => e.stopPropagation()}
-                                                    className="hover:text-[rgb(var(--color-foreground))] hover:underline transition-colors duration-300 ease-in-out"
+                                                    className="hover:text-foreground hover:underline transition-colors duration-300 ease-in-out"
                                                 >
                                                     {font.designer}
                                                 </Link>
@@ -658,7 +658,7 @@ function CyberpunkFontCard({
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                             }}
-                                            className={`flex justify-center items-center gap-1 text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out py-2 px-3 rounded-full pointer-events-auto cursor-pointer`}
+                                            className={`flex justify-center items-center gap-1 text-muted hover:text-foreground transition-colors duration-300 ease-in-out py-2 px-3 rounded-full pointer-events-auto cursor-pointer`}
                                         >
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"
@@ -687,7 +687,7 @@ function CyberpunkFontCard({
                                         <Link
                                             key={i}
                                             to={`?categories=${tag}`}
-                                            className="bg-[rgb(var(--color-foreground)/0.05)] text-[rgb(var(--color-foreground)/0.5)] hover:bg-[rgb(var(--color-foreground)/0.9)] backdrop-blur-md hover:text-[rgb(var(--color-background))] text-[10px] md:text-[11px] px-2.5 py-1.5 rounded-full tracking-wider font-normal font-inter-tight zuppercase transition-colors duration-300 ease-in-out"
+                                            className="bg-foreground/5 text-foreground/50 hover:bg-foreground/90 backdrop-blur-md hover:text-background text-[10px] md:text-[11px] px-2.5 py-1.5 rounded-full tracking-wider font-normal font-inter-tight zuppercase transition-colors duration-300 ease-in-out"
                                         >
                                             {tag}
                                         </Link>

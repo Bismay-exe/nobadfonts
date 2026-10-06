@@ -30,12 +30,12 @@ interface FontResearchPanelProps {
 
 function ResearchStatusBadge({ status }: { status: string | null }) {
     const config: Record<string, { label: string; color: string; icon: any; animate?: boolean }> = {
-        unresearched: { label: 'Unresearched', color: 'rgb(var(--color-muted-foreground))', icon: Clock },
-        pending: { label: 'Unresearched', color: 'rgb(var(--color-muted-foreground))', icon: Clock },
-        researching: { label: 'Researching...', color: 'rgb(var(--color-accent))', icon: Loader2, animate: true },
-        verified: { label: 'Verified', color: 'rgb(var(--color-highlight))', icon: CheckCircle2 },
-        needs_review: { label: 'Needs Review', color: 'rgb(var(--color-warning))', icon: AlertTriangle },
-        failed: { label: 'Failed', color: 'rgb(var(--color-destructive))', icon: XCircle },
+        unresearched: { label: 'Unresearched', color: 'var(--color-muted)', icon: Clock },
+        pending: { label: 'Unresearched', color: 'var(--color-muted)', icon: Clock },
+        researching: { label: 'Researching...', color: 'var(--color-accent)', icon: Loader2, animate: true },
+        verified: { label: 'Verified', color: 'var(--color-accent)', icon: CheckCircle2 },
+        needs_review: { label: 'Needs Review', color: 'var(--color-warning)', icon: AlertTriangle },
+        failed: { label: 'Failed', color: 'var(--color-warning)', icon: XCircle },
     };
 
     const s = config[status || 'unresearched'] || config.unresearched;
@@ -60,15 +60,15 @@ function ResearchStatusBadge({ status }: { status: string | null }) {
 
 function ConfidenceBar({ label, score }: { label: string; score: number | null }) {
     const pct = score ?? 0;
-    const color = pct >= 80 ? 'rgb(var(--color-highlight))' : pct >= 60 ? 'rgb(var(--color-warning))' : 'rgb(var(--color-destructive))';
+    const color = pct >= 80 ? 'var(--color-accent)' : pct >= 60 ? 'var(--color-warning)' : 'var(--color-warning)';
 
     return (
         <div className="space-y-1">
             <div className="flex justify-between text-xs">
-                <span className="text-[rgb(var(--color-muted-foreground))] font-medium">{label}</span>
+                <span className="text-muted font-medium">{label}</span>
                 <span className="font-bold" style={{ color }}>{pct}/100</span>
             </div>
-            <div className="h-1.5 bg-[rgb(var(--color-foreground)/0.08)] rounded-full overflow-hidden">
+            <div className="h-1.5 bg-foreground/8 rounded-full overflow-hidden">
                 <div
                     className="h-full rounded-full transition-all duration-500"
                     style={{ width: `${pct}%`, backgroundColor: color }}
@@ -82,10 +82,10 @@ function ConfidenceBar({ label, score }: { label: string; score: number | null }
 
 function TierBadge({ tier }: { tier: number }) {
     const config: Record<number, { label: string; color: string }> = {
-        1: { label: 'Official', color: 'rgb(var(--color-highlight))' },
-        2: { label: 'Trusted', color: 'rgb(var(--color-accent))' },
-        3: { label: 'Secondary', color: 'rgb(var(--color-warning))' },
-        4: { label: 'Unverified', color: 'rgb(var(--color-destructive))' },
+        1: { label: 'Official', color: 'var(--color-accent)' },
+        2: { label: 'Trusted', color: 'var(--color-accent)' },
+        3: { label: 'Secondary', color: 'var(--color-warning)' },
+        4: { label: 'Unverified', color: 'var(--color-warning)' },
     };
     const c = config[tier] || config[4];
     return (
@@ -255,7 +255,7 @@ export default function FontResearchPanel({
             <div className="flex items-center gap-3">
                 <ResearchStatusBadge status={research?.research_status || 'unresearched'} />
                 {research?.confidence && research.confidence !== 'none' && (
-                    <span className="text-xs text-[rgb(var(--color-muted-foreground))] font-mono">
+                    <span className="text-xs text-muted font-mono">
                         {research.confidence.toUpperCase()}
                     </span>
                 )}
@@ -265,8 +265,8 @@ export default function FontResearchPanel({
                     disabled={isButtonDisabled}
                     title={isAnyResearching && !isCurrentFontResearching ? "Another font is currently being researched (1 at a time)" : ""}
                     className={`px-3 py-1 text-xs font-bold rounded-full border transition-colors duration-300 ease-in-out flex items-center gap-1 ${isCurrentFontResearching
-                            ? 'bg-[rgb(var(--color-accent)/0.15)] text-[rgb(var(--color-accent))] border-[rgb(var(--color-accent)/0.3)]'
-                            : 'bg-[rgb(var(--color-foreground)/0.05)] hover:bg-[rgb(var(--color-foreground)/0.1)] border-[rgb(var(--color-border))] disabled:opacity-40 disabled:cursor-not-allowed'
+                            ? 'bg-accent/15 text-accent border-accent/30'
+                            : 'bg-foreground/5 hover:bg-foreground/10 border-border disabled:opacity-40 disabled:cursor-not-allowed'
                         }`}
                 >
                     {isCurrentFontResearching ? <Loader2 size={12} className="animate-spin" /> : <Search size={12} />}
@@ -279,13 +279,13 @@ export default function FontResearchPanel({
     // ─── Full Panel ─────────────────────────────────────────────────
 
     return (
-        <div className="bg-[rgb(var(--color-card,var(--color-muted)))] border border-[rgb(var(--color-foreground)/0.05)] rounded-4xl overflow-hidden">
+        <div className="bg-card-background border border-foreground/5 rounded-4xl overflow-hidden">
             {/* Header */}
-            <div className="p-6 border-b border-[rgb(var(--color-foreground)/0.05)]">
+            <div className="p-6 border-b border-foreground/5">
                 <div className="flex items-center justify-between flex-wrap gap-3">
                     <div className="flex items-center gap-3">
-                        <Sparkles className="text-[rgb(var(--color-highlight))]" size={20} />
-                        <h3 className="font-bold text-lg uppercase tracking-wider text-[rgb(var(--color-foreground))]">
+                        <Sparkles className="text-accent" size={20} />
+                        <h3 className="font-bold text-lg uppercase tracking-wider text-foreground">
                             AI Research
                         </h3>
                         <ResearchStatusBadge status={research?.research_status || 'unresearched'} />
@@ -295,7 +295,7 @@ export default function FontResearchPanel({
                         onClick={triggerResearch}
                         disabled={isButtonDisabled}
                         title={isAnyResearching && !isCurrentFontResearching ? "Another font is currently being researched (1 at a time)" : ""}
-                        className="px-5 py-2 text-sm font-bold rounded-full bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] hover:opacity-90 transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2 cursor-pointer"
+                        className="px-5 py-2 text-sm font-bold rounded-full bg-foreground text-background hover:opacity-90 transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2 cursor-pointer"
                     >
                         {isCurrentFontResearching ? (
                             <><Loader2 size={14} className="animate-spin" /> Researching...</>
@@ -306,7 +306,7 @@ export default function FontResearchPanel({
                 </div>
 
                 {research?.researched_at && (
-                    <p className="text-xs text-[rgb(var(--color-muted-foreground))] mt-2">
+                    <p className="text-xs text-muted mt-2">
                         Last researched: {new Date(research.researched_at).toLocaleString()}
                     </p>
                 )}
@@ -317,12 +317,12 @@ export default function FontResearchPanel({
                 <div className="p-6 space-y-6">
                     {/* Conflict Warning */}
                     {research.has_conflicts && (
-                        <div className="p-4 rounded-2xl bg-[rgb(var(--color-warning)/0.1)] border border-[rgb(var(--color-warning)/0.3)]">
+                        <div className="p-4 rounded-2xl bg-warning/10 border border-warning/30">
                             <div className="flex items-start gap-2">
-                                <AlertTriangle size={16} className="text-[rgb(var(--color-warning))] mt-0.5 shrink-0" />
+                                <AlertTriangle size={16} className="text-warning mt-0.5 shrink-0" />
                                 <div>
-                                    <p className="text-sm font-bold text-[rgb(var(--color-foreground))]">Conflicting Information Detected</p>
-                                    <p className="text-xs text-[rgb(var(--color-muted-foreground))] mt-1">
+                                    <p className="text-sm font-bold text-foreground">Conflicting Information Detected</p>
+                                    <p className="text-xs text-muted mt-1">
                                         {research.conflict_details || 'Some sources provide contradictory information. Manual review recommended.'}
                                     </p>
                                 </div>
@@ -370,19 +370,19 @@ export default function FontResearchPanel({
 
                     {/* Google Fonts Match */}
                     {research.google_fonts_match && (
-                        <div className="flex items-center gap-2 p-3 rounded-xl bg-[rgb(var(--color-highlight)/0.08)] border border-[rgb(var(--color-highlight)/0.2)]">
-                            <CheckCircle2 size={14} className="text-[rgb(var(--color-highlight))]" />
-                            <span className="text-xs font-bold text-[rgb(var(--color-foreground))]">Available on Google Fonts</span>
+                        <div className="flex items-center gap-2 p-3 rounded-xl bg-accent/8 border border-accent/20">
+                            <CheckCircle2 size={14} className="text-accent" />
+                            <span className="text-xs font-bold text-foreground">Available on Google Fonts</span>
                         </div>
                     )}
 
                     {/* License Evidence */}
                     {research.license_evidence && (
-                        <div className="p-4 rounded-2xl bg-[rgb(var(--color-foreground)/0.03)] border border-[rgb(var(--color-foreground)/0.08)]">
-                            <p className="text-xs font-bold uppercase tracking-wider text-[rgb(var(--color-muted-foreground))] mb-2">
+                        <div className="p-4 rounded-2xl bg-foreground/3 border border-foreground/8">
+                            <p className="text-xs font-bold uppercase tracking-wider text-muted mb-2">
                                 License Evidence
                             </p>
-                            <blockquote className="text-sm text-[rgb(var(--color-foreground)/0.7)] italic border-l-2 border-[rgb(var(--color-highlight))] pl-3">
+                            <blockquote className="text-sm text-foreground/70 italic border-l-2 border-accent pl-3">
                                 "{research.license_evidence}"
                             </blockquote>
                         </div>
@@ -393,21 +393,21 @@ export default function FontResearchPanel({
                         <div className="space-y-3">
                             <button
                                 onClick={() => setShowDescription(!showDescription)}
-                                className="flex items-center gap-2 text-sm font-bold text-[rgb(var(--color-foreground))] hover:text-[rgb(var(--color-highlight))] transition-colors duration-300 ease-in-out"
+                                className="flex items-center gap-2 text-sm font-bold text-foreground hover:text-accent transition-colors duration-300 ease-in-out"
                             >
                                 <Sparkles size={14} />
                                 AI-Generated Description
                                 {showDescription ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                             </button>
                             {showDescription && (
-                                <div className="p-4 rounded-2xl bg-[rgb(var(--color-foreground)/0.03)] border border-[rgb(var(--color-foreground)/0.08)] space-y-3">
-                                    <p className="text-sm text-[rgb(var(--color-foreground)/0.7)] leading-relaxed">
+                                <div className="p-4 rounded-2xl bg-foreground/3 border border-foreground/8 space-y-3">
+                                    <p className="text-sm text-foreground/70 leading-relaxed">
                                         {research.ai_description}
                                     </p>
                                     {research.ai_tags && research.ai_tags.length > 0 && (
                                         <div className="flex flex-wrap gap-1.5">
                                             {research.ai_tags.map(tag => (
-                                                <span key={tag} className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[rgb(var(--color-foreground)/0.06)] text-[rgb(var(--color-muted-foreground))]">
+                                                <span key={tag} className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-foreground/6 text-muted">
                                                     {tag}
                                                 </span>
                                             ))}
@@ -417,7 +417,7 @@ export default function FontResearchPanel({
                                         <motion.button
                                             whileTap={{ scale: 0.95 }}
                                             onClick={applyDescription}
-                                            className="px-4 py-1.5 text-xs font-bold rounded-full bg-[rgb(var(--color-highlight))] text-[rgb(var(--color-background))] hover:opacity-90 transition-all cursor-pointer"
+                                            className="px-4 py-1.5 text-xs font-bold rounded-full bg-accent text-background hover:opacity-90 transition-all cursor-pointer"
                                         >
                                             Apply to Font Page
                                         </motion.button>
@@ -427,7 +427,7 @@ export default function FontResearchPanel({
                                                 await navigator.clipboard.writeText(research.ai_description || '');
                                                 await Toast.show({ text: 'Copied!', duration: 'short' });
                                             }}
-                                            className="px-4 py-1.5 text-xs font-bold rounded-full bg-[rgb(var(--color-foreground)/0.05)] hover:bg-[rgb(var(--color-foreground)/0.1)] border border-[rgb(var(--color-border))] transition-colors duration-300 ease-in-out cursor-pointer flex items-center gap-1"
+                                            className="px-4 py-1.5 text-xs font-bold rounded-full bg-foreground/5 hover:bg-foreground/10 border border-border transition-colors duration-300 ease-in-out cursor-pointer flex items-center gap-1"
                                         >
                                             <Copy size={10} /> Copy
                                         </motion.button>
@@ -442,7 +442,7 @@ export default function FontResearchPanel({
                         <div className="space-y-3">
                             <button
                                 onClick={() => setShowSources(!showSources)}
-                                className="flex items-center gap-2 text-sm font-bold text-[rgb(var(--color-foreground))] hover:text-[rgb(var(--color-highlight))] transition-colors duration-300 ease-in-out"
+                                className="flex items-center gap-2 text-sm font-bold text-foreground hover:text-accent transition-colors duration-300 ease-in-out"
                             >
                                 <Search size={14} />
                                 Sources ({sortedSources.length})
@@ -451,12 +451,12 @@ export default function FontResearchPanel({
                             {showSources && (
                                 <div className="space-y-2">
                                     {sortedSources.map((source) => (
-                                        <div key={source.id} className="p-3 rounded-xl bg-[rgb(var(--color-foreground)/0.03)] border border-[rgb(var(--color-foreground)/0.05)]">
+                                        <div key={source.id} className="p-3 rounded-xl bg-foreground/3 border border-foreground/5">
                                             <div className="flex items-start justify-between gap-2">
                                                 <div className="flex-1 min-w-0">
                                                     <div className="flex items-center gap-2 flex-wrap mb-1">
                                                         <TierBadge tier={source.source_tier} />
-                                                        <span className="text-[10px] font-mono text-[rgb(var(--color-muted-foreground))]">
+                                                        <span className="text-[10px] font-mono text-muted">
                                                             {source.source_type?.replace(/_/g, ' ')}
                                                         </span>
                                                     </div>
@@ -464,7 +464,7 @@ export default function FontResearchPanel({
                                                         href={source.url}
                                                         target="_blank"
                                                         rel="noopener noreferrer"
-                                                        className="text-xs font-medium text-[rgb(var(--color-foreground))] hover:text-[rgb(var(--color-highlight))] truncate block"
+                                                        className="text-xs font-medium text-foreground hover:text-accent truncate block"
                                                     >
                                                         {source.domain || source.url}
                                                         <ExternalLink size={10} className="inline ml-1" />
@@ -472,14 +472,14 @@ export default function FontResearchPanel({
                                                     {source.supports && source.supports.length > 0 && (
                                                         <div className="flex flex-wrap gap-1 mt-1">
                                                             {source.supports.map(s => (
-                                                                <span key={s} className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[rgb(var(--color-foreground)/0.05)] text-[rgb(var(--color-muted-foreground))]">
+                                                                <span key={s} className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-foreground/5 text-muted">
                                                                     {s}
                                                                 </span>
                                                             ))}
                                                         </div>
                                                     )}
                                                     {source.evidence && (
-                                                        <p className="text-[10px] text-[rgb(var(--color-muted-foreground))] mt-1 italic truncate">
+                                                        <p className="text-[10px] text-muted mt-1 italic truncate">
                                                             "{source.evidence}"
                                                         </p>
                                                     )}
@@ -497,8 +497,8 @@ export default function FontResearchPanel({
             {/* Empty State */}
             {(!research || research.research_status === 'pending' || research.research_status === 'unresearched') && (
                 <div className="p-8 text-center">
-                    <Search size={32} className="mx-auto text-[rgb(var(--color-muted-foreground)/0.3)] mb-3" />
-                    <p className="text-sm text-[rgb(var(--color-muted-foreground))]">
+                    <Search size={32} className="mx-auto text-muted/30 mb-3" />
+                    <p className="text-sm text-muted">
                         No research data yet. Click "Research Now" to analyze this font.
                     </p>
                 </div>
@@ -518,22 +518,22 @@ function InfoRow({ icon: Icon, label, value, isLink }: {
     if (!value) return null;
 
     return (
-        <div className="flex items-center gap-3 p-3 rounded-xl bg-[rgb(var(--color-foreground)/0.03)]">
-            <Icon size={14} className="text-[rgb(var(--color-muted-foreground))] shrink-0" />
+        <div className="flex items-center gap-3 p-3 rounded-xl bg-foreground/3">
+            <Icon size={14} className="text-muted shrink-0" />
             <div className="flex-1 min-w-0">
-                <p className="text-[10px] text-[rgb(var(--color-muted-foreground))] uppercase tracking-wider font-mono">{label}</p>
+                <p className="text-[10px] text-muted uppercase tracking-wider font-mono">{label}</p>
                 {isLink ? (
                     <a
                         href={value}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-xs font-bold text-[rgb(var(--color-foreground))] hover:text-[rgb(var(--color-highlight))] truncate block"
+                        className="text-xs font-bold text-foreground hover:text-accent truncate block"
                     >
                         {value.replace(/^https?:\/\/(www\.)?/, '').split('/')[0]}
                         <ExternalLink size={10} className="inline ml-1" />
                     </a>
                 ) : (
-                    <p className="text-xs font-bold text-[rgb(var(--color-foreground))] truncate">{value}</p>
+                    <p className="text-xs font-bold text-foreground truncate">{value}</p>
                 )}
             </div>
         </div>

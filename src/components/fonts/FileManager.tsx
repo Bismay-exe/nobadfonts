@@ -184,26 +184,26 @@ export default function FileManager({ font, user, onClose, onSaveSuccess }: File
     };
 
     return (
-        <div className="fixed inset-0 z-50 bg-[rgb(var(--color-background)/0.8)] backdrop-blur-sm flex items-center justify-center p-4">
-            <div className="bg-[rgb(var(--color-card,var(--color-muted)))] border border-[rgb(var(--color-foreground)/0.1)] rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto p-6 md:p-8 space-y-8">
+        <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4">
+            <div className="bg-card-background border border-foreground/10 rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto p-6 md:p-8 space-y-8">
                 <div className="flex justify-between items-center">
-                    <h2 className="text-2xl font-bold text-[rgb(var(--color-foreground))]">Manage Variants & Files</h2>
-                    <button onClick={onClose} className="p-2 text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.1)] rounded-full transition-colors duration-300 ease-in-out"><X /></button>
+                    <h2 className="text-2xl font-bold text-foreground">Manage Variants & Files</h2>
+                    <button onClick={onClose} className="p-2 text-muted hover:text-foreground hover:bg-foreground/10 rounded-full transition-colors duration-300 ease-in-out"><X /></button>
                 </div>
 
                 <div className="space-y-4">
-                    <h3 className="text-lg font-bold text-[rgb(var(--color-muted-foreground))] uppercase tracking-widest flex items-center gap-2">
+                    <h3 className="text-lg font-bold text-muted uppercase tracking-widest flex items-center gap-2">
                         <FileType size={16} /> Main Font Files
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {['woff2', 'woff', 'ttf', 'otf'].map(format => (
-                            <div key={format} className="p-4 bg-[rgb(var(--color-background)/0.5)] rounded-xl border border-[rgb(var(--color-foreground)/0.05)] flex items-center justify-between">
+                            <div key={format} className="p-4 bg-background/50 rounded-xl border border-foreground/5 flex items-center justify-between">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-lg bg-[rgb(var(--color-card,var(--color-muted)))] flex items-center justify-center text-[rgb(var(--color-muted-foreground))] font-mono text-xs uppercase shadow-inner">
+                                    <div className="w-10 h-10 rounded-lg bg-card-background flex items-center justify-center text-muted font-mono text-xs uppercase shadow-inner">
                                         {format}
                                     </div>
                                     <div>
-                                        <span className="block font-bold text-[rgb(var(--color-foreground)/0.7)] uppercase leading-tight">{format}</span>
+                                        <span className="block font-bold text-foreground/70 uppercase leading-tight">{format}</span>
                                         <span className={cn("text-[10px] font-bold uppercase tracking-wider", (font as any)[`${format}_url`] ? "text-green-500" : "text-red-500/50")}>
                                             {(font as any)[`${format}_url`] ? 'Installed' : 'Missing'}
                                         </span>
@@ -213,8 +213,8 @@ export default function FileManager({ font, user, onClose, onSaveSuccess }: File
                                     <label className={cn(
                                         "cursor-pointer p-2 rounded-lg transition-all border",
                                         (stagedChanges.find((c: any) => c.variantId === 'main' && c.format === format)?.file)
-                                            ? "bg-[rgb(var(--color-success)/0.1)] border-[rgb(var(--color-success)/0.5)] text-[rgb(var(--color-success))]"
-                                            : "bg-[rgb(var(--color-foreground)/0.05)] border-transparent text-[rgb(var(--color-muted-foreground))] hover:bg-[rgb(var(--color-foreground)/0.1)] hover:text-[rgb(var(--color-foreground))]"
+                                            ? "bg-success/10 border-success/50 text-success"
+                                            : "bg-foreground/5 border-transparent text-muted hover:bg-foreground/10 hover:text-foreground"
                                     )}>
                                         <Upload size={16} />
                                         <input
@@ -235,20 +235,20 @@ export default function FileManager({ font, user, onClose, onSaveSuccess }: File
 
                 {/* Variants List */}
                 <div className="space-y-4">
-                    <div className="flex justify-between items-center border-t border-[rgb(var(--color-foreground)/0.1)] pt-8">
-                        <h3 className="text-lg font-bold text-[rgb(var(--color-muted-foreground))] uppercase tracking-widest flex items-center gap-2">
+                    <div className="flex justify-between items-center border-t border-foreground/10 pt-8">
+                        <h3 className="text-lg font-bold text-muted uppercase tracking-widest flex items-center gap-2">
                             <Type size={16} /> Variants
                         </h3>
                         <div className="flex gap-2">
                             <button
                                 onClick={addCustomVariantToState}
-                                className="text-xs bg-[rgb(var(--color-foreground)/0.05)] text-[rgb(var(--color-foreground))] border border-[rgb(var(--color-foreground)/0.1)] px-4 py-2 rounded-full font-bold hover:bg-[rgb(var(--color-foreground)/0.1)] transition-colors duration-300 ease-in-out"
+                                className="text-xs bg-foreground/5 text-foreground border border-foreground/10 px-4 py-2 rounded-full font-bold hover:bg-foreground/10 transition-colors duration-300 ease-in-out"
                             >
                                 + Custom
                             </button>
                             <button
                                 onClick={addStdVariantToState}
-                                className="text-xs bg-[rgb(var(--color-highlight))] text-[rgb(var(--color-background))] px-4 py-2 rounded-full font-bold hover:scale-105 transition-transform shadow-[0_0_15px_rgba(var(--color-highlight),0.2)]"
+                                className="text-xs bg-accent text-background px-4 py-2 rounded-full font-bold hover:scale-105 transition-transform shadow-[0_0_15px_rgba(var(--color-highlight),0.2)]"
                             >
                                 + Standard
                             </button>
@@ -257,11 +257,11 @@ export default function FileManager({ font, user, onClose, onSaveSuccess }: File
 
                     <div className="space-y-4">
                         {font.font_variants?.map((variant: any) => (
-                            <div key={variant.id} className="p-5 bg-[rgb(var(--color-background)/0.5)] rounded-2xl border border-[rgb(var(--color-foreground)/0.05)] space-y-4">
-                                <div className="flex justify-between items-center pb-3 border-b border-[rgb(var(--color-foreground)/0.05)]">
-                                    <span className="font-bold text-[rgb(var(--color-foreground))] text-lg tracking-wide">{variant.variant_name}</span>
+                            <div key={variant.id} className="p-5 bg-background/50 rounded-2xl border border-foreground/5 space-y-4">
+                                <div className="flex justify-between items-center pb-3 border-b border-foreground/5">
+                                    <span className="font-bold text-foreground text-lg tracking-wide">{variant.variant_name}</span>
                                     <div className="flex items-center gap-3">
-                                        <span className="text-[10px] font-bold text-[rgb(var(--color-highlight)/0.5)] uppercase border border-[rgb(var(--color-highlight)/0.2)] bg-[rgb(var(--color-highlight)/0.05)] px-2 py-0.5 rounded shadow-inner"> Existing </span>
+                                        <span className="text-[10px] font-bold text-accent/50 uppercase border border-accent/20 bg-accent/5 px-2 py-0.5 rounded shadow-inner"> Existing </span>
                                     </div>
                                 </div>
                                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -274,12 +274,12 @@ export default function FileManager({ font, user, onClose, onSaveSuccess }: File
                                                 <label className={cn(
                                                     "flex flex-col items-center justify-center gap-1 p-3 rounded-xl border text-sm cursor-pointer transition-all h-full",
                                                     isPendingDelete
-                                                        ? "border-[rgb(var(--color-destructive)/0.3)] bg-[rgb(var(--color-destructive)/0.1)] text-[rgb(var(--color-destructive)/0.5)] opacity-50"
+                                                        ? "border-warning/30 bg-warning/10 text-warning/50 opacity-50"
                                                         : (staged?.file)
-                                                            ? "border-[rgb(var(--color-success)/0.5)] bg-[rgb(var(--color-success)/0.1)] text-[rgb(var(--color-success))] shadow-[0_0_15px_rgba(var(--color-success)/0.1)]"
+                                                            ? "border-success/50 bg-success/10 text-success shadow-[0_0_15px_rgba(var(--color-success)/0.1)]"
                                                             : (variant as any)[`${format}_url`]
-                                                                ? "border-[rgb(var(--color-foreground)/0.1)] bg-[rgb(var(--color-card,var(--color-muted)))] text-[rgb(var(--color-foreground)/0.7)] hover:bg-[rgb(var(--color-foreground)/0.15)] shadow-inner"
-                                                                : "border-dashed border-[rgb(var(--color-foreground)/0.1)] bg-[rgb(var(--color-foreground)/0.05)] text-[rgb(var(--color-muted-foreground))] hover:border-[rgb(var(--color-foreground)/0.3)] hover:text-[rgb(var(--color-foreground)/0.7)]"
+                                                                ? "border-foreground/10 bg-card-background text-foreground/70 hover:bg-foreground/15 shadow-inner"
+                                                                : "border-dashed border-foreground/10 bg-foreground/5 text-muted hover:border-foreground/30 hover:text-foreground/70"
                                                 )}>
                                                     <span className="uppercase font-bold text-xs tracking-wider">{format}</span>
                                                     <span className="text-[9px] uppercase font-bold opacity-70">
@@ -302,7 +302,7 @@ export default function FileManager({ font, user, onClose, onSaveSuccess }: File
                                                             e.preventDefault(); e.stopPropagation();
                                                             handleStageChange('delete', format, undefined, variant.id, variant.variant_name);
                                                         }}
-                                                        className="absolute -top-2 -right-2 p-1.5 bg-[rgb(var(--color-destructive))] text-[rgb(var(--color-background))] rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:scale-110 shadow-lg"
+                                                        className="absolute -top-2 -right-2 p-1.5 bg-warning text-background rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:scale-110 shadow-lg"
                                                         title="Remove File"
                                                     >
                                                         <Trash2 size={10} />
@@ -314,7 +314,7 @@ export default function FileManager({ font, user, onClose, onSaveSuccess }: File
                                                             e.preventDefault(); e.stopPropagation();
                                                             setStagedChanges(prev => prev.filter(c => !(c.variantId === variant.id && c.format === format)));
                                                         }}
-                                                        className="absolute -top-2 -right-2 p-1 text-[9px] font-bold uppercase bg-[rgb(var(--color-muted))] text-[rgb(var(--color-foreground))] rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:opacity-80 shadow-lg px-2"
+                                                        className="absolute -top-2 -right-2 p-1 text-[9px] font-bold uppercase bg-muted text-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:opacity-80 shadow-lg px-2"
                                                     >
                                                         Undo
                                                     </button>
@@ -328,16 +328,16 @@ export default function FileManager({ font, user, onClose, onSaveSuccess }: File
 
                         {/* Added New Variants UI */}
                         {addedVariants.map(variant => (
-                            <div key={variant.id} className="p-5 bg-[rgb(var(--color-success)/0.05)] rounded-2xl border border-[rgb(var(--color-success)/0.3)] space-y-4 relative overflow-hidden animate-in fade-in slide-in-from-bottom-2 shadow-[0_0_20px_rgba(var(--color-success)/0.05)]">
-                                <div className="absolute top-0 left-0 w-1 h-full bg-[rgb(var(--color-success))] shadow-[0_0_10px_rgba(var(--color-success)/0.5)]"></div>
-                                <div className="flex flex-col md:flex-row gap-4 items-start md:items-center pb-3 border-b border-[rgb(var(--color-foreground)/0.05)]">
+                            <div key={variant.id} className="p-5 bg-success/5 rounded-2xl border border-success/30 space-y-4 relative overflow-hidden animate-in fade-in slide-in-from-bottom-2 shadow-[0_0_20px_rgba(var(--color-success)/0.05)]">
+                                <div className="absolute top-0 left-0 w-1 h-full bg-success shadow-[0_0_10px_rgba(var(--color-success)/0.5)]"></div>
+                                <div className="flex flex-col md:flex-row gap-4 items-start md:items-center pb-3 border-b border-foreground/5">
                                     <div className="w-full md:w-1/3">
                                         {variant.isCustom ? (
                                             <input
                                                 type="text"
                                                 value={variant.name}
                                                 onChange={(e) => updateAddedVariantName(variant.id, e.target.value)}
-                                                className="bg-transparent border-b border-[rgb(var(--color-foreground)/0.2)] text-[rgb(var(--color-foreground))] font-bold text-lg tracking-wide focus:border-[rgb(var(--color-success))] outline-none pb-1 w-full placeholder:text-[rgb(var(--color-muted-foreground))] transition-colors duration-300 ease-in-out"
+                                                className="bg-transparent border-b border-foreground/20 text-foreground font-bold text-lg tracking-wide focus:border-success outline-none pb-1 w-full placeholder:text-muted transition-colors duration-300 ease-in-out"
                                                 placeholder="Variant Name"
                                                 autoFocus
                                             />
@@ -345,7 +345,7 @@ export default function FileManager({ font, user, onClose, onSaveSuccess }: File
                                             <select
                                                 value={variant.name}
                                                 onChange={(e) => updateAddedVariantName(variant.id, e.target.value)}
-                                                className="bg-[rgb(var(--color-card,var(--color-muted)))] border border-[rgb(var(--color-foreground)/0.1)] text-[rgb(var(--color-foreground))] font-bold text-lg tracking-wide rounded-xl px-3 py-2 w-full focus:outline-none focus:border-[rgb(var(--color-success)/0.5)] appearance-none shadow-inner"
+                                                className="bg-card-background border border-foreground/10 text-foreground font-bold text-lg tracking-wide rounded-xl px-3 py-2 w-full focus:outline-none focus:border-success/50 appearance-none shadow-inner"
                                             >
                                                 {VARIANT_NAMES.filter(name => name === variant.name || !addedVariants.some(v => v.name === name)).map(name => (
                                                     <option key={name} value={name}>{name}</option>
@@ -353,25 +353,25 @@ export default function FileManager({ font, user, onClose, onSaveSuccess }: File
                                             </select>
                                         )}
                                     </div>
-                                    <button onClick={() => removeAddedVariant(variant.id)} className="ml-auto text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-destructive))] hover:scale-110 transition-transform p-1 bg-[rgb(var(--color-foreground)/0.05)] rounded-full"><X size={16} /></button>
+                                    <button onClick={() => removeAddedVariant(variant.id)} className="ml-auto text-muted hover:text-warning hover:scale-110 transition-transform p-1 bg-foreground/5 rounded-full"><X size={16} /></button>
                                 </div>
 
                                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
                                     {(['ttf', 'otf', 'woff', 'woff2'] as const).map(fmt => (
                                         <div key={fmt} className="relative">
                                             {variant.files[fmt] ? (
-                                                <div className="flex items-center justify-between border border-[rgb(var(--color-success)/0.5)] bg-[rgb(var(--color-success)/0.1)] text-[rgb(var(--color-success))] rounded-xl p-3 text-xs font-bold shadow-[0_0_15px_rgba(var(--color-success)/0.1)]">
+                                                <div className="flex items-center justify-between border border-success/50 bg-success/10 text-success rounded-xl p-3 text-xs font-bold shadow-[0_0_15px_rgba(var(--color-success)/0.1)]">
                                                     <span className="truncate max-w-20 uppercase tracking-widest">{variant.files[fmt]?.name || fmt}</span>
                                                     <button
                                                         type="button"
                                                         onClick={() => updateAddedVariantFile(variant.id, fmt, null)}
                                                         className="hover:scale-110 transition-transform"
                                                     >
-                                                        <Trash2 size={14} className="text-[rgb(var(--color-success))] hover:text-[rgb(var(--color-destructive))]" />
+                                                        <Trash2 size={14} className="text-success hover:text-warning" />
                                                     </button>
                                                 </div>
                                             ) : (
-                                                <label className="flex flex-col items-center justify-center gap-1 border border-dashed border-[rgb(var(--color-foreground)/0.2)] bg-[rgb(var(--color-foreground)/0.05)] text-[rgb(var(--color-muted-foreground))] rounded-xl p-3 text-xs font-bold cursor-pointer hover:border-[rgb(var(--color-success)/0.5)] hover:text-[rgb(var(--color-success))] transition-all">
+                                                <label className="flex flex-col items-center justify-center gap-1 border border-dashed border-foreground/20 bg-foreground/5 text-muted rounded-xl p-3 text-xs font-bold cursor-pointer hover:border-success/50 hover:text-success transition-all">
                                                     <span className="uppercase tracking-widest">{fmt}</span>
                                                     <span className="text-[9px] opacity-70"><Plus size={10} className="inline mb-0.5" /> UPLOAD</span>
                                                     <input type="file" className="hidden" accept={`.${fmt}`} onChange={(e) => updateAddedVariantFile(variant.id, fmt, e.target.files?.[0] || null)} />
@@ -386,17 +386,17 @@ export default function FileManager({ font, user, onClose, onSaveSuccess }: File
                 </div>
 
                 {/* Actions */}
-                <div className="sticky bottom-0 pt-6 pb-2 border-t border-[rgb(var(--color-foreground)/0.1)] flex justify-end gap-3 bg-[rgb(var(--color-card,var(--color-muted)))]">
+                <div className="sticky bottom-0 pt-6 pb-2 border-t border-foreground/10 flex justify-end gap-3 bg-card-background">
                     <button
                         onClick={onClose}
-                        className="px-6 py-3 rounded-full font-bold bg-[rgb(var(--color-foreground)/0.05)] border border-[rgb(var(--color-foreground)/0.1)] text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.1)] transition-colors duration-300 ease-in-out"
+                        className="px-6 py-3 rounded-full font-bold bg-foreground/5 border border-foreground/10 text-foreground hover:bg-foreground/10 transition-colors duration-300 ease-in-out"
                     >
                         Cancel
                     </button>
                     <button
                         onClick={executeBatchChanges}
                         disabled={stagedChanges.length === 0 && addedVariants.length === 0 || isSaving}
-                        className="px-8 py-3 rounded-full font-bold bg-[rgb(var(--color-highlight))] text-[rgb(var(--color-background))] hover:scale-105 transition-transform disabled:opacity-50 disabled:hover:scale-100 flex items-center gap-2 shadow-[0_0_20px_rgba(var(--color-highlight)/0.2)] disabled:shadow-none"
+                        className="px-8 py-3 rounded-full font-bold bg-accent text-background hover:scale-105 transition-transform disabled:opacity-50 disabled:hover:scale-100 flex items-center gap-2 shadow-[0_0_20px_rgba(var(--color-highlight)/0.2)] disabled:shadow-none"
                     >
                         {isSaving ? 'Saving...' : <><Save size={18} /> Save Changes</>}
                     </button>

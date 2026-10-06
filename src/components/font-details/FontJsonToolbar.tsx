@@ -52,8 +52,8 @@ export function buildCanonicalFontMetadata(font: Font, research?: FontResearchRo
             family_name: tax.identity?.family_name || font.name,
             slug: font.slug,
             version: tax.identity?.version || extracted.version || '1.000',
-            release_year: tax.identity?.release_year 
-                ? Number(tax.identity.release_year) 
+            release_year: tax.identity?.release_year
+                ? Number(tax.identity.release_year)
                 : (font.created_at ? new Date(font.created_at).getFullYear() : null),
         },
         creator: {
@@ -313,16 +313,16 @@ export default function FontJsonToolbar({
                 <button
                     type="button"
                     onClick={() => setShowJsonModal(true)}
-                    className="flex items-center gap-2 px-4 py-2 rounded-full font-bold text-xs uppercase bg-[rgb(var(--color-foreground)/0.06)] hover:bg-[rgb(var(--color-foreground)/0.12)] border border-[rgb(var(--color-foreground)/0.1)] text-[rgb(var(--color-foreground))] transition-all cursor-pointer shadow-sm"
+                    className="flex items-center gap-2 px-4 py-2 rounded-full font-bold text-xs uppercase bg-foreground/6 hover:bg-foreground/12 border border-foreground/10 text-foreground transition-all cursor-pointer shadow-sm"
                     title="Import, edit, or auto-fill metadata from JSON"
                 >
-                    <FileJson size={14} className="text-[rgb(var(--color-highlight))]" />
+                    <FileJson size={14} className="text-accent" />
                     Auto-fill from JSON
                 </button>
                 <button
                     type="button"
                     onClick={handleExportJson}
-                    className="flex items-center gap-2 px-4 py-2 rounded-full font-bold text-xs uppercase bg-[rgb(var(--color-foreground)/0.06)] hover:bg-[rgb(var(--color-foreground)/0.12)] border border-[rgb(var(--color-foreground)/0.1)] text-[rgb(var(--color-foreground))] transition-all cursor-pointer shadow-sm"
+                    className="flex items-center gap-2 px-4 py-2 rounded-full font-bold text-xs uppercase bg-foreground/6 hover:bg-foreground/12 border border-foreground/10 text-foreground transition-all cursor-pointer shadow-sm"
                     title="Export font metadata as canonical JSON file"
                 >
                     <Download size={14} />

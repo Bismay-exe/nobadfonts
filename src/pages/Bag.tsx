@@ -121,7 +121,7 @@ async function downloadAsZip(
             if (n.includes("semibold") || n.includes("semi bold")) return 600;
             if (n.includes("extrabold") || n.includes("extra bold")) return 800;
             if (n.includes("bold")) return 700;
-            if (n.includes("[rgb(var(--color-background))]") || n.includes("heavy"))
+            if (n.includes("[var(--color-background)]") || n.includes("heavy"))
                 return 900;
             return 400;
         };
@@ -248,7 +248,7 @@ function CopyButton({
     return (
         <button
             onClick={handleCopy}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-[rgb(var(--color-foreground)/0.1)] hover:bg-[rgb(var(--color-foreground)/0.2)] text-[rgb(var(--color-foreground))] rounded-md text-xs font-medium transition-all"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-foreground/10 hover:bg-foreground/20 text-foreground rounded-md text-xs font-medium transition-all"
         >
             {copied ? (
                 <Check size={14} />
@@ -288,13 +288,13 @@ export default function BagPage() {
     };
 
     return (
-        <div className="pt-24 min-h-screen bg-[rgb(var(--color-background))] font-inter-tight text-[rgb(var(--color-foreground))]">
+        <div className="pt-24 min-h-screen bg-background font-inter-tight text-foreground">
             <div>
                 {items.length === 0 ? (
                     <div className="flex flex-col items-center justify-center w-full h-[calc(100vh-184px)] text-center px-12">
                         <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path fill="currentColor" d="M3.977 9.84A2 2 0 0 1 5.971 8h12.058a2 2 0 0 1 1.994 1.84l.803 10A2 2 0 0 1 18.833 22H5.167a2 2 0 0 1-1.993-2.16z"/><path d="M16 11V6a4 4 0 0 0-4-4v0a4 4 0 0 0-4 4v5"/></g></svg>
                         <h2 className="text-xl font-medium mt-4 mb-2">Your bag is empty</h2>
-                        <p className="text-[rgb(var(--color-foreground)/0.4)] text-center">
+                        <p className="text-foreground/40 text-center">
                             Browse fonts and add them to your bag to see them here.
                         </p>
                     </div>
@@ -304,11 +304,11 @@ export default function BagPage() {
                         <div className="flex items-center justify-between mb-8">
                             <h1 className="text-3xl font-medium font-inter-tight tracking-tight flex items-center gap-3">
                                 Font Bag
-                                <span className="bg-[rgb(var(--color-foreground))]text-[rgb(var(--color-background))] text-sm font-bold rounded-full w-6 h-6 flex items-center justify-center">
+                                <span className="bg-foregroundtext-background text-sm font-bold rounded-full w-6 h-6 flex items-center justify-center">
                                     {items.length}
                                 </span>
                             </h1>
-                            <button onClick={clearBag} className="flex cursor-pointer  items-center gap-2 px-4 py-3 bg-[rgb(var(--color-foreground)/0.05)] hover:bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-foreground))] hover:text-[rgb(var(--color-background))] rounded-xl text-sm font-medium transition-all duration-300 ease-in-out">Clear bag</button>
+                            <button onClick={clearBag} className="flex cursor-pointer  items-center gap-2 px-4 py-3 bg-foreground/5 hover:bg-foreground text-foreground hover:text-background rounded-xl text-sm font-medium transition-all duration-300 ease-in-out">Clear bag</button>
                         </div>
                         <div className="grid grid-cols-1 lg:grid-cols-[3fr_5fr] gap-4 md:gap-3">
                             {/* Left Column: Fonts List */}
@@ -327,7 +327,7 @@ export default function BagPage() {
                                     return (
                                         <div
                                             key={item.font.id}
-                                            className="bg-[rgb(var(--color-foreground)/0.05)] rounded-2xl overflow-hidden"
+                                            className="bg-foreground/5 rounded-2xl overflow-hidden"
                                         >
                                             <div
                                                 className="flex items-start justify-between p-5 cursor-pointer"
@@ -346,7 +346,7 @@ export default function BagPage() {
                                                     >
                                                         {item.font.name}
                                                     </h3>
-                                                    <p className="text-[13px] font-light tracking-wider text-[rgb(var(--color-foreground)/0.5)] mt-1.5">
+                                                    <p className="text-[13px] font-light tracking-wider text-foreground/50 mt-1.5">
                                                         {selectedCount} variant{selectedCount !== 1 ? "s" : ""} selected
                                                     </p>
                                                 </div>
@@ -355,7 +355,7 @@ export default function BagPage() {
                                                         e.stopPropagation();
                                                         removeFromBag(item.font.id);
                                                     }}
-                                                    className="text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))] transition-colors duration-300 ease-in-out"
+                                                    className="text-muted hover:text-foreground transition-colors duration-300 ease-in-out"
                                                 >
                                                     <X size={25} strokeWidth={2} />
                                                 </button>
@@ -382,7 +382,7 @@ export default function BagPage() {
                                                                             e.stopPropagation();
                                                                             toggleVariant(item.font.id, v.variant_name);
                                                                         }}
-                                                                        className={`flex items-center justify-between p-3 px-4 rounded-xl ${selected ? "bg-[rgb(var(--color-foreground)/0.05)]" : "bg-[rgb(var(--color-foreground)/0.01)]"} hover:bg-[rgb(var(--color-foreground)/0.05)] transition-colors duration-300 ease-in-out group`}
+                                                                        className={`flex items-center justify-between p-3 px-4 rounded-xl ${selected ? "bg-foreground/5" : "bg-foreground/1"} hover:bg-foreground/5 transition-colors duration-300 ease-in-out group`}
                                                                     >
                                                                         <span
                                                                             className="text-[22px]"
@@ -408,7 +408,7 @@ export default function BagPage() {
                                                                         </span>
                                                                         <Check
                                                                             size={20}
-                                                                            className={`transition-opacity ${selected ? "opacity-100 text-[rgb(var(--color-foreground))]" : "opacity-0 group-hover:opacity-30"}`}
+                                                                            className={`transition-opacity ${selected ? "opacity-100 text-foreground" : "opacity-0 group-hover:opacity-30"}`}
                                                                         />
                                                                     </button>
                                                                 );
@@ -424,14 +424,14 @@ export default function BagPage() {
 
                             {/* Right Column: Export Options */}
                             <div className="relative">
-                                <div className="sticky top-25 bg-[rgb(var(--color-foreground)/0.05)] rounded-2xl p-4 md:p-6 @container">
+                                <div className="sticky top-25 bg-foreground/5 rounded-2xl p-4 md:p-6 @container">
                                     {/* Tabs */}
                                     <div className="flex gap-2 mb-8">
                                         <button
                                             onClick={() => setActiveTab("embed")}
                                             className={`px-6 py-2.5 rounded-xl text-sm font-medium tracking-wider transition-all duration-300 ease-in-out ${activeTab === "embed"
-                                                ? "bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))]"
-                                                : "bg-[rgb(var(--color-foreground)/0.05)] hover:bg-[rgb(var(--color-foreground)/0.08)] text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))]"
+                                                ? "bg-foreground text-background"
+                                                : "bg-foreground/5 hover:bg-foreground/8 text-muted hover:text-foreground"
                                                 }`}
                                         >
                                             Embed
@@ -439,8 +439,8 @@ export default function BagPage() {
                                         <button
                                             onClick={() => setActiveTab("cli")}
                                             className={`px-6 py-2.5 rounded-xl text-sm font-medium tracking-wider transition-all duration-300 ease-in-out ${activeTab === "cli"
-                                                ? "bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))]"
-                                                : "bg-[rgb(var(--color-foreground)/0.05)] hover:bg-[rgb(var(--color-foreground)/0.08)] text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))]"
+                                                ? "bg-foreground text-background"
+                                                : "bg-foreground/5 hover:bg-foreground/8 text-muted hover:text-foreground"
                                                 }`}
                                         >
                                             Cli
@@ -448,8 +448,8 @@ export default function BagPage() {
                                         <button
                                             onClick={() => setActiveTab("zip")}
                                             className={`px-6 py-2.5 rounded-xl text-sm font-medium tracking-wider transition-all duration-300 ease-in-out ${activeTab === "zip"
-                                                ? "bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))]"
-                                                : "bg-[rgb(var(--color-foreground)/0.05)] hover:bg-[rgb(var(--color-foreground)/0.08)] text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))]"
+                                                ? "bg-foreground text-background"
+                                                : "bg-foreground/5 hover:bg-foreground/8 text-muted hover:text-foreground"
                                                 }`}
                                         >
                                             Zip
@@ -467,11 +467,11 @@ export default function BagPage() {
                                             {activeTab === "embed" && (
                                                 <div className="flex flex-col gap-8">
                                                     <div>
-                                                        <h3 className="text-xl font-medium text-[rgb(var(--color-foreground)/0.9)] mb-4 tracking-wide">
+                                                        <h3 className="text-xl font-medium text-foreground/90 mb-4 tracking-wide">
                                                             1. Add to the head section of web page
                                                         </h3>
-                                                        <div className="relative group bg-[rgb(var(--color-foreground)/0.05)] rounded-xl overflow-hidden">
-                                                            <pre className="p-4 text-[13px] text-[rgb(var(--color-muted-foreground))] font-mono overflow-x-auto space-pre-wrap">
+                                                        <div className="relative group bg-foreground/5 rounded-xl overflow-hidden">
+                                                            <pre className="p-4 text-[13px] text-muted font-mono overflow-x-auto space-pre-wrap">
                                                                 {items.map((i) => `<link href="${window.location.origin}/css/${i.font.slug}" rel="stylesheet">`).join("\n")}
                                                             </pre>
                                                             <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -481,11 +481,11 @@ export default function BagPage() {
                                                     </div>
 
                                                     <div>
-                                                        <h3 className="text-xl font-medium text-[rgb(var(--color-foreground)/0.9)] mb-4 tracking-wide">
+                                                        <h3 className="text-xl font-medium text-foreground/90 mb-4 tracking-wide">
                                                             OR Using @import CSS directive
                                                         </h3>
-                                                        <div className="relative group bg-[rgb(var(--color-foreground)/0.05)] rounded-xl overflow-hidden">
-                                                            <pre className="max-h-40 p-4 text-[13px] text-[rgb(var(--color-muted-foreground))] font-mono overflow-x-auto space-pre-wrap">
+                                                        <div className="relative group bg-foreground/5 rounded-xl overflow-hidden">
+                                                            <pre className="max-h-40 p-4 text-[13px] text-muted font-mono overflow-x-auto space-pre-wrap">
                                                                 {buildEmbedCode(items)}
                                                             </pre>
                                                             <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -495,11 +495,11 @@ export default function BagPage() {
                                                     </div>
 
                                                     <div>
-                                                        <h3 className="text-xl font-medium text-[rgb(var(--color-foreground)/0.9)] mb-4 tracking-wide">
+                                                        <h3 className="text-xl font-medium text-foreground/90 mb-4 tracking-wide">
                                                             OR Use font-face declaration
                                                         </h3>
-                                                        <div className="relative group bg-[rgb(var(--color-foreground)/0.05)] rounded-xl overflow-hidden">
-                                                            <pre className="max-h-60 p-4 text-[13px] text-[rgb(var(--color-muted-foreground))] font-mono overflow-x-auto space-pre-wrap">
+                                                        <div className="relative group bg-foreground/5 rounded-xl overflow-hidden">
+                                                            <pre className="max-h-60 p-4 text-[13px] text-muted font-mono overflow-x-auto space-pre-wrap">
                                                                 {buildFontFaces(items)}
                                                             </pre>
                                                             <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -512,11 +512,11 @@ export default function BagPage() {
                                                     </div>
 
                                                     <div>
-                                                        <h3 className="text-xl font-medium text-[rgb(var(--color-foreground)/0.9)] mb-4 tracking-wide">
+                                                        <h3 className="text-xl font-medium text-foreground/90 mb-4 tracking-wide">
                                                             2. CSS rules to specify fonts
                                                         </h3>
-                                                        <div className="relative group bg-[rgb(var(--color-foreground)/0.05)] rounded-xl overflow-hidden">
-                                                            <pre className="max-h-40 p-4 text-[13px] text-[rgb(var(--color-muted-foreground))] font-mono overflow-x-auto space-pre-wrap">
+                                                        <div className="relative group bg-foreground/5 rounded-xl overflow-hidden">
+                                                            <pre className="max-h-40 p-4 text-[13px] text-muted font-mono overflow-x-auto space-pre-wrap">
                                                                 {buildCSSRules(items)}
                                                             </pre>
                                                             <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -530,11 +530,11 @@ export default function BagPage() {
                                             {activeTab === "cli" && (
                                                 <div className="flex flex-col gap-8">
                                                     <div>
-                                                        <h3 className="text-xl font-medium text-[rgb(var(--color-foreground)/0.9)] mb-4 tracking-wide">
+                                                        <h3 className="text-xl font-medium text-foreground/90 mb-4 tracking-wide">
                                                             Add via NoBadFonts CLI
                                                         </h3>
-                                                        <div className="relative group bg-[rgb(var(--color-foreground)/0.05)] rounded-xl overflow-hidden">
-                                                            <div className="p-4 text-[13px] text-[rgb(var(--color-muted-foreground))] font-mono overflow-x-auto whitespace-nowrap pr-14">
+                                                        <div className="relative group bg-foreground/5 rounded-xl overflow-hidden">
+                                                            <div className="p-4 text-[13px] text-muted font-mono overflow-x-auto whitespace-nowrap pr-14">
                                                                 npx nobadfonts add {buildCliCommand(items)}
                                                             </div>
                                                             <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -544,18 +544,18 @@ export default function BagPage() {
                                                                 />
                                                             </div>
                                                         </div>
-                                                        <p className="text-[rgb(var(--color-muted-foreground))] text-sm pl-2 mt-4">
+                                                        <p className="text-muted text-sm pl-2 mt-4">
                                                             Run this command in your project root to automatically
                                                             download and configure the fonts.
                                                         </p>
                                                     </div>
 
                                                     <div>
-                                                        <h3 className="text-xl font-medium text-[rgb(var(--color-foreground)/0.9)] mb-4 tracking-wide">
+                                                        <h3 className="text-xl font-medium text-foreground/90 mb-4 tracking-wide">
                                                             Download via NoBadFonts CLI
                                                         </h3>
-                                                        <div className="relative group bg-[rgb(var(--color-foreground)/0.05)] rounded-xl overflow-hidden">
-                                                            <div className="p-4 text-[13px] text-[rgb(var(--color-muted-foreground))] font-mono overflow-x-auto whitespace-nowrap pr-14">
+                                                        <div className="relative group bg-foreground/5 rounded-xl overflow-hidden">
+                                                            <div className="p-4 text-[13px] text-muted font-mono overflow-x-auto whitespace-nowrap pr-14">
                                                                 npx nobadfonts download {buildCliCommand(items)}
                                                             </div>
                                                             <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -565,7 +565,7 @@ export default function BagPage() {
                                                                 />
                                                             </div>
                                                         </div>
-                                                        <p className="text-[rgb(var(--color-muted-foreground))] text-sm pl-2 mt-4">
+                                                        <p className="text-muted text-sm pl-2 mt-4">
                                                             Run this command in your project root to only download
                                                             the font files.
                                                         </p>
@@ -575,7 +575,7 @@ export default function BagPage() {
 
                                             {activeTab === "zip" && (
                                                 <div className="flex flex-col gap-6">
-                                                    <h3 className="text-xl font-medium text-[rgb(var(--color-foreground)/0.9)] mb-4 tracking-wide">
+                                                    <h3 className="text-xl font-medium text-foreground/90 mb-4 tracking-wide">
                                                         Download Font Files
                                                     </h3>
                                                     <p className="text-gray-400 text-sm mb-4">
@@ -585,7 +585,7 @@ export default function BagPage() {
                                                     <button
                                                         onClick={handleDownload}
                                                         disabled={isDownloading}
-                                                        className="w-full py-3.5 bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] rounded-xl font-bold font-inter-tight tracking-wide transition-colors disabled:opacity-50 cursor-pointer hover:bg-[rgb(var(--color-foreground)/0.8)]"
+                                                        className="w-full py-3.5 bg-foreground text-background rounded-xl font-bold font-inter-tight tracking-wide transition-colors disabled:opacity-50 cursor-pointer hover:bg-foreground/80"
                                                     >
                                                         {isDownloading
                                                             ? downloadStatus || "Downloading..."

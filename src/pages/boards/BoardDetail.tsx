@@ -39,11 +39,11 @@ const MasonryCard = ({ data, width }: { data: any; width: number }) => {
       />
       {data.selectionMode && (
         <div
-        className={`absolute inset-0 z-20 rounded-3xl border-2 transition-all duration-300 ease-in-out cursor-pointer 
-          ${data.viewMode==='image' ? 'border-[rgb(var(--color-muted-foreground)/0)] rounded-4xl' : 'border-[rgb(var(--color-muted-foreground)/0.3)]'} 
-          ${data.isSelected ? 
-            'bg-[rgb(var(--color-muted)/0.85)]'
-            : 'border-transparent hover:border-[rgb(var(--color-foreground)/0.2)] bg-[rgb(var(--color-foreground)/0.02)]'
+          className={`absolute inset-0 z-20 rounded-3xl border-2 transition-all duration-300 ease-in-out cursor-pointer 
+          ${data.viewMode === 'image' ? 'border-muted/0 rounded-4xl' : 'border-muted/30'} 
+          ${data.isSelected ?
+              'bg-muted/85'
+              : 'border-transparent hover:border-foreground/20 bg-foreground/2'
             }`}
           onClick={(e) => {
             e.preventDefault();
@@ -51,9 +51,9 @@ const MasonryCard = ({ data, width }: { data: any; width: number }) => {
             data.onToggleSelect();
           }}
         >
-          <div className={`absolute top-4 right-4 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors duration-300 ease-in-out shadow-sm ${data.isSelected ? 'border-[rgb(var(--color-foreground))] bg-[rgb(var(--color-foreground))]' : 'border-[rgb(var(--color-foreground)/0.3)] bg-[rgb(var(--color-card))]'
+          <div className={`absolute top-4 right-4 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors duration-300 ease-in-out shadow-sm ${data.isSelected ? 'border-foreground bg-foreground' : 'border-foreground/30 bg-card-background'
             }`}>
-            {data.isSelected && <svg className="w-4 h-4 text-[rgb(var(--color-background))]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>}
+            {data.isSelected && <svg className="w-4 h-4 text-background" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>}
           </div>
         </div>
       )}
@@ -250,50 +250,50 @@ export default function BoardDetail() {
           1;
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center bg-[rgb(var(--color-background))]">
-      <div className="w-8 h-8 rounded-full border-2 border-[rgb(var(--color-foreground)/0.1)] border-t-[rgb(var(--color-foreground))] animate-spin" />
+    <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="w-8 h-8 rounded-full border-2 border-foreground/10 border-t-[var(--color-foreground)] animate-spin" />
     </div>
   );
 
   if (notFound || !board || !owner) return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))]">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-background text-foreground">
       <p className="text-5xl mb-4">🔒</p>
       <h1 className="text-2xl font-black mb-2">Board not found</h1>
-      <p className="text-[rgb(var(--color-muted-foreground))] mb-6">This board doesn't exist or is private.</p>
-      <Link to="/" className="text-[rgb(var(--color-highlight))] hover:underline text-sm font-medium">← Back to home</Link>
+      <p className="text-muted mb-6">This board doesn't exist or is private.</p>
+      <Link to="/" className="text-accent hover:underline text-sm font-medium">← Back to home</Link>
     </div>
   );
 
   return (
-    <div className="pt-24 min-h-screen bg-[rgb(var(--color-background))]">
+    <div className="pt-24 min-h-screen bg-background">
       <SEO
         title={`${board.name} by ${owner.full_name} — NoBadFonts`}
         description={board.description || `A curated font board by ${owner.full_name} on NoBadFonts.`}
       />
 
-      <div className="relative bg-[rgb(var(--color-card)/0.4)] backdrop-blur-sm">
-        <div className='h-px w-full bg-linear-to-r from-transparent via-[rgb(var(--color-foreground)/0.08)] to-transparent absolute bottom-0 left-0 right-0' />
+      <div className="relative bg-card-background/40 backdrop-blur-sm">
+        <div className='h-px w-full bg-linear-to-r from-transparent via-foreground/8 to-transparent absolute bottom-0 left-0 right-0' />
         <div className="max-w-6xl mx-auto px-4 py-8">
-          <div className="flex items-center gap-2 text-sm text-[rgb(var(--color-muted-foreground))] mb-5">
-            <Link to={`/${username}`} className="hover:text-[rgb(var(--color-foreground))] transition-colors flex items-center gap-1.5">
+          <div className="flex items-center gap-2 text-sm text-muted mb-5">
+            <Link to={`/${username}`} className="hover:text-foreground transition-colors flex items-center gap-1.5">
               {owner.avatar_url ? (
                 <img src={owner.avatar_url} alt={owner.full_name} className="w-5 h-5 rounded-full object-cover" />
               ) : (
-                <div className="w-5 h-5 rounded-full bg-[rgb(var(--color-foreground)/0.1)] flex items-center justify-center text-[rgb(var(--color-foreground))] text-[10px] font-black">{owner.full_name?.[0]}</div>
+                <div className="w-5 h-5 rounded-full bg-foreground/10 flex items-center justify-center text-foreground text-[10px] font-black">{owner.full_name?.[0]}</div>
               )}
               @{owner.username}
             </Link>
-            <span className="text-[rgb(var(--color-foreground)/0.3)]">/</span>
-            <span className="text-[rgb(var(--color-foreground))] font-medium">{board.name}</span>
+            <span className="text-foreground/30">/</span>
+            <span className="text-foreground font-medium">{board.name}</span>
           </div>
 
           <div className="flex items-start gap-4 justify-between flex-wrap">
             <div>
               <div className="flex items-center gap-3 flex-wrap">
-                <h1 className="text-3xl font-black text-[rgb(var(--color-foreground))]">{board.name}</h1>
+                <h1 className="text-3xl font-black text-foreground">{board.name}</h1>
                 <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${board.visibility === 'private'
-                  ? 'bg-[rgb(var(--color-foreground)/0.08)] text-[rgb(var(--color-muted-foreground))]'
-                  : 'bg-[rgb(var(--color-foreground)/0.08)] text-[rgb(var(--color-muted-foreground))]'}`}>
+                  ? 'bg-foreground/8 text-muted'
+                  : 'bg-foreground/8 text-muted'}`}>
                   {board.visibility === 'private' ?
                     <div className='flex gap-1 items-center'><Lock size={14} /> Private</div>
                     : <div className='flex gap-1 items-center'><Globe size={14} /> Public</div>
@@ -301,9 +301,9 @@ export default function BoardDetail() {
                 </span>
               </div>
               {board.description && (
-                <p className="text-[rgb(var(--color-muted-foreground))] mt-2 max-w-xl">{board.description}</p>
+                <p className="text-muted mt-2 max-w-xl">{board.description}</p>
               )}
-              <p className="text-sm text-[rgb(var(--color-muted-foreground))] mt-2">
+              <p className="text-sm text-muted mt-2">
                 {board.font_count} font{board.font_count !== 1 ? 's' : ''}
               </p>
             </div>
@@ -311,7 +311,7 @@ export default function BoardDetail() {
             <div className={`${selectionMode ? 'w-full' : 'w-auto'} md:w-auto flex justify-between md:justify-center items-center gap-2`}>
               <button
                 onClick={copyLink}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border border-[rgb(var(--color-foreground)/0.15)] text-sm font-medium text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.04)] transition-all ${selectionMode ? 'hidden' : ''}`}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border border-foreground/15 text-sm font-medium text-foreground hover:bg-foreground/4 transition-all ${selectionMode ? 'hidden' : ''}`}
               >
                 {copied ? (
                   <><svg className="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg> Copied!</>
@@ -331,14 +331,13 @@ export default function BoardDetail() {
                   }}
                   disabled={savingBoard}
                   title={isBoardSaved(board.id) ? 'Remove from saved boards' : 'Save this board'}
-                  className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-medium transition-all duration-300 ease-in-out disabled:opacity-60 ${
-                    isBoardSaved(board.id)
-                      ? 'border-[rgb(var(--color-highlight)/0.4)] bg-[rgb(var(--color-highlight)/0.08)] text-[rgb(var(--color-highlight))]'
-                      : 'border-[rgb(var(--color-foreground)/0.15)] text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.04)]'
-                  }`}
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-medium transition-all duration-300 ease-in-out disabled:opacity-60 ${isBoardSaved(board.id)
+                    ? 'border-accent/40 bg-accent/8 text-accent'
+                    : 'border-foreground/15 text-foreground hover:bg-foreground/4'
+                    }`}
                 >
                   {isBoardSaved(board.id) ? (
-                    <><BookmarkCheck size={16} className="fill-[rgb(var(--color-highlight))]" /> Saved</>
+                    <><BookmarkCheck size={16} className="fill-accent" /> Saved</>
                   ) : (
                     <><Bookmark size={16} /> Save Board</>
                   )}
@@ -358,14 +357,14 @@ export default function BoardDetail() {
                             if (selectedFonts.size === fonts.length) setSelectedFonts(new Set());
                             else setSelectedFonts(new Set(fonts.map(f => f.font_id)));
                           }}
-                          className="px-4 h-10 text-xs bg-[rgb(var(--color-foreground)/0.05)] hover:bg-[rgb(var(--color-foreground)/0.1)] rounded-xl font-medium text-[rgb(var(--color-foreground)/0.6)] hover:text-[rgb(var(--color-foreground))] transition-colors"
+                          className="px-4 h-10 text-xs bg-foreground/5 hover:bg-foreground/10 rounded-xl font-medium text-foreground/60 hover:text-foreground transition-colors"
                         >
                           {selectedFonts.size === fonts.length ? 'Deselect All' : 'Select All'}
                         </button>
                         <button
                           onClick={handleRemoveSelectedFonts}
                           disabled={selectedFonts.size === 0}
-                          className="flex items-center gap-1.5 px-4 h-10 rounded-xl bg-[rgb(var(--color-destructive)/0.15)] border border-[rgb(var(--color-destructive)/0.25)] text-[rgb(var(--color-destructive))] text-xs font-medium hover:bg-[rgb(var(--color-destructive)/0.25)] transition-colors duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="flex items-center gap-1.5 px-4 h-10 rounded-xl bg-warning/15 border border-warning/25 text-warning text-xs font-medium hover:bg-warning/25 transition-colors duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           <Trash2 size={14} />
                           <span className='hidden sm:block'>Remove Selected</span>
@@ -375,7 +374,7 @@ export default function BoardDetail() {
                   ) : (
                     <button
                       onClick={() => setIsEditModalOpen(true)}
-                      className="flex items-center justify-center w-10 h-10 rounded-xl border border-[rgb(var(--color-foreground)/0.15)] text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.04)] transition-all duration-300 ease-in-out"
+                      className="flex items-center justify-center w-10 h-10 rounded-xl border border-foreground/15 text-foreground hover:bg-foreground/4 transition-all duration-300 ease-in-out"
                       title="Edit Board"
                     >
                       <Edit3 size={18} />
@@ -387,9 +386,9 @@ export default function BoardDetail() {
                       setSelectionMode(!selectionMode);
                       setSelectedFonts(new Set());
                     }}
-                    className={`flex items-center justify-center px-4 h-10 rounded-xl border border-[rgb(var(--color-foreground)/0.15)] transition-all duration-300 ease-in-out text-sm font-medium ${selectionMode
-                      ? 'bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))]'
-                      : 'text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.04)]'
+                    className={`flex items-center justify-center px-4 h-10 rounded-xl border border-foreground/15 transition-all duration-300 ease-in-out text-sm font-medium ${selectionMode
+                      ? 'bg-foreground text-background'
+                      : 'text-foreground hover:bg-foreground/4'
                       }`}
                   >
                     {selectionMode ? 'Cancel' : 'Manage Fonts'}
@@ -403,7 +402,7 @@ export default function BoardDetail() {
 
       {/* {selectionMode && (
         <div className="max-w-6xl mx-auto px-4 mt-4 mb-2">
-          <div className="p-4 rounded-2xl bg-[rgb(var(--color-foreground)/0.03)] border border-[rgb(var(--color-foreground)/0.08)] flex items-center justify-between">
+          <div className="p-4 rounded-2xl bg-foreground/3 border border-foreground/8 flex items-center justify-between">
             <span className="font-medium text-sm">
               {selectedFonts.size} font{selectedFonts.size !== 1 ? 's' : ''} selected
             </span>
@@ -413,14 +412,14 @@ export default function BoardDetail() {
                   if (selectedFonts.size === fonts.length) setSelectedFonts(new Set());
                   else setSelectedFonts(new Set(fonts.map(f => f.font_id)));
                 }}
-                className="px-4 h-10 text-xs bg-[rgb(var(--color-foreground)/0.05)] hover:bg-[rgb(var(--color-foreground)/0.1)] rounded-xl font-medium text-[rgb(var(--color-foreground)/0.6)] hover:text-[rgb(var(--color-foreground))] transition-colors"
+                className="px-4 h-10 text-xs bg-foreground/5 hover:bg-foreground/10 rounded-xl font-medium text-foreground/60 hover:text-foreground transition-colors"
               >
                 {selectedFonts.size === fonts.length ? 'Deselect All' : 'Select All'}
               </button>
               <button
                 onClick={handleRemoveSelectedFonts}
                 disabled={selectedFonts.size === 0}
-                className="flex items-center gap-1.5 px-4 h-10 rounded-xl bg-[rgb(var(--color-destructive)/0.1)] text-[rgb(var(--color-destructive))] text-xs font-medium hover:bg-[rgb(var(--color-destructive)/0.2)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center gap-1.5 px-4 h-10 rounded-xl bg-warning/10 text-warning text-xs font-medium hover:bg-warning/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Trash2 size={14} />
                 Remove Selected
@@ -471,12 +470,12 @@ export default function BoardDetail() {
 
         <div className="w-full h-full pb-20">
           {fonts.length === 0 ? (
-            <div className="text-center py-20 text-[rgb(var(--color-muted-foreground))]">
+            <div className="text-center py-20 text-muted">
               <p className="text-4xl mb-3">🎨</p>
-              <p className="font-medium text-[rgb(var(--color-foreground))]">This board is empty</p>
+              <p className="font-medium text-foreground">This board is empty</p>
               {isOwner && (
                 <p className="text-sm mt-1">
-                  <Link to="/fonts" className="text-[rgb(var(--color-foreground))] hover:underline">Browse fonts</Link> and save them to this board.
+                  <Link to="/fonts" className="text-foreground hover:underline">Browse fonts</Link> and save them to this board.
                 </p>
               )}
             </div>
@@ -494,9 +493,9 @@ export default function BoardDetail() {
               />
             </div>
           ) : (
-            <div className="text-center py-20 text-[rgb(var(--color-muted-foreground)/0.5)]">
+            <div className="text-center py-20 text-muted/50">
               <p className="text-xl mb-2">No fonts match your filters</p>
-              <button onClick={() => setFilters({ query: '', categories: [], sortBy: 'trending' })} className="text-[rgb(var(--color-foreground))] hover:underline text-sm font-medium cursor-pointer">
+              <button onClick={() => setFilters({ query: '', categories: [], sortBy: 'trending' })} className="text-foreground hover:underline text-sm font-medium cursor-pointer">
                 Clear all filters
               </button>
             </div>

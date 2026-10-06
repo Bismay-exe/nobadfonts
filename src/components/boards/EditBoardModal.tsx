@@ -74,14 +74,14 @@ export default function EditBoardModal({ board, isOpen, onClose, onUpdate, onDel
       />
       
       {/* Modal */}
-      <div className="relative bg-[rgb(var(--color-background))] border border-[rgb(var(--color-foreground)/0.1)] rounded-3xl w-full max-w-md shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      <div className="relative bg-background border border-foreground/10 rounded-3xl w-full max-w-md shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         
         {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-[rgb(var(--color-foreground)/0.05)]">
-          <h2 className="text-xl font-bold text-[rgb(var(--color-foreground))]">Edit Board</h2>
+        <div className="flex items-center justify-between p-5 border-b border-foreground/5">
+          <h2 className="text-xl font-bold text-foreground">Edit Board</h2>
           <button 
             onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[rgb(var(--color-foreground)/0.05)] text-[rgb(var(--color-muted-foreground))] hover:text-[rgb(var(--color-foreground))] transition-colors"
+            className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-foreground/5 text-muted hover:text-foreground transition-colors"
           >
             <X size={18} />
           </button>
@@ -99,7 +99,7 @@ export default function EditBoardModal({ board, isOpen, onClose, onUpdate, onDel
           <form id="edit-board-form" onSubmit={handleSubmit} className="p-5 space-y-5">
             {/* Name */}
             <div>
-              <label htmlFor="board-name" className="block text-sm font-medium text-[rgb(var(--color-foreground))] mb-1.5">
+              <label htmlFor="board-name" className="block text-sm font-medium text-foreground mb-1.5">
                 Board Name
               </label>
               <input
@@ -108,15 +108,15 @@ export default function EditBoardModal({ board, isOpen, onClose, onUpdate, onDel
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="E.g., Retro Display Fonts"
-                className="w-full px-4 py-2.5 rounded-xl bg-[rgb(var(--color-foreground)/0.03)] border border-[rgb(var(--color-foreground)/0.1)] focus:border-[rgb(var(--color-highlight))] focus:ring-1 focus:ring-[rgb(var(--color-highlight))] outline-none transition-all text-[rgb(var(--color-foreground))] font-medium"
+                className="w-full px-4 py-2.5 rounded-xl bg-foreground/3 border border-foreground/10 focus:border-accent focus:ring-1 focus:ring-accent outline-none transition-all text-foreground font-medium"
                 required
               />
             </div>
 
             {/* Description */}
             <div>
-              <label htmlFor="board-desc" className="block text-sm font-medium text-[rgb(var(--color-foreground))] mb-1.5">
-                Description <span className="text-[rgb(var(--color-muted-foreground))] font-normal">(Optional)</span>
+              <label htmlFor="board-desc" className="block text-sm font-medium text-foreground mb-1.5">
+                Description <span className="text-muted font-normal">(Optional)</span>
               </label>
               <textarea
                 id="board-desc"
@@ -124,13 +124,13 @@ export default function EditBoardModal({ board, isOpen, onClose, onUpdate, onDel
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="What is this board for?"
                 rows={3}
-                className="w-full px-4 py-2.5 rounded-xl bg-[rgb(var(--color-foreground)/0.03)] border border-[rgb(var(--color-foreground)/0.1)] focus:border-[rgb(var(--color-highlight))] focus:ring-1 focus:ring-[rgb(var(--color-highlight))] outline-none transition-all text-[rgb(var(--color-foreground))] resize-none"
+                className="w-full px-4 py-2.5 rounded-xl bg-foreground/3 border border-foreground/10 focus:border-accent focus:ring-1 focus:ring-accent outline-none transition-all text-foreground resize-none"
               />
             </div>
 
             {/* Visibility */}
             <div>
-              <label className="block text-sm font-medium text-[rgb(var(--color-foreground))] mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Visibility
               </label>
               <div className="grid grid-cols-2 gap-3">
@@ -139,8 +139,8 @@ export default function EditBoardModal({ board, isOpen, onClose, onUpdate, onDel
                   onClick={() => setVisibility('public')}
                   className={`flex flex-col items-center justify-center p-3 rounded-xl border-2 transition-all ${
                     visibility === 'public' 
-                      ? 'border-[rgb(var(--color-highlight))] bg-[rgb(var(--color-highlight)/0.05)] text-[rgb(var(--color-highlight))]' 
-                      : 'border-[rgb(var(--color-foreground)/0.1)] bg-[rgb(var(--color-foreground)/0.02)] text-[rgb(var(--color-muted-foreground))] hover:border-[rgb(var(--color-foreground)/0.2)]'
+                      ? 'border-accent bg-accent/5 text-accent' 
+                      : 'border-foreground/10 bg-foreground/2 text-muted hover:border-foreground/20'
                   }`}
                 >
                   <Globe size={20} className="mb-1.5" />
@@ -153,8 +153,8 @@ export default function EditBoardModal({ board, isOpen, onClose, onUpdate, onDel
                   onClick={() => setVisibility('private')}
                   className={`flex flex-col items-center justify-center p-3 rounded-xl border-2 transition-all ${
                     visibility === 'private' 
-                      ? 'border-[rgb(var(--color-highlight))] bg-[rgb(var(--color-highlight)/0.05)] text-[rgb(var(--color-highlight))]' 
-                      : 'border-[rgb(var(--color-foreground)/0.1)] bg-[rgb(var(--color-foreground)/0.02)] text-[rgb(var(--color-muted-foreground))] hover:border-[rgb(var(--color-foreground)/0.2)]'
+                      ? 'border-accent bg-accent/5 text-accent' 
+                      : 'border-foreground/10 bg-foreground/2 text-muted hover:border-foreground/20'
                   }`}
                 >
                   <Lock size={20} className="mb-1.5" />
@@ -166,10 +166,10 @@ export default function EditBoardModal({ board, isOpen, onClose, onUpdate, onDel
           </form>
 
           {/* Danger Zone */}
-          <div className="p-5 border-t border-[rgb(var(--color-foreground)/0.05)] bg-[rgb(var(--color-destructive)/0.02)]">
-            <h3 className="text-sm font-semibold text-[rgb(var(--color-destructive))] mb-2">Danger Zone</h3>
+          <div className="p-5 border-t border-foreground/5 bg-warning/2">
+            <h3 className="text-sm font-semibold text-warning mb-2">Danger Zone</h3>
             <div className="flex items-center justify-between">
-              <p className="text-xs text-[rgb(var(--color-muted-foreground))] max-w-50">
+              <p className="text-xs text-muted max-w-50">
                 Once you delete a board, there is no going back. Please be certain.
               </p>
               <button
@@ -178,8 +178,8 @@ export default function EditBoardModal({ board, isOpen, onClose, onUpdate, onDel
                 disabled={isDeleting}
                 className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all flex items-center gap-1.5 ${
                   deleteConfirm
-                    ? 'bg-[rgb(var(--color-destructive))] text-white hover:bg-[rgb(var(--color-destructive)/0.9)]'
-                    : 'border border-[rgb(var(--color-destructive)/0.3)] text-[rgb(var(--color-destructive))] hover:bg-[rgb(var(--color-destructive)/0.1)]'
+                    ? 'bg-warning text-white hover:bg-warning/90'
+                    : 'border border-warning/30 text-warning hover:bg-warning/10'
                 }`}
               >
                 {isDeleting ? 'Deleting...' : (
@@ -194,12 +194,12 @@ export default function EditBoardModal({ board, isOpen, onClose, onUpdate, onDel
         </div>
 
         {/* Footer */}
-        <div className="p-5 border-t border-[rgb(var(--color-foreground)/0.05)] bg-[rgb(var(--color-foreground)/0.02)] flex gap-3 justify-end rounded-b-3xl">
+        <div className="p-5 border-t border-foreground/5 bg-foreground/2 flex gap-3 justify-end rounded-b-3xl">
           <button
             type="button"
             onClick={onClose}
             disabled={isSaving || isDeleting}
-            className="px-5 py-2.5 rounded-xl font-semibold text-sm text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.05)] transition-colors"
+            className="px-5 py-2.5 rounded-xl font-semibold text-sm text-foreground hover:bg-foreground/5 transition-colors"
           >
             Cancel
           </button>
@@ -207,7 +207,7 @@ export default function EditBoardModal({ board, isOpen, onClose, onUpdate, onDel
             type="submit"
             form="edit-board-form"
             disabled={isSaving || isDeleting}
-            className="px-6 py-2.5 rounded-xl font-semibold text-sm bg-[rgb(var(--color-highlight))] text-white hover:opacity-90 transition-opacity disabled:opacity-50"
+            className="px-6 py-2.5 rounded-xl font-semibold text-sm bg-accent text-white hover:opacity-90 transition-opacity disabled:opacity-50"
           >
             {isSaving ? 'Saving...' : 'Save Changes'}
           </button>

@@ -66,7 +66,7 @@ export default function Profile() {
         });
     }, []);
 
-    if (loading) return <div className="w-screen h-screen flex justify-center items-center bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))]">Loading...</div>;
+    if (loading) return <div className="w-screen h-screen flex justify-center items-center bg-background text-foreground">Loading...</div>;
     if (!user) return <Navigate to="/auth" replace />;
 
     return (
@@ -76,12 +76,12 @@ export default function Profile() {
 
                 <div className={`fixed left-0 top-0 righ-0 w-full zrounded-t-4xl overflow-hidden ${isEditing ? 'hidden' : 'hidden'}`}>
                     <img src="https://img.magnific.com/free-photo/side-view-asian-model-close-up_23-2148239994.jpg?t=st=1790712645~exp=1790716245~hmac=5c9dfd9224f63db4a7494e92f3ac4441725c3aeaeed577a2064225bda8e8fbe9&w=1480" alt="" className='w-full min-h-[50vh] max- h-screen zh-full object-cover zobject-top' />
-                    {/* <div className="hidden absolute inset-0 w-full h-full backdrop-blur-md mask-[linear-gradient(to_bottom,transparent_0%,black_70%,black_100%)] bg-linear-to-b from-transparent zvia-[rgb(var(--color-background)/0.7)] to-[rgb(var(--color-background))]" /> */}
+                    {/* <div className="hidden absolute inset-0 w-full h-full backdrop-blur-md mask-[linear-gradient(to_bottom,transparent_0%,black_70%,black_100%)] bg-linear-to-b from-transparent zvia-background/70 to-background" /> */}
                     <div className="absolute inset-0 w-full h-full backdrop-blur-3xl mask-[linear-gradient(to_bottom,transparent_0%,black_70%,black_100%)]"
                         style={{
                             backgroundImage: `
                             url('data:image/svg+xml,%3Csvg viewBox="0 0 200 200" xmlns="http://w3.org"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="2.8" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)" opacity="0.04"/%3E%3C/svg%3E'), 
-                            linear-gradient(to bottom, transparent, rgb(var(--color-background) / 0.7), rgb(var(--color-background)))
+                            linear-gradient(to bottom, transparent, color-mix(in srgb, var(--color-background) 70%, transparent), var(--color-background))
                         `
                         }}
                     />
@@ -92,10 +92,10 @@ export default function Profile() {
                 <div>
                     {/* Membership Status Section */}
                     {!isEditing && profile?.role === 'user' && (
-                        <div className="bg-[rgb(var(--color-foreground)/0.1)] border border-[rgb(var(--color-foreground)/0.1)] rounded-4xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
+                        <div className="bg-foreground/10 border border-foreground/10 rounded-4xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
                             <div>
                                 <h3 className="text-xl font-black uppercase">Become a Contributor</h3>
-                                <p className="text-[rgb(var(--color-muted-foreground))] font-medium">
+                                <p className="text-muted font-medium">
                                     {profile.membership_status === 'pending'
                                         ? "Your request is under review by our admins."
                                         : profile.membership_status === 'rejected'
@@ -106,7 +106,7 @@ export default function Profile() {
                             </div>
 
                             {profile.membership_status === 'pending' ? (
-                                <div className="px-6 py-3 bg-[rgb(var(--color-muted))] text-[rgb(var(--color-muted-foreground))] font-bold rounded-xl border-2 border-[rgb(var(--color-border))] uppercase tracking-wide">
+                                <div className="px-6 py-3 bg-muted text-muted font-bold rounded-xl border-2 border-border uppercase tracking-wide">
                                     Request Pending
                                 </div>
                             ) : (
@@ -117,7 +117,7 @@ export default function Profile() {
                                         handleRequestAccess();
                                     }}
                                     disabled={requestLoading}
-                                    className="px-6 py-3 bg-[rgb(var(--color-highlight))] hover:opacity-80 text-[rgb(var(--color-background))] font-black uppercase rounded-xl border-2 border-[rgb(var(--color-background))] transition-all hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(rgb(var(--color-background)),1)] disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="px-6 py-3 bg-accent hover:opacity-80 text-background font-black uppercase rounded-xl border-2 border-background transition-all hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(var(--color-background),1)] disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     {requestLoading ? 'Requesting...' : (profile.membership_status === 'rejected' ? 'Request Again' : 'Request Access')}
                                 </motion.button>
@@ -143,14 +143,13 @@ export default function Profile() {
                 </div>
             </div>
 
-            <div className={`absolute inset-0 w-full h-full transition-all duration-500 ease-in-out ${isEditing ? ' z-10 ztranslate-y-0 bg-[rgb(var(--color-foreground)/0.3)] backdrop-blur-sm opacity-100 scale-100' : '-z-10 ztranslate-y-400 bg-transparent opacity-0 zscale-0'}`}>
-            <div className={`${isEditing ? 'scale-100' : 'scale-0'} transition-all duration-300 ease-in-out`}>
-                <SettingsForm onCancel={() => {
+            <SettingsForm 
+                isOpen={isEditing} 
+                onCancel={() => {
                     setIsEditing(false);
                     setActiveTab('favorites');
-                }} />
-            </div>
-            </div>
+                }} 
+            />
 
         </>
     );
