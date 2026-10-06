@@ -107,15 +107,15 @@ export function buildCanonicalTaxonomy(font, research) {
     });
     if (detected.size > 0) dynamicFormats.push(...Array.from(detected));
   }
-  if (dynamicFormats.length === 0) dynamicFormats.push('OTF', 'TTF');
 
+  // Extract weights from variants if present
   const dynamicWeights = existingTax.technical?.weights || [];
   if (dynamicWeights.length === 0 && font.font_variants && font.font_variants.length > 0) {
     const weights = Array.from(new Set(font.font_variants.map(v => v.variant_name).filter(Boolean)));
     if (weights.length > 0) dynamicWeights.push(...weights);
   }
-  if (dynamicWeights.length === 0) dynamicWeights.push('Regular');
 
+  // Do not fake formats or weights if none exist
   let rawCategory = (existingTax.classification?.category || font.category || 'display').toLowerCase().trim();
   if (CATEGORY_ALIASES[rawCategory]) rawCategory = CATEGORY_ALIASES[rawCategory];
   const safeCategory = ALLOWED_CATEGORIES.includes(rawCategory) ? rawCategory : 'display';
@@ -130,10 +130,10 @@ export function buildCanonicalTaxonomy(font, research) {
       name: existingTax.identity?.name || font.name || '',
       family_name: existingTax.identity?.family_name || font.name || '',
       slug: font.slug || '',
-      version: existingTax.identity?.version || '1.000',
-      release_year: existingTax.identity?.release_year !== undefined && existingTax.identity?.release_year !== null
+      version: existingTax.identity?.version || extracted.version || null,
+      release_year: (existingTax.identity?.release_year !== undefined && existingTax.identity?.release_year !== null && existingTax.identity?.release_year !== '')
         ? Number(existingTax.identity.release_year)
-        : (font.created_at ? new Date(font.created_at).getFullYear() : null)
+        : null
     },
     creator: {
       designer: existingTax.creator?.designer || font.designer || null,
@@ -143,12 +143,12 @@ export function buildCanonicalTaxonomy(font, research) {
     classification: {
       category: safeCategory,
       subcategory: existingTax.classification?.subcategory || null,
-      style: existingTax.classification?.style || (safeTags[0] || 'Regular'),
+      style: existingTax.classification?.style || (safeTags[0] || null),
       tags: safeTags,
       mood: Array.isArray(existingTax.classification?.mood) ? existingTax.classification.mood : [],
-      recommended_uses: Array.isArray(existingTax.classification?.recommended_uses) && existingTax.classification.recommended_uses.length > 0
+      recommended_uses: Array.isArray(existingTax.classification?.recommended_uses)
         ? existingTax.classification.recommended_uses
-        : ['Headlines', 'Branding', 'Display']
+        : []
     },
     description: {
       description: existingTax.description?.description || research?.ai_description || font.description || null,
@@ -156,13 +156,13 @@ export function buildCanonicalTaxonomy(font, research) {
       characteristics: existingTax.description?.characteristics || null
     },
     license: {
-      distribution_status: existingTax.license?.distribution_status || (font.commercial_use ? 'open_source' : 'free'),
-      license_type: existingTax.license?.license_type || research?.license_type_verified || font.license_type || 'Free for Personal Use',
+      distribution_status: existingTax.license?.distribution_status || (font.commercial_use ? 'open_source' : (font.commercial_use === false ? 'free' : 'unknown')),
+      license_type: existingTax.license?.license_type || research?.license_type_verified || font.license_type || null,
       license_url: cleanUrl(existingTax.license?.license_url || research?.license_url),
-      commercial_use: existingTax.license?.commercial_use ?? (font.commercial_use ?? false),
+      commercial_use: existingTax.license?.commercial_use ?? (font.commercial_use ?? null),
       personal_use: existingTax.license?.personal_use ?? true,
-      modification_allowed: existingTax.license?.modification_allowed ?? false,
-      redistribution_allowed: existingTax.license?.redistribution_allowed ?? false,
+      modification_allowed: existingTax.license?.modification_allowed ?? null,
+      redistribution_allowed: existingTax.license?.redistribution_allowed ?? null,
       license_evidence: existingTax.license?.license_evidence || research?.license_evidence || null
     },
     official_links: {
@@ -176,14 +176,20 @@ export function buildCanonicalTaxonomy(font, research) {
     technical: {
       formats: dynamicFormats,
       weights: dynamicWeights,
-      styles: Array.isArray(existingTax.technical?.styles) && existingTax.technical.styles.length > 0 ? existingTax.technical.styles : ['Normal'],
-      glyph_count: existingTax.technical?.glyph_count || font.glyph_count || 92,
-      languages: Array.isArray(existingTax.technical?.languages) && existingTax.technical.languages.length > 0
+      styles: Array.isArray(existingTax.technical?.styles) ? existingTax.technical.styles : [],
+      glyph_count: (existingTax.technical?.glyph_count !== undefined && existingTax.technical?.glyph_count !== null && existingTax.technical?.glyph_count !== '')
+        ? Number(existingTax.technical.glyph_count)
+        : ((extracted.glyph_count !== undefined && extracted.glyph_count !== null)
+          ? Number(extracted.glyph_count)
+          : ((font.glyph_count !== undefined && font.glyph_count !== null)
+            ? Number(font.glyph_count)
+            : null)),
+      languages: Array.isArray(existingTax.technical?.languages)
         ? existingTax.technical.languages
-        : ['English', 'Basic Latin'],
+        : (extracted.detected_languages || []),
       opentype_features: Array.isArray(existingTax.technical?.opentype_features)
         ? existingTax.technical.opentype_features
-        : []
+        : (extracted.opentype_features || [])
     }
   };
 }
@@ -339,6 +345,43 @@ async function handleGetFontFields(args) {
     populated_count: fieldsCatalog.filter(f => !f.is_empty).length,
     empty_count: fieldsCatalog.filter(f => f.is_empty).length,
     fields: fieldsCatalog
+  };
+}
+
+async function handleGetFont(args) {
+  if (!args.slug && !args.id) {
+    throw new Error('Either "slug" or "id" must be provided.');
+  }
+
+  let endpoint = 'fonts?select=*,font_variants(*),font_research(*)&limit=1';
+  if (args.id) {
+    endpoint += `&id=eq.${encodeURIComponent(args.id)}`;
+  } else {
+    endpoint += `&slug=eq.${encodeURIComponent(args.slug.toLowerCase().trim())}`;
+  }
+
+  const fonts = await supabaseFetch(endpoint);
+  if (!fonts || fonts.length === 0) {
+    throw new Error(`Font not found: ${args.slug || args.id}`);
+  }
+
+  const font = fonts[0];
+  const research = Array.isArray(font.font_research) ? font.font_research[0] : font.font_research;
+  const taxonomy = buildCanonicalTaxonomy(font, research);
+
+  return {
+    font_id: font.id,
+    name: font.name,
+    slug: font.slug,
+    category: font.category,
+    status: font.status,
+    canonical_taxonomy_json: taxonomy,
+    variants: (font.font_variants || []).map(v => ({
+      variant_name: v.variant_name,
+      woff2_url: v.woff2_url,
+      otf_url: v.otf_url,
+      ttf_url: v.ttf_url
+    }))
   };
 }
 
@@ -610,6 +653,31 @@ const TOOLS = [
     }
   },
   {
+    name: 'get_font',
+    description: 'Retrieve complete canonical taxonomy matching JSON schema, variants, and research status for a font.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        slug: { type: 'string', description: 'URL slug of the font' },
+        id: { type: 'string', description: 'UUID of the font' }
+      }
+    }
+  },
+  {
+    name: 'propose_font_update',
+    description: 'Directly update a font in the database with verified canonical changes (direct-write mode: immediately applies and verifies without review delay).',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        slug: { type: 'string', description: 'Font slug' },
+        id: { type: 'string', description: 'Font UUID' },
+        changes: { type: 'object', description: 'Canonical section modifications to apply directly' },
+        rationale: { type: 'string', description: 'Rationale note' }
+      },
+      required: ['changes']
+    }
+  },
+  {
     name: 'update_multiple_fonts_json',
     description: 'Batch update multiple font JSONs directly in the Supabase database in a single call (up to 50 fonts).',
     inputSchema: {
@@ -705,8 +773,33 @@ export function startMcpServer() {
           toolOutput = await handleGetAllFontsFields(args);
         } else if (toolName === 'get_font_fields') {
           toolOutput = await handleGetFontFields(args);
+        } else if (toolName === 'get_font') {
+          toolOutput = await handleGetFont(args);
         } else if (toolName === 'update_font_json') {
           toolOutput = await handleUpdateFontJson(args);
+        } else if (toolName === 'propose_font_update') {
+          toolOutput = await handleUpdateFontJson({
+            slug: args.slug,
+            id: args.id,
+            json: args.changes || args.json,
+            rationale: args.rationale
+          });
+        } else if (toolName === 'patch_font_fields') {
+          // Convert flat dot-notation patches to section object
+          const changes = {};
+          for (const [dotKey, value] of Object.entries(args.patches || {})) {
+            const [section, field] = dotKey.split('.');
+            if (section && field) {
+              if (!changes[section]) changes[section] = {};
+              changes[section][field] = value;
+            }
+          }
+          toolOutput = await handleUpdateFontJson({
+            slug: args.slug,
+            id: args.id,
+            json: changes,
+            rationale: args.rationale
+          });
         } else if (toolName === 'update_multiple_fonts_json') {
           toolOutput = await handleUpdateMultipleFontsJson(args);
         } else {
@@ -744,3 +837,11 @@ export function startMcpServer() {
 if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.argv[1])) {
   startMcpServer();
 }
+
+export {
+  handleGetFont,
+  handleUpdateFontJson,
+  handleGetAllFontsFields,
+  handleGetFontFields,
+  handleUpdateMultipleFontsJson
+};

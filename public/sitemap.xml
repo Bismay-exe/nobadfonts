@@ -292,12 +292,6 @@
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://nobadfonts.in/fonts/nobulina</loc>
-        <lastmod>2026-02-08T23:12:03.819Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.9</priority>
-    </url>
-    <url>
         <loc>https://nobadfonts.in/fonts/certain-reasons</loc>
         <lastmod>2026-03-21T00:29:08.689Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -814,6 +808,12 @@
         <priority>0.9</priority>
     </url>
     <url>
+        <loc>https://nobadfonts.in/fonts/nobulina</loc>
+        <lastmod>2026-02-08T23:12:03.819Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
         <loc>https://nobadfonts.in/fonts/hatori</loc>
         <lastmod>2026-09-16T15:40:37.025Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -1063,11 +1063,6 @@
         <priority>0.7</priority>
     </url>
     <url>
-        <loc>https://nobadfonts.in/designers/%20Zarma%20Type%20Foundry</loc>
-        <changefreq>weekly</changefreq>
-        <priority>0.7</priority>
-    </url>
-    <url>
         <loc>https://nobadfonts.in/designers/Aqeel%20Art%20Studio</loc>
         <changefreq>weekly</changefreq>
         <priority>0.7</priority>
@@ -1079,6 +1074,11 @@
     </url>
     <url>
         <loc>https://nobadfonts.in/designers/Furqan%20Sudirman%2C%20Muhammad%20Muammar%2C%20Marno%20Palangda</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://nobadfonts.in/designers/%20Zarma%20Type%20Foundry</loc>
         <changefreq>weekly</changefreq>
         <priority>0.7</priority>
     </url>

@@ -48,10 +48,10 @@ export function buildCanonicalFontMetadata(font: Font, research?: FontResearchRo
             name: tax.identity?.name || font.name,
             family_name: tax.identity?.family_name || font.name,
             slug: font.slug,
-            version: tax.identity?.version ?? '1.000',
-            release_year: tax.identity?.release_year
+            version: tax.identity?.version ?? null,
+            release_year: (tax.identity?.release_year !== undefined && tax.identity?.release_year !== null && tax.identity?.release_year !== '')
                 ? Number(tax.identity.release_year)
-                : (font.created_at ? new Date(font.created_at).getFullYear() : null),
+                : null,
         },
         creator: {
             designer: tax.creator?.designer || font.designer || null,
@@ -61,10 +61,10 @@ export function buildCanonicalFontMetadata(font: Font, research?: FontResearchRo
         classification: {
             category: (tax.classification?.category || font.category || 'display').toLowerCase(),
             subcategory: tax.classification?.subcategory || null,
-            style: tax.classification?.style || (font.tags?.[0] || 'Regular'),
+            style: tax.classification?.style || (font.tags?.[0] || null),
             tags: tax.classification?.tags || font.tags || [],
             mood: tax.classification?.mood || [],
-            recommended_uses: tax.classification?.recommended_uses || ['Headlines', 'Branding', 'Display'],
+            recommended_uses: tax.classification?.recommended_uses || [],
         },
         description: {
             description: tax.description?.description ?? font.description ?? null,
@@ -72,13 +72,13 @@ export function buildCanonicalFontMetadata(font: Font, research?: FontResearchRo
             characteristics: tax.description?.characteristics || null,
         },
         license: {
-            distribution_status: tax.license?.distribution_status || (font.commercial_use ? 'open_source' : 'free'),
+            distribution_status: tax.license?.distribution_status || (font.commercial_use ? 'open_source' : (font.commercial_use === false ? 'free' : 'unknown')),
             license_type: tax.license?.license_type ?? font.license_type ?? null,
             license_url: cleanUrl(tax.license?.license_url || research?.license_url),
-            commercial_use: tax.license?.commercial_use ?? (font.commercial_use ?? false),
+            commercial_use: tax.license?.commercial_use ?? (font.commercial_use ?? null),
             personal_use: tax.license?.personal_use ?? true,
-            modification_allowed: tax.license?.modification_allowed ?? false,
-            redistribution_allowed: tax.license?.redistribution_allowed ?? false,
+            modification_allowed: tax.license?.modification_allowed ?? null,
+            redistribution_allowed: tax.license?.redistribution_allowed ?? null,
             license_evidence: tax.license?.license_evidence || null,
         },
         official_links: {
@@ -92,9 +92,11 @@ export function buildCanonicalFontMetadata(font: Font, research?: FontResearchRo
         technical: {
             formats: dynamicFormats,
             weights: dynamicWeights,
-            styles: tax.technical?.styles ?? ['Normal'],
-            glyph_count: tax.technical?.glyph_count ?? font.glyph_count ?? 92,
-            languages: tax.technical?.languages ?? ['English', 'Basic Latin'],
+            styles: tax.technical?.styles ?? [],
+            glyph_count: (tax.technical?.glyph_count !== undefined && tax.technical?.glyph_count !== null && tax.technical?.glyph_count !== '')
+                ? Number(tax.technical.glyph_count)
+                : (font.glyph_count !== undefined && font.glyph_count !== null ? Number(font.glyph_count) : null),
+            languages: tax.technical?.languages ?? [],
             opentype_features: tax.technical?.opentype_features ?? [],
         }
     };
