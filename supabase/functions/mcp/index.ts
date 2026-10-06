@@ -29,6 +29,11 @@ import {
   handleGetMyBoards,
   handleCreateCollection,
   handleUpdateCollection,
+  // Direct font JSON application and catalog inspection tools
+  handleGetAllFontsFields,
+  handleGetFontFieldsDirect,
+  handleUpdateFontJsonDirect,
+  handleUpdateMultipleFontsJsonDirect,
   type Caller
 } from './tools.ts';
 
@@ -54,7 +59,7 @@ app.use('*', async (c, next) => {
   if (origin && origin !== 'null') {
     const isAllowed =
       /^https?:\/\/localhost(:\d+)?$/.test(origin) ||
-      /^https:\/\/([a-z0-9-]+\.)*(supabase\.co|claude\.ai|anthropic\.com|openai\.com|chatgpt\.com)$/.test(origin);
+      /^https:\/\/([a-z0-9-]+\.)*(supabase\.co|claude\.ai|anthropic\.com|openai\.com|chatgpt\.com|google\.com)$/.test(origin);
 
     if (!isAllowed) {
       return c.json({ error: 'Forbidden: Untrusted Origin' }, 403);
@@ -1037,6 +1042,86 @@ Returns the ready-to-copy command string plus usage notes.`,
       }]
     };
   }
+);
+
+// ─── Tools: Direct Font JSON Application & Field Inspection ───────────────────
+
+// Register Tool: get_all_fonts_fields
+server.tool(
+  'get_all_fonts_fields',
+  `Browse and inspect all fonts in the database with their existing metadata fields exposed separately.
+
+Supports:
+- sections: ["identity", "creator", "classification", "description", "license", "official_links", "technical"] to filter sections
+- fields: ["license.license_type", "official_links.github_url"] for dot-notation field isolation
+- filter: "missing_metadata" to retrieve only fonts needing attention
+- category: "sans" | "serif" | "display" | "script" | "slab-serif" | "monospace" | "handwritten"
+- format: "flat" (dot-notation dictionary per font) or "nested" (7 canonical sections)
+- limit (1-100, default 25) and offset for catalog pagination`,
+  {
+    sections: z.array(z.string()).optional().describe('Top-level sections to include: identity, creator, classification, description, license, official_links, technical'),
+    fields: z.array(z.string()).optional().describe('Dot-notation fields to isolate (e.g. "license.license_type", "official_links.github_url")'),
+    filter: z.enum(['all', 'missing_metadata']).optional().describe('Filter mode: "all" or "missing_metadata" (default: "all")'),
+    category: z.string().optional().describe('Filter by category (sans, serif, display, script, slab-serif, monospace, handwritten)'),
+    limit: z.number().optional().describe('Number of fonts to return (1-100, default 25)'),
+    offset: z.number().optional().describe('Pagination offset (default 0)'),
+    format: z.enum(['flat', 'nested']).optional().describe('Format style: "nested" (canonical 7 sections) or "flat" (dot-notation key-value pairs)')
+  },
+  async (args, _extra, c) => handleGetAllFontsFields({ ...args, caller: c?.get?.('caller') ?? undefined })
+);
+
+// Register Tool: get_font_fields
+server.tool(
+  'get_font_fields',
+  `Retrieve all individual fields of a specific font separately with value and empty/populated status.
+
+Returns a complete field inventory for the font to inspect which fields are missing before applying updates.`,
+  {
+    slug: z.string().optional().describe('URL slug of the font (e.g. "oreon")'),
+    id: z.string().optional().describe('UUID of the font')
+  },
+  async (args, _extra, c) => handleGetFontFieldsDirect({ ...args, caller: c?.get?.('caller') ?? undefined })
+);
+
+// Register Tool: update_font_json
+server.tool(
+  'update_font_json',
+  `Apply generated canonical font JSON directly to the Supabase database without requiring a staging review queue.
+
+Directly updates:
+1. fonts.taxonomy (JSONB source of truth across all 7 canonical sections)
+2. fonts table synchronized columns (name, designer, category, tags, description, license_type, commercial_use, glyph_count, updated_at)
+3. font_research table official links & license evidence
+4. audit_logs record for full traceability
+
+Immediately verifies and returns the persisted record from the database.`,
+  {
+    slug: z.string().optional().describe('URL slug of the font to update'),
+    id: z.string().optional().describe('UUID of the font to update'),
+    json: z.record(z.any()).describe('Generated canonical JSON containing modifications within the 7 canonical sections: identity, creator, classification, description, license, official_links, technical'),
+    merge_strategy: z.enum(['smart', 'fill_missing', 'force_overwrite']).optional().describe('Merge policy: "smart" (default, merges non-null values), "fill_missing" (only populates empty/null fields), "force_overwrite" (replaces fields)'),
+    rationale: z.string().optional().describe('Audit note explaining what was updated and why')
+  },
+  async (args, _extra, c) => handleUpdateFontJsonDirect({ ...args, caller: c?.get?.('caller') ?? undefined })
+);
+
+// Register Tool: update_multiple_fonts_json
+server.tool(
+  'update_multiple_fonts_json',
+  `Apply multiple generated font JSONs directly to the Supabase database in a single batch MCP call.
+
+Supports up to 50 fonts per call. Best-effort execution: valid fonts are updated immediately while any failing fonts return exact error diagnostics and suggested retry payloads.`,
+  {
+    fonts: z.array(z.object({
+      slug: z.string().optional().describe('Font URL slug'),
+      id: z.string().optional().describe('Font UUID'),
+      json: z.record(z.any()).describe('Generated canonical JSON or section updates for this font'),
+      rationale: z.string().optional().describe('Audit note for this font')
+    })).describe('Array of font update payloads (up to 50 fonts)'),
+    merge_strategy: z.enum(['smart', 'fill_missing', 'force_overwrite']).optional().describe('Merge policy across all fonts: "smart" (default), "fill_missing", "force_overwrite"'),
+    stop_on_error: z.boolean().optional().describe('If true, halts on first error; if false (default), continues processing remaining fonts')
+  },
+  async (args, _extra, c) => handleUpdateMultipleFontsJsonDirect({ ...args, caller: c?.get?.('caller') ?? undefined })
 );
 
 // ═══ 4. Connect Transport & Serve ═══════════════════════════════════════════

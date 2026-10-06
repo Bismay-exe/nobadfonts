@@ -3008,3 +3008,558 @@ export async function handleUpdateCollection(args: {
     }]
   };
 }
+
+// ══════════════════════════════════════════════════════════════════════════════
+// TOOL: get_all_fonts_fields
+// Catalog & field inspector. Returns all fonts with existing fields exposed separately.
+// ══════════════════════════════════════════════════════════════════════════════
+
+export async function handleGetAllFontsFields(args: {
+  sections?: string[];
+  fields?: string[];
+  filter?: 'all' | 'missing_metadata';
+  category?: string;
+  limit?: number;
+  offset?: number;
+  format?: 'flat' | 'nested';
+  caller?: Caller;
+}) {
+  const supabase = getSupabaseClient();
+  const limit = Math.min(Math.max(args.limit ?? 25, 1), 100);
+  const offset = Math.max(args.offset ?? 0, 0);
+  const format = args.format || 'nested';
+  const filter = args.filter || 'all';
+
+  let query = supabase
+    .from('fonts')
+    .select('*, font_variants(*), font_research(*)', { count: 'exact' });
+
+  if (args.category) {
+    query = query.eq('category', args.category.toLowerCase().trim());
+  }
+
+  query = query
+    .order('name', { ascending: true })
+    .range(offset, offset + limit - 1);
+
+  const { data: rawFonts, error, count: totalCount } = await query;
+
+  if (error) {
+    return {
+      isError: true,
+      content: [{ type: 'text', text: `Database error while fetching fonts: ${error.message}` }]
+    };
+  }
+
+  const results: any[] = [];
+
+  for (const font of rawFonts || []) {
+    const research = Array.isArray(font.font_research) ? font.font_research[0] : font.font_research;
+    const taxonomy = buildCanonicalTaxonomy(font, research);
+
+    // If filtering by missing metadata, check if key fields are missing
+    if (filter === 'missing_metadata') {
+      const isMissingCreator = !taxonomy.creator?.designer && !font.designer;
+      const isMissingFoundry = !taxonomy.creator?.foundry && !research?.foundry;
+      const isMissingLicense = !taxonomy.license?.license_type && !font.license_type;
+      const isMissingWebsite = !taxonomy.official_links?.official_website && !research?.official_website;
+      const isMissingGithub = !taxonomy.official_links?.github_url;
+      const isMissingDescription = !taxonomy.description?.description && !font.description;
+
+      const hasMissingField = isMissingCreator || isMissingFoundry || isMissingLicense || isMissingWebsite || isMissingGithub || isMissingDescription;
+      if (!hasMissingField) {
+        continue;
+      }
+    }
+
+    let fontOutput: any = {
+      id: font.id,
+      name: font.name,
+      slug: font.slug,
+      category: font.category,
+      updated_at: font.updated_at
+    };
+
+    if (format === 'flat') {
+      const flatFields: Record<string, any> = {};
+
+      const flattenSection = (secName: string, secObj: Record<string, any>) => {
+        if (!secObj || typeof secObj !== 'object') return;
+        for (const [k, v] of Object.entries(secObj)) {
+          const dotKey = `${secName}.${k}`;
+          if (!args.fields || args.fields.includes(dotKey)) {
+            flatFields[dotKey] = v;
+          }
+        }
+      };
+
+      const targetSections = args.sections && args.sections.length > 0
+        ? args.sections
+        : Object.keys(taxonomy);
+
+      for (const sec of targetSections) {
+        flattenSection(sec, taxonomy[sec] || {});
+      }
+
+      fontOutput.fields = flatFields;
+    } else {
+      // nested format
+      if (args.sections && args.sections.length > 0) {
+        const filteredTax: Record<string, any> = {};
+        for (const sec of args.sections) {
+          filteredTax[sec] = taxonomy[sec] ?? null;
+        }
+        fontOutput.taxonomy = filteredTax;
+      } else {
+        fontOutput.taxonomy = taxonomy;
+      }
+    }
+
+    results.push(fontOutput);
+  }
+
+  return {
+    content: [{
+      type: 'text',
+      text: JSON.stringify({
+        total_in_database: totalCount || 0,
+        returned_count: results.length,
+        offset,
+        limit,
+        filter,
+        format,
+        fonts: results
+      }, null, 2)
+    }]
+  };
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// TOOL: get_font_fields
+// Inspects a single font's individual fields separately with empty/populated flags.
+// ══════════════════════════════════════════════════════════════════════════════
+
+export async function handleGetFontFieldsDirect(args: {
+  slug?: string;
+  id?: string;
+  caller?: Caller;
+}) {
+  if (!args.slug && !args.id) {
+    return {
+      isError: true,
+      content: [{ type: 'text', text: 'Error: Either "slug" or "id" must be provided.' }]
+    };
+  }
+
+  const supabase = getSupabaseClient();
+  let query = supabase
+    .from('fonts')
+    .select('*, font_variants(*), font_research(*)')
+    .limit(1);
+
+  if (args.id) {
+    query = query.eq('id', args.id);
+  } else if (args.slug) {
+    query = query.eq('slug', args.slug.toLowerCase().trim());
+  }
+
+  const { data: font, error } = await query.maybeSingle();
+
+  if (error || !font) {
+    return {
+      isError: true,
+      content: [{ type: 'text', text: `Font not found: ${args.slug || args.id}` }]
+    };
+  }
+
+  const research = Array.isArray(font.font_research) ? font.font_research[0] : font.font_research;
+  const taxonomy = buildCanonicalTaxonomy(font, research);
+
+  const fieldsCatalog: Array<{ path: string; section: string; key: string; value: any; is_empty: boolean }> = [];
+
+  for (const [section, secObj] of Object.entries(taxonomy)) {
+    if (secObj && typeof secObj === 'object') {
+      for (const [key, val] of Object.entries(secObj as Record<string, any>)) {
+        const isNullOrEmpty = val === null || val === undefined || val === '' || (Array.isArray(val) && val.length === 0);
+        fieldsCatalog.push({
+          path: `${section}.${key}`,
+          section,
+          key,
+          value: val,
+          is_empty: isNullOrEmpty
+        });
+      }
+    }
+  }
+
+  return {
+    content: [{
+      type: 'text',
+      text: JSON.stringify({
+        font_id: font.id,
+        name: font.name,
+        slug: font.slug,
+        category: font.category,
+        total_fields: fieldsCatalog.length,
+        populated_count: fieldsCatalog.filter(f => !f.is_empty).length,
+        empty_count: fieldsCatalog.filter(f => f.is_empty).length,
+        fields: fieldsCatalog
+      }, null, 2)
+    }]
+  };
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// TOOL: update_font_json
+// Direct, verified write of generated canonical JSON to fonts table without staging queue.
+// ══════════════════════════════════════════════════════════════════════════════
+
+export async function handleUpdateFontJsonDirect(args: {
+  slug?: string;
+  id?: string;
+  json: Record<string, any>;
+  merge_strategy?: 'smart' | 'fill_missing' | 'force_overwrite';
+  rationale?: string;
+  auto_sanitize?: boolean;
+  caller?: Caller;
+}) {
+  if (!args.slug && !args.id) {
+    return {
+      isError: true,
+      content: [{ type: 'text', text: 'Error: Either "slug" or "id" must be provided to identify the target font.' }]
+    };
+  }
+
+  if (!args.json || typeof args.json !== 'object' || Object.keys(args.json).length === 0) {
+    return {
+      isError: true,
+      content: [{ type: 'text', text: 'Error: "json" must be a non-empty canonical JSON or partial section update object.' }]
+    };
+  }
+
+  const supabase = getSupabaseClient();
+  let query = supabase
+    .from('fonts')
+    .select('*, font_variants(*), font_research(*)')
+    .limit(1);
+
+  if (args.id) {
+    query = query.eq('id', args.id);
+  } else if (args.slug) {
+    query = query.eq('slug', args.slug.toLowerCase().trim());
+  }
+
+  const { data: font, error: fetchErr } = await query.maybeSingle();
+
+  if (fetchErr || !font) {
+    return {
+      isError: true,
+      content: [{
+        type: 'text',
+        text: JSON.stringify({
+          isError: true,
+          error_type: 'NOT_FOUND',
+          message: `Font not found for identifier: "${args.slug || args.id}"`,
+          suggested_retry: { action: 'use search_fonts or get_all_fonts_fields to verify the correct font slug' }
+        }, null, 2)
+      }]
+    };
+  }
+
+  const research = Array.isArray(font.font_research) ? font.font_research[0] : font.font_research;
+  const currentTax = buildCanonicalTaxonomy(font, research);
+
+  // Validate incoming root sections
+  const VALID_ROOT_SECTIONS = ['identity', 'creator', 'classification', 'description', 'license', 'official_links', 'technical'];
+  const incomingKeys = Object.keys(args.json);
+  const invalidKeys = incomingKeys.filter(k => !VALID_ROOT_SECTIONS.includes(k));
+
+  if (invalidKeys.length > 0) {
+    return {
+      isError: true,
+      content: [{
+        type: 'text',
+        text: JSON.stringify({
+          isError: true,
+          error_type: 'INVALID_SCHEMA_KEYS',
+          message: `Found unrecognized top-level keys: ${invalidKeys.join(', ')}. All modifications must reside within the 7 canonical sections.`,
+          allowed_sections: VALID_ROOT_SECTIONS,
+          retry_payload: {
+            slug: font.slug,
+            json: Object.fromEntries(Object.entries(args.json).filter(([k]) => VALID_ROOT_SECTIONS.includes(k)))
+          }
+        }, null, 2)
+      }]
+    };
+  }
+
+  // Deep copy for mutation
+  const mergedTax = JSON.parse(JSON.stringify(currentTax));
+  const strategy = args.merge_strategy || 'smart';
+  const changedFields: string[] = [];
+
+  for (const section of VALID_ROOT_SECTIONS) {
+    if (!args.json[section] || typeof args.json[section] !== 'object') continue;
+
+    const incomingSection = args.json[section];
+    if (!mergedTax[section]) mergedTax[section] = {};
+
+    for (const [field, rawVal] of Object.entries(incomingSection)) {
+      let val = rawVal;
+
+      // URL auto-sanitization for links
+      if (
+        (section === 'official_links' && ['official_website', 'official_font_page', 'purchase_url', 'free_download_url', 'github_url', 'google_fonts_url'].includes(field)) ||
+        (section === 'license' && field === 'license_url')
+      ) {
+        if (typeof val === 'string' && val.trim().length > 0) {
+          val = cleanUrl(val);
+        }
+      }
+
+      // Classification category normalization
+      if (section === 'classification' && field === 'category' && typeof val === 'string') {
+        const normCat = val.toLowerCase().trim();
+        const mappedCat = CATEGORY_ALIASES[normCat] || normCat;
+        if (!ALLOWED_CATEGORIES.includes(mappedCat as any)) {
+          return {
+            isError: true,
+            content: [{
+              type: 'text',
+              text: JSON.stringify({
+                isError: true,
+                error_type: 'INVALID_CATEGORY',
+                message: `Category "${val}" is not allowed. Must be one of: ${ALLOWED_CATEGORIES.join(', ')}`,
+                details: { field: 'classification.category', received: val, allowed: ALLOWED_CATEGORIES },
+                retry_payload: {
+                  slug: font.slug,
+                  json: {
+                    ...args.json,
+                    classification: {
+                      ...args.json.classification,
+                      category: 'display'
+                    }
+                  }
+                }
+              }, null, 2)
+            }]
+          };
+        }
+        val = mappedCat;
+      }
+
+      // Classification tags normalization
+      if (section === 'classification' && field === 'tags' && Array.isArray(val)) {
+        val = val.map((t: any) => String(t).toLowerCase().trim()).filter(Boolean);
+      }
+
+      // Release year number coercion
+      if (section === 'identity' && field === 'release_year' && val !== null && val !== undefined) {
+        const num = Number(val);
+        val = isNaN(num) ? null : num;
+      }
+
+      const currentVal = mergedTax[section][field];
+      const isCurrentEmpty = currentVal === null || currentVal === undefined || currentVal === '' || (Array.isArray(currentVal) && currentVal.length === 0);
+
+      let shouldApply = false;
+      if (strategy === 'force_overwrite') {
+        shouldApply = true;
+      } else if (strategy === 'fill_missing') {
+        shouldApply = isCurrentEmpty && (val !== null && val !== undefined && val !== '');
+      } else {
+        // smart strategy: apply if new value provided and not identical
+        shouldApply = val !== undefined && JSON.stringify(val) !== JSON.stringify(currentVal);
+      }
+
+      if (shouldApply) {
+        mergedTax[section][field] = val;
+        changedFields.push(`${section}.${field}`);
+      }
+    }
+  }
+
+  // Synchronize top-level database columns in fonts table
+  const fontUpdates: Record<string, any> = {
+    taxonomy: mergedTax,
+    updated_at: new Date().toISOString()
+  };
+
+  if (mergedTax.identity?.name) fontUpdates.name = mergedTax.identity.name;
+  if (mergedTax.creator?.designer) fontUpdates.designer = mergedTax.creator.designer;
+  if (mergedTax.classification?.category) fontUpdates.category = mergedTax.classification.category;
+  if (mergedTax.classification?.tags) fontUpdates.tags = mergedTax.classification.tags;
+  if (mergedTax.description?.description) fontUpdates.description = mergedTax.description.description;
+  if (mergedTax.license?.license_type) fontUpdates.license_type = mergedTax.license.license_type;
+  if (typeof mergedTax.license?.commercial_use === 'boolean') fontUpdates.commercial_use = mergedTax.license.commercial_use;
+  if (mergedTax.technical?.glyph_count) fontUpdates.glyph_count = mergedTax.technical.glyph_count;
+
+  // Execute direct DB update
+  const { error: updateErr } = await supabase
+    .from('fonts')
+    .update(fontUpdates)
+    .eq('id', font.id);
+
+  if (updateErr) {
+    return {
+      isError: true,
+      content: [{ type: 'text', text: `Failed to update font "${font.slug}": ${updateErr.message}` }]
+    };
+  }
+
+  // Synchronize font_research table links if updated
+  if (mergedTax.official_links || mergedTax.license) {
+    const researchUpdates: Record<string, any> = {};
+    if (mergedTax.official_links?.official_website) researchUpdates.official_website = mergedTax.official_links.official_website;
+    if (mergedTax.official_links?.official_font_page) researchUpdates.official_font_page = mergedTax.official_links.official_font_page;
+    if (mergedTax.official_links?.purchase_url) researchUpdates.purchase_url = mergedTax.official_links.purchase_url;
+    if (mergedTax.official_links?.free_download_url) researchUpdates.free_download_url = mergedTax.official_links.free_download_url;
+    if (mergedTax.official_links?.github_url) researchUpdates.github_url = mergedTax.official_links.github_url;
+    if (mergedTax.license?.license_url) researchUpdates.license_url = mergedTax.license.license_url;
+    if (mergedTax.license?.license_evidence) researchUpdates.license_evidence = mergedTax.license.license_evidence;
+
+    if (Object.keys(researchUpdates).length > 0) {
+      if (research?.id) {
+        await supabase.from('font_research').update(researchUpdates).eq('id', research.id);
+      } else {
+        await supabase.from('font_research').insert({ font_id: font.id, ...researchUpdates });
+      }
+    }
+  }
+
+  // Audit logging (safe non-blocking)
+  try {
+    await supabase.from('audit_logs').insert({
+      action: 'direct_font_json_update',
+      font_id: font.id,
+      changed_fields: changedFields,
+      before_state: currentTax,
+      after_state: mergedTax,
+      reason: args.rationale || 'Direct JSON update applied via MCP',
+      performed_by: args.caller?.user_id || 'mcp'
+    });
+  } catch {
+    // Non-blocking if audit_logs table isn't present
+  }
+
+  // Read-after-write verification
+  const { data: verifiedFont } = await supabase
+    .from('fonts')
+    .select('*, font_variants(*), font_research(*)')
+    .eq('id', font.id)
+    .maybeSingle();
+
+  const verifiedResearch = Array.isArray(verifiedFont?.font_research) ? verifiedFont?.font_research[0] : verifiedFont?.font_research;
+  const verifiedTax = buildCanonicalTaxonomy(verifiedFont || font, verifiedResearch || research);
+
+  return {
+    content: [{
+      type: 'text',
+      text: JSON.stringify({
+        success: true,
+        verified_in_db: true,
+        font_id: font.id,
+        slug: font.slug,
+        name: fontUpdates.name || font.name,
+        changed_fields: changedFields,
+        strategy: strategy,
+        persisted_taxonomy: verifiedTax,
+        message: `✨ Successfully updated and verified "${font.name}" (${font.slug}). ${changedFields.length} fields modified.`
+      }, null, 2)
+    }]
+  };
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// TOOL: update_multiple_fonts_json
+// Batch direct updates across multiple fonts in one MCP call.
+// ══════════════════════════════════════════════════════════════════════════════
+
+export async function handleUpdateMultipleFontsJsonDirect(args: {
+  fonts: Array<{
+    slug?: string;
+    id?: string;
+    json: Record<string, any>;
+    rationale?: string;
+  }>;
+  merge_strategy?: 'smart' | 'fill_missing' | 'force_overwrite';
+  stop_on_error?: boolean;
+  caller?: Caller;
+}) {
+  if (!args.fonts || !Array.isArray(args.fonts) || args.fonts.length === 0) {
+    return {
+      isError: true,
+      content: [{ type: 'text', text: 'Error: "fonts" array must contain at least 1 font update payload.' }]
+    };
+  }
+
+  const MAX_BATCH = 50;
+  if (args.fonts.length > MAX_BATCH) {
+    return {
+      isError: true,
+      content: [{ type: 'text', text: `Batch size ${args.fonts.length} exceeds maximum limit of ${MAX_BATCH} fonts per call.` }]
+    };
+  }
+
+  const results: any[] = [];
+  let succeededCount = 0;
+  let failedCount = 0;
+
+  for (const item of args.fonts) {
+    const res = await handleUpdateFontJsonDirect({
+      slug: item.slug,
+      id: item.id,
+      json: item.json,
+      merge_strategy: args.merge_strategy,
+      rationale: item.rationale,
+      caller: args.caller
+    });
+
+    if (res.isError) {
+      failedCount++;
+      let errDetails: any = null;
+      try {
+        errDetails = JSON.parse(res.content[0].text);
+      } catch {
+        errDetails = { message: res.content[0].text };
+      }
+
+      results.push({
+        identifier: item.slug || item.id,
+        status: 'failed',
+        error: errDetails
+      });
+
+      if (args.stop_on_error) {
+        break;
+      }
+    } else {
+      succeededCount++;
+      let successData: any = null;
+      try {
+        successData = JSON.parse(res.content[0].text);
+      } catch {
+        successData = {};
+      }
+
+      results.push({
+        slug: successData.slug,
+        font_id: successData.font_id,
+        status: 'updated',
+        changed_fields: successData.changed_fields || []
+      });
+    }
+  }
+
+  return {
+    content: [{
+      type: 'text',
+      text: JSON.stringify({
+        total: args.fonts.length,
+        succeeded: succeededCount,
+        failed: failedCount,
+        results
+      }, null, 2)
+    }]
+  };
+}

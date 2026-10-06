@@ -1,63 +1,109 @@
 ---
 title: MCP Setup & Connection
-description: Step-by-step setup in Cursor, Claude Desktop, and custom MCP clients.
+description: Step-by-step setup in ChatGPT, Claude Desktop, Claude Code, Gemini, Antigravity IDE, Cursor, and Codex.
 ---
 
 # MCP Setup & Connection
 
-Connecting your AI assistant to the NoBadFonts MCP Server takes less than a minute.
+Connecting your AI assistant to the **NoBadFonts MCP Server** takes less than a minute. You can use it anywhere: in desktop IDEs, CLI tools, and browser-based AI chats.
 
 ---
 
-## 1. Cursor IDE Setup
+## 1. Google Antigravity IDE
 
-1. Open Cursor Settings (`Cmd + ,` on Mac or `Ctrl + ,` on Windows).
-2. Navigate to **Features** > **MCP**.
-3. Click **+ Add New MCP Server**.
-4. Configure with the following settings:
+Open or create `~/.gemini/config/mcp_config.json`:
 
 ```json
 {
-  "name": "nobadfonts",
-  "type": "sse",
-  "url": "https://mcp.nobadfonts.in/sse"
+  "mcpServers": {
+    "nobadfonts": {
+      "command": "node",
+      "args": [
+        "c:/Users/bisma/OneDrive/Desktop/TimePass Projects/xyz/scripts/mcp-server.js"
+      ]
+    }
+  }
 }
 ```
 
-<Callout type="tip" title="Self-Hosted or Edge Endpoint">
-If you are running against your own Supabase project, replace the URL with:
-`https://<YOUR_PROJECT_REF>.supabase.co/functions/v1/mcp`
-</Callout>
+The Antigravity agent will automatically discover the tools and make them available in your session.
 
 ---
 
-## 2. Claude Desktop Setup
+## 2. Claude Desktop
 
 Open your Claude Desktop configuration file:
 * **macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
 * **Windows:** `%APPDATA%\Claude\claude_desktop_config.json`
 
-Add the `nobadfonts` server under `mcpServers`:
+Add `nobadfonts` under `mcpServers`:
 
 ```json
 {
   "mcpServers": {
     "nobadfonts": {
       "command": "npx",
-      "args": ["-y", "nobadfonts", "mcp-proxy"]
+      "args": ["-y", "nobadfonts", "mcp"],
+      "env": {
+        "SUPABASE_URL": "https://wcegdxhvgwbeskaidlxr.supabase.co",
+        "SUPABASE_ANON_KEY": "eyJhbGciOi..."
+      }
     }
   }
 }
 ```
 
-Restart Claude Desktop. You will see a small hammer icon indicating the NoBadFonts tools are available.
+Restart Claude Desktop. The hammer icon in chat will display the NoBadFonts tools.
 
 ---
 
-## 3. Testing the Connection
+## 3. Claude Code CLI
 
-Once connected, ask your AI assistant:
+Add the server directly from your terminal:
 
-> *"Use NoBadFonts to find a geometric sans-serif typeface with at least 5 weights, and show me the pairing recommendations."*
+```bash
+claude mcp add nobadfonts -- npx -y nobadfonts mcp
+```
 
-If the server is active, your AI will invoke `search_fonts` and return verified results from the curated database.
+---
+
+## 4. ChatGPT (Custom Actions & Remote MCP)
+
+For ChatGPT with MCP Connectors or Custom GPT Actions:
+
+* **Endpoint URL:** `https://wcegdxhvgwbeskaidlxr.supabase.co/functions/v1/mcp`
+* **Transport:** Streamable HTTP / Server-Sent Events (SSE)
+* **Authentication:** Pass your API Key in the query string `?key=YOUR_MCP_API_KEY` or via Bearer Token.
+
+---
+
+## 5. Claude Web (claude.ai) & Gemini in Browser
+
+Connect directly to the remote Edge Function:
+
+* **Remote URL:** `https://wcegdxhvgwbeskaidlxr.supabase.co/functions/v1/mcp?key=YOUR_MCP_API_KEY`
+* **CORS Whitelist:** Origin headers from `claude.ai`, `chatgpt.com`, `google.com`, and `localhost` are pre-authorized.
+
+---
+
+## 6. Cursor IDE / Windsurf / Codex
+
+1. Open Cursor Settings (`Cmd + ,` on Mac or `Ctrl + ,` on Windows).
+2. Navigate to **Features** > **MCP**.
+3. Click **+ Add New MCP Server**.
+4. Configure as **Command**:
+   * **Command:** `npx -y nobadfonts mcp`
+   * Or as **SSE URL:** `https://wcegdxhvgwbeskaidlxr.supabase.co/functions/v1/mcp?key=YOUR_MCP_API_KEY`
+
+---
+
+## 7. Available Tools Overview
+
+| Tool | Description |
+| :--- | :--- |
+| **`get_all_fonts_fields`** | Inspect all fonts and their existing fields separately (nested or flat dot-notation). |
+| **`get_font_fields`** | View all individual fields of a specific font with empty/populated flags. |
+| **`update_font_json`** | Directly apply generated canonical font JSON to Supabase with automatic field synchronization. |
+| **`update_multiple_fonts_json`** | Batch-apply multiple generated font JSONs at once (up to 50 fonts) with itemized diff reporting. |
+| **`search_fonts`** | Fast keyword search across font name, slug, designer, and category. |
+| **`get_font`** | Retrieve the full canonical 7-section taxonomy for a font. |
