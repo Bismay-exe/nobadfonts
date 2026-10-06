@@ -1,20 +1,14 @@
 import React, { useState } from 'react';
-import { Type, Sliders, RotateCcw } from 'lucide-react';
+import { RotateCcw } from 'lucide-react';
 
 interface FontPlaygroundEmbedProps {
   primaryFont?: string;
-  secondaryFont?: string;
   defaultText?: string;
-  title?: string;
-  category?: string;
 }
 
 export const FontPlaygroundEmbed: React.FC<FontPlaygroundEmbedProps> = ({
   primaryFont = 'Geist, sans-serif',
-  secondaryFont = 'Playfair Display, serif',
   defaultText = 'Typography is the art and technique of arranging type to make written language legible, readable, and appealing.',
-  title = 'Typography Pairing Live Preview',
-  category = 'Curated Pair',
 }) => {
   const [text, setText] = useState(defaultText);
   const [fontSize, setFontSize] = useState(24);
@@ -41,42 +35,17 @@ export const FontPlaygroundEmbed: React.FC<FontPlaygroundEmbedProps> = ({
       <div
         className="flex flex-wrap items-center justify-between gap-3 px-5 py-3.5 border-b font-inter-tight"
         style={{
-          backgroundColor: 'rgb(var(--color-card)/0.3)',
+          backgroundColor: 'rgb(var(--color-foreground)/0.03)',
           borderColor: 'rgb(var(--color-border))',
+          color: 'rgb(var(--color-muted-foreground))',
         }}
       >
         <div className="flex items-center gap-2">
-          <div
-            className="p-1.5 rounded-lg"
-            style={{
-              backgroundColor: 'rgb(var(--color-highlight)/0.1)',
-              color: 'rgb(var(--color-highlight))',
-            }}
-          >
-            <Type className="w-4 h-4" />
-          </div>
-          <div>
-            <div
-              className="text-xs font-semibold flex items-center gap-2"
-              style={{ color: 'rgb(var(--color-foreground))' }}
-            >
-              {title}
-              <span
-                className="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded-md"
-                style={{
-                  backgroundColor: 'rgb(var(--color-muted))',
-                  color: 'rgb(var(--color-muted-foreground))',
-                }}
-              >
-                {category}
-              </span>
-            </div>
-            <div
-              className="text-[11px] font-mono"
-              style={{ color: 'rgb(var(--color-muted-foreground))' }}
-            >
-              Primary: {primaryFont.split(',')[0]} · Secondary: {secondaryFont.split(',')[0]}
-            </div>
+          {/* macOS traffic lights */}
+          <div className="flex items-center gap-1.5 mr-2">
+            <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: '#ff5f57' }} />
+            <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: '#febc2e' }} />
+            <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: '#28c840' }} />
           </div>
         </div>
 
@@ -95,7 +64,7 @@ export const FontPlaygroundEmbed: React.FC<FontPlaygroundEmbedProps> = ({
 
       {/* Controls */}
       <div
-        className="px-5 py-3 border-b flex flex-wrap items-center gap-6 text-xs font-inter-tight"
+        className="px-3 py-3 border-b flex items-center gap-6 text-xs font-inter-tight"
         style={{
           backgroundColor: 'rgb(var(--color-foreground)/0.02)',
           borderColor: 'rgb(var(--color-border))',
@@ -107,8 +76,8 @@ export const FontPlaygroundEmbed: React.FC<FontPlaygroundEmbedProps> = ({
           { label: 'Weight', value: fontWeight, min: 300, max: 800, step: 100, unit: '', onChange: setFontWeight },
           { label: 'Tracking', value: letterSpacing, min: -2, max: 5, step: 0.5, unit: 'px', onChange: setLetterSpacing },
         ].map(({ label, value, min, max, step, unit, onChange }) => (
-          <div key={label} className="flex items-center gap-2">
-            <span className="text-[11px] font-medium w-12">{label}:</span>
+          <div key={label} className="flex w-full items-center gap-2">
+            <span className="text-[11px] font-medium">{label}</span>
             <input
               type="range"
               min={min}
@@ -116,10 +85,10 @@ export const FontPlaygroundEmbed: React.FC<FontPlaygroundEmbedProps> = ({
               step={step}
               value={value}
               onChange={(e) => onChange(Number(e.target.value) as any)}
-              className="w-20 cursor-pointer"
+              className="w-full h-0.5 bg-[rgb(var(--color-foreground)/0.2)] appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-2 sm:[&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-2 sm:[&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[rgb(var(--color-foreground))] [&::-webkit-slider-thumb]:cursor-grab [&::-moz-range-thumb]:w-2 sm:[::-moz-range-thumb]:w-3 [&::-moz-range-thumb]:h-2 sm:[::-moz-range-thumb]:h-3 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[rgb(var(--color-foreground))] [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:cursor-grab"
               style={{ accentColor: 'rgb(var(--color-foreground))' }}
             />
-            <span className="font-mono text-[11px] w-10 text-right">
+            <span className="hidden sm:block font-mono text-[11px] text-right">
               {value}{unit}
             </span>
           </div>
@@ -127,7 +96,7 @@ export const FontPlaygroundEmbed: React.FC<FontPlaygroundEmbedProps> = ({
       </div>
 
       {/* Canvas */}
-      <div className="p-6">
+      <div className="p-4">
         <textarea
           rows={3}
           value={text}
@@ -147,24 +116,6 @@ export const FontPlaygroundEmbed: React.FC<FontPlaygroundEmbedProps> = ({
             width: '100%',
           }}
         />
-      </div>
-
-      {/* Footer */}
-      <div
-        className="px-5 py-2.5 border-t flex items-center justify-between text-[11px] font-inter-tight"
-        style={{
-          backgroundColor: 'rgb(var(--color-foreground)/0.02)',
-          borderColor: 'rgb(var(--color-border))',
-          color: 'rgb(var(--color-muted-foreground))',
-        }}
-      >
-        <span className="flex items-center gap-1.5">
-          <Sliders className="w-3 h-3" />
-          Click and edit the text above to test contrast &amp; legibility
-        </span>
-        <span className="font-mono text-[10px]">
-          font-family: '{primaryFont.split(',')[0].trim()}';
-        </span>
       </div>
     </div>
   );

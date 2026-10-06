@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 
-type Theme = 'light' | 'dark' | 'concrete';
+type Theme = 'light' | 'dark';
 
-const THEMES: Theme[] = ['light', 'dark', 'concrete'];
+const THEMES: Theme[] = ['light', 'dark'];
 
 interface ThemeContextType {
   theme: Theme;

@@ -596,7 +596,7 @@ Do not fabricate URLs.
 
 Do not transform one URL into another simply because the URL pattern looks predictable.
 
-url should be like this only https://google.com 
+url should be like this only https://google.com 
 
 ==================================================
 9. DESCRIPTION
@@ -801,23 +801,32 @@ Do not duplicate family-level information unnecessarily.
 If files appear to belong to different families, identify that conflict rather than merging them.
 
 ==================================================
-14. RELEASE ZIPS (AUTO-DOWNLOAD)
+14. RELEASE ZIPS (ZIP ARCHIVES)
 ==================================================
 
-If the font is open-source and has a GitHub Releases page with downloadable zip files, you MUST provide the direct zip download URLs so our system can automatically fetch, extract, and process all font files.
+If a font is open-source and hosted on a public repository (like GitHub), you MUST provide direct, raw download links to the font files so our system can automatically fetch them.
 
 - Populate the `release_zips` array.
-- For each zip available in the GitHub Releases section, add one object with:
-  - `url`: The DIRECT download URL to the zip file from the GitHub Releases page.
-    Example: "https://github.com/owner/repo/releases/download/v1.0/font-complete.zip"
-  - `label`: A short human-readable label describing the zip contents.
-    Examples: "complete", "static", "variable", "webfonts"
-- Include ALL available zips from the releases page (complete, static, variable, webfonts, etc.).
-  Our system will download all of them and intelligently merge everything.
-- Do NOT link to the GitHub HTML releases page. Link directly to the .zip file asset.
-- Do NOT provide raw file URLs — provide the release ZIP URLs only.
-- If no GitHub Releases zips are available (the font is only distributed via raw files), return `release_zips: []`.
-- NEVER guess or fabricate zip URLs. A null/empty list is always better than an incorrect URL.
+- For each release zip, provide:
+  - `label`: A short, human-readable name for the zip (e.g., "complete", "variable", "essentials", "trial").
+  - `url`: The DIRECT RAW URL to the zip file.
+- Do NOT link to the GitHub HTML page, link to the RAW zip file (e.g., "https://github.com/owner/repo/releases/download/v1.0/font-complete.zip").
+- Omit any variants or files that are not available.
+- If no release zip is available at all, omit the array or return `[]`.
+- The `label` should match what the repository calls the release (e.g., if they label it "complete", use "complete").
+- Example format:
+```json
+"release_zips": [
+  {
+    "url": "https://github.com/owner/repo/releases/download/v1.0/font-complete.zip",
+    "label": "complete"
+  },
+  {
+    "url": "https://github.com/owner/repo/releases/download/v1.0/font-variable.zip",
+    "label": "variable"
+  }
+]
+```
 
 ==================================================
 15. NULL IS BETTER THAN A GUESS
@@ -911,16 +920,16 @@ CANONICAL JSON SCHEMA
     "languages": [],
     "opentype_features": []
   },
-  "release_zips": [
-    {
-      "url": "https://github.com/owner/repo/releases/download/v1.0/font-complete.zip",
-      "label": "complete"
-    },
-    {
-      "url": "https://github.com/owner/repo/releases/download/v1.0/font-variable.zip",
-      "label": "variable"
-    }
-  ]
+  "release_zips": [
+  {
+    "url": "https://github.com/owner/repo/releases/download/v1.0/font-complete.zip",
+    "label": "complete"
+  },
+  {
+    "url": "https://github.com/owner/repo/releases/download/v1.0/font-variable.zip",
+    "label": "variable"
+  }
+]
 }
 
 ==================================================
@@ -955,3 +964,11 @@ Before returning the JSON, internally verify:
 If any important field is uncertain, use null instead of guessing.
 
 Accuracy is more important than filling every field.
+
+
+Here is actually 2 instruction mixed in. if user want a font's json , just generate it without including release zip github download links. but if user ask for a opensource font available in github, then include each and evry release zips with download link {
+    "url": "https://github.com/owner/repo/releases/download/v1.0/font-complete.zip",
+    "label": "complete"
+  },
+
+Do as instructed and output the json in copy-pasteable texts.

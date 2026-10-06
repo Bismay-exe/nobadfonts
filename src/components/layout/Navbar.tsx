@@ -4,7 +4,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { useState, useEffect, useMemo } from "react";
 import { cn } from "../../lib/utils";
-import { Type, Combine, Terminal, Users, Shield, Plus, Sun, Moon, Building, UserRound, BookOpen, Search, X, Menu, } from "lucide-react";
+import { Type, Combine, Terminal, Users, Shield, Plus, Sun, Moon, UserRound, BookOpen, Search, X, Menu, } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "../../contexts/ThemeContext";
 import { Haptics, ImpactStyle } from "@capacitor/haptics";
@@ -384,9 +384,6 @@ export default function Navbar() {
                                             fill="white"
                                             className="transition-transform duration-700 group-hover:rotate-360 group-active:scale-90"
                                         />
-                                    )}
-                                    {theme === "concrete" && (
-                                        <Building size={18} className="group-active:scale-90" />
                                     )}
                                 </div>
                             </motion.button>

@@ -31,7 +31,7 @@ export default function SiteCookies() {
                     </p>
                     <ul className="list-disc pl-6 space-y-2 text-[rgb(var(--color-foreground)/0.8)]">
                         <li>
-                            <code>theme</code>: Stores your chosen visual contrast mode (Dark, Light, Sepia, or Concrete) so your eyes aren't blinded by sudden light flashes when you reopen the site.
+                            <code>theme</code>: Stores your chosen visual contrast mode (Dark, Light) so your eyes aren't blinded by sudden light flashes when you reopen the site.
                         </li>
                         <li>
                             <code>cookie_consent</code>: Records whether you have reviewed or dismissed the initial privacy choices prompt so we do not repeatedly display banner dialogs on subsequent page visits.

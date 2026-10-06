@@ -385,7 +385,7 @@ export default function BagPage() {
                                                                         className={`flex items-center justify-between p-3 px-4 rounded-xl ${selected ? "bg-[rgb(var(--color-foreground)/0.05)]" : "bg-[rgb(var(--color-foreground)/0.01)]"} hover:bg-[rgb(var(--color-foreground)/0.05)] transition-colors duration-300 ease-in-out group`}
                                                                     >
                                                                         <span
-                                                                            className="text-[22px] tracking-tight"
+                                                                            className="text-[22px]"
                                                                             style={{
                                                                                 fontFamily: `'font-${item.font.id}', sans-serif`,
                                                                                 fontWeight: v.variant_name
@@ -575,7 +575,7 @@ export default function BagPage() {
 
                                             {activeTab === "zip" && (
                                                 <div className="flex flex-col gap-6">
-                                                    <h3 className="text-[17px] font-medium text-[rgb(var(--color-foreground)/0.9)] mb-4 tracking-tight">
+                                                    <h3 className="text-xl font-medium text-[rgb(var(--color-foreground)/0.9)] mb-4 tracking-wide">
                                                         Download Font Files
                                                     </h3>
                                                     <p className="text-gray-400 text-sm mb-4">
@@ -585,17 +585,14 @@ export default function BagPage() {
                                                     <button
                                                         onClick={handleDownload}
                                                         disabled={isDownloading}
-                                                        className="w-full py-3.5 bg-[rgb(var(--color-foreground))]text-[rgb(var(--color-background))] rounded-xl font-bold font-inter-tight tracking-wide hover:bg-gray-200 transition-colors disabled:opacity-50"
+                                                        className="w-full py-3.5 bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] rounded-xl font-bold font-inter-tight tracking-wide transition-colors disabled:opacity-50 cursor-pointer hover:bg-[rgb(var(--color-foreground)/0.8)]"
                                                     >
                                                         {isDownloading
                                                             ? downloadStatus || "Downloading..."
-                                                            : "Download ZIP"}
+                                                            : downloadStatus || "Download ZIP"
+                                                        }
                                                     </button>
-                                                    {downloadStatus && !isDownloading && (
-                                                        <p className="text-center text-sm text-gray-400 mt-2">
-                                                            {downloadStatus}
-                                                        </p>
-                                                    )}
+
                                                 </div>
                                             )}
                                         </motion.div>

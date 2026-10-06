@@ -4,6 +4,7 @@ import { Sun, Moon, ArrowLeft, User, Share2, Download, Loader2 } from 'lucide-re
 import { motion } from 'framer-motion';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useBag } from '../../contexts/BagContext';
 import { cn } from '../../lib/utils';
 import type { Font } from '../../types/font';
 
@@ -30,6 +31,7 @@ export default function FontDetailsNav({
 }: FontDetailsNavProps) {
     const navigate = useNavigate();
     const { theme, toggleTheme } = useTheme();
+    const { count: bagCount } = useBag();
 
     return (
         <>
@@ -78,6 +80,44 @@ export default function FontDetailsNav({
                                 </div>
                             </motion.button>
 
+                            {/* Bag Button */}
+                            <motion.button
+                                whileTap={{ scale: 0.95 }}
+                                onClick={async () => {
+                                    await Haptics.impact({ style: ImpactStyle.Light });
+                                    navigate("/bag");
+                                }}
+                                className="relative h-10 w-10 flex items-center justify-center rounded-full bg-[rgb(var(--color-foreground)/0.05)] backdrop-blur-3xl text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-foreground)/0.1)] transition-all cursor-pointer group"
+                                title="Font Bag"
+                                aria-label={`Font Bag — ${bagCount} font${bagCount !== 1 ? "s" : ""}`}
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="18"
+                                    height="18"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <g
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                    >
+                                        <path
+                                            d="M3.977 9.84A2 2 0 0 1 5.971 8h12.058a2 2 0 0 1 1.994 1.84l.803 10A2 2 0 0 1 18.833 22H5.167a2 2 0 0 1-1.993-2.16z"
+                                            fill="currentColor"
+                                        />
+                                        <path d="M16 11V6a4 4 0 0 0-4-4v0a4 4 0 0 0-4 4v5" />
+                                    </g>
+                                </svg>
+                                {bagCount > 0 && (
+                                    <span className="absolute -top-1 -right-1 min-w-4.5 h-4.5 px-1 bg-[rgb(var(--color-foreground))] text-[rgb(var(--color-background))] text-[12px] font-inter-tight font-semibold rounded-full flex items-center justify-center">
+                                        {bagCount > 99 ? "99+" : bagCount}
+                                    </span>
+                                )}
+                            </motion.button>
+
                             {user ? (
                                 <Link
                                     to="/profile"
@@ -110,7 +150,7 @@ export default function FontDetailsNav({
                 <motion.div
                     initial={{ y: -100 }}
                     animate={{ y: isScrolled ? 0 : -200 }}
-                    className={`absolute top-[calc(3.5rem+env(safe-area-inset-top))] md:top-0 h-full left-0 md:left-33 right-0 md:right-37 w-full md:w-auto z-40 flex items-center justify-center px-6 md:px-0
+                    className={`absolute top-[calc(3.5rem+env(safe-area-inset-top))] md:top-0 h-full left-0 md:left-33 right-0 ${user ? "md:right-49" : "md:right-58"} w-full md:w-auto z-40 flex items-center justify-center px-6 md:px-0
                     bg-[rgb(var(--color-background))] md:bg-transparent`}
                 >
                     <div className="absolute top-0 h-px w-full bg-linear-to-r from-transparent via-[rgb(var(--color-foreground)/0.1)] to-transparent"></div>

@@ -195,7 +195,7 @@ export default memo(function ProfileHeading({ onEditClick, isEditing, fontsLiked
                 {/* Socials */}
                 {socials.length > 0 && (
                     <div className="flex justify-center mt-6">
-                        <div className="flex items-center rounded-full zbg-[rgb(var(--color-foreground)/0.08)] zborder border-[rgb(var(--color-foreground)/0.12)] px-2 py-1.5 backdrop-blur-xl">
+                        <div className="flex items-center rounded-full zbg-[rgb(var(--color-foreground)/0.08)] border border-[rgb(var(--color-border)/0.5)] p-1 backdrop-blur-xl">
                             <div className="flex -space-x-2">
                                 {socials.map((social) => (
                                     <a key={social.label} href={social.href} target="_blank" rel="noopener noreferrer" aria-label={social.label} className="w-10 h-10 flex items-center justify-center rounded-full border border-[rgb(var(--color-background))] bg-[rgb(var(--color-foreground)/0.16)] overflow-hidden hover:z-10 hover:bg-[rgb(var(--color-foreground)/0.24)] hover:scale-105 transition-all duration-300">
@@ -224,7 +224,7 @@ export default memo(function ProfileHeading({ onEditClick, isEditing, fontsLiked
                         </svg>
                         <span>{isEditing ? 'Cancel Edit' : 'Edit Profile'}</span>
                     </button>
-                    <button onClick={() => signOut()} className="mt-3 flex justify-center items-center gap-2 bg-[rgb(var(--color-foreground)/0.05)] hover:bg-[rgb(var(--color-foreground)/0.1)] border border-[rgb(var(--color-foreground)/0.05)] w-fit px-4 py-3 rounded-full text-[rgb(var(--color-foreground)/0.65)] hover:text-[rgb(var(--color-foreground))] transition-all duration-300 ease-in-out">
+                    <button onClick={() => signOut()} className="mt-3 flex justify-center items-center gap-2 bg-[rgb(var(--color-foreground)/0.05)] hover:bg-[rgb(var(--color-destructive)/0.1)] border border-[rgb(var(--color-foreground)/0.05)] hover:border-[rgb(var(--color-destructive)/0.2)] w-fit px-4 rounded-full text-[rgb(var(--color-foreground)/0.65)] hover:text-[rgb(var(--color-destructive))] transition-all duration-300 ease-in-out active:scale-80">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
                             <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.996 12h-10m3.976-6c-.046-1.093-.184-1.79-.596-2.326a3 3 0 0 0-.554-.554c-.808-.62-1.98-.62-4.326-.62s-3.518 0-4.326.62a3 3 0 0 0-.554.554c-.62.808-.62 1.98-.62 4.326v8c0 2.346 0 3.518.62 4.326a3 3 0 0 0 .554.554c.808.62 1.98.62 4.326.62s3.518 0 4.326-.62a3 3 0 0 0 .554-.554c.412-.536.55-1.233.596-2.326m3.524-2.5s3.5-2.578 3.5-3.5s-3.5-3.5-3.5-3.5" />
                         </svg>

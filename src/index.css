@@ -59,26 +59,6 @@ body {
   --color-gold-2: 253 185 49;
 }
 
-[data-theme="concrete"] {
-  --color-background: 180 180 180;
-  --color-foreground: 20 20 20;
-  --color-card: 200 200 200;
-  --color-card-foreground: 20 20 20;
-  --color-muted: 160 160 160;
-  --color-muted-foreground: 80 80 80;
-  --color-border: 60 60 60;
-  --color-primary: 0 0 0;
-  --color-highlight: 255 255 255;
-  --color-accent: 100 100 100;
-  --color-purple: 80 80 120;
-  --color-destructive: 150 0 0;
-  --color-success: 0 120 0;
-  --color-warning: 180 150 0;
-  --color-orange: 180 80 0;
-  --color-brown: 100 80 60;
-  --color-gold-1: 180 150 80;
-  --color-gold-2: 150 120 60;
-}
 
 @theme {
   --font-bricolage-grotesque: "Bricolage Grotesque", sans-serif;
@@ -459,4 +439,9 @@ button {
     syntax: "*";
     inherits: false;
     initial-value: 1;
+}
+
+
+button {
+  cursor: pointer;
 }

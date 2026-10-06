@@ -117,7 +117,7 @@ export const DocRenderer: React.FC<DocRendererProps> = ({ defaultSlug }) => {
       </div>
 
       {/* MDX Article Content */}
-      <article className="font-bricolage-grotesque">
+      <article className="font-bricolage-grotesque -pt-10">
         <MDXComponent components={MDX_COMPONENTS} />
       </article>
 

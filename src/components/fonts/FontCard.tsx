@@ -439,7 +439,7 @@ function FontCard({
                                 (font.preview_image_url ||
                                     (font.gallery_images && font.gallery_images.length > 0)) ? (
                                 <div
-                                    className={`w-full h-full flex items-center justify-center transition-all duration-300 ease-in-out min-h-50
+                                    className={`w-full h-full flex items-center justify-center transition-all duration-300 ease-in-out min-h-40
                                     ${isExpanded ? "p-0" : "p-0"}`}
                                 >
                                     <div className="border border-[rgba(var(--color-foreground)/0.1)] rounded-4xl overflow-hidden">
