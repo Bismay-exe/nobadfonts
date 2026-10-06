@@ -236,10 +236,10 @@ export function normalizeFontJson(raw: any): { parsedState: Partial<FontFormStat
     if (idObj.release_year || idObj.releaseYear) { state.releaseYear = toStr(idObj.release_year || idObj.releaseYear); count++; }
 
     // 2. Creator
-    const creatorObj = raw.creator || raw;
-    if (creatorObj.designer) { state.designer = toStr(creatorObj.designer); count++; }
-    if (creatorObj.foundry) { state.foundry = toStr(creatorObj.foundry); count++; }
-    if (creatorObj.publisher) { state.publisher = toStr(creatorObj.publisher); count++; }
+    const creatorObj = raw.creator ?? raw;
+    if (creatorObj.designer !== undefined) { state.designer = toStr(creatorObj.designer); count++; }
+    if (creatorObj.foundry !== undefined) { state.foundry = toStr(creatorObj.foundry); count++; }
+    if (creatorObj.publisher !== undefined) { state.publisher = toStr(creatorObj.publisher); count++; }
 
     // 3. Classification
     const classObj = raw.classification || raw;
@@ -329,29 +329,29 @@ export function normalizeFontJson(raw: any): { parsedState: Partial<FontFormStat
     }
 
     // 6. Official Links
-    const linksObj = raw.official_links || raw.links || raw;
-    if (linksObj.official_website || linksObj.officialWebsite) {
-        state.officialWebsite = toUrl(linksObj.official_website || linksObj.officialWebsite);
+    const linksObj = raw.official_links ?? raw.links ?? raw;
+    if (linksObj.official_website !== undefined || linksObj.officialWebsite !== undefined) {
+        state.officialWebsite = toUrl(linksObj.official_website ?? linksObj.officialWebsite);
         count++;
     }
-    if (linksObj.official_font_page || linksObj.officialFontPage) {
-        state.officialFontPage = toUrl(linksObj.official_font_page || linksObj.officialFontPage);
+    if (linksObj.official_font_page !== undefined || linksObj.officialFontPage !== undefined) {
+        state.officialFontPage = toUrl(linksObj.official_font_page ?? linksObj.officialFontPage);
         count++;
     }
-    if (linksObj.purchase_url || linksObj.purchaseUrl) {
-        state.purchaseUrl = toUrl(linksObj.purchase_url || linksObj.purchaseUrl);
+    if (linksObj.purchase_url !== undefined || linksObj.purchaseUrl !== undefined) {
+        state.purchaseUrl = toUrl(linksObj.purchase_url ?? linksObj.purchaseUrl);
         count++;
     }
-    if (linksObj.free_download_url || linksObj.freeDownloadUrl) {
-        state.freeDownloadUrl = toUrl(linksObj.free_download_url || linksObj.freeDownloadUrl);
+    if (linksObj.free_download_url !== undefined || linksObj.freeDownloadUrl !== undefined) {
+        state.freeDownloadUrl = toUrl(linksObj.free_download_url ?? linksObj.freeDownloadUrl);
         count++;
     }
-    if (linksObj.github_url || linksObj.githubUrl) {
-        state.githubUrl = toUrl(linksObj.github_url || linksObj.githubUrl);
+    if (linksObj.github_url !== undefined || linksObj.githubUrl !== undefined) {
+        state.githubUrl = toUrl(linksObj.github_url ?? linksObj.githubUrl);
         count++;
     }
-    if (linksObj.google_fonts_url || linksObj.googleFontsUrl) {
-        state.googleFontsUrl = toUrl(linksObj.google_fonts_url || linksObj.googleFontsUrl);
+    if (linksObj.google_fonts_url !== undefined || linksObj.googleFontsUrl !== undefined) {
+        state.googleFontsUrl = toUrl(linksObj.google_fonts_url ?? linksObj.googleFontsUrl);
         count++;
     }
 

@@ -12,8 +12,6 @@ import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { Toast } from '@capacitor/toast';
 import FileManager from '../components/fonts/FileManager';
 import { createFontZipPackage, triggerBlobDownload } from '../utils/zipBuilder';
-import FontResearchPanel from '../components/admin/FontResearchPanel';
-import type { Database } from '../types/database.types';
 import {
     FontDetailsNav,
     FontHeroHeader,
@@ -58,12 +56,6 @@ export default function FontDetails() {
     // Similar Fonts State
     const [similarFonts, setSimilarFonts] = useState<Font[]>([]);
 
-    // AI Research State
-    type FontResearchRow = Database['public']['Tables']['font_research']['Row'];
-    type FontSourceRow = Database['public']['Tables']['font_sources']['Row'];
-    const [fontResearch, setFontResearch] = useState<FontResearchRow | null>(null);
-    const [fontSources, setFontSources] = useState<FontSourceRow[]>([]);
-
     useEffect(() => {
         if (!font || !font.category) return;
 
@@ -91,26 +83,6 @@ export default function FontDetails() {
             }
         };
         fetchSimilar();
-
-        // Fetch AI research data
-        const fetchResearch = async () => {
-            const { data: research } = await supabase
-                .from('font_research')
-                .select('*')
-                .eq('font_id', font.id)
-                .maybeSingle();
-
-            if (research) {
-                setFontResearch(research);
-                const { data: sources } = await supabase
-                    .from('font_sources')
-                    .select('*')
-                    .eq('research_id', research.id)
-                    .order('source_tier', { ascending: true });
-                setFontSources(sources || []);
-            }
-        };
-        fetchResearch();
     }, [font?.id]);
 
     // Load Web Fonts
@@ -529,18 +501,16 @@ export default function FontDetails() {
                             </span>
                             <FontJsonToolbar
                                 font={font}
-                                research={fontResearch}
                                 profile={profile}
                                 onFontUpdated={(updated) => setFont(prev => prev ? { ...prev, ...updated } : null)}
-                                onResearchUpdated={(updated) => setFontResearch(updated)}
                             />
                         </div>
                     )}
-                    <FontEditorialDetails font={font} research={fontResearch} />
+                    <FontEditorialDetails font={font} />
                 </div>
 
                 {/* 3.5 Admin: AI Research Panel */}
-                {profile?.role === 'admin' && font && (
+                {/* {profile?.role === 'admin' && font && (
                     <div className="space-y-8">
                         <div className="flex items-center gap-4">
                             <div className="h-px bg-foreground/10 flex-1"></div>
@@ -572,7 +542,7 @@ export default function FontDetails() {
                             }}
                         />
                     </div>
-                )}
+                )} */}
 
                 {/* 4. Type Tester */}
                 <div id="tester" className="scroll-mt-24 space-y-8">
@@ -586,7 +556,7 @@ export default function FontDetails() {
 
                 {/* 5. Integration & Stats */}
                 <div id="integration" className="scroll-mt-24">
-                    <FontIntegrationSection font={font} research={fontResearch} />
+                    <FontIntegrationSection font={font} />
                 </div>
 
                 {/* 6. Glyph Map */}

@@ -160,7 +160,7 @@ export default function FontDetailsNav({
                                 {font.name}
                             </h2>
                             <span className="text-muted">
-                                by {font.designer}
+                                by {(font as any).taxonomy?.creator?.foundry || (font as any).taxonomy?.creator?.publisher || font.designer}
                             </span>
                         </div>
                         <div className="flex items-center gap-2">

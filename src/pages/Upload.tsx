@@ -13,7 +13,7 @@ import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { Toast } from '@capacitor/toast';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CustomLock } from '../components/ui/CustomIcons';
-import { extractFontMetadata, validateFontFile, validateImageFile } from '../utils/fontValidator';
+import { validateFontFile, validateImageFile } from '../utils/fontValidator';
 import { extractRichFontMetadata } from '../utils/fontMetadataExtractor';
 import { JsonImportModal, type FontFormState } from '../components/fonts/JsonImportModal';
 import { cleanUrl } from '../utils/urlHelper';
@@ -895,7 +895,6 @@ const Upload = () => {
             // Compute SHA-256 hash of primary font file for deduplication
             let fontFileHash: string | null = null;
             const primaryFile = variants[0]?.files.ttf || variants[0]?.files.otf || variants[0]?.files.woff2 || variants[0]?.files.woff;
-            const fontMetadata = primaryFile ? await extractFontMetadata(primaryFile) : {};
             if (primaryFile) {
                 try {
                     const buffer = await primaryFile.arrayBuffer();
@@ -907,50 +906,6 @@ const Upload = () => {
                 }
             }
 
-            // 1. Insert into fonts table
-            const { error: dbError } = await supabase
-                .from('fonts')
-                .insert([
-                    {
-                        name: formState.name,
-                        designer: formState.designer || 'Unknown',
-                        category: formState.category || formState.tags[0] || 'sans',
-                        tags: formState.tags,
-                        description: formState.description || null,
-                        license_type: formState.licenseType,
-                        commercial_use: formState.commercialUse,
-                        slug: slug,
-                        is_published: true,
-                        user_id: user.id,
-                        font_file_hash: fontFileHash,
-                        glyph_count: formState.glyphCount || null,
-                        weights: dynamicWeights.length > 0 ? dynamicWeights : [400],
-                        has_italic: dynamicStyles.includes('Italic'),
-                        research_status: 'unresearched',
-
-                        preview_image_url: previewImageUrl,
-                        file_size_image_preview: previewImageSize,
-                        gallery_images: galleryUrls,
-                        gallery_image_sizes: gallerySizes,
-                        uploaded_by: user.id,
-                    }
-                ]);
-
-            if (dbError) {
-                console.error('Database Error:', dbError);
-                throw new Error(`Database insert failed: ${dbError.message}`);
-            }
-
-            // Retrieve new font ID
-            const { data: insertedFont, error: insertError } = await supabase
-                .from('fonts')
-                .select('id')
-                .eq('slug', slug)
-                .single();
-
-            if (insertError || !insertedFont) throw new Error('Failed to retrieve new font ID');
-
-            // 2. Upsert comprehensive metadata into font_research table
             // Stores first-class columns + full structured JSON taxonomy in JSONB
             const canonicalTaxonomy = {
                 identity: {
@@ -961,9 +916,9 @@ const Upload = () => {
                     release_year: formState.releaseYear ? Number(formState.releaseYear) : null,
                 },
                 creator: {
-                    designer: formState.designer,
-                    foundry: formState.foundry,
-                    publisher: formState.publisher,
+                    designer: formState.designer || null,
+                    foundry: formState.foundry || null,
+                    publisher: formState.publisher || null,
                 },
                 classification: {
                     category: formState.category,
@@ -974,9 +929,9 @@ const Upload = () => {
                     recommended_uses: formState.recommendedUses,
                 },
                 description: {
-                    description: formState.description,
-                    history: formState.history,
-                    characteristics: formState.characteristics,
+                    description: formState.description || null,
+                    history: formState.history || null,
+                    characteristics: formState.characteristics || null,
                 },
                 license: {
                     distribution_status: formState.distributionStatus,
@@ -1006,27 +961,49 @@ const Upload = () => {
                 }
             };
 
-            const { error: metadataError } = await supabase.from('font_research').upsert({
-                font_id: insertedFont.id,
-                foundry: formState.foundry || null,
-                official_website: cleanUrl(formState.officialWebsite),
-                official_font_page: cleanUrl(formState.officialFontPage),
-                purchase_url: cleanUrl(formState.purchaseUrl),
-                free_download_url: cleanUrl(formState.freeDownloadUrl),
-                license_url: cleanUrl(formState.licenseUrl),
-                license_type_verified: formState.licenseType,
-                commercial_use_verified: formState.commercialUse,
-                personal_use_verified: formState.personalUse,
-                ai_description: formState.description || null,
-                font_metadata_extracted: {
-                    ...fontMetadata,
-                    detected_hints: detectedHints,
-                    taxonomy: canonicalTaxonomy,
-                },
-                research_status: 'unresearched',
-            }, { onConflict: 'font_id' });
+            // 1. Insert into fonts table
+            const { error: dbError } = await supabase
+                .from('fonts')
+                .insert([
+                    {
+                        name: formState.name,
+                        designer: formState.designer || 'Unknown',
+                        category: formState.category || formState.tags[0] || 'sans',
+                        tags: formState.tags,
+                        description: formState.description || null,
+                        license_type: formState.licenseType,
+                        commercial_use: formState.commercialUse,
+                        slug: slug,
+                        is_published: true,
+                        user_id: user.id,
+                        font_file_hash: fontFileHash,
+                        glyph_count: formState.glyphCount || null,
+                        weights: dynamicWeights.length > 0 ? dynamicWeights : [400],
+                        has_italic: dynamicStyles.includes('Italic'),
 
-            if (metadataError) console.warn('Failed to store font research metadata:', metadataError);
+                        taxonomy: canonicalTaxonomy,
+
+                        preview_image_url: previewImageUrl,
+                        file_size_image_preview: previewImageSize,
+                        gallery_images: galleryUrls,
+                        gallery_image_sizes: gallerySizes,
+                        uploaded_by: user.id,
+                    }
+                ]);
+
+            if (dbError) {
+                console.error('Database Error:', dbError);
+                throw new Error(`Database insert failed: ${dbError.message}`);
+            }
+
+            // Retrieve new font ID
+            const { data: insertedFont, error: insertError } = await supabase
+                .from('fonts')
+                .select('id')
+                .eq('slug', slug)
+                .single();
+
+            if (insertError || !insertedFont) throw new Error('Failed to retrieve new font ID');
 
             // 3. Upload and Insert Variants
             const variantsToConvert: { id: string; name: string; files: { ttf: File | null; otf: File | null } }[] = [];
@@ -1251,7 +1228,7 @@ const Upload = () => {
                                 {formState.releaseZips.map((z, i) => (
                                     <span key={i} className="text-[10px] font-mono px-2 py-1 rounded bg-foreground/5 border border-border flex items-center gap-1.5">
                                         <span className="text-accent uppercase font-bold">{z.label}</span>
-                                        <span className="text-muted truncate max-w-[180px]">{z.url.split('/').pop()}</span>
+                                        <span className="text-muted truncate max-w-45">{z.url.split('/').pop()}</span>
                                     </span>
                                 ))}
                             </div>

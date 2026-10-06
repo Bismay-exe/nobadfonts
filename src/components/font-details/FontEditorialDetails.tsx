@@ -1,34 +1,28 @@
 import { Check, X, ExternalLink, Globe, Handbag, Download, Cat } from 'lucide-react';
 import type { Font } from '../../types/font';
-import type { Database } from '../../types/database.types';
 import { generateDescription } from '../../utils/fontDescriptionGenerator';
 import { cleanUrl, formatUrlForDisplay } from '../../utils/urlHelper';
 
-type FontResearchRow = Database['public']['Tables']['font_research']['Row'];
-
 interface FontEditorialDetailsProps {
     font: Font;
-    research?: FontResearchRow | null;
 }
 
-export default function FontEditorialDetails({ font, research }: FontEditorialDetailsProps) {
-    // Extract structured taxonomy and detected metadata
-    const extracted = (research?.font_metadata_extracted as any) || {};
-    const taxonomy = extracted?.taxonomy || {};
+export default function FontEditorialDetails({ font }: FontEditorialDetailsProps) {
+    const taxonomy = (font as any).taxonomy || {};
 
     const fontName = taxonomy?.identity?.name || font.name || 'Untitled Typeface';
     const designer = taxonomy?.creator?.designer || font.designer || 'Unknown Designer';
-    const foundry = taxonomy?.creator?.foundry || research?.foundry || null;
+    const foundry = taxonomy?.creator?.foundry ?? null;
     const releaseYear = taxonomy?.identity?.release_year
         ? String(taxonomy.identity.release_year)
         : (font.created_at ? new Date(font.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : null);
-    const version = taxonomy?.identity?.version || extracted?.version || '1.000';
+    const version = taxonomy?.identity?.version ?? '1.000';
 
     // 1. Description
-    const descriptionText = taxonomy?.description?.description
-        || research?.ai_description
-        || font.description
-        || generateDescription(font);
+    const descriptionText =
+        taxonomy?.description?.description ??
+        font.description ??
+        generateDescription(font);
 
     // 2. History & Background
     const defaultHistory = font.designer
@@ -82,13 +76,18 @@ export default function FontEditorialDetails({ font, research }: FontEditorialDe
     }
 
     let languageString = 'English · Basic Latin';
-    if (Array.isArray(taxonomy?.technical?.languages) && taxonomy.technical.languages.length > 0) {
+
+    if (
+        Array.isArray(taxonomy?.technical?.languages) &&
+        taxonomy.technical.languages.length > 0
+    ) {
         languageString = taxonomy.technical.languages.join(' · ');
-    } else if (Array.isArray(extracted?.detected_languages) && extracted.detected_languages.length > 0) {
-        languageString = extracted.detected_languages.join(' · ');
     }
 
-    const glyphCount = taxonomy?.technical?.glyph_count || extracted?.glyph_count || font.glyph_count || 92;
+    const glyphCount =
+        taxonomy?.technical?.glyph_count ??
+        font.glyph_count ??
+        92;
 
     // 6. Classification & Tags
     const subcategory = taxonomy?.classification?.subcategory || '';
@@ -118,7 +117,7 @@ export default function FontEditorialDetails({ font, research }: FontEditorialDe
     }
 
     // 8. Licensing & Permissions Matrix
-    const licenseType = taxonomy?.license?.license_type || research?.license_type_verified || font.license_type || 'Personal Use Only';
+    const licenseType = taxonomy?.license?.license_type ?? font.license_type ?? 'Personal Use Only';
     const isCommercialAllowed = taxonomy?.license?.commercial_use ?? (font.commercial_use ?? false);
     const isPersonalAllowed = taxonomy?.license?.personal_use ?? true;
     const isModificationAllowed = taxonomy?.license?.modification_allowed ?? (
@@ -136,25 +135,25 @@ export default function FontEditorialDetails({ font, research }: FontEditorialDe
         : (isCommercialAllowed ? 'FREE & OPEN SOURCE' : 'PERSONAL USE ONLY');
 
     const licenseEvidence = taxonomy?.license?.license_evidence || null;
-    const licenseUrl = cleanUrl(taxonomy?.license?.license_url || research?.license_url);
+    const licenseUrl = cleanUrl(taxonomy?.license?.license_url);
 
     // 9. Official Links
     const rawLinks = [
         {
             label: 'Official Website',
-            url: cleanUrl(taxonomy?.official_links?.official_website || research?.official_website),
+            url: cleanUrl(taxonomy?.official_links?.official_website),
             icon: Globe,
             desc: 'Creator or Foundry storefront'
         },
         {
             label: 'Official Font Page',
-            url: cleanUrl(taxonomy?.official_links?.official_font_page || research?.official_font_page),
+            url: cleanUrl(taxonomy?.official_links?.official_font_page),
             icon: ExternalLink,
             desc: 'Official release specimen page'
         },
         {
             label: 'Purchase License',
-            url: cleanUrl(taxonomy?.official_links?.purchase_url || research?.purchase_url),
+            url: cleanUrl(taxonomy?.official_links?.purchase_url),
             icon: Handbag,
             desc: 'Commercial licenses and upgrades'
         },
@@ -166,7 +165,7 @@ export default function FontEditorialDetails({ font, research }: FontEditorialDe
         },
         {
             label: 'Free Download',
-            url: cleanUrl(taxonomy?.official_links?.free_download_url || research?.free_download_url),
+            url: cleanUrl(taxonomy?.official_links?.free_download_url),
             icon: Download,
             desc: 'Authorized digital package'
         },

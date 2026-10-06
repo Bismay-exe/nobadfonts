@@ -45,10 +45,10 @@ export default function FontHeroHeader({
                     <div className="flex items-center gap-2 text-muted text-lg md:text-xl">
                         <span>by</span>
                         <Link
-                            to={`/designers/${encodeURIComponent(font.designer || '')}`}
+                            to={`/designers/${encodeURIComponent((font as any).taxonomy?.creator?.foundry || (font as any).taxonomy?.creator?.publisher || font.designer || '')}`}
                             className="text-foreground hover:underline decoration-1 underline-offset-4 font-medium"
                         >
-                            {font.designer || 'Unknown'}
+                            {(font as any).taxonomy?.creator?.foundry || (font as any).taxonomy?.creator?.publisher || font.designer || 'Unknown'}
                         </Link>
                     </div>
                 </div>

@@ -1,4 +1,4 @@
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Heart } from "lucide-react";
 import SaveToBoardModal from "../boards/SaveToBoardModal";
 import type { Font } from "../../types/font";
@@ -168,7 +168,6 @@ function FontCard({
 }: FontCardProps) {
     const { user } = useAuth();
     const navigate = useNavigate();
-    const location = useLocation();
     const { addToBag, isInBag } = useBag();
     const [isFontLoaded, setIsFontLoaded] = useState(() =>
         font ? loadedFontsCache.has(font.id) : false,
@@ -602,7 +601,7 @@ function FontCard({
                                         <p className={`text-sm transition-transform duration-300 delay-75 ${isExpanded ? "translate-y-2" : "translate-y-2 group-hover:translate-y-0"}
                                         ${viewMode === 'image' ? 'text-white/60' : 'text-muted'}`}
                                         >
-                                            {font.designer}
+                                            {(font as any).taxonomy?.creator?.foundry || (font as any).taxonomy?.creator?.publisher || font.designer || 'Unknown'}
                                         </p>
                                     </div>
 
@@ -662,12 +661,10 @@ function FontCard({
                                             <p className="text-sm text-muted tracking-wide">
                                                 by{" "}
                                                 <Link
-                                                    to={`/designers/${encodeURIComponent(font.designer || "")}`}
-                                                    state={{ from: location }}
-                                                    onClick={(e) => e.stopPropagation()}
-                                                    className="hover:text-foreground hover:underline transition-colors duration-300 ease-in-out"
+                                                    to={`/designers/${encodeURIComponent((font as any).taxonomy?.creator?.foundry || (font as any).taxonomy?.creator?.publisher || font.designer || '')}`}
+                                                    className="text-foreground hover:underline decoration-1 underline-offset-4 font-medium"
                                                 >
-                                                    {font.designer}
+                                                    {(font as any).taxonomy?.creator?.foundry || (font as any).taxonomy?.creator?.publisher || font.designer || 'Unknown'}
                                                 </Link>
                                             </p>
                                         </div>
