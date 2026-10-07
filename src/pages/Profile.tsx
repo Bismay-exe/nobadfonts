@@ -8,6 +8,7 @@ import { motion } from 'framer-motion';
 import ProfileHeader from '../components/profile/ProfileHeader';
 import SettingsForm from '../components/profile/SettingsForm';
 import SEO from '../components/shared/SEO';
+import LoadingState from '../components/shared/LoadingState';
 
 export default function Profile() {
     const { user, profile, loading, refreshProfile } = useAuth();
@@ -66,7 +67,7 @@ export default function Profile() {
         });
     }, []);
 
-    if (loading) return <div className="w-screen h-screen flex justify-center items-center bg-background text-foreground">Loading...</div>;
+    if (loading) return <LoadingState />;
     if (!user) return <Navigate to="/auth" replace />;
 
     return (
@@ -143,12 +144,12 @@ export default function Profile() {
                 </div>
             </div>
 
-            <SettingsForm 
-                isOpen={isEditing} 
+            <SettingsForm
+                isOpen={isEditing}
                 onCancel={() => {
                     setIsEditing(false);
                     setActiveTab('favorites');
-                }} 
+                }}
             />
 
         </>

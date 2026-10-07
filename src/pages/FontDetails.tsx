@@ -29,6 +29,7 @@ import {
 } from '../components/font-details';
 import AdminOgImageManager from '../components/fonts/AdminOgImageManager';
 import ContextPreview from '../components/fonts/ContextPreview';
+import LoadingState from '../components/shared/LoadingState';
 
 export default function FontDetails() {
     const { id } = useParams();
@@ -304,7 +305,7 @@ export default function FontDetails() {
         return list;
     }, [similarFonts]);
 
-    if (loading) return <div className="w-screen h-screen flex justify-center items-center bg-background text-foreground">Loading...</div>;
+    if (loading) return <LoadingState />;
     if (error || !font) {
         return (
             <main className="pt-24 flex min-h-screen flex-col justify-center items-center bg-background text-foreground">
