@@ -9,9 +9,11 @@ import ProfileHeader from '../components/profile/ProfileHeader';
 import SettingsForm from '../components/profile/SettingsForm';
 import SEO from '../components/shared/SEO';
 import LoadingState from '../components/shared/LoadingState';
+import { usePageReady } from '../components/transitions/PageTransition';
 
 export default function Profile() {
     const { user, profile, loading, refreshProfile } = useAuth();
+    usePageReady(!loading);
     const [activeTab, setActiveTab] = useState<'favorites' | 'downloads' | 'settings' | 'analytics'>('favorites');
     const [isEditing, setIsEditing] = useState(false);
     const [requestLoading, setRequestLoading] = useState(false);

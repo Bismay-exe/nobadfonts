@@ -16,6 +16,7 @@ import { Browser } from '@capacitor/browser';
 import { UpdateModal } from './components/modals/UpdateModal';
 import { UpdateProvider } from './contexts/UpdateContext';
 import { BagProvider } from './contexts/BagContext';
+import { PageTransition, PageTransitionTracker } from './components/transitions/PageTransition';
 const FontsCatalog = React.lazy(() => import('./pages/FontsCatalog'));
 const Bag = React.lazy(() => import('./pages/Bag'));
 const FontDetails = React.lazy(() => import('./pages/FontDetails'));
@@ -77,9 +78,6 @@ function OnboardingGuard({ children }: { children: React.ReactNode }) {
 }
 
 function AppContent() {
-  const location = useLocation();
-
-
   useEffect(() => {
     const init = async () => {
       await SplashScreen.hide();
@@ -124,55 +122,62 @@ function AppContent() {
 
   return (
     <>
-      <ScrollRestoration />
+      <PageTransition>
+        {({ displayLocation }) => (
+          <>
+            <ScrollRestoration location={displayLocation} />
+            <BackHandler />
+            <OnboardingGuard>
+              <Suspense fallback={
+                <div className="fixed inset-0 flex items-center justify-center bg-background z-50">
+                  <div className="animate-spin rounded-full h-12 w-12 border-4 border-foreground/10"></div>
+                </div>
+              }>
+                <PageTransitionTracker />
+                <Routes location={displayLocation} key={displayLocation.pathname}>
+                  <Route path="/auth" element={<Auth />} />
+                  <Route path="/onboarding" element={<Onboarding />} />
+                  <Route path="/board-share/:shareToken" element={<BoardShare />} />
+                  <Route path="/fonts/:id" element={<FontDetails />} />
+                  {/* Documentation Platform */}
+                  <Route path="/docs" element={<DocsLayout />}>
+                    <Route index element={<DocRenderer defaultSlug="introduction" />} />
+                    <Route path="*" element={<DocRenderer />} />
+                  </Route>
+                  <Route path="/" element={<Layout />}>
+                    <Route index element={<Home />} />
+                    <Route path="fonts" element={<FontsCatalog />} />
+                    <Route path="pairing" element={<FontPairing />} />
+                    <Route path="upload" element={<Upload />} />
+                    <Route path="profile" element={<Profile />} />
+                    <Route path="members" element={<Members />} />
+                    <Route path="members/:id" element={<MemberDetails />} />
+                    <Route path="designers/:designerName" element={<DesignerFonts />} />
+                    <Route path="admin" element={<AdminDashboard />} />
+                    <Route path="cli" element={<Cli />} />
+                    <Route path="legal/terms" element={<TermsOfService />} />
+                    <Route path="legal/privacy" element={<PrivacyPolicy />} />
+                    <Route path="legal/dmca" element={<DmcaPolicy />} />
+                    <Route path="legal/cookies" element={<CookiePolicy />} />
+                    <Route path="bag" element={<Bag />} />
+                    {/* Moods / Worlds */}
+                    <Route path="moods" element={<Moods />} />
+                    <Route path="moods/:slug" element={<MoodDetail />} />
+                    {/* Font tools */}
+                    <Route path="playground" element={<FontPlayground />} />
+                    <Route path="type-swap" element={<TypeSwap />} />
+                    {/* User boards routes — must be after all known paths */}
+                    <Route path=":username" element={<UserBoards />} />
+                    <Route path=":username/:boardSlug" element={<BoardDetail />} />
+                    <Route path="*" element={<NotFound />} />
+                  </Route>
+                </Routes>
+              </Suspense>
+            </OnboardingGuard>
+          </>
+        )}
+      </PageTransition>
       <UploadProgressPopup />
-      <BackHandler />
-      <OnboardingGuard>
-        <Suspense fallback={
-          <div className="fixed inset-0 flex items-center justify-center bg-background z-50">
-            <div className="animate-spin rounded-full h-12 w-12 border-4 border-foreground/10"></div>
-          </div>
-        }>
-          <Routes location={location} key={location.pathname}>
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/onboarding" element={<Onboarding />} />
-            <Route path="/board-share/:shareToken" element={<BoardShare />} />
-            <Route path="/fonts/:id" element={<FontDetails />} />
-            {/* Documentation Platform */}
-            <Route path="/docs" element={<DocsLayout />}>
-              <Route index element={<DocRenderer defaultSlug="introduction" />} />
-              <Route path="*" element={<DocRenderer />} />
-            </Route>
-            <Route path="/" element={<Layout />}>
-              <Route index element={<Home />} />
-              <Route path="fonts" element={<FontsCatalog />} />
-              <Route path="pairing" element={<FontPairing />} />
-              <Route path="upload" element={<Upload />} />
-              <Route path="profile" element={<Profile />} />
-              <Route path="members" element={<Members />} />
-              <Route path="members/:id" element={<MemberDetails />} />
-              <Route path="designers/:designerName" element={<DesignerFonts />} />
-              <Route path="admin" element={<AdminDashboard />} />
-              <Route path="cli" element={<Cli />} />
-              <Route path="legal/terms" element={<TermsOfService />} />
-              <Route path="legal/privacy" element={<PrivacyPolicy />} />
-              <Route path="legal/dmca" element={<DmcaPolicy />} />
-              <Route path="legal/cookies" element={<CookiePolicy />} />
-              <Route path="bag" element={<Bag />} />
-              {/* Moods / Worlds */}
-              <Route path="moods" element={<Moods />} />
-              <Route path="moods/:slug" element={<MoodDetail />} />
-              {/* Font tools */}
-              <Route path="playground" element={<FontPlayground />} />
-              <Route path="type-swap" element={<TypeSwap />} />
-              {/* User boards routes — must be after all known paths */}
-              <Route path=":username" element={<UserBoards />} />
-              <Route path=":username/:boardSlug" element={<BoardDetail />} />
-              <Route path="*" element={<NotFound />} />
-            </Route>
-          </Routes>
-        </Suspense>
-      </OnboardingGuard>
       <UpdateModal />
       <CookieConsent />
     </>

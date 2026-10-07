@@ -1,12 +1,10 @@
 import { memo } from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
-import { AnimatePresence, motion } from 'framer-motion';
 // import ProgressiveBlur from '../ui/ProgressiveBlur';
 
 const Layout = memo(function Layout() {
-    const location = useLocation();
     return (
         <div className="app-container flex flex-col min-h-screen bg-background text-foreground antialiased selection:bg-foreground selection:text-background overflow-x-hidden">
 
@@ -27,18 +25,7 @@ const Layout = memo(function Layout() {
 
             <Navbar />
             <main id="main-content" tabIndex={-1} className="mb-17 md:mb-0 grow max-w-480 mx-auto w-full focus:outline-none">
-                <AnimatePresence mode="wait">
-                    <motion.div
-                        key={location.pathname}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
-                        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                        className="w-full"
-                    >
-                        <Outlet />
-                    </motion.div>
-                </AnimatePresence>
+                <Outlet />
             </main>
             <Footer />
         </div>

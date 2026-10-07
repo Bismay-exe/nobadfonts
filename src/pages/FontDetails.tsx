@@ -30,12 +30,14 @@ import {
 import AdminOgImageManager from '../components/fonts/AdminOgImageManager';
 import ContextPreview from '../components/fonts/ContextPreview';
 import LoadingState from '../components/shared/LoadingState';
+import { usePageReady } from '../components/transitions/PageTransition';
 
 export default function FontDetails() {
     const { id } = useParams();
     const { user, profile } = useAuth();
     const navigate = useNavigate();
     const { font, setFont, loading, error, isFavorited, setIsFavorited } = useFont(id);
+    usePageReady(!loading);
     const [isFontLoaded, setIsFontLoaded] = useState(false);
 
     // Social Share State

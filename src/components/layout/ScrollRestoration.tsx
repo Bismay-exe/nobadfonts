@@ -3,8 +3,9 @@ import { useLayoutEffect } from 'react';
 
 export const scrollPositions = new Map<string, number>();
 
-export function ScrollRestoration() {
-    const location = useLocation();
+export function ScrollRestoration({ location: propLocation }: { location?: ReturnType<typeof useLocation> } = {}) {
+    const routerLocation = useLocation();
+    const location = propLocation || routerLocation;
 
     useLayoutEffect(() => {
         if ('scrollRestoration' in window.history) {

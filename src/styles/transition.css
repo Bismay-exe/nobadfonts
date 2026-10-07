@@ -1,0 +1,188 @@
+/* NoBadFonts Global Page Transition System */
+
+.page-transition-shell {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* Only during active transition: provide background and clip outer bounds */
+.page-transition-shell[data-transitioning="true"] {
+  background: var(--color-border);
+  overflow: hidden;
+}
+
+/* 
+ * Page content when IDLE:
+ * Crucial: NO transform, NO will-change, NO opacity reduction.
+ * This ensures position: fixed elements (Navbar, Dockbar, Modals, Popups) 
+ * remain anchored directly to the browser viewport during normal browsing.
+ */
+.page-transition-content {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  transform: none !important;
+  will-change: auto !important;
+  opacity: 1 !important;
+}
+
+/* 
+ * Page content ONLY during active transition:
+ * Enables scale-down and fade effect around the current viewport.
+ */
+.page-transition-content[data-transitioning="true"] {
+  transform-origin: center calc(var(--scroll-y, 0px) + 50vh);
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transition:
+    transform 800ms cubic-bezier(0.76, 0, 0.24, 1),
+    opacity 800ms cubic-bezier(0.76, 0, 0.24, 1),
+    border-radius 800ms cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+.page-transition-content[data-transitioning="true"][data-scaled="true"] {
+  transform: scale(0.9) !important;
+  opacity: 0.55 !important;
+  border-radius: 1.5rem;
+  overflow: hidden;
+}
+
+.page-transition-content[data-transitioning="true"][data-scaled="false"] {
+  transform: scale(1) !important;
+  opacity: 1 !important;
+  border-radius: 0;
+}
+
+/* --------------------------------
+   Transition panel
+-------------------------------- */
+
+.page-transition-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+
+  transform: translate3d(0, 100%, 0);
+
+  pointer-events: none;
+  visibility: hidden;
+
+  overflow: hidden;
+}
+
+/* Panel starts below viewport */
+.page-transition-overlay[data-position="down"] {
+  transform: translate3d(0, 100%, 0);
+}
+
+/* Panel fully covers viewport */
+.page-transition-overlay[data-position="center"] {
+  transform: translate3d(0, 0, 0);
+}
+
+/* Only animate when explicitly enabled */
+.page-transition-overlay[data-animating="true"] {
+  transition:
+    transform 850ms cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+.page-transition-overlay[data-visible="true"] {
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* --------------------------------
+   Logo
+-------------------------------- */
+
+.page-transition-logo {
+  opacity: 0;
+  transform: scale(0.86);
+
+  will-change: transform, opacity;
+
+  transition:
+    transform 650ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 500ms ease;
+}
+
+.page-transition-overlay[data-position="center"]
+  .page-transition-logo {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* --------------------------------
+   Star
+-------------------------------- */
+
+.page-transition-star {
+  transform-origin: 113.5px 113px;
+  animation: page-transition-spin 2.8s linear infinite;
+}
+
+@keyframes page-transition-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* --------------------------------
+   Reduced motion
+-------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .page-transition-content,
+  .page-transition-content[data-transitioning="true"],
+  .page-transition-content[data-scaled="true"] {
+    transform: none !important;
+    opacity: 1 !important;
+    border-radius: 0 !important;
+    transition: none !important;
+  }
+
+  .page-transition-shell[data-transitioning="true"] {
+    overflow: visible !important;
+    background: transparent !important;
+  }
+
+  .page-transition-overlay {
+    transform: none !important;
+    transition: opacity 180ms ease !important;
+  }
+
+  .page-transition-overlay[data-position="down"] {
+    opacity: 0;
+  }
+
+  .page-transition-overlay[data-position="center"] {
+    opacity: 1;
+  }
+
+  .page-transition-logo {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .page-transition-star {
+    animation: none !important;
+  }
+}

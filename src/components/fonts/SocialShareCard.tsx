@@ -174,7 +174,7 @@ const SocialShareCard = forwardRef<HTMLDivElement, SocialShareCardProps>(({
                 {/* Logo & Brand Tag */}
                 <div className={`flex ${isOg ? 'flex-row items-center gap-2.5 flex-wrap justify-end' : 'flex-col items-end gap-3'} bg-black/40 backdrop-blur-md rounded-2xl`}>
                     <div className={`${isOg ? 'w-16 h-16' : 'w-18 h-18'} rounded-lg overflow-hidden flex items-center justify-center`}>
-                        <img src="/logo/logo.png" alt="Logo" className="w-full h-full object-contain" />
+                        <img src="/logo/logo-black.png" alt="Logo" className="w-full h-full object-contain" />
                     </div>
                 </div>
             </div>

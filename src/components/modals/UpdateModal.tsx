@@ -40,7 +40,7 @@ export const UpdateModal = () => {
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-3">
                     <div className="p-1 bg-black rounded-xl">
-                      <img src="/logo/logo.png" alt="NoBadFonts Logo" className='w-8 h-8 rounded-xl object-cover' />
+                      <img src="/logo/logo-black.png" alt="NoBadFonts Logo" className='w-8 h-8 rounded-xl object-cover' />
                     </div>
                     <h2 className="text-xl font-bold text-background">Update Ready</h2>
                   </div>
