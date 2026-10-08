@@ -13,7 +13,7 @@ const Footer: React.FC = memo(() => {
     }, []);
 
     return (
-        <footer className="hidden sm:block pt-8 bg-background text-muted font-sans selection:bg-foreground selection:text-background relative z-0">
+        <footer className="pt-8 bg-background text-muted font-sans selection:bg-foreground selection:text-background relative z-0">
             <div className="max-w-480 mx-auto pb-10 z-10 px-4 md:px-8">
 
                 {/* <div className=''>
@@ -94,17 +94,31 @@ const Footer: React.FC = memo(() => {
                             <Link to="/legal/dmca" className="w-fit text-sm hover:text-foreground transition-colors duration-300 ease-in-out">DMCA / Takedown</Link>
                         </div>
 
+                        {/* Column 5: Socials */}
+                        <div className="md:hidden flex flex-col space-y-4">
+                            <h3 className="text-foreground text-sm font-bold tracking-wider zuppercase mb-4">Socials</h3>
+                            <a href="https://x.com/NoBadFonts" target="_blank" rel="noopener noreferrer" aria-label="Follow NoBadFonts on X(formerly Twitter) (opens in new window)" className="w-fit text-sm hover:text-foreground transition-colors duration-300 ease-in-out">
+                                X (Twitter)
+                            </a>
+                            <a href="https://github.com/Bismay-exe" target="_blank" rel="noopener noreferrer" aria-label="Visit NoBadFonts on GitHub (opens in new window)" className="w-fit text-sm hover:text-foreground transition-colors duration-300 ease-in-out">
+                                GitHub
+                            </a>
+                            <a href="https://www.instagram.com/bismay.exe" target="_blank" rel="noopener noreferrer" aria-label="Follow NoBadFonts on Instagram (opens in new window)" className="w-fit text-sm hover:text-foreground transition-colors duration-300 ease-in-out">
+                                Instagram
+                            </a>
+                        </div>
+
                     </div>
                 </div>
 
                 {/* Absolute Bottom Footer: Socials & Copyright */}
-                <div className="flex flex-col md:flex-row justify-between items-center gap-6 zpt-8 zborder-t border-border">
+                <div className="flex flex-col-reverse md:flex-row justify-between items-center gap-6 zpt-8 zborder-t border-border">
 
                     <div className="flex items-center gap-2 text-xs text-muted">
                         <span>&copy; {currentYear} nobadfonts.in. All rights reserved.</span>
                     </div>
 
-                    <div className="flex items-center gap-6 text-sm">
+                    <div className="hidden md:flex items-center gap-6 text-sm">
                         <a href="https://x.com/NoBadFonts" target="_blank" rel="noopener noreferrer" aria-label="Follow NoBadFonts on X(formerly Twitter) (opens in new window)" className="hover:text-foreground transition-colors duration-300 ease-in-out flex items-center gap-1 group">
                             X (Twitter)
                             <svg className="w-3 h-3 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>

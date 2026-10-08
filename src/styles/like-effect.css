@@ -1,0 +1,209 @@
+/* ══ Like Effect ════════════════════════════════════════════ */
+
+.lk {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 0;
+  border-radius: var(--r, 9999px);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  transition: transform 200ms cubic-bezier(0.3, 0.9, 0.4, 1), background-color 200ms, color 200ms, border-color 200ms;
+}
+
+.lk:active {
+  transform: scale(0.95);
+}
+
+.lk:focus-visible {
+  outline: none;
+}
+
+.lk-heart {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: var(--lk-heart-size, 20px);
+  height: var(--lk-heart-size, 20px);
+}
+
+.lk-glyph {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+}
+
+.lk-glyph[data-liked] {
+  color: var(--lk-on, #ec4899);
+}
+
+/* the heart springs in from nothing, past its size and back */
+.lk-glyph[data-on] {
+  color: var(--lk-on, #ec4899);
+  animation: lk-pop 520ms cubic-bezier(0.3, 1.5, 0.4, 1) both;
+}
+
+.lk[data-fx="Bloom"] .lk-glyph[data-on] {
+  animation: lk-heart 760ms cubic-bezier(0.3, 1.6, 0.4, 1) both;
+}
+
+.lk-burst {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* the bloom: a full disc that grows, then hollows out from the
+   middle into a ring and thins to nothing */
+.lk-bloom {
+  position: absolute;
+  left: -17px;
+  top: -17px;
+  width: 34px;
+  height: 34px;
+  box-sizing: border-box;
+  border-radius: 50%;
+  border: 17px solid var(--lk-bloom-color, #cc8ef5);
+  animation: lk-bloom 560ms cubic-bezier(0.25, 0.8, 0.35, 1) both;
+}
+
+.lk[data-color="Ink"] .lk-bloom {
+  border-color: var(--lk-on, currentColor);
+  animation-name: lk-bloom-ink;
+}
+
+/* seven spokes, each a pair of dots, thrown as the ring opens */
+.lk-spoke {
+  position: absolute;
+  left: 0;
+  top: 0;
+  rotate: var(--a);
+}
+
+.lk-spoke i {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  margin: -2.5px 0 0 -2.5px;
+  border-radius: 50%;
+  background: var(--c);
+  animation: lk-dot 620ms cubic-bezier(0.2, 0.8, 0.3, 1) 200ms both;
+}
+
+.lk-spoke i:first-child {
+  --side: -4px;
+  --far: 0px;
+}
+
+.lk-spoke i:last-child {
+  --side: 4px;
+  --far: -5px;
+  width: 4px;
+  height: 4px;
+  margin: -2px 0 0 -2px;
+}
+
+/* ── Firework: up and out, then they fall ────── */
+.lk-fw {
+  position: absolute;
+  left: 0;
+  top: 0;
+  animation: lk-fw-x 1000ms cubic-bezier(0.2, 0.7, 0.4, 1) var(--d) both;
+}
+
+.lk-fw i {
+  position: absolute;
+  left: -2px;
+  top: -2px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  animation: lk-fw-y 1000ms linear var(--d) both;
+}
+
+/* the count: one wheel per digit, each its own window */
+.lk-count {
+  display: inline-flex;
+  align-items: center;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.lk-wheel {
+  position: relative;
+  display: inline-block;
+  height: 1.25em;
+  overflow: hidden;
+}
+
+.lk-digit {
+  display: block;
+  line-height: 1.25em;
+}
+
+.lk-comma {
+  line-height: 1.25em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lk-glyph[data-on],
+  .lk-bloom,
+  .lk-spoke i,
+  .lk-fw,
+  .lk-fw i {
+    animation: none !important;
+  }
+  .lk-burst {
+    display: none !important;
+  }
+}
+
+@keyframes lk-pop {
+  0% { transform: scale(0.6); }
+  45% { transform: scale(1.28); }
+  100% { transform: scale(1); }
+}
+
+@keyframes lk-heart {
+  0%, 28% { transform: scale(0); }
+  62% { transform: scale(1.25); }
+  100% { transform: scale(1); }
+}
+
+@keyframes lk-bloom {
+  0% { transform: scale(0.15); border-width: 17px; border-color: var(--lk-on, #e5484d); }
+  40% { transform: scale(1); border-width: 17px; border-color: var(--lk-bloom-color, #cc8ef5); }
+  75% { border-width: 2px; opacity: 1; }
+  100% { transform: scale(1.12); border-width: 0; opacity: 0; border-color: var(--lk-bloom-color, #cc8ef5); }
+}
+
+@keyframes lk-bloom-ink {
+  0% { transform: scale(0.15); border-width: 17px; }
+  40% { transform: scale(1); border-width: 17px; }
+  75% { border-width: 2px; opacity: 1; }
+  100% { transform: scale(1.12); border-width: 0; opacity: 0; }
+}
+
+@keyframes lk-dot {
+  0% { transform: translate(12px, var(--side)) scale(1); opacity: 0; }
+  12% { opacity: 1; }
+  100% { transform: translate(calc(18px + var(--fly) * 14px + var(--far)), calc(var(--side) * 1.6)) scale(0); opacity: 1; }
+}
+
+@keyframes lk-fw-x {
+  from { transform: translateX(0); }
+  to { transform: translateX(var(--x)); }
+}
+
+@keyframes lk-fw-y {
+  0% { transform: translateY(0); opacity: 1; animation-timing-function: cubic-bezier(0.2, 0.7, 0.4, 1); }
+  45% { transform: translateY(var(--y)); opacity: 1; animation-timing-function: cubic-bezier(0.5, 0, 0.8, 0.5); }
+  100% { transform: translateY(calc(var(--y) + 30px)); opacity: 0; }
+}

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Heart, Share2, Download, Loader2 } from 'lucide-react';
+import { Share2, Download, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import Like from '../ui/LikeEffect';
 import { cn } from '../../lib/utils';
 import type { Font } from '../../types/font';
 import SaveToBoardModal from '../boards/SaveToBoardModal';
@@ -55,20 +56,20 @@ export default function FontHeroHeader({
 
                 <div className="flex flex-wrap gap-3">
                     {/* Favorite Button */}
-                    <motion.button
-                        whileTap={{ scale: 0.9 }}
+                    <Like
+                        liked={isFavorited}
+                        count={font.favorites_count || 0}
                         onClick={onFavorite}
+                        color="Accent"
+                        size={20}
                         aria-label={isFavorited ? `Remove ${font.name} from favorites` : `Add ${font.name} to favorites`}
                         className={cn(
-                            "flex items-center gap-2 px-4 md:px-6 py-3 rounded-full border transition-all duration-300 cursor-pointer",
+                            "px-4 md:px-6 py-3 rounded-full border transition-all duration-300 cursor-pointer font-bold",
                             isFavorited
                                 ? "bg-accent/15 border-accent/30 text-accent"
                                 : "bg-foreground/5 border-foreground/10 text-foreground hover:opacity-80"
                         )}
-                    >
-                        <Heart size={20} className={isFavorited ? "fill-accent" : ""} />
-                        <span className="font-bold">{font.favorites_count || 0}</span>
-                    </motion.button>
+                    />
 
                     {/* Save to Board Button — only for logged-in users */}
                     {user && (

@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Heart } from "lucide-react";
 import SaveToBoardModal from "../boards/SaveToBoardModal";
+import Like from "../ui/LikeEffect";
 import type { Font } from "../../types/font";
 import React, {
     useEffect,
@@ -463,9 +463,7 @@ function FontCard({
                             )}
 
                             {/* Hover overlay gradient for collapsed state */}
-                            <div
-                                className={`absolute inset-0 flex flex-col justify-between items-end w-full p-5 rounded-4xl z-10 transition-all duration-300 ease-in-out pointer-events-none ${isExpanded ? "opacity-100" : "bg-linear-to-t opacity-0 group-hover:opacity-100"} ${viewMode === 'image' ? 'text-white from-black/50 via-transparent via-100% to-transparent' : 'text-foreground'}`}
-                            >
+                            <div className={`absolute inset-0 flex flex-col justify-between items-end w-full p-5 rounded-4xl z-10 transition-all duration-300 ease-in-out pointer-events-none ${isExpanded ? "opacity-100" : "bg-linear-to-t opacity-0 group-hover:opacity-100"} ${viewMode === 'image' ? 'text-white from-black/50 via-transparent via-100% to-transparent' : 'text-foreground'}`}>
                                 <div className="w-full flex justify-between items-start gap-3">
                                     <div className="flex items-center justify-end gap-2 font-inter-tight tracking-wider">
                                         {/* Likes */}
@@ -473,24 +471,20 @@ function FontCard({
                                             <div
                                                 className={`flex items-center gap-1 ${isExpanded ? "pointer-events-none" : "pointer-events-auto"}`}
                                             >
-                                                <button
+                                                <Like
+                                                    liked={isFavorited}
+                                                    count={favoritesCount}
                                                     onClick={toggleFavorite}
+                                                    color="Pink"
+                                                    size={20}
                                                     aria-label={
                                                         isFavorited
                                                             ? `Remove ${font.name} from favorites`
                                                             : `Add ${font.name} to favorites`
                                                     }
-                                                    className={`flex justify-center items-center gap-1 ${isExpanded ? "backdrop-blur-sm" : ""} transition-all duration-300 ease-in-out h-11 px-3 rounded-full pointer-events-auto cursor-pointer
-                                                    ${viewMode === 'image' ? 'bg-black/30' : ''}`}
-                                                >
-                                                    <Heart
-                                                        size={20}
-                                                        className={`transition-transform duration-300 ${isFavorited ? "fill-pink-500 text-pink-500" : "group-hover/like:scale-105"}`}
-                                                    />
-                                                    <span className="font-medium text-[16px]">
-                                                        {favoritesCount}
-                                                    </span>
-                                                </button>
+                                                    className={`flex justify-center items-center gap-1.5 ${isExpanded ? "backdrop-blur-sm" : ""} transition-all duration-300 ease-in-out h-11 px-3 rounded-full pointer-events-auto cursor-pointer font-medium text-[16px]
+                                                    ${viewMode === 'image' ? 'bg-black/30 text-white' : isFavorited ? 'text-pink-500 hover:bg-pink-500/10' : 'text-foreground hover:bg-foreground/5'}`}
+                                                />
                                             </div>
                                         )}
                                         {/* Save to Board */}
@@ -589,9 +583,7 @@ function FontCard({
                                             {fontIsInBag ? "View in bag" : "Add to bag"}</span>
                                     </button>
                                 </div>
-                                <div
-                                    className={`${isExpanded ? "hidden" : "flex"} justify-between items-end gap-5 w-full`}
-                                >
+                                <div className={`${isExpanded ? "hidden" : "flex"} justify-between items-end gap-5 w-full`}>
                                     {/* Font name and designer name */}
                                     <div className="flex flex-col justify-center items-start transition-colors duration-300 ease-in-out pointer-events-auto">
                                         <p className={`font-medium text-base transition-transform duration-300 ${isExpanded ? "translate-y-2" : "translate-y-2 group-hover:translate-y-0"}`}

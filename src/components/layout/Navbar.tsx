@@ -4,13 +4,12 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { useState, useEffect, useMemo } from "react";
 import { cn } from "../../lib/utils";
-import { Type, Combine, Terminal, Users, Shield, Plus, Sun, Moon, UserRound, BookOpen, Search, X, Menu, } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { Type, Combine, Terminal, Users, Shield, Plus, Sun, Moon, UserRound, BookOpen, Search, X, Menu, Star, ShieldAlert, LayoutDashboard } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
 import { useTheme } from "../../contexts/ThemeContext";
 import { Haptics, ImpactStyle } from "@capacitor/haptics";
 import { useUpdate } from "../../contexts/UpdateContext";
 import { Download } from "lucide-react";
-import { CustomSerifA, CustomTerminal, CustomUpload, CustomUsers, } from "../ui/CustomIcons";
 import { Squircle } from "react-ios-corners";
 import { useBag } from "../../contexts/BagContext";
 import { DocsSearchModal } from "../docs/DocsSearchModal";
@@ -29,6 +28,7 @@ export default function Navbar() {
     const { count: bagCount } = useBag();
     const [isScrolled, setIsScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [desktopMenuOpen, setDesktopMenuOpen] = useState(false);
     const [searchOpen, setSearchOpen] = useState(false);
     const location = useLocation();
     const navigate = useNavigate();
@@ -36,13 +36,6 @@ export default function Navbar() {
     // Checks if path starts with '/docs/' and ensures it isn't just '/docs' or '/docs/'
     const inDocs = location.pathname.startsWith("/docs");
     // const isMobile = window.innerWidth < 768;
-
-    // Local state for instantaneous UI updates so animations don't lag
-    const [activeTab, setActiveTab] = useState(location.pathname);
-
-    useEffect(() => {
-        setActiveTab(location.pathname);
-    }, [location.pathname]);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -75,16 +68,8 @@ export default function Navbar() {
                 path: "/fonts",
                 icon: Type,
                 svg: (
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        viewBox="0 0 15 15"
-                    >
-                        <path
-                            fill="currentColor"
-                            d="M12.499 2a.5.5 0 0 1 .001 1H8.692l-.287.854c-.216.643-.51 1.518-.824 2.444L7.344 7H8.5a.5.5 0 0 1 0 1H7.004c-.437 1.285-.84 2.462-1.046 3.04c-.322.899-.751 1.446-1.291 1.738c-.504.273-1.025.272-1.383.272H3.25a.55.55 0 1 1 0-1.1c.392 0 .653-.01.894-.14c.22-.119.511-.396.778-1.142c.185-.517.531-1.527.92-2.668H4.5a.5.5 0 0 1 0-1h1.682l.357-1.055c.313-.925.607-1.799.823-2.441L7.532 3H5c-.849 0-1.5.651-1.5 1.5a.5.5 0 0 1-1 0C2.5 3.099 3.599 2 5 2z"
-                        />
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 16 16">
+                        <path fill="currentColor" d="M12.494.253C11.08.253 10.172 0 8.715 0C4.007 0 1.812 2.681 1.812 5.404c0 1.604.76 2.132 2.259 2.132c-.106-.232-.296-.486-.296-1.626c0-3.188 1.203-4.117 2.744-4.18c0 0-1.264 12.396-4.934 13.883v.385h4.947l1.688-8h3.091l.689-2H8.642l.812-3.847c.929.19 1.837.38 2.618.38c.971 0 1.858-.296 2.343-2.533c-.591.19-1.224.253-1.921.253z" />
                     </svg>
                 ),
             },
@@ -93,16 +78,11 @@ export default function Navbar() {
                 path: "/pairing",
                 icon: Combine,
                 svg: (
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        viewBox="0 0 24 24"
-                    >
-                        <path
-                            fill="currentColor"
-                            d="m19.467 8.694l.246-.566a4.36 4.36 0 0 1 2.22-2.25l.759-.339a.53.53 0 0 0 0-.963l-.717-.319a4.37 4.37 0 0 1-2.251-2.326l-.253-.611a.506.506 0 0 0-.942 0l-.253.61a4.37 4.37 0 0 1-2.25 2.327l-.718.32a.53.53 0 0 0 0 .962l.76.338a4.36 4.36 0 0 1 2.219 2.251l.246.566c.18.414.753.414.934 0M4.754 15h6.492l2 5H15.4L9 4H7L.6 20h2.154zM8 6.885L10.446 13H5.554zM21 12v.535a4 4 0 1 0 0 6.93V20h2v-8zm0 4a2 2 0 1 1-4 0a2 2 0 0 1 4 0"
-                        />
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 15 15">
+                        <path fill="currentColor" d="M3.5 5A1.5 1.5 0 0 0 2 6.5V8h3V6.5A1.5 1.5 0 0 0 3.5 5" />
+                        <path fill="currentColor" fill-rule="evenodd" d="M0 2.5A1.5 1.5 0 0 1 1.5 1h4A1.5 1.5 0 0 1 7 2.5v10A1.5 1.5 0 0 1 5.5 14h-4A1.5 1.5 0 0 1 0 12.5zM2 11V9h3v2h1V6.5a2.5 2.5 0 0 0-5 0V11z" clip-rule="evenodd" />
+                        <path fill="currentColor" d="M12 7h-2V5h2a1 1 0 1 1 0 2m0 3h-2V8h2a1 1 0 1 1 0 2" />
+                        <path fill="currentColor" fill-rule="evenodd" d="M8 2.5A1.5 1.5 0 0 1 9.5 1h4A1.5 1.5 0 0 1 15 2.5v10a1.5 1.5 0 0 1-1.5 1.5h-4A1.5 1.5 0 0 1 8 12.5zM12 4H9v7h3a2 2 0 0 0 1.323-3.5A2 2 0 0 0 12 4" clip-rule="evenodd" />
                     </svg>
                 ),
             },
@@ -111,22 +91,8 @@ export default function Navbar() {
                 path: "/cli",
                 icon: Terminal,
                 svg: (
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        viewBox="0 0 24 24"
-                    >
-                        <g
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2.5"
-                        >
-                            <path d="m4 5 7 7 -7 7" />
-                            <path d="M14 19h7" />
-                        </g>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 12 12">
+                        <path fill="currentColor" d="M11 1H1c-.55 0-1 .45-1 1v8c0 .55.45 1 1 1h10c.55 0 1-.45 1-1V2c0-.55-.45-1-1-1M9.5 9h-4c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h4c.28 0 .5.22.5.5s-.22.5-.5.5m-7 .12a.62.62 0 0 1-.44-.18a.63.63 0 0 1 0-.88L4.12 6L2.06 3.94a.63.63 0 0 1 0-.88c.24-.24.64-.24.88 0L5.09 5.2c.44.44.44 1.15 0 1.59L2.94 8.94a.62.62 0 0 1-.44.18" />
                     </svg>
                 ),
                 badge: "NEW",
@@ -136,16 +102,8 @@ export default function Navbar() {
                 path: "/docs",
                 icon: BookOpen,
                 svg: (
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        viewBox="0 0 256 256"
-                    >
-                        <path
-                            fill="currentColor"
-                            d="m231.65 194.55l-33.19-157.8a16 16 0 0 0-19-12.39l-46.81 10.06a16.08 16.08 0 0 0-12.3 19l33.19 157.8A16 16 0 0 0 169.16 224a16.3 16.3 0 0 0 3.38-.36l46.81-10.06a16.09 16.09 0 0 0 12.3-19.03M136 50.15v-.09l46.8-10l3.33 15.87L139.33 66Zm6.62 31.47l46.82-10.05l3.34 15.9L146 97.53Zm6.64 31.57l46.82-10.06l13.3 63.24l-46.82 10.06ZM216 197.94l-46.8 10l-3.33-15.87l46.8-10.07l3.33 15.85zM104 32H56a16 16 0 0 0-16 16v160a16 16 0 0 0 16 16h48a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16M56 48h48v16H56Zm0 32h48v96H56Zm48 128H56v-16h48z"
-                        />
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20.25" height="18" viewBox="0 0 576 512">
+                        <path fill="currentColor" d="M528.3 46.5H388.5c-48.1 0-89.9 33.3-100.4 80.3c-10.6-47-52.3-80.3-100.4-80.3H48c-26.5 0-48 21.5-48 48v245.8c0 26.5 21.5 48 48 48h89.7c102.2 0 132.7 24.4 147.3 75c.7 2.8 5.2 2.8 6 0c14.7-50.6 45.2-75 147.3-75H528c26.5 0 48-21.5 48-48V94.6c0-26.4-21.3-47.9-47.7-48.1M242 311.9c0 1.9-1.5 3.5-3.5 3.5H78.2c-1.9 0-3.5-1.5-3.5-3.5V289c0-1.9 1.5-3.5 3.5-3.5h160.4c1.9 0 3.5 1.5 3.5 3.5v22.9zm0-60.9c0 1.9-1.5 3.5-3.5 3.5H78.2c-1.9 0-3.5-1.5-3.5-3.5v-22.9c0-1.9 1.5-3.5 3.5-3.5h160.4c1.9 0 3.5 1.5 3.5 3.5V251zm0-60.9c0 1.9-1.5 3.5-3.5 3.5H78.2c-1.9 0-3.5-1.5-3.5-3.5v-22.9c0-1.9 1.5-3.5 3.5-3.5h160.4c1.9 0 3.5 1.5 3.5 3.5v22.9zm259.3 121.7c0 1.9-1.5 3.5-3.5 3.5H337.5c-1.9 0-3.5-1.5-3.5-3.5v-22.9c0-1.9 1.5-3.5 3.5-3.5h160.4c1.9 0 3.5 1.5 3.5 3.5v22.9zm0-60.9c0 1.9-1.5 3.5-3.5 3.5H337.5c-1.9 0-3.5-1.5-3.5-3.5V228c0-1.9 1.5-3.5 3.5-3.5h160.4c1.9 0 3.5 1.5 3.5 3.5v22.9zm0-60.9c0 1.9-1.5 3.5-3.5 3.5H337.5c-1.9 0-3.5-1.5-3.5-3.5v-22.8c0-1.9 1.5-3.5 3.5-3.5h160.4c1.9 0 3.5 1.5 3.5 3.5V190z" />
                     </svg>
                 ),
             },
@@ -164,6 +122,59 @@ export default function Navbar() {
             //     ),
             //     badge: "NEW",
             // },
+            {
+                name: "Favourites",
+                path: "/favourites",
+                icon: Star,
+                svg: (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 16 16">
+                        <path fill="currentColor" fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15C-7.534 4.736 3.562-3.248 8 1.314" />
+                    </svg>
+
+                ),
+            },
+            {
+                name: "Boards",
+                path: "/boards",
+                icon: LayoutDashboard,
+                svg: (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
+                        <g fill="currentColor">
+                            <path d="M2.75391 13.75C2.75048 13.2102 2.75 12.6285 2.75 12C2.75 9.62177 2.75198 7.91326 2.92676 6.61328C3.09865 5.33508 3.42551 4.56472 3.99512 3.99512C4.56472 3.42551 5.33508 3.09864 6.61328 2.92676C7.91326 2.75198 9.62178 2.75 12 2.75C12.8274 2.75 13.5737 2.75404 14.25 2.76172L14.25 13.75L2.75391 13.75Z" />
+                            <path d="M15.75 13.75L15.75 2.79492C16.3613 2.8209 16.9024 2.86164 17.3867 2.92676C18.6649 3.09865 19.4353 3.42551 20.0049 3.99512C20.5745 4.56472 20.9014 5.33508 21.0732 6.61328C21.248 7.91326 21.25 9.62177 21.25 12C21.25 12.6285 21.2495 13.2102 21.2461 13.75L15.75 13.75Z" />
+                            <path fill-rule="evenodd" d="M12 21.25C9.62177 21.25 7.91326 21.248 6.61328 21.0732C5.33508 20.9014 4.56472 20.5745 3.99512 20.0049C3.42551 19.4353 3.09865 18.6649 2.92676 17.3867C2.84442 16.7743 2.80084 16.0711 2.77734 15.25L21.2227 15.25C21.1992 16.0711 21.1556 16.7743 21.0732 17.3867C20.9014 18.6649 20.5745 19.4353 20.0049 20.0049C19.4353 20.5745 18.6649 20.9014 17.3867 21.0732C16.0867 21.248 14.3782 21.25 12 21.25Z" clip-rule="evenodd" />
+                        </g>
+                    </svg>
+
+                ),
+            },
+            {
+                name: "Bag",
+                path: "/bag",
+                icon: Users,
+                svg: (
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                    >
+                        <g
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                        >
+                            <path
+                                d="M3.977 9.84A2 2 0 0 1 5.971 8h12.058a2 2 0 0 1 1.994 1.84l.803 10A2 2 0 0 1 18.833 22H5.167a2 2 0 0 1-1.993-2.16z"
+                                fill="currentColor"
+                            />
+                            <path d="M16 11V6a4 4 0 0 0-4-4v0a4 4 0 0 0-4 4v5" />
+                        </g>
+                    </svg>
+                ),
+            },
             ...(profile?.role === "member" || profile?.role === "admin"
                 ? [
                     {
@@ -171,39 +182,36 @@ export default function Navbar() {
                         path: "/members",
                         icon: Users,
                         svg: (
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="16"
-                                height="16"
-                                viewBox="0 0 24 24"
-                            >
-                                <g
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="1.5"
-                                >
-                                    <path d="M13 11a4 4 0 1 0-8 0a4 4 0 0 0 8 0" />
-                                    <path d="M11.039 7.558a4 4 0 1 1 1.923 2.885M15 21a6 6 0 0 0-12 0" />
-                                    <path d="M21 17a6 6 0 0 0-6-6" />
-                                </g>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22.5" height="18" viewBox="0 0 640 512">
+                                <path fill="currentColor" d="M96 224c35.3 0 64-28.7 64-64s-28.7-64-64-64s-64 28.7-64 64s28.7 64 64 64m448 0c35.3 0 64-28.7 64-64s-28.7-64-64-64s-64 28.7-64 64s28.7 64 64 64m32 32h-64c-17.6 0-33.5 7.1-45.1 18.6c40.3 22.1 68.9 62 75.1 109.4h66c17.7 0 32-14.3 32-32v-32c0-35.3-28.7-64-64-64m-256 0c61.9 0 112-50.1 112-112S381.9 32 320 32S208 82.1 208 144s50.1 112 112 112m76.8 32h-8.3c-20.8 10-43.9 16-68.5 16s-47.6-6-68.5-16h-8.3C179.6 288 128 339.6 128 403.2V432c0 26.5 21.5 48 48 48h288c26.5 0 48-21.5 48-48v-28.8c0-63.6-51.6-115.2-115.2-115.2m-223.7-13.4C161.5 263.1 145.6 256 128 256H64c-35.3 0-64 28.7-64 64v32c0 17.7 14.3 32 32 32h65.9c6.3-47.4 34.9-87.3 75.2-109.4" />
                             </svg>
+                        ),
+                    },
+                    {
+                        name: "Admin",
+                        path: "/admin",
+                        icon: ShieldAlert,
+                        svg: (
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 16 16">
+                                <path fill="currentColor" fill-rule="evenodd" d="M8 0c-.69 0-1.843.265-2.928.56c-1.11.3-2.229.655-2.887.87a1.54 1.54 0 0 0-1.044 1.262c-.596 4.477.787 7.795 2.465 9.99a11.8 11.8 0 0 0 2.517 2.453c.386.273.744.482 1.048.625c.28.132.581.24.829.24s.548-.108.829-.24a7 7 0 0 0 1.048-.625a11.8 11.8 0 0 0 2.517-2.453c1.678-2.195 3.061-5.513 2.465-9.99a1.54 1.54 0 0 0-1.044-1.263a63 63 0 0 0-2.887-.87C9.843.266 8.69 0 8 0m2.146 5.146a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 7.793z" />
+                            </svg>
+
+
+                        ),
+                    },
+                    {
+                        name: "Upload",
+                        path: "/upload",
+                        icon: Plus,
+                        svg: (
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 512 512">
+                                <path fill="currentColor" d="M288 109.3V352c0 17.7-14.3 32-32 32s-32-14.3-32-32V109.3l-73.4 73.4c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l128-128c12.5-12.5 32.8-12.5 45.3 0l128 128c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0zM64 352h128c0 35.3 28.7 64 64 64s64-28.7 64-64h128c35.3 0 64 28.7 64 64v32c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64v-32c0-35.3 28.7-64 64-64m368 104a24 24 0 1 0 0-48a24 24 0 1 0 0 48" />
+                            </svg>
+
                         ),
                     },
                 ]
                 : []),
-        ],
-        [profile?.role],
-    );
-
-    const mobileNavLinks = useMemo(
-        () => [
-            { name: "Fonts", path: "/fonts", icon: CustomSerifA },
-            { name: "Pairing", path: "/pairing", icon: Combine },
-            { name: "CLI", path: "/cli", icon: CustomTerminal, badge: "NEW" },
-            { name: "Members", path: "/members", icon: CustomUsers },
-            { name: "Upload", path: "/upload", icon: CustomUpload },
         ],
         [profile?.role],
     );
@@ -565,6 +573,42 @@ export default function Navbar() {
                                             </Link>
                                         </Squircle>
                                     )}
+
+                                    <button
+                                        type="button"
+                                        onClick={async () => {
+                                            await Haptics.impact({
+                                                style: ImpactStyle.Light,
+                                            });
+                                            setDesktopMenuOpen((prev) => !prev);
+                                        }}
+                                        className="hidden md:flex h-10 w-10 rounded-full bg-foreground/10 backdrop-blur-3xl border border-border/20 items-center justify-center text-foreground overflow-hidden hover:bg-foreground/20 hover:scale-105 transition-transform duration-300 ease-in-out cursor-pointer"
+                                        aria-label="Open account menu"
+                                        aria-expanded={desktopMenuOpen}
+                                    >
+                                        {desktopMenuOpen ? (
+                                            <X className="w-5 h-5" />
+                                        ) : (
+                                            <Menu className="w-5 h-5" />
+                                        )}
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onClick={async () => {
+                                            await Haptics.impact({ style: ImpactStyle.Light });
+                                            setMobileMenuOpen((prev) => !prev);
+                                        }}
+                                        className="md:hidden relative h-10 w-10 flex items-center justify-center rounded-xl bg-foreground/5 backdrop-blur-3xl text-foreground hover:bg-foreground/10 transition-all duration-300 cursor-pointer"
+                                        aria-label={mobileMenuOpen ? "Close navigation" : "Open navigation"}
+                                        aria-expanded={mobileMenuOpen}
+                                    >
+                                        {mobileMenuOpen ? (
+                                            <X className="w-5 h-5" />
+                                        ) : (
+                                            <Menu className="w-5 h-5" />
+                                        )}
+                                    </button>
                                 </>
                             )}
                         </div>
@@ -572,77 +616,413 @@ export default function Navbar() {
                 </div>
             </nav>
 
-            {/* Mobile Bottom Dock */}
-            <div className="md:hidden fixed bottom-0 left-1/2 -translate-x-1/2 z-100">
-                <nav className="flex items-center justify-evenly gap-1 w-screen px-2 pt-2.5 pb-[calc(0.625rem+env(safe-area-inset-bottom))] bg-background/60 backdrop-blur-3xl border-t border-border/30">
-                    {mobileNavLinks.map((link) => {
-                        const Icon = link.icon;
-                        const isActive = activeTab === link.path;
+            <AnimatePresence>
+                {desktopMenuOpen && (
+                    <>
+                        <motion.div
+                            className="fixed inset-0 z-40 hidden md:block"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setDesktopMenuOpen(false)}
+                        />
 
-                        return (
-                            <motion.button
-                                key={link.path}
-                                aria-label={link.name}
-                                layout // Smoothly adjusts the surrounding buttons when width changes
-                                onClick={async (e) => {
-                                    e.preventDefault();
-                                    if (activeTab === link.path) return;
+                        <motion.div
+                            className="fixed right-4 top-18 z-50 hidden md:block w-75 overflow-hidden rounded-3xl border border-border/20 bg-background/50 backdrop-blur-3xl shadow-2xl"
+                            initial={{ opacity: 0, y: -8, scale: 0.98 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: -8, scale: 0.98 }}
+                            transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                        >
+                            <div className="p-2">
 
-                                    setActiveTab(link.path); // Instant UI feedback
-                                    await Haptics.selectionChanged();
+                                {/* Navigation */}
+                                <div className="space-y-0.5">
+                                    {navLinks.map((link) => {
+                                        const isActive = location.pathname === link.path;
 
-                                    // Let the button layout animation finish (300ms) before hitting the React Router tree
-                                    setTimeout(() => {
-                                        navigate(link.path);
-                                    }, 300);
-                                }}
-                                className={cn(
-                                    "relative flex items-center justify-center min-h-10 max-h-12 rounded-full transition-all duration-300 ease-in-out",
-                                    isActive
-                                        ? "bg-foreground/80 text-background px-4 shadow-sm"
-                                        : "bg-foreground/5 text-foreground hover:text-foreground hover:bg-foreground/10 px-3",
-                                )}
-                                style={{ WebkitTapHighlightColor: "transparent" }}
-                            >
-                                {/* Icon */}
-                                <Icon
-                                    className={cn(
-                                        "shrink-0 w-4.5 h-4.5",
-                                        isActive
-                                            ? "fill-background"
-                                            : "text-foreground",
-                                    )}
-                                />
+                                        return (
+                                            <Link
+                                                key={link.path}
+                                                to={link.path}
+                                                onClick={async () => {
+                                                    await Haptics.impact({
+                                                        style: ImpactStyle.Light,
+                                                    });
+                                                    setDesktopMenuOpen(false);
+                                                }}
+                                                className={cn(
+                                                    "flex items-center justify-between rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
+                                                    isActive
+                                                        ? "bg-foreground/5 text-foreground"
+                                                        : "text-foreground hover:bg-foreground/5"
+                                                )}
+                                            >
+                                                <span className={cn(
+                                                    "font-inter-tight ztext-[2.4rem] zsm:text-[2.7rem] zmd:text-[2rem] zleading-none ztracking-[-0.055em] transition-colors duration-200 flex items-center",
+                                                    isActive ? "text-foreground" : "text-muted group-hover:text-foreground"
+                                                )}>
+                                                    {link.name}
+                                                    {link.name === "Bag" && bagCount > 0 && (
+                                                        <span className="ml-2 text-xs bg-foreground text-background px-2 py-0.5 rounded-full">
+                                                            {bagCount > 99 ? "99+" : bagCount} <span className='ml-0.5 tracking-normal'>fonts</span>
+                                                        </span>
+                                                    )}
+                                                </span>
+                                                <span className={cn(isActive ? "text-foreground" : "text-muted group-hover:text-foreground")}>
+                                                    {link.svg}
+                                                </span>
+                                            </Link>
+                                        );
+                                    })}
+                                </div>
 
-                                {/* Animating Text */}
-                                <AnimatePresence initial={false}>
-                                    {isActive && (
-                                        <motion.span
-                                            initial={{ width: 0, opacity: 0, marginLeft: 0 }}
-                                            animate={{ width: "auto", opacity: 1, marginLeft: 8 }}
-                                            exit={{ width: 0, opacity: 0, marginLeft: 0 }}
-                                            transition={{ type: "spring", bounce: 0, duration: 0.35 }}
-                                            className="font-semibold font-inter-tight text-[18px] overflow-hidden whitespace-nowrap"
+                                {/* Theme + Docs Search */}
+                                <div className="mt-2 border-t border-border/50 pt-2">
+
+                                    <div className="flex items-center justify-between rounded-xl px-3 py-2.5 text-sm font-medium transition-colors text-foreground">
+                                        <span className="flex items-center gap-3 text-sm font-medium">
+                                            Theme
+                                        </span>
+
+                                        <button
+                                            type="button"
+                                            onClick={async () => {
+                                                await Haptics.impact({
+                                                    style: ImpactStyle.Light,
+                                                });
+                                                toggleTheme();
+                                            }}
+                                            className="flex items-center justify-center rounded-full transition-colors cursor-pointer"
+                                            aria-label="Toggle theme"
                                         >
-                                            {link.name}
-                                        </motion.span>
-                                    )}
-                                </AnimatePresence>
+                                            {theme === "light" ? (
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
+                                                    <path fill="currentColor" d="M11.643 5.28q-.143-.145-.143-.357V2.539q0-.213.144-.357t.357-.144t.356.144t.143.356v2.385q0 .213-.144.356t-.357.144t-.356-.144m5 2.079q-.141-.14-.131-.342q.01-.2.15-.366l1.65-1.694q.15-.166.359-.166t.378.17q.155.156.155.35t-.16.354L17.35 7.358q-.16.16-.354.16t-.354-.16m2.435 5.142q-.213 0-.356-.144t-.144-.357t.144-.356t.356-.143h2.385q.212 0 .356.144t.143.357t-.143.356t-.357.143zm-7.434 9.318q-.143-.144-.143-.356v-2.366q0-.212.144-.356t.357-.144t.356.144t.143.356v2.366q0 .212-.144.356t-.357.144t-.356-.144M6.67 7.358l-1.713-1.67q-.165-.149-.165-.36t.165-.372q.16-.14.367-.14t.34.14l1.714 1.713q.14.134.14.341t-.136.348q-.15.14-.348.14t-.364-.14m11.662 11.686l-1.67-1.694q-.14-.165-.15-.366t.128-.342t.34-.14t.371.16l1.694 1.669q.146.14.143.344t-.149.37q-.16.164-.366.164t-.341-.165M2.539 12.5q-.213 0-.357-.144t-.143-.357t.143-.356t.357-.143h2.384q.213 0 .356.144t.144.357t-.144.356t-.356.143zm2.436 6.544q-.14-.16-.15-.363t.13-.344l1.676-1.675q.16-.16.35-.16t.358.155q.165.17.165.371t-.165.366l-1.65 1.65q-.166.166-.373.166t-.341-.166m3.487-3.501Q7 14.086 7 12.005T8.457 8.46T11.995 7t3.544 1.457T17 11.995t-1.457 3.544T12.005 17T8.46 15.543" />
+                                                </svg>
+                                            ) : (
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
+                                                    <path fill="currentColor" d="M20.71 13.51c-.78.23-1.58.35-2.38.35c-4.52 0-8.2-3.68-8.2-8.2c0-.8.12-1.6.35-2.38a1.002 1.002 0 0 0-1.25-1.25A10.17 10.17 0 0 0 2 11.8C2 17.42 6.58 22 12.2 22c4.53 0 8.45-2.91 9.76-7.24a1.002 1.002 0 0 0-1.25-1.25" />
+                                                    <path fill="currentColor" d="m16 8l.94-2.06L19 5l-2.06-.94L16 2l-.94 2.06L13 5l2.06.94zm4.25-.5l-.55 1.2l-1.2.55l1.2.55l.55 1.2l.55-1.2l1.2-.55l-1.2-.55z" />
+                                                </svg>
+                                            )}
+                                        </button>
+                                    </div>
 
-                                {link.badge && (
-                                    <span className="absolute top-0 right-0 flex h-2.5 w-2.5 transform translate-x-1/2 -translate-y-1/2">
-                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-success/75"></span>
-                                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-success"></span>
-                                    </span>
-                                )}
-                            </motion.button>
-                        );
-                    })}
-                </nav>
-            </div>
+
+                                    {inDocs && (
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setDesktopMenuOpen(false);
+                                                setSearchOpen(true);
+                                            }}
+                                            className="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-sm font-medium text-foreground hover:bg-foreground/5 transition-colors cursor-pointer"
+                                        >
+                                            <span className="flex items-center gap-3">
+                                                <Search size={18} />
+                                                Docs Search
+                                            </span>
+
+                                            <kbd className="rounded-md bg-foreground/5 px-2 py-1 text-[10px] text-muted">
+                                                ⌘K
+                                            </kbd>
+                                        </button>
+                                    )}
+                                </div>
+
+                                {/* Account */}
+                                <div className="border-t border-border/50 pt-2">
+                                    {user ? (
+                                        <Link
+                                            to="/profile"
+                                            onClick={async () => {
+                                                await Haptics.impact({
+                                                    style: ImpactStyle.Light,
+                                                });
+                                                setDesktopMenuOpen(false);
+                                            }}
+                                            className="flex items-center gap-3 rounded-xl px-3 py-3 hover:bg-foreground/5 transition-colors"
+                                        >
+                                            <div className="h-9 w-9 shrink-0 overflow-hidden rounded-full bg-foreground/10 flex items-center justify-center">
+                                                {profile?.avatar_url ? (
+                                                    <img
+                                                        src={profile.avatar_url}
+                                                        alt={profile?.full_name ? `${profile.full_name}'s avatar` : "Profile"}
+                                                        className="h-full w-full object-cover"
+                                                    />
+                                                ) : (
+                                                    <UserRound size={17} />
+                                                )}
+                                            </div>
+
+                                            <div className="min-w-0 flex-1">
+                                                <p className="truncate text-sm font-semibold text-foreground">
+                                                    {profile?.full_name || "Profile"}
+                                                </p>
+                                                <p className="truncate text-sm font-normal text-muted">
+                                                    {profile?.email || "email"}
+                                                </p>
+                                            </div>
+                                        </Link>
+                                    ) : (
+                                        <Link
+                                            to="/auth"
+                                            onClick={() => setDesktopMenuOpen(false)}
+                                            className="flex items-center justify-between rounded-xl px-3 py-3 text-sm font-semibold text-foreground hover:bg-foreground/5 transition-colors"
+                                        >
+                                            <span className="flex items-center gap-3">
+                                                <UserRound size={18} />
+                                                Login
+                                            </span>
+
+                                            <span className="text-muted">
+                                                →
+                                            </span>
+                                        </Link>
+                                    )}
+                                </div>
+                            </div>
+                        </motion.div>
+                    </>
+                )}
+            </AnimatePresence>
+
+            <AnimatePresence>
+                {mobileMenuOpen && (
+                    <>
+                        <motion.div
+                            className="md:hidden fixed inset-0 z-55 bg-black/40 backdrop-blur-[2px]"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                            onClick={() => setMobileMenuOpen(false)}
+                        />
+
+                        <motion.aside
+                            className="md:hidden fixed z-60 inset-0 md:inset-auto md:right-4 md:top-4 md:bottom-4 md:w-90 bg-background text-foreground md:rounded-[28px] border border-foreground/10 overflow-hidden shadow-2xl"
+                            initial={{ opacity: 0, x: 30 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: 20 }}
+                            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                        >
+                            <div className="relative h-full flex flex-col">
+
+                                {/* Header */}
+                                <div className="flex items-center justify-between px-6 md:px-7 pt-[calc(1.5rem+env(safe-area-inset-top))] md:pt-6">
+
+                                    <Link
+                                        to="/"
+                                        onClick={() => setMobileMenuOpen(false)}
+                                        className="flex items-center gap-2"
+                                    >
+                                        <div className="w-8 h-8 flex items-center justify-center text-foreground">
+                                            <svg
+                                                className="overflow-visible"
+                                                width="30"
+                                                height="30"
+                                                viewBox="0 0 680 678"
+                                                fill="currentColor"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                            >
+                                                <path d="M27.7539 678C27.7539 678 4.99807 663 0.500015 598C-3.99804 533 22 418 72.5 353.5C123 289 226.5 226 226.5 226C226.5 226 319.5 0 452.5 0C585.5 0 680 213.239 680 415.5C680 617.761 639.5 678 639.5 678H403C403 678 366.5 625 345 537C323.5 449 384.5 291 384.5 218.5C384.5 146 226.5 226 226.5 226C226.5 226 191 320.5 191 452C191 583.5 250 678 250 678H27.7539Z" />
+                                                <path d="M30.508 20.5896C21.5794 14.4189 11.648 7.55723 0.503116 0.0105563C8.0698 11.1837 14.9155 21.091 21.0703 29.9942C49.3078 70.8509 63.4278 91.2869 63.4272 113.006C63.4278 134.69 49.3555 155.092 21.2122 195.813L21.0862 195.999C14.915 204.928 8.05273 214.86 0.506647 226.005C11.6816 218.44 21.5883 211.595 30.4915 205.439C71.3464 177.201 91.7824 163.081 113.501 163.081C135.187 163.079 155.588 177.152 196.309 205.297L196.497 205.42C205.425 211.592 215.356 218.456 226.5 226.002C218.935 214.827 212.09 204.92 205.935 196.016C177.698 155.16 163.576 134.726 163.576 113.006C163.576 91.3234 177.648 70.9203 205.792 30.199L205.918 30.0119C212.09 21.0839 218.952 11.1508 226.497 0.00820215C215.323 7.57253 205.417 14.4171 196.512 20.5731C155.657 48.8118 135.222 62.9323 113.502 62.9317C91.8183 62.9317 71.417 48.8582 30.6945 20.7161L30.508 20.5896Z" />
+                                            </svg>
+                                        </div>
+
+                                        <span className="font-advine text-2xl text-foreground">
+                                            NoBadFonts
+                                        </span>
+                                    </Link>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => setMobileMenuOpen(false)}
+                                        className="h-10 w-10 rounded-full flex items-center justify-center text-foreground hover:bg-foreground/5 transition-colors cursor-pointer"
+                                        aria-label="Close menu"
+                                    >
+                                        <X size={25} strokeWidth={1.5} />
+                                    </button>
+
+                                </div>
+
+
+                                {/* Navigation */}
+                                <div className="px-6 md:px-7 pt-10 md:pt-12 overflow-y-auto flex-1">
+
+                                    <nav className="flex flex-col">
+
+                                        {navLinks.map((link, index) => {
+                                            const isActive = location.pathname === link.path;
+
+                                            return (
+                                                <Link
+                                                    key={link.path}
+                                                    to={link.path}
+                                                    onClick={async () => {
+                                                        await Haptics.impact({
+                                                            style: ImpactStyle.Light,
+                                                        });
+
+                                                        setMobileMenuOpen(false);
+                                                    }}
+                                                    className="group"
+                                                >
+                                                    <motion.div
+                                                        initial={{ opacity: 0, x: 15 }}
+                                                        animate={{ opacity: 1, x: 0 }}
+                                                        transition={{ delay: index * 0.035, duration: 0.3 }}
+                                                        className="flex items-center justify-between py-2 md:py-2.5"
+                                                    >
+                                                        <span
+                                                            className={cn(
+                                                                "font-inter-tight text-[2.4rem] sm:text-[2.7rem] md:text-[2rem] leading-none tracking-[-0.055em] transition-colors duration-200 flex items-center",
+                                                                isActive ? "text-foreground" : "text-muted group-hover:text-foreground"
+                                                            )}
+                                                        >
+                                                            {link.name}
+                                                            {link.name === "Bag" && bagCount > 0 && (
+                                                                <span className="ml-2 text-xl bg-foreground text-black px-2 py-0.5 rounded-full">
+                                                                    {bagCount > 99 ? "99+" : bagCount} <span className='ml-1 tracking-normal'>fonts</span>
+                                                                </span>
+                                                            )}
+                                                        </span>
+
+                                                        <span className={cn(isActive ? "text-foreground" : "text-muted group-hover:text-foreground")}>
+                                                            {link.svg}
+                                                        </span>
+                                                    </motion.div>
+                                                </Link>
+                                            );
+                                        })}
+
+                                    </nav>
+
+                                    {/* Utilities */}
+                                    <div className="mt-8 pt-6 border-t border-foreground/10">
+                                        <div className="grid grid-cols-1 gap-2">
+
+                                            {/* Search */}
+                                            {/* <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setMobileMenuOpen(false);
+                                                    setSearchOpen(true);
+                                                }}
+                                                className="h-12 rounded-2xl bg-foreground/5 flex items-center justify-between px-4 text-sm hover:bg-foreground/10 transition-colors cursor-pointer"
+                                            >
+                                                <span className="flex items-center gap-2">
+                                                    <Search size={17} />
+                                                    Search
+                                                </span>
+
+                                                <span className="text-[10px] text-muted">
+                                                    ⌘K
+                                                </span>
+                                            </button> */}
+
+                                            {/* Theme */}
+                                            <div className="flex items-center justify-between rounded-xl py-2.5 transition-colors text-foreground">
+                                                <span className="font-inter-tight text-[2.4rem] sm:text-[2.7rem] md:text-[2rem] leading-none tracking-[-0.055em] transition-colors duration-200 flex items-center">
+                                                    Theme
+                                                </span>
+
+                                                <button
+                                                    type="button"
+                                                    onClick={async () => {
+                                                        await Haptics.impact({
+                                                            style: ImpactStyle.Light,
+                                                        });
+                                                        toggleTheme();
+                                                    }}
+                                                    className="flex items-center justify-center rounded-full transition-colors cursor-pointer"
+                                                    aria-label="Toggle theme"
+                                                >
+                                                    {theme === "light" ? (
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
+                                                            <path fill="currentColor" d="M11.643 5.28q-.143-.145-.143-.357V2.539q0-.213.144-.357t.357-.144t.356.144t.143.356v2.385q0 .213-.144.356t-.357.144t-.356-.144m5 2.079q-.141-.14-.131-.342q.01-.2.15-.366l1.65-1.694q.15-.166.359-.166t.378.17q.155.156.155.35t-.16.354L17.35 7.358q-.16.16-.354.16t-.354-.16m2.435 5.142q-.213 0-.356-.144t-.144-.357t.144-.356t.356-.143h2.385q.212 0 .356.144t.143.357t-.143.356t-.357.143zm-7.434 9.318q-.143-.144-.143-.356v-2.366q0-.212.144-.356t.357-.144t.356.144t.143.356v2.366q0 .212-.144.356t-.357.144t-.356-.144M6.67 7.358l-1.713-1.67q-.165-.149-.165-.36t.165-.372q.16-.14.367-.14t.34.14l1.714 1.713q.14.134.14.341t-.136.348q-.15.14-.348.14t-.364-.14m11.662 11.686l-1.67-1.694q-.14-.165-.15-.366t.128-.342t.34-.14t.371.16l1.694 1.669q.146.14.143.344t-.149.37q-.16.164-.366.164t-.341-.165M2.539 12.5q-.213 0-.357-.144t-.143-.357t.143-.356t.357-.143h2.384q.213 0 .356.144t.144.357t-.144.356t-.356.143zm2.436 6.544q-.14-.16-.15-.363t.13-.344l1.676-1.675q.16-.16.35-.16t.358.155q.165.17.165.371t-.165.366l-1.65 1.65q-.166.166-.373.166t-.341-.166m3.487-3.501Q7 14.086 7 12.005T8.457 8.46T11.995 7t3.544 1.457T17 11.995t-1.457 3.544T12.005 17T8.46 15.543" />
+                                                        </svg>
+                                                    ) : (
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
+                                                            <path fill="currentColor" d="M20.71 13.51c-.78.23-1.58.35-2.38.35c-4.52 0-8.2-3.68-8.2-8.2c0-.8.12-1.6.35-2.38a1.002 1.002 0 0 0-1.25-1.25A10.17 10.17 0 0 0 2 11.8C2 17.42 6.58 22 12.2 22c4.53 0 8.45-2.91 9.76-7.24a1.002 1.002 0 0 0-1.25-1.25" />
+                                                            <path fill="currentColor" d="m16 8l.94-2.06L19 5l-2.06-.94L16 2l-.94 2.06L13 5l2.06.94zm4.25-.5l-.55 1.2l-1.2.55l1.2.55l.55 1.2l.55-1.2l1.2-.55l-1.2-.55z" />
+                                                        </svg>
+                                                    )}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                {/* Account / Social Panel */}
+                                <div className="mx-4 md:mx-5 mb-4 md:mb-5 rounded-3xl bg-card-background hover:bg-foreground/8 transition-colors duration-300 ease-in-out overflow-hidden">
+                                    {user ? (
+                                        <>
+                                            {/* Profile */}
+                                            <Link
+                                                to="/profile"
+                                                onClick={async () => {
+                                                    await Haptics.impact({
+                                                        style: ImpactStyle.Light,
+                                                    });
+
+                                                    setMobileMenuOpen(false);
+                                                }}
+                                                className="flex items-center gap-3 px-5 py-4 transition-colors"
+                                            >
+                                                <div className="h-11 w-11 rounded-full overflow-hidden bg-foreground/10 flex items-center justify-center shrink-0">
+                                                    {profile?.avatar_url ? (
+                                                        <img
+                                                            src={profile.avatar_url}
+                                                            alt={profile?.full_name ? `${profile.full_name}'s avatar` : "User profile avatar"}
+                                                            className="h-full w-full object-cover"
+                                                        />
+                                                    ) : (
+                                                        <UserRound size={19} />
+                                                    )}
+                                                </div>
+
+                                                <div className="min-w-0">
+                                                    <p className="font-medium truncate">
+                                                        {profile?.full_name || "Your profile"}
+                                                    </p>
+
+                                                    <p className="text-sm text-muted truncate">
+                                                        {profile?.email || "Your email"}
+                                                    </p>
+                                                </div>
+                                            </Link>
+                                        </>
+                                    ) : (
+                                        <>
+                                            {/* Login */}
+                                            <Link
+                                                to="/auth"
+                                                onClick={async () => {
+                                                    await Haptics.impact({
+                                                        style: ImpactStyle.Light,
+                                                    });
+
+                                                    setMobileMenuOpen(false);
+                                                }}
+                                                className="flex items-center justify-between px-5 py-5 font-medium hover:bg-foreground/5 transition-colors"
+                                            >
+                                                <span>Sign in</span>
+                                                <span>→</span>
+                                            </Link>
+                                        </>
+                                    )}
+                                </div>
+                            </div>
+                        </motion.aside>
+                    </>
+                )}
+            </AnimatePresence>
 
             {/* Cmd+K Search Modal */}
-            <DocsSearchModal
+            < DocsSearchModal
                 isOpen={searchOpen}
                 onClose={() => setSearchOpen(false)}
             />

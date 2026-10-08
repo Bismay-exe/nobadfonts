@@ -166,6 +166,10 @@ export default function FontDetails() {
 
         const newStatus = !isFavorited;
         setIsFavorited(newStatus);
+        setFont(prev => prev ? {
+            ...prev,
+            favorites_count: Math.max(0, (prev.favorites_count || 0) + (newStatus ? 1 : -1))
+        } : null);
 
         try {
             if (newStatus) {
@@ -183,6 +187,10 @@ export default function FontDetails() {
         } catch (error) {
             console.error('Error updating favorite:', error);
             setIsFavorited(!newStatus);
+            setFont(prev => prev ? {
+                ...prev,
+                favorites_count: Math.max(0, (prev.favorites_count || 0) + (!newStatus ? 1 : -1))
+            } : null);
             await Toast.show({ text: 'Failed to update favorites', duration: 'short' });
         }
     };
