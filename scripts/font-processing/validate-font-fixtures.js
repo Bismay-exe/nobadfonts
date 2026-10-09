@@ -70,7 +70,7 @@ export function validateFontFiles(filePaths) {
 if (process.argv[1] && import.meta.url === new URL(`file://${path.resolve(process.argv[1])}`).href) {
   try {
     const result = validateFontFiles(process.argv.slice(2));
-    process.stdout.write(JSON.stringify(result, null, 2) + '\\n');
+    process.stdout.write(JSON.stringify(result, null, 2) + '\n');
   } catch (error) {
     console.error(error instanceof Error ? error.message : String(error));
     process.exitCode = 1;
