@@ -51,8 +51,8 @@ node scripts/font-processing/validate-font-fixtures.js path/to/font.otf path/to/
 
 - Fraunces' `Fraunces144pt-BlackItalic.otf` has binary metadata `family_name = Fraunces 144pt Black`, `subfamily_name = Italic`, and weight class `900`. The processor now routes this to review instead of incorrectly treating “Black” as part of the family and “Italic” as the complete variant.
 - Mona Sans' variable TTF parsed successfully as a variable font and formed one unambiguous dry-run group.
-- The saved Monaspace report contains 1,485 assets across seven archive packages. All 1,485 hashes are distinct in this report; 1,060 assets have parsed metadata and 425 WOFF2 assets are not parsed by the discovery script.
-- In the dry run, 1,123 Monaspace assets are routed to review (698 family/weight naming ambiguities and 425 unparsed WOFF2 files). The remaining 362 assets form 183 tentative variant groups, with 82 format conflicts flagged. These are review findings, not approval to publish.
+- The initial saved Monaspace report contains 1,485 assets across seven archive packages. All 1,485 hashes are distinct in that report; at that point, 1,060 assets had parsed metadata and 425 WOFF2 assets were not parsed by the discovery script.
+- The initial dry run routed 1,123 assets to review (698 family/weight naming ambiguities and 425 unparsed WOFF2 files). The remaining 362 assets formed 183 tentative variant groups, with 82 format conflicts flagged. These are historical baseline findings; see the fresh replay and audit findings below for the newer results.
 
 ## Fresh all-format archive replay results (2026-10-09)
 
@@ -147,17 +147,17 @@ The output is explicitly marked non-publishable and read-only. Groups with obser
 
 ### Latest automated audit findings (2026-10-09)
 
-The fresh replay workflow now runs the audit against its actual merged Monaspace report and includes `results/variant-group-audit.json` in the artifact. On commit `1a7a71f649de13d29bc293342ddffd64d791bc40`, the audit reported:
+The fresh replay workflow now runs the audit against its actual merged Monaspace report and includes `results/variant-group-audit.json` in the artifact. The latest completed run on commit `c13ffbaeb6bfe47ec5e55c455fd40442fd4781c6` is [Fresh Font Metadata Validation (Read Only)](https://github.com/Bismay-exe/nobadfonts/actions/runs/37958812323). It reported:
 
 - 1,485 input assets, 1,485 unique binary hashes, and 635 deterministic planned groups.
 - 72 groups flagged for human review; all 72 flags were `weight_class_disagreement`.
-- The sampled disagreements show WOFF/WOFF2 assets reporting weight class 400 while their matching OTF files report the variant's expected class (for example, Bold: 400 vs 700; ExtraBold: 400 vs 800).
+- All 72 disagreements share the same format pattern: WOFF and WOFF2 report weight class 400, while the matching OTF reports the expected non-400 class. This occurs across six named weights (ExtraLight, Light, Medium, SemiBold, Bold, and ExtraBold) and their italic variants. The raw WOFF/WOFF2 subfamily names still identify the named styles (for example, Bold and ExtraBold).
 - Zero same-format binary conflicts and zero assets routed to the deterministic core's review queue in this replay.
 - 563 groups had no automatic audit flags, which is not proof of semantic correctness.
 
-This pattern suggests that weight-class metadata in the webfont copies may be normalized or lost during their generation. Treat that as a hypothesis to verify against the upstream Monaspace source/build process, not as permission to overwrite the embedded metadata or silently infer weights. The current audit intentionally preserves the raw values and does not auto-correct them.
+The source report identifies the affected webfont assets as coming from the official Monaspace v1.400 release archive `https://github.com/githubnext/monaspace/releases/download/v1.400/monaspace-webfont-nerdfonts-v1.400.zip`. The cross-format pattern strongly localizes the discrepancy to the webfont copies or their generation pipeline, but the report alone does not establish the exact upstream cause. Treat this as an investigation lead, not permission to overwrite embedded metadata or silently infer weights. The parser reads the embedded OS/2 weight class; the audit intentionally preserves the raw values and does not auto-correct them.
 
-The workflow completed successfully. The artifact is available from [Fresh Font Metadata Validation (Read Only)](https://github.com/Bismay-exe/nobadfonts/actions/runs/37955760503). No Gemini API calls, uploads, database writes, or queue updates were performed.
+The latest workflow completed successfully, including core tests, real-font fixture validation, and Android APK build. No Gemini API calls, uploads, database writes, or queue updates were performed.
 
 The audit also preserves `weight_classes_by_format` for each group: each format's asset count, raw embedded weight-class values, and source paths are shown separately. This helps investigate cross-format metadata patterns without replacing the observed value or treating any format as automatically authoritative. A regression test covers an OTF Bold asset reporting 700 alongside WOFF/WOFF2 assets reporting 400; the audit flags the disagreement and preserves all three original values.
 
