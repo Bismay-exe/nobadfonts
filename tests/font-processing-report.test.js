@@ -134,3 +134,12 @@ test('compareDiscoverySummaries flags missing baseline/fresh slugs', () => {
   );
   assert.deepEqual(result.comparisons.map((item) => item.status), ['new_in_fresh', 'missing_from_fresh']);
 });
+
+import { validateWoff2FromDiscoveryReport } from '../scripts/font-processing/replay-woff2-discovery.js';
+
+test('validateWoff2FromDiscoveryReport rejects malformed reports before network access', async () => {
+  await assert.rejects(
+    validateWoff2FromDiscoveryReport({ queue_items: null }),
+    /queue_items array/,
+  );
+});
