@@ -144,3 +144,17 @@ node scripts/font-processing/audit-variant-groups.js path/to/discovery-report.js
 ```
 
 The output is explicitly marked non-publishable and read-only. Groups with observable metadata disagreement are flagged for human review. A group without flags is **not** considered semantically verified: matching embedded metadata cannot prove that font assets belong to the intended family. The tool does not call external APIs, upload files, mutate queues, or write to a database. Output files are created with exclusive-write mode so an existing report is not silently overwritten.
+
+### Latest automated audit findings (2026-10-09)
+
+The fresh replay workflow now runs the audit against its actual merged Monaspace report and includes `results/variant-group-audit.json` in the artifact. On commit `1a7a71f649de13d29bc293342ddffd64d791bc40`, the audit reported:
+
+- 1,485 input assets, 1,485 unique binary hashes, and 635 deterministic planned groups.
+- 72 groups flagged for human review; all 72 flags were `weight_class_disagreement`.
+- The sampled disagreements show WOFF/WOFF2 assets reporting weight class 400 while their matching OTF files report the variant's expected class (for example, Bold: 400 vs 700; ExtraBold: 400 vs 800).
+- Zero same-format binary conflicts and zero assets routed to the deterministic core's review queue in this replay.
+- 563 groups had no automatic audit flags, which is not proof of semantic correctness.
+
+This pattern suggests that weight-class metadata in the webfont copies may be normalized or lost during their generation. Treat that as a hypothesis to verify against the upstream Monaspace source/build process, not as permission to overwrite the embedded metadata or silently infer weights. The current audit intentionally preserves the raw values and does not auto-correct them.
+
+The workflow completed successfully. The artifact is available from [Fresh Font Metadata Validation (Read Only)](https://github.com/Bismay-exe/nobadfonts/actions/runs/37955760503). No Gemini API calls, uploads, database writes, or queue updates were performed.
