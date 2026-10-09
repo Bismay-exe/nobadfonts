@@ -400,3 +400,76 @@ test('ambiguous candidate exporter writes bounded local batches without API or d
     fs.rmSync(outputDir, { recursive: true, force: true });
   }
 });
+
+
+test('Gemini runner caches validated results and a cache hit avoids API calls and API-key requirements', async () => {
+  const originalFetch = globalThis.fetch;
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'nbf-gemini-cache-test-'));
+  const cacheFile = path.join(tempDir, 'cache.json');
+  let fetchCount = 0;
+  try {
+    globalThis.fetch = async () => {
+      fetchCount += 1;
+      return new Response(JSON.stringify({
+        candidates: [{ content: { parts: [{ text: JSON.stringify({ decisions: [
+          { candidate_id: 'cached-asset', decision: 'group', relation: 'same_family', confidence: 0.99, reason: 'Metadata aligns.' },
+        ] }) }] } }],
+        usageMetadata: { promptTokenCount: 80, candidatesTokenCount: 20 },
+      }), { status: 200, headers: { 'content-type': 'application/json' } });
+    };
+    const input = [{ asset_id: 'cached-asset', metadata: { family_name: 'Cache Sans', subfamily_name: 'Regular' } }];
+    const first = await runGeminiReview(input, { apiKey: 'test-key-not-real', cacheFile, maxRequests: 1 });
+    const second = await runGeminiReview(input, { cacheFile, maxRequests: 1 });
+
+    assert.equal(fetchCount, 1);
+    assert.equal(first.cache.hit, false);
+    assert.equal(second.cache.hit, true);
+    assert.equal(first.cache.key, second.cache.key);
+    assert.equal(second.decisions[0].decision, 'group');
+    assert.equal(JSON.parse(fs.readFileSync(cacheFile, 'utf8')).requests_used, 1);
+  } finally {
+    globalThis.fetch = originalFetch;
+    fs.rmSync(tempDir, { recursive: true, force: true });
+  }
+});
+
+test('Gemini runner enforces persistent request budget before sending a new request', async () => {
+  const originalFetch = globalThis.fetch;
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'nbf-gemini-budget-test-'));
+  const cacheFile = path.join(tempDir, 'cache.json');
+  let fetchCount = 0;
+  try {
+    globalThis.fetch = async () => {
+      fetchCount += 1;
+      return new Response(JSON.stringify({
+        candidates: [{ content: { parts: [{ text: JSON.stringify({ decisions: [
+          { candidate_id: 'budget-a', decision: 'review', relation: 'unknown', confidence: 0.2, reason: 'Evidence is insufficient.' },
+        ] }) }] } }],
+      }), { status: 200, headers: { 'content-type': 'application/json' } });
+    };
+    await runGeminiReview([{ asset_id: 'budget-a', metadata: {} }], { apiKey: 'test-key-not-real', cacheFile, maxRequests: 1 });
+    await assert.rejects(
+      runGeminiReview([{ asset_id: 'budget-b', metadata: {} }], { apiKey: 'test-key-not-real', cacheFile, maxRequests: 1 }),
+      /budget exhausted.*no request was sent/,
+    );
+    assert.equal(fetchCount, 1);
+    assert.equal(JSON.parse(fs.readFileSync(cacheFile, 'utf8')).requests_used, 1);
+  } finally {
+    globalThis.fetch = originalFetch;
+    fs.rmSync(tempDir, { recursive: true, force: true });
+  }
+});
+
+test('Gemini runner fails closed on malformed cache files', async () => {
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'nbf-gemini-invalid-cache-test-'));
+  const cacheFile = path.join(tempDir, 'cache.json');
+  try {
+    fs.writeFileSync(cacheFile, '{not json');
+    await assert.rejects(
+      runGeminiReview([{ asset_id: 'cache-invalid', metadata: {} }], { apiKey: 'test-key-not-real', cacheFile }),
+      /cache is malformed.*refusing to call the API/,
+    );
+  } finally {
+    fs.rmSync(tempDir, { recursive: true, force: true });
+  }
+});
