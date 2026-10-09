@@ -18,3 +18,12 @@ Stage 4 safety hardening. Production publishing remains disabled pending Stage 5
 - Filename-derived grouping remains non-authoritative; isolated tests must validate the metadata-driven plan.
 - There is no attempt counter/backoff/dead-letter policy. Automatic retries remain disabled until this is specified.
 - No production database writes, Storage uploads, or Gemini requests were performed during this stage.
+
+
+## Stage 5: isolated publishing protocol
+
+The new `scripts/font-processing/publishing-protocol.js` is dependency-injected and tested with in-memory adapters only. It validates asset bytes against SHA-256 and size before side effects, stages all assets under batch-specific keys, verifies staged hashes/sizes, and only then calls an idempotent publisher. Retries are bounded (default 3, maximum 5) with bounded exponential delay.
+
+A staging failure cleans up only known keys from the current batch. Cleanup failure is recorded as `reconciliation_required`. After database publication starts, network failures can be ambiguous, so staging objects are retained pending idempotency-key reconciliation rather than risking deletion of referenced assets.
+
+**Release blocker remains:** this is the tested protocol contract, not a production Supabase adapter. The legacy processor has not yet been migrated to deterministic metadata-driven rows, and no atomic transaction RPC is wired. The production workflow remains statically disabled. These tests do not authorize production writes, Storage uploads, or Gemini requests.
