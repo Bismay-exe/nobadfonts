@@ -27,17 +27,33 @@ function assertSafeZipEntries(entries) {
 }
 
 async function downloadArchive(url, destination) {
-  const response = await fetch(url, {
-    headers: { 'User-Agent': 'NoBadFonts-ReadOnly-WOFF2-Validation/1.0' },
-    signal: AbortSignal.timeout(fetchTimeoutMs),
-  });
-  if (!response.ok) throw new Error(`HTTP ${response.status} ${response.statusText}`);
-  const length = Number(response.headers.get('content-length') || 0);
-  if (length > MAX_ARCHIVE_BYTES) throw new Error(`Archive exceeds ${MAX_ARCHIVE_BYTES} byte limit`);
-  const bytes = Buffer.from(await response.arrayBuffer());
-  if (bytes.length > MAX_ARCHIVE_BYTES) throw new Error(`Archive exceeds ${MAX_ARCHIVE_BYTES} byte limit`);
-  fs.writeFileSync(destination, bytes, { flag: 'wx' });
-  return { bytes: bytes.length, sha256: sha256(bytes) };
+  const maxAttempts = 3;
+  let lastError;
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    try {
+      const response = await fetch(url, {
+        headers: { 'User-Agent': 'NoBadFonts-ReadOnly-Font-Metadata-Validation/1.0' },
+        signal: AbortSignal.timeout(fetchTimeoutMs),
+      });
+      if (!response.ok) {
+        const error = new Error(`HTTP ${response.status} ${response.statusText}`);
+        if (response.status < 500 && response.status !== 429) throw error;
+        lastError = error;
+      } else {
+        const length = Number(response.headers.get('content-length') || 0);
+        if (length > MAX_ARCHIVE_BYTES) throw new Error(`Archive exceeds ${MAX_ARCHIVE_BYTES} byte limit`);
+        const bytes = Buffer.from(await response.arrayBuffer());
+        if (bytes.length > MAX_ARCHIVE_BYTES) throw new Error(`Archive exceeds ${MAX_ARCHIVE_BYTES} byte limit`);
+        fs.writeFileSync(destination, bytes, { flag: 'wx' });
+        return { bytes: bytes.length, sha256: sha256(bytes), attempts: attempt };
+      }
+    } catch (error) {
+      lastError = error;
+      if (error instanceof Error && /HTTP 4\d\d/.test(error.message) && !/HTTP 429/.test(error.message)) throw error;
+    }
+    if (attempt < maxAttempts) await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
+  }
+  throw new Error(`Archive download failed after ${maxAttempts} attempts: ${lastError instanceof Error ? lastError.message : String(lastError)}`);
 }
 
 function parseWoff2(parserPath, filePath) {
@@ -66,6 +82,7 @@ export async function validateWoff2FromDiscoveryReport(report, options = {}) {
   const result = {
     generated_at: new Date().toISOString(),
     mode: 'read-only-offline-discovery-replay',
+    validation_complete: false,
     database_writes_performed: false,
     baseline_generated_at: report.generated_at || null,
     queue_items: [],
@@ -108,11 +125,12 @@ export async function validateWoff2FromDiscoveryReport(report, options = {}) {
         const label = source.label || 'source';
         const archivePath = path.join(workRoot, `${safeLabel(label)}.zip`);
         const extractDir = path.join(workRoot, `${safeLabel(label)}-extracted`);
-        const archiveResult = { label, url, status: 'pending', archive_bytes: null, archive_sha256: null, baseline_archive_sha256: null, font_files_found: 0, woff2_files_found: 0, error: null };
+        const archiveResult = { label, url, status: 'pending', archive_bytes: null, archive_sha256: null, baseline_archive_sha256: null, download_attempts: null, font_files_found: 0, woff2_files_found: 0, error: null };
         itemResult.archives.push(archiveResult);
         try {
           const downloaded = await downloadArchive(url, archivePath);
           archiveResult.archive_bytes = downloaded.bytes;
+          archiveResult.download_attempts = downloaded.attempts;
           archiveResult.archive_sha256 = downloaded.sha256;
           archiveResult.baseline_archive_sha256 = source.archive_sha256 || null;
           if (source.archive_sha256 && source.archive_sha256 !== downloaded.sha256) {
@@ -189,11 +207,20 @@ export async function validateWoff2FromDiscoveryReport(report, options = {}) {
       itemResult.woff2_parse_failed_count = itemResult.woff2_results.filter((asset) => asset.metadata_status !== 'parsed').length;
       itemResult.woff2_matching_baseline_hash_count = itemResult.woff2_results.filter((asset) => asset.hash_matches_baseline === true).length;
       itemResult.woff2_hash_mismatch_count = itemResult.woff2_results.filter((asset) => asset.hash_matches_baseline === false).length;
+      itemResult.expected_font_asset_count = baselineFontAssets.length;
+      itemResult.replay_match_count = itemResult.font_results.filter((asset) => asset.hash_matches_baseline === true).length;
+      itemResult.missing_replay_match_count = Math.max(0, baselineFontAssets.length - itemResult.replay_match_count);
+      itemResult.failed_archive_count = itemResult.archives.filter((archive) => archive.status !== 'scanned').length;
+      itemResult.validation_complete = itemResult.failed_archive_count === 0 &&
+        itemResult.font_results.length === baselineFontAssets.length &&
+        itemResult.replay_match_count === baselineFontAssets.length &&
+        itemResult.font_parse_failed_count === 0;
       result.queue_items.push(itemResult);
     }
   } finally {
     fs.rmSync(workRoot, { recursive: true, force: true });
   }
+  result.validation_complete = result.queue_items.length > 0 && result.queue_items.every((item) => item.validation_complete);
   return result;
 }
 
@@ -216,6 +243,9 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.a
         font_parse_failed_count: item.font_parse_failed_count,
         font_matching_baseline_hash_count: item.font_matching_baseline_hash_count,
         font_hash_mismatch_count: item.font_hash_mismatch_count,
+        missing_replay_match_count: item.missing_replay_match_count,
+        failed_archive_count: item.failed_archive_count,
+        validation_complete: item.validation_complete,
         baseline_woff2_asset_count: item.woff2_asset_count_in_baseline,
         fresh_woff2_status_counts: item.fresh_woff2_status_counts,
         fresh_parse_success_count: item.woff2_fresh_parse_success_count,
@@ -223,7 +253,8 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.a
         matching_baseline_hash_count: item.woff2_matching_baseline_hash_count,
         hash_mismatch_count: item.woff2_hash_mismatch_count,
       }));
-      console.log(JSON.stringify({ summary, warnings: result.warnings }, null, 2));
+      console.log(JSON.stringify({ validation_complete: result.validation_complete, summary, warnings: result.warnings }, null, 2));
+      if (!result.validation_complete) process.exitCode = 1;
     } catch (error) {
       console.error(error instanceof Error ? error.stack || error.message : String(error));
       process.exitCode = 1;
