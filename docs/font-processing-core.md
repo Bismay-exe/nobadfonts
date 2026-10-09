@@ -111,3 +111,10 @@ GEMINI_MAX_REQUESTS=1 GEMINI_REVIEW_CACHE_FILE=.cache/font-processing/gemini-rev
 ```
 
 The API key belongs in the environment or a protected GitHub Actions secret, never in source files, candidate JSON, cache entries, logs, or output artifacts. Merely adding `GEMINI_API_KEY` to repository secrets does not call the API; no workflow in this branch automatically invokes the live Gemini runner.
+
+
+## Optional manually approved Gemini smoke test
+
+The workflow `.github/workflows/gemini-advisory-smoke-test.yml` is manual-only. It requires the `confirm_live_gemini_request` checkbox to be enabled at dispatch time, uses one synthetic candidate, caps the request at 512 output tokens, allows one request total, and never uploads fonts or writes to a database. It checks that `GEMINI_API_KEY` is configured without printing it. The workflow was added but has **not** been dispatched; no live Gemini request is made by this change.
+
+To run it, open **Actions → Gemini Advisory Smoke Test (Manual Only) → Run workflow**, select the feature branch, and explicitly check the live-request confirmation. Review the generated advisory artifact manually. This is an API connectivity/response-validation test only, not a test of real font-family decisions.
