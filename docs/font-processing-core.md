@@ -9,6 +9,7 @@ This module is an isolated first step toward the AI-assisted font processor. It 
 - Deduplicate identical assets by SHA-256 while retaining all archive/path provenance.
 - Preserve distinct hashes, even when filenames and extensions match.
 - Route ambiguous family/weight naming, unreadable metadata, and missing metadata to review.
+- Extract WOFF2 metadata locally with fontTools, including variable axes; parser failures remain review cases.
 - Report conflicting assets when a variant has multiple distinct files for the same format.
 - Validate discovery reports without changing their source data.
 
@@ -18,6 +19,16 @@ Use Node's built-in test runner:
 
 ```sh
 npm run test:font-processing
+```
+
+## Parse WOFF2 metadata locally
+
+The discovery script uses `scripts/font-processing/parse-woff2-metadata.py` for `.woff2` files. The read-only discovery workflow installs Python `fonttools` and `brotli`; parsing runs locally on the downloaded archive file and makes no network calls. It extracts family/subfamily names, weight class, italic/variable flags, glyph count, and variation axes. A parse failure is preserved as a failure, not replaced with filename guesses.
+
+To run it manually, install `fonttools` and `brotli`, then run:
+
+```sh
+python3 scripts/font-processing/parse-woff2-metadata.py path/to/font.woff2
 ```
 
 ## Validate real font binaries and the saved Monaspace report
