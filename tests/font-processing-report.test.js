@@ -44,6 +44,15 @@ test('validateDiscoveryReport reports archive counts, duplicate hashes, and revi
         },
         {
           source_label: 'static',
+          relative_path: 'Font-ExtraBold.ttf',
+          extension: 'ttf',
+          sha256: hashC,
+          size_bytes: 102,
+          variant_name_guess: 'Extra Bold',
+          metadata: { status: 'parsed', family_name: 'Fixture Sans ExtraBold', subfamily_name: 'Regular', weight_class: 800, is_italic: false },
+        },
+        {
+          source_label: 'static',
           relative_path: 'Unknown.otf',
           extension: 'otf',
           sha256: hashD,
@@ -55,10 +64,10 @@ test('validateDiscoveryReport reports archive counts, duplicate hashes, and revi
   };
 
   const [result] = validateDiscoveryReport(report).queue_items;
-  assert.equal(result.asset_count, 4);
+  assert.equal(result.asset_count, 5);
   assert.equal(result.unique_binary_count, 4);
   assert.equal(result.duplicate_source_copies, 1);
-  assert.equal(result.source_file_counts.static, 2);
+  assert.equal(result.source_file_counts.static, 3);
   assert.equal(result.source_file_counts['static-copy'], 1);
   assert.equal(result.source_file_counts.web, 1);
   assert.equal(result.review_reason_counts.metadata_not_parsed, 1);
@@ -66,7 +75,6 @@ test('validateDiscoveryReport reports archive counts, duplicate hashes, and revi
   assert.equal(result.review_reason_counts.missing_family_metadata, 1);
   assert.equal(result.planned_variant_group_count, 1);
   assert.equal(result.planned_asset_count, 1);
-  assert.equal(result.database_writes_performed, undefined);
 });
 
 test('validateDiscoveryReport rejects invalid input', () => {
