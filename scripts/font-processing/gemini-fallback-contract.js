@@ -112,6 +112,8 @@ export function validateGeminiFallbackResponse(response, candidate, options = {}
   if (response.evidence_refs.length === 0) return fail('no_evidence_referenced');
 
   const metadata = candidate.metadata;
+  if (response.family_name !== null && typeof response.family_name !== 'string') return fail('invalid_family_name');
+  if (response.subfamily_name !== null && typeof response.subfamily_name !== 'string') return fail('invalid_subfamily_name');
   const proposed = {
     family_name: response.family_name === null ? null : normalizeText(response.family_name),
     subfamily_name: response.subfamily_name === null ? null : normalizeText(response.subfamily_name),
@@ -120,8 +122,6 @@ export function validateGeminiFallbackResponse(response, candidate, options = {}
   };
   if (proposed.family_name === '') proposed.family_name = null;
   if (proposed.subfamily_name === '') proposed.subfamily_name = null;
-  if (proposed.family_name !== null && typeof proposed.family_name !== 'string') return fail('invalid_family_name');
-  if (proposed.subfamily_name !== null && typeof proposed.subfamily_name !== 'string') return fail('invalid_subfamily_name');
   if (proposed.weight_class !== null && (!Number.isInteger(proposed.weight_class) || proposed.weight_class < 1 || proposed.weight_class > 1000)) {
     return fail('invalid_weight_class');
   }
