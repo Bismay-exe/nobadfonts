@@ -31,12 +31,17 @@ def main(path):
     weight = getattr(os2, "usWeightClass", None)
     selection = getattr(os2, "fsSelection", 0)
     mac_style = getattr(head, "macStyle", 0)
-    subfamily = name_value(font, 2)
+    # Prefer typographic family/subfamily names (IDs 16/17) when present;
+    # legacy IDs 1/2 may incorrectly bake the weight into the family name.
+    family = name_value(font, 16) or name_value(font, 1)
+    subfamily = name_value(font, 17) or name_value(font, 2)
     italic = bool((selection & 1) or (mac_style & 2) or (post and post.italicAngle) or (subfamily and ("italic" in subfamily.lower() or "oblique" in subfamily.lower())))
     result = {
         "status": "parsed",
-        "family_name": name_value(font, 1),
+        "family_name": family,
+        "legacy_family_name": name_value(font, 1),
         "subfamily_name": subfamily,
+        "legacy_subfamily_name": name_value(font, 2),
         "full_name": name_value(font, 4),
         "postscript_name": name_value(font, 6),
         "weight_class": weight,
