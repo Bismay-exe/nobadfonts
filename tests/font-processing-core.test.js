@@ -115,3 +115,24 @@ test('planVariantGroups does not merge unrelated subfamilies', () => {
   assert.equal(result.groups.length, 2);
   assert.deepEqual(result.review, []);
 });
+
+
+test('planVariantGroups sends contradictory family-weight metadata to review', () => {
+  const result = planVariantGroups([
+    {
+      sha256: 'e'.repeat(64),
+      metadata: {
+        family_name: 'Monaspace Argon Frozen ExtraBold',
+        subfamily_name: 'Regular',
+        weight_class: 800,
+        is_italic: false,
+        extension: '.ttf',
+        status: 'parsed',
+      },
+    },
+  ]);
+
+  assert.equal(result.groups.length, 0);
+  assert.equal(result.review.length, 1);
+  assert.equal(result.review[0].reason, 'family_name_weight_conflict');
+});
