@@ -146,7 +146,7 @@ test('validateWoff2FromDiscoveryReport rejects malformed reports before network 
 
 import { mergeWoff2ReplayIntoDiscoveryReport } from '../scripts/font-processing/merge-woff2-replay.js';
 
-test('mergeWoff2ReplayIntoDiscoveryReport updates only matching WOFF2 metadata without mutating baseline', () => {
+test('mergeWoff2ReplayIntoDiscoveryReport updates matching font metadata without mutating baseline', () => {
   const baseline = {
     queue_items: [{
       slug: 'example',
@@ -173,7 +173,7 @@ test('mergeWoff2ReplayIntoDiscoveryReport updates only matching WOFF2 metadata w
   assert.equal(result.report.queue_items[0].assets[0].metadata.status, 'parsed');
   assert.equal(result.report.queue_items[0].assets[1].metadata.family_name, 'Keep Me');
   assert.equal(baseline.queue_items[0].assets[0].metadata.status, 'not_parsed');
-  assert.deepEqual(result.summary, [{ slug: 'example', baseline_font_count: 1, updated_from_replay: 1, missing_replay_matches: 0, baseline_woff2_count: 1, updated_woff2_from_replay: 1, missing_woff2_replay_matches: 0 }]);
+  assert.deepEqual(result.summary, [{ slug: 'example', baseline_font_count: 1, updated_from_replay: 1, missing_replay_matches: 1, baseline_woff2_count: 1, updated_woff2_from_replay: 1, missing_woff2_replay_matches: 0 }]);
 });
 
 test('mergeWoff2ReplayIntoDiscoveryReport reports missing replay matches without guessing', () => {
