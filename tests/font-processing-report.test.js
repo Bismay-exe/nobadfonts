@@ -231,3 +231,26 @@ test('Gemini review response rejects unexpected or duplicate candidate IDs', () 
     ],
   }, request), /Duplicate candidate_id/);
 });
+
+import { runGeminiReview } from '../scripts/font-processing/run-gemini-review.js';
+
+test('Gemini review runner refuses to send requests without an API key', async () => {
+  await assert.rejects(
+    runGeminiReview([{ asset_id: 'asset-1', metadata: {} }], { apiKey: '' }),
+    /Missing GEMINI_API_KEY/,
+  );
+});
+
+test('Gemini response omissions become explicit manual-review decisions', () => {
+  const request = buildGeminiReviewRequest([
+    { asset_id: 'asset-1', metadata: {} },
+    { asset_id: 'asset-2', metadata: {} },
+  ]);
+  const result = validateGeminiReviewResponse({
+    decisions: [{ candidate_id: 'asset-1', decision: 'group', relation: 'same_family', confidence: 0.99, reason: 'Evidence aligns.' }],
+  }, request);
+  assert.deepEqual(result.missing_candidate_ids, ['asset-2']);
+  assert.equal(result.decisions[1].candidate_id, 'asset-2');
+  assert.equal(result.decisions[1].decision, 'review');
+  assert.equal(result.decisions[1].publishable, false);
+});
