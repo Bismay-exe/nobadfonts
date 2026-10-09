@@ -1,7 +1,7 @@
 import { assertProductionWriteEnabled } from './font-processing/write-gate.js';
 import fs from 'fs';
 import path from 'path';
-import { execSync } from 'child_process';
+import { execFileSync } from 'child_process';
 import { createWriteStream, mkdirSync } from 'fs';
 import { pipeline } from 'stream/promises';
 import { createUnzip } from 'zlib';
@@ -107,7 +107,7 @@ async function downloadFile(url, destPath) {
 function extractZip(zipPath, destDir) {
   mkdirSync(destDir, { recursive: true });
   try {
-    execSync(`unzip -o -q "${zipPath}" -d "${destDir}"`, { stdio: 'pipe' });
+    execFileSync('unzip', ['-o', '-q', zipPath, '-d', destDir], { stdio: 'pipe' });
   } catch (err) {
     // unzip exits non-zero even on warnings, check if files were extracted
     if (!fs.existsSync(destDir)) throw new Error(`Extraction failed: ${err.message}`);
@@ -327,7 +327,7 @@ async function processQueue() {
         const woff2Path = sourceFile.replace(/\.(ttf|otf)$/i, '.woff2');
         try {
           console.log(`    Generating WOFF2 from .${formats.ttf ? 'ttf' : 'otf'}...`);
-          execSync(`woff2_compress "${sourceFile}"`, { stdio: 'pipe' });
+          execFileSync('woff2_compress', [sourceFile], { stdio: 'pipe' });
           // woff2_compress outputs to same directory with .woff2 extension
           const expectedWoff2 = sourceFile.replace(/\.(ttf|otf)$/i, '.woff2');
           if (fs.existsSync(expectedWoff2)) {
