@@ -513,3 +513,49 @@ test('Gemini runner reserves a persistent output-token budget before requests', 
     fs.rmSync(tempDir, { recursive: true, force: true });
   }
 });
+
+
+test('Gemini cache key changes when candidate input, model, confidence threshold, or token cap changes', async () => {
+  const originalFetch = globalThis.fetch;
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'nbf-gemini-cache-key-test-'));
+  const cacheFile = path.join(tempDir, 'cache.json');
+  let fetchCount = 0;
+  try {
+    globalThis.fetch = async (_url, options) => {
+      fetchCount += 1;
+      const body = JSON.parse(options.body);
+      const userText = body.contents[0].parts[0].text;
+      const ids = [...userText.matchAll(/"asset_id":"([^"]+)"/g)].map((m) => m[1]);
+      const uniqueId = ids[0] || `cache-key-${fetchCount}`;
+      return new Response(JSON.stringify({
+        candidates: [{ content: { parts: [{ text: JSON.stringify({ decisions: [{
+          candidate_id: uniqueId,
+          decision: 'review',
+          relation: 'unknown',
+          confidence: 0.2,
+          reason: 'Insufficient evidence.',
+        }] }) }] } }],
+      }), { status: 200, headers: { 'content-type': 'application/json' } });
+    };
+    const input = [{ asset_id: 'key-a', metadata: { family_name: 'Key Sans' } }];
+    const a = await runGeminiReview(input, { apiKey: 'test-key-not-real', cacheFile, maxRequests: 8, maxTotalOutputTokens: 32000 });
+    const same = await runGeminiReview(input, { cacheFile, maxRequests: 8, maxTotalOutputTokens: 32000 });
+    const model = await runGeminiReview(input, { apiKey: 'test-key-not-real', cacheFile, model: 'test-model-b', maxRequests: 8, maxTotalOutputTokens: 32000 });
+    const confidence = await runGeminiReview(input, { apiKey: 'test-key-not-real', cacheFile, minimumConfidence: 0.9, maxRequests: 8, maxTotalOutputTokens: 32000 });
+    const tokenCap = await runGeminiReview(input, { apiKey: 'test-key-not-real', cacheFile, maxOutputTokens: 1024, maxRequests: 8, maxTotalOutputTokens: 32000 });
+    const differentInput = await runGeminiReview([{ asset_id: 'key-b', metadata: { family_name: 'Other Sans' } }], {
+      apiKey: 'test-key-not-real', cacheFile, maxRequests: 8, maxTotalOutputTokens: 32000,
+    });
+
+    assert.equal(same.cache.hit, true);
+    assert.equal(a.cache.key, same.cache.key);
+    assert.equal(model.cache.key === a.cache.key, false);
+    assert.equal(confidence.cache.key === a.cache.key, false);
+    assert.equal(tokenCap.cache.key === a.cache.key, false);
+    assert.equal(differentInput.cache.key === a.cache.key, false);
+    assert.equal(fetchCount, 5);
+  } finally {
+    globalThis.fetch = originalFetch;
+    fs.rmSync(tempDir, { recursive: true, force: true });
+  }
+});
