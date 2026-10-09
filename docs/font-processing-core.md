@@ -62,3 +62,18 @@ node scripts/font-processing/validate-font-fixtures.js path/to/font.otf path/to/
 - No automatic publishing is performed.
 
 This core is intentionally not wired into the scheduled production workflow. Any later publishing path must have its own isolated tests and explicit review.
+
+
+## Gemini advisory review (isolated)
+
+The Gemini stage is deliberately separate from deterministic parsing and grouping. It accepts only a bounded JSON list of ambiguous candidates and sends extracted metadata—not font binaries or Supabase credentials—to the Gemini API. It requires `GEMINI_API_KEY`; `GEMINI_MODEL` can override the default `gemini-2.5-flash`.
+
+Create an input JSON array containing candidate objects with `asset_id`, `relative_path`, and a `metadata` object, then run:
+
+```sh
+GEMINI_API_KEY=your_key node scripts/font-processing/run-gemini-review.js ambiguous-assets.json gemini-review.json
+```
+
+The output is advisory only. It is marked `publishable: false`; no database or Storage writes are performed. Invalid IDs, duplicate decisions, malformed responses, and invalid confidence values are rejected. Low-confidence or omitted candidates are sent to human review. The runner does not update queue statuses or connect to the scheduled production processor.
+
+Do not pass service-role credentials to this script. The API key should be provided through the environment and must never be committed to the repository. Review Gemini's output before using any suggestion; model output is not authoritative evidence for licensing, official links, or factual font metadata.
