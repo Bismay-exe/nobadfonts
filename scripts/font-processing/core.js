@@ -148,7 +148,7 @@ export function planVariantGroups(assets) {
       && metadata.subfamily_name?.toLocaleLowerCase('en-US') === 'regular'
       && metadata.weight_class != null
       && metadata.weight_class !== 400
-      && /(?:^|\\s)(?:thin|hairline|extra\\s*light|ultra\\s*light|light|medium|semi\\s*bold|demi\\s*bold|extra\\s*bold|ultra\\s*bold|bold|black|heavy)(?:\\s+italic)?$/i.test(metadata.family_name);
+      && /(?:^|\s)(?:thin|hairline|extra\s*light|ultra\s*light|light|medium|semi\s*bold|demi\s*bold|extra\s*bold|ultra\s*bold|bold|black|heavy)(?:\s+italic)?$/i.test(metadata.family_name);
 
     if (metadata.parser_status === 'not_parsed' || metadata.parser_status === 'parse_failed') {
       review.push({
