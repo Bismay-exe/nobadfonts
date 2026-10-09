@@ -109,6 +109,19 @@ export function auditVariantGroups(report) {
     const plan = planVariantGroups(uniqueAssets);
     const groups = plan.groups.map(inspectGroup);
     const flaggedGroups = groups.filter((group) => group.review_flags.length > 0);
+    const reviewFlagCounts = flaggedGroups.reduce((counts, group) => {
+      for (const flag of group.review_flags) counts[flag] = (counts[flag] || 0) + 1;
+      return counts;
+    }, {});
+    const weightDisagreementGroups = groups
+      .filter((group) => group.review_flags.includes('weight_class_disagreement'))
+      .map((group) => ({
+        family_name: group.family_name,
+        variant_name: group.variant_name,
+        variant_key: group.variant_key,
+        weight_classes_by_format: group.evidence_variation.weight_classes_by_format,
+        source_paths: group.source_paths,
+      }));
 
     return {
       slug: item.slug || null,
@@ -116,6 +129,9 @@ export function auditVariantGroups(report) {
       unique_binary_count: uniqueAssets.length,
       planned_group_count: groups.length,
       flagged_group_count: flaggedGroups.length,
+      review_flag_counts: reviewFlagCounts,
+      weight_disagreement_group_count: weightDisagreementGroups.length,
+      weight_disagreement_groups: weightDisagreementGroups,
       groups_without_automatic_flags: groups.length - flaggedGroups.length,
       review_asset_count: plan.review.length,
       format_conflict_count: groups.reduce((count, group) => count + group.conflicts.length, 0),
@@ -144,6 +160,13 @@ export function auditVariantGroups(report) {
       flagged_group_count: queues.reduce((sum, queue) => sum + queue.flagged_group_count, 0),
       review_asset_count: queues.reduce((sum, queue) => sum + queue.review_asset_count, 0),
       format_conflict_count: queues.reduce((sum, queue) => sum + queue.format_conflict_count, 0),
+      weight_disagreement_group_count: queues.reduce((sum, queue) => sum + queue.weight_disagreement_group_count, 0),
+      review_flag_counts: queues.reduce((counts, queue) => {
+        for (const [flag, count] of Object.entries(queue.review_flag_counts)) {
+          counts[flag] = (counts[flag] || 0) + count;
+        }
+        return counts;
+      }, {}),
     },
     queues,
     limitations: [
