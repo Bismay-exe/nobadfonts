@@ -80,7 +80,7 @@ export function exportAmbiguousAssets(report, outputDir, options = {}) {
       const filename = `${slug}-ambiguous-${String(batchNumber).padStart(3, '0')}.json`;
       const filePath = path.join(outputDir, filename);
       const batch = candidates.slice(offset, offset + batchSize).map(({ review_reason, ...candidate }) => candidate);
-      fs.writeFileSync(filePath, JSON.stringify(batch, null, 2) + '\\n', { flag: 'wx' });
+      fs.writeFileSync(filePath, JSON.stringify(batch, null, 2) + '\n', { flag: 'wx' });
       outputFiles.push(filePath);
       batchFiles.push({ file: filename, candidate_count: batch.length });
     }
@@ -104,7 +104,7 @@ export function exportAmbiguousAssets(report, outputDir, options = {}) {
     queue_items: queueSummaries,
   };
   const manifestPath = path.join(outputDir, 'manifest.json');
-  fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2) + '\\n', { flag: 'wx' });
+  fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2) + '\n', { flag: 'wx' });
   return { manifest, manifestPath, outputFiles: [...outputFiles, manifestPath] };
 }
 
