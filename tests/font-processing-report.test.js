@@ -359,3 +359,44 @@ test('Gemini runner surfaces API failures and never returns publishable results'
     globalThis.fetch = originalFetch;
   }
 });
+
+
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { exportAmbiguousAssets } from '../scripts/font-processing/export-ambiguous-assets.js';
+
+test('ambiguous candidate exporter writes bounded local batches without API or database side effects', () => {
+  const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), 'nbf-gemini-export-test-'));
+  try {
+    const report = {
+      queue_items: [{
+        slug: 'fixture-font',
+        assets: [
+          { source_label: 'static', relative_path: 'A-Regular.ttf', extension: 'ttf', sha256: '1'.repeat(64), metadata: { status: 'parsed', family_name: 'Fixture Sans', subfamily_name: 'Regular', weight_class: 400, is_italic: false } },
+          { source_label: 'static', relative_path: 'Unknown-1.woff2', extension: 'woff2', sha256: '2'.repeat(64), metadata: { status: 'parsed' } },
+          { source_label: 'static', relative_path: 'Unknown-2.otf', extension: 'otf', sha256: '3'.repeat(64), metadata: { status: 'parsed' } },
+          { source_label: 'static', relative_path: 'Unknown-3.woff', extension: 'woff', sha256: '4'.repeat(64), metadata: { status: 'parsed' } },
+        ],
+      }],
+    };
+
+    const result = exportAmbiguousAssets(report, outputDir, { batchSize: 2 });
+    const [queue] = result.manifest.queue_items;
+    assert.equal(queue.unique_asset_count, 4);
+    assert.equal(queue.candidate_count, 3);
+    assert.equal(queue.batch_files.length, 2);
+    assert.deepEqual(queue.batch_files.map((item) => item.candidate_count), [2, 1]);
+    assert.equal(result.manifest.api_calls_performed, false);
+    assert.equal(result.manifest.database_writes_performed, false);
+    assert.equal(result.manifest.uploads_performed, false);
+
+    const batches = queue.batch_files.map((item) => JSON.parse(fs.readFileSync(path.join(outputDir, item.file), 'utf8')));
+    assert.deepEqual(batches.map((batch) => batch.length), [2, 1]);
+    assert.ok(batches.flat().every((candidate) => candidate.asset_id && candidate.metadata));
+    assert.ok(batches.flat().every((candidate) => !('review_reason' in candidate)));
+    assert.throws(() => exportAmbiguousAssets(report, outputDir, { batchSize: 51 }), /between 1 and 50/);
+  } finally {
+    fs.rmSync(outputDir, { recursive: true, force: true });
+  }
+});
