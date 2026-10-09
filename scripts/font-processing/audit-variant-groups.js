@@ -21,15 +21,15 @@ function unique(values) {
 }
 
 const NAMED_WEIGHT_CLASSES = [
-  { pattern: /(?:^|\\s)(?:extra\\s*light|ultra\\s*light|extralight|ultralight)(?:\\s|$)/i, weight: 200 },
-  { pattern: /(?:^|\\s)(?:semi\\s*bold|demi\\s*bold|semibold|demibold)(?:\\s|$)/i, weight: 600 },
-  { pattern: /(?:^|\\s)(?:extra\\s*bold|ultra\\s*bold|extrabold|ultrabold)(?:\\s|$)/i, weight: 800 },
-  { pattern: /(?:^|\\s)(?:hairline|thin)(?:\\s|$)/i, weight: 100 },
-  { pattern: /(?:^|\\s)light(?:\\s|$)/i, weight: 300 },
-  { pattern: /(?:^|\\s)regular(?:\\s|$)/i, weight: 400 },
-  { pattern: /(?:^|\\s)medium(?:\\s|$)/i, weight: 500 },
-  { pattern: /(?:^|\\s)bold(?:\\s|$)/i, weight: 700 },
-  { pattern: /(?:^|\\s)(?:black|heavy)(?:\\s|$)/i, weight: 900 },
+  { pattern: /(?:^|\s)(?:extra\s*light|ultra\s*light|extralight|ultralight)(?:\s|$)/i, weight: 200 },
+  { pattern: /(?:^|\s)(?:semi\s*bold|demi\s*bold|semibold|demibold)(?:\s|$)/i, weight: 600 },
+  { pattern: /(?:^|\s)(?:extra\s*bold|ultra\s*bold|extrabold|ultrabold)(?:\s|$)/i, weight: 800 },
+  { pattern: /(?:^|\s)(?:hairline|thin)(?:\s|$)/i, weight: 100 },
+  { pattern: /(?:^|\s)light(?:\s|$)/i, weight: 300 },
+  { pattern: /(?:^|\s)regular(?:\s|$)/i, weight: 400 },
+  { pattern: /(?:^|\s)medium(?:\s|$)/i, weight: 500 },
+  { pattern: /(?:^|\s)bold(?:\s|$)/i, weight: 700 },
+  { pattern: /(?:^|\s)(?:black|heavy)(?:\s|$)/i, weight: 900 },
 ];
 
 function getNamedWeightMismatch(metadata) {
