@@ -40,7 +40,7 @@ export async function publishStagedBatch({ batchId, assets, rows, adapter, maxAt
   } catch (e) { let cleanupError = null; try { if (stagedKeys.length) await adapter.deleteStaged(stagedKeys); } catch (c) { cleanupError = c; } await audit(cleanupError ? 'reconciliation_required' : 'failed', { phase: 'staging', error: String(e?.message || e), cleanupError: cleanupError ? String(cleanupError.message || cleanupError) : null }); throw e; }
   await audit('ready_to_publish');
   try {
-    const publishRows = rows.map((r) => ({ ...r, staging_key: `${prefix}${r.assetId}/${assets.find((a) => a.assetId === r.assetId).fileName}` }));
+    const publishRows = rows.map((r) => { const asset = assets.find((a) => a.assetId === r.assetId); const extension = asset.fileName.split('.').pop().toLowerCase(); return { ...r, format: r.format || extension, size_bytes: r.size_bytes ?? asset.sizeBytes, staging_key: `${prefix}${r.assetId}/${asset.fileName}` }; });
     const result = await retry(() => adapter.publishRows(publishRows, { batchId, idempotencyKey: `font-processing:${batchId}` }), opts);
     if (result?.committed !== true) throw new Error('Publisher did not confirm an atomic commit');
     await audit('committed'); return { batchId, status: 'committed', stagedKeys: [...stagedKeys], rowCount: rows.length };
