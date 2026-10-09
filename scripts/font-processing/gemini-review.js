@@ -18,17 +18,17 @@ export function buildGeminiReviewRequest(assets) {
     if (!candidateId || candidateId.length > 128) throw new TypeError('Candidate IDs must be 1-128 characters');
     return {
       candidate_id: candidateId,
-      file_name: normalizeText(asset?.relative_path || asset?.filename || ''),
-      extension: normalizeText(metadata.extension || asset?.extension || ''),
-      family_name: normalizeText(metadata.family_name || ''),
-      subfamily_name: normalizeText(metadata.subfamily_name || ''),
-      full_name: normalizeText(metadata.full_name || ''),
-      postscript_name: normalizeText(metadata.postscript_name || ''),
+      file_name: boundedText(asset?.relative_path || asset?.filename || '', 512),
+      extension: boundedText(metadata.extension || asset?.extension || '', 16),
+      family_name: boundedText(metadata.family_name || '', 256),
+      subfamily_name: boundedText(metadata.subfamily_name || '', 256),
+      full_name: boundedText(metadata.full_name || '', 256),
+      postscript_name: boundedText(metadata.postscript_name || '', 256),
       weight_class: Number.isInteger(metadata.weight_class) ? metadata.weight_class : null,
       is_italic: typeof metadata.is_italic === 'boolean' ? metadata.is_italic : null,
       is_variable: typeof metadata.is_variable === 'boolean' ? metadata.is_variable : null,
-      variation_axes: Array.isArray(metadata.variation_axes) ? metadata.variation_axes.slice(0, 16) : [],
-      parser_status: normalizeText(metadata.status || metadata.parser_status || 'unknown'),
+      variation_axes: safeVariationAxes(metadata.variation_axes),
+      parser_status: boundedText(metadata.status || metadata.parser_status || 'unknown', 32),
     };
   });
   const ids = candidates.map((candidate) => candidate.candidate_id);
@@ -78,8 +78,11 @@ export function buildGeminiReviewRequest(assets) {
 export function validateGeminiReviewResponse(input, request, options = {}) {
   const minimumConfidence = Number.isFinite(options.minimumConfidence) ? options.minimumConfidence : 0.85;
   const parsed = typeof input === 'string' ? JSON.parse(input) : input;
-  if (!parsed || typeof parsed !== 'object' || !Array.isArray(parsed.decisions)) {
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed) || !Array.isArray(parsed.decisions)) {
     throw new TypeError('Gemini response must contain a decisions array');
+  }
+  if (Object.keys(parsed).some((key) => key !== 'decisions')) {
+    throw new TypeError('Gemini response contains unexpected top-level fields');
   }
   const expected = new Set((request?.candidates || []).map((item) => item.candidate_id));
   const seen = new Set();
