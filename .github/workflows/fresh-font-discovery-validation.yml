@@ -4,6 +4,9 @@ on:
   pull_request:
     paths:
       - 'scripts/font-processing/replay-woff2-discovery.js'
+      - 'scripts/font-processing/merge-woff2-replay.js'
+      - 'scripts/font-processing/compare-discovery-summaries.js'
+      - 'scripts/font-processing/validate-discovery-report.js'
       - 'scripts/font-processing/parse-woff2-metadata.py'
       - '.github/workflows/fresh-font-discovery-validation.yml'
       - 'tests/font-processing-report.test.js'
