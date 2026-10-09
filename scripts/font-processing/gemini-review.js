@@ -1,7 +1,7 @@
 const ALLOWED_DECISIONS = new Set(['group', 'separate', 'review']);
 const ALLOWED_RELATIONS = new Set(['same_family', 'subfamily', 'packaging_duplicate', 'unrelated', 'unknown']);
 
-const normalizeText = (value) => typeof value === 'string' ? value.normalize('NFKC').trim().replace(/\\s+/g, ' ') : '';
+const normalizeText = (value) => typeof value === 'string' ? value.normalize('NFKC').trim().replace(/\s+/g, ' ') : '';
 const boundedText = (value, maxLength) => normalizeText(value).slice(0, maxLength);
 
 function safeVariationAxes(value) {
