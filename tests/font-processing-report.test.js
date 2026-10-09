@@ -402,6 +402,36 @@ test('ambiguous candidate exporter writes bounded local batches without API or d
 });
 
 
+test('ambiguous candidate exporter emits an empty manifest when deterministic metadata needs no review', () => {
+  const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), 'nbf-gemini-empty-export-test-'));
+  try {
+    const report = {
+      queue_items: [{
+        slug: 'fully-parsed-font',
+        assets: [
+          { source_label: 'static', relative_path: 'A-Regular.ttf', extension: 'ttf', sha256: 'a'.repeat(64), metadata: { status: 'parsed', family_name: 'Fixture Sans', subfamily_name: 'Regular', weight_class: 400, is_italic: false } },
+          { source_label: 'webfont', relative_path: 'A-Regular.woff2', extension: 'woff2', sha256: 'b'.repeat(64), metadata: { status: 'parsed', family_name: 'Fixture Sans', subfamily_name: 'Regular', weight_class: 400, is_italic: false } },
+        ],
+      }],
+    };
+
+    const result = exportAmbiguousAssets(report, outputDir);
+    const [queue] = result.manifest.queue_items;
+    assert.equal(queue.unique_asset_count, 2);
+    assert.equal(queue.candidate_count, 0);
+    assert.deepEqual(queue.reason_counts, {});
+    assert.deepEqual(queue.batch_files, []);
+    assert.equal(result.manifest.output_files, 0);
+    assert.equal(result.manifest.api_calls_performed, false);
+    assert.equal(result.manifest.database_writes_performed, false);
+    assert.equal(result.manifest.uploads_performed, false);
+    assert.deepEqual(fs.readdirSync(outputDir), ['manifest.json']);
+  } finally {
+    fs.rmSync(outputDir, { recursive: true, force: true });
+  }
+});
+
+
 test('Gemini runner caches validated results and a cache hit avoids API calls and API-key requirements', async () => {
   const originalFetch = globalThis.fetch;
   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'nbf-gemini-cache-test-'));
