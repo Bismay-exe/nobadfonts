@@ -96,3 +96,18 @@ GEMINI_API_KEY=your_key node scripts/font-processing/run-gemini-review.js ./tmp/
 ```
 
 Run batches deliberately and inspect their outputs. Gemini responses remain advisory, confidence-gated, non-publishable, and subject to human review. This workflow does not apply model decisions to the saved discovery report or production data.
+
+
+## Gemini response cache and request budget
+
+The command-line runner uses a local persistent cache at `.cache/font-processing/gemini-review-cache.json` by default. Override it with `GEMINI_REVIEW_CACHE_FILE`. The cache key hashes the model, confidence threshold, system instruction, response schema, and sanitized candidate inputs. Only validated, non-publishable advisory results are cached; API keys are never stored. Cache hits do not require an API key or consume another request.
+
+A new cache starts with a **one-request hard budget**. This conservative default prevents repeated invocations from silently making unlimited requests. To allow more distinct uncached batches, explicitly set `GEMINI_MAX_REQUESTS` to the total request allowance for that cache file, for example `GEMINI_MAX_REQUESTS=3`. The persistent counter records attempts before network access, including failed requests, to prevent unlimited retries. Cache corruption or an unsupported cache version fails closed. The cache is local to the machine/workspace; do not commit it or share it publicly.
+
+Example (after explicitly approving a live request):
+
+```sh
+GEMINI_MAX_REQUESTS=1 GEMINI_REVIEW_CACHE_FILE=.cache/font-processing/gemini-review-cache.json node scripts/font-processing/run-gemini-review.js ./tmp/gemini-review-input/fixture-font-ambiguous-001.json ./tmp/gemini-review-output-001.json
+```
+
+The API key belongs in the environment or a protected GitHub Actions secret, never in source files, candidate JSON, cache entries, logs, or output artifacts. Merely adding `GEMINI_API_KEY` to repository secrets does not call the API; no workflow in this branch automatically invokes the live Gemini runner.
