@@ -27,7 +27,8 @@ export function sha256Buffer(buffer) {
 }
 
 export function getFontExtension(filePath) {
-  const extension = path.extname(String(filePath || '')).toLowerCase();
+  const value = String(filePath || '').toLowerCase();
+  const extension = SUPPORTED_FONT_EXTENSIONS.has(value) ? value : path.extname(value);
   return SUPPORTED_FONT_EXTENSIONS.has(extension) ? extension : null;
 }
 
