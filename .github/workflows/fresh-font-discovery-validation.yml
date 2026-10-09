@@ -45,7 +45,7 @@ jobs:
       - name: Download saved discovery artifact using GitHub API
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BASELINE_ARTIFACT_ID: ${{ inputs.baseline_artifact_id }}
+          BASELINE_ARTIFACT_ID: ${{ inputs.baseline_artifact_id || '11608622180' }}
         run: |
           mkdir -p validation-output/baseline
           curl --fail --location --retry 3 \
