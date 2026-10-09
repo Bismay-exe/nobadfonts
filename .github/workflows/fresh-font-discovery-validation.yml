@@ -75,7 +75,23 @@ jobs:
       - name: Export unresolved candidates for bounded Gemini review (no API calls)
         run: |
           node scripts/font-processing/export-ambiguous-assets.js validation-output/results/merged-report.json validation-output/gemini-review-input
-          node --input-type=module -e "import fs from 'node:fs'; const m=JSON.parse(fs.readFileSync('validation-output/gemini-review-input/manifest.json','utf8')); console.log(JSON.stringify({mode:m.mode,api_calls_performed:m.api_calls_performed,database_writes_performed:m.database_writes_performed,uploads_performed:m.uploads_performed,output_files:m.output_files,queues:m.queue_items.map(q=>({slug:q.slug,candidate_count:q.candidate_count,reason_counts:q.reason_counts,batches:q.batch_files.length}))},null,2));"
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const m = JSON.parse(fs.readFileSync('validation-output/gemini-review-input/manifest.json', 'utf8'));
+          console.log(JSON.stringify({
+            mode: m.mode,
+            api_calls_performed: m.api_calls_performed,
+            database_writes_performed: m.database_writes_performed,
+            uploads_performed: m.uploads_performed,
+            output_files: m.output_files,
+            queues: m.queue_items.map((q) => ({
+              slug: q.slug,
+              candidate_count: q.candidate_count,
+              reason_counts: q.reason_counts,
+              batches: q.batch_files.length,
+            })),
+          }, null, 2));
+          NODE
 
       - name: Upload all-format font metadata replay results
         if: always()
