@@ -99,7 +99,7 @@ function getEmbeddedWeightSuffix(metadata) {
   const lowerFamily = family.toLocaleLowerCase('en-US');
   for (const candidate of WEIGHT_SUFFIXES) {
     if (candidate.weight !== weight) continue;
-    const suffixes = [candidate.suffix, candidate.suffix.replace(/\\s+/g, '')];
+    const suffixes = [candidate.suffix, candidate.suffix.split(' ').join('')];
     for (const suffixValue of suffixes) {
       const suffix = suffixValue.toLocaleLowerCase('en-US');
       if (!lowerFamily.endsWith(` ${suffix}`)) continue;
