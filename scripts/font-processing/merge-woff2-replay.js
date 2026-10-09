@@ -25,15 +25,15 @@ export function mergeWoff2ReplayIntoDiscoveryReport(report, replay) {
     let missingWoff2 = 0;
     item.assets = (item.assets || []).map((asset) => {
       const ext = String(asset.extension || path.extname(asset.relative_path || '')).toLowerCase().replace(/^\./, '');
-      if (!SUPPORTED_FONT_EXTENSIONS.has(ext.replace(/^\\./, ''))) return asset;
+      if (!SUPPORTED_FONT_EXTENSIONS.has(ext)) return asset;
       const replayAsset = replayAssets.get(JSON.stringify([asset.source_label, asset.relative_path]));
       if (!replayAsset) {
         missing += 1;
-        if (ext.replace(/^\\./, '') === 'woff2') missingWoff2 += 1;
+        if (ext === 'woff2') missingWoff2 += 1;
         return asset;
       }
       updated += 1;
-      if (ext.replace(/^\\./, '') === 'woff2') updatedWoff2 += 1;
+      if (ext === 'woff2') updatedWoff2 += 1;
       return {
         ...asset,
         metadata: {
