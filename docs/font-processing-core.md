@@ -131,3 +131,16 @@ The API key belongs in the environment or a protected GitHub Actions secret, nev
 The workflow `.github/workflows/gemini-advisory-smoke-test.yml` is manual-only. It requires the `confirm_live_gemini_request` checkbox to be enabled at dispatch time, uses one synthetic candidate, caps the request at 512 output tokens, allows one request total, and never uploads fonts or writes to a database. It checks that `GEMINI_API_KEY` is configured without printing it. The workflow was added but has **not** been dispatched; no live Gemini request is made by this change.
 
 To run it, open **Actions → Gemini Advisory Smoke Test (Manual Only) → Run workflow**, select the feature branch, and explicitly check the live-request confirmation. Review the generated advisory artifact manually. This is an API connectivity/response-validation test only, not a test of real font-family decisions.
+
+
+## Offline variant-group audit
+
+`scripts/font-processing/audit-variant-groups.js` produces a detailed review artifact from a saved discovery report. It records each deterministic group, the source paths and binary metadata behind each asset, the formats present, existing format conflicts, and disagreements in family/subfamily/weight/italic/variable metadata across assets assigned to one group.
+
+Run it against a local saved report:
+
+```sh
+node scripts/font-processing/audit-variant-groups.js path/to/discovery-report.json audit-output.json
+```
+
+The output is explicitly marked non-publishable and read-only. Groups with observable metadata disagreement are flagged for human review. A group without flags is **not** considered semantically verified: matching embedded metadata cannot prove that font assets belong to the intended family. The tool does not call external APIs, upload files, mutate queues, or write to a database. Output files are created with exclusive-write mode so an existing report is not silently overwritten.
