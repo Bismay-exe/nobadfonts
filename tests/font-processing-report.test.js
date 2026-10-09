@@ -652,3 +652,22 @@ test('variant audit preserves weight-class evidence by format without inferring 
   assert.equal(result.queues[0].weight_disagreement_groups.length, 1);
   assert.deepEqual(result.queues[0].weight_disagreement_groups[0].weight_classes_by_format, group.evidence_variation.weight_classes_by_format);
 });
+
+
+test('named-weight audit recognizes common weights without confusing Monaspace width labels', () => {
+  const cases = [
+    ['ExtraLight', 200], ['Light', 300], ['Medium', 500], ['SemiBold', 600], ['Bold Italic', 700], ['ExtraBold', 800],
+  ];
+  for (const [subfamily, expected] of cases) {
+    const result = auditVariantGroups({ queue_items: [{ slug: 'named-weight', assets: [
+      { relative_path: `Fixture-${subfamily}.woff2`, extension: 'woff2', sha256: (String(expected).padStart(64, '0')).slice(-64), metadata: { status: 'parsed', family_name: 'Fixture', subfamily_name: subfamily, weight_class: 400, is_italic: /italic/i.test(subfamily), is_variable: false } },
+    ] }] });
+    const [group] = result.queues[0].groups;
+    assert.ok(group.review_flags.includes('subfamily_weight_class_disagreement'), subfamily);
+    assert.equal(group.evidence_variation.named_weight_mismatches[0].named_weight_class, expected, subfamily);
+  }
+  const widthResult = auditVariantGroups({ queue_items: [{ slug: 'width-label', assets: [
+    { relative_path: 'Fixture-SemiWide.woff2', extension: 'woff2', sha256: 'e'.repeat(64), metadata: { status: 'parsed', family_name: 'Fixture', subfamily_name: 'SemiWide', weight_class: 400, is_italic: false, is_variable: false } },
+  ] }] });
+  assert.equal(widthResult.queues[0].groups[0].evidence_variation.named_weight_mismatches.length, 0);
+});

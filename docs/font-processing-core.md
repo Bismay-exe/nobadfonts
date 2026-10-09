@@ -167,3 +167,8 @@ The audit's compact summary now includes counts per review flag and a focused li
 ## Gemini runner regression coverage
 
 The offline test suite includes mocked-fetch tests for validated-result caching, persistent request-budget enforcement, and fail-closed behavior when the cache is malformed. These tests use a fake API key and a local mocked response; they do not make live Gemini requests. Run them with `npm run test:font-processing`.
+
+
+## Exporter and audit regression coverage
+
+Offline tests verify that ambiguous candidates are split into bounded JSON batches, omit review-reason prose from model input, preserve only extracted metadata, refuse to overwrite existing output, and record that no API/database/storage side effects occurred. Named-weight audit tests cover common named weights and confirm that the Monaspace width label `SemiWide` is not mistaken for the weight `Bold`. All tests use synthetic fixtures and make no live API requests.
