@@ -1,0 +1,49 @@
+name: Font Asset Discovery (Read Only)
+
+on:
+  workflow_dispatch:
+    inputs:
+      queue_id:
+        description: "Optional font_processing_queue UUID. Leave empty to scan pending/error queue items."
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install archive tools
+        run: sudo apt-get update && sudo apt-get install -y unzip
+
+      - name: Inventory font assets (read only)
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          FONT_PROCESSING_QUEUE_ID: ${{ inputs.queue_id }}
+          FONT_DISCOVERY_OUTPUT_DIR: font-discovery-reports
+        run: node scripts/discover-font-assets.js
+
+      - name: Upload discovery report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: font-asset-discovery-report
+          path: font-discovery-reports/*.json
+          if-no-files-found: warn
+          retention-days: 14
