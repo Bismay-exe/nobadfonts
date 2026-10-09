@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { deduplicateAssets, planVariantGroups } from './core.js';
+import { auditVariantGroups } from './audit-variant-groups.js';
 
 const BATCH_SIZE = 50;
 
@@ -44,33 +45,52 @@ export function exportAmbiguousAssets(report, outputDir, options = {}) {
     const assets = rawAssets.map(normalizeAsset);
     const uniqueAssets = deduplicateAssets(assets);
     const plan = planVariantGroups(uniqueAssets);
+    const audit = auditVariantGroups({ queue_items: [item] }).queues[0];
     const assetById = new Map(uniqueAssets.map((asset) => [asset.asset_id, asset]));
-    const candidates = plan.review.map((review) => {
-      const asset = assetById.get(review.asset_id);
-      if (!asset) throw new Error(`Review candidate missing from normalized assets: ${review.asset_id}`);
+    const reviewByAssetId = new Map();
+    const addReview = (assetId, reasons, groupEvidence = null) => {
+      if (!assetId || !assetById.has(assetId)) return;
+      const current = reviewByAssetId.get(assetId) || { reasons: new Set(), groupEvidence: [] };
+      for (const reason of reasons || []) if (reason) current.reasons.add(reason);
+      if (groupEvidence && !current.groupEvidence.some((entry) =>
+        entry.family_name === groupEvidence.family_name && entry.variant_key === groupEvidence.variant_key
+      )) current.groupEvidence.push(groupEvidence);
+      reviewByAssetId.set(assetId, current);
+    };
+    for (const review of plan.review) addReview(review.asset_id, [review.reason]);
+    // Grouped assets can still be unsafe; export every asset in a flagged group
+    // with the group's cross-format evidence, not just unassigned assets.
+    for (const group of audit.flagged_groups) {
+      const groupEvidence = {
+        family_name: group.family_name, variant_name: group.variant_name, variant_key: group.variant_key,
+        review_flags: group.review_flags,
+        weight_classes_by_format: group.evidence_variation.weight_classes_by_format,
+        source_paths: group.source_paths,
+      };
+      for (const asset of group.assets) addReview(asset.asset_id, group.review_flags, groupEvidence);
+    }
+    const candidates = [...reviewByAssetId.entries()].map(([assetId, review]) => {
+      const asset = assetById.get(assetId);
+      if (!asset) throw new Error(`Review candidate missing from normalized assets: ${assetId}`);
       return {
         asset_id: asset.asset_id,
         relative_path: asset.sources[0]?.relative_path || null,
         source_label: asset.sources[0]?.archive_label || null,
         extension: asset.metadata.extension,
-        review_reason: review.reason,
+        review_reasons: [...review.reasons].sort(),
+        group_evidence: review.groupEvidence,
         metadata: {
-          family_name: asset.metadata.family_name,
-          subfamily_name: asset.metadata.subfamily_name,
-          full_name: asset.metadata.full_name,
-          postscript_name: asset.metadata.postscript_name,
-          weight_class: asset.metadata.weight_class,
-          is_italic: asset.metadata.is_italic,
-          is_variable: asset.metadata.is_variable,
-          glyph_count: asset.metadata.glyph_count,
-          extension: asset.metadata.extension,
-          status: asset.metadata.parser_status,
+          family_name: asset.metadata.family_name, subfamily_name: asset.metadata.subfamily_name,
+          full_name: asset.metadata.full_name, postscript_name: asset.metadata.postscript_name,
+          weight_class: asset.metadata.weight_class, is_italic: asset.metadata.is_italic,
+          is_variable: asset.metadata.is_variable, glyph_count: asset.metadata.glyph_count,
+          extension: asset.metadata.extension, status: asset.metadata.parser_status,
         },
       };
     });
     const reasonCounts = {};
-    for (const candidate of candidates) {
-      reasonCounts[candidate.review_reason] = (reasonCounts[candidate.review_reason] || 0) + 1;
+    for (const candidate of candidates) for (const reason of candidate.review_reasons) {
+      reasonCounts[reason] = (reasonCounts[reason] || 0) + 1;
     }
 
     const slug = safeLabel(item.slug);
@@ -88,6 +108,9 @@ export function exportAmbiguousAssets(report, outputDir, options = {}) {
       slug: item.slug || null,
       unique_asset_count: uniqueAssets.length,
       candidate_count: candidates.length,
+      unassigned_review_asset_count: plan.review.length,
+      flagged_group_count: audit.flagged_group_count,
+      flagged_group_asset_count: audit.flagged_group_asset_count,
       reason_counts: reasonCounts,
       batch_files: batchFiles,
     });

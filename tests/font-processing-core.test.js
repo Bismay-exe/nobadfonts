@@ -240,3 +240,20 @@ test('planVariantGroups preserves Monaspace width variants and italic distinctio
   ]);
   assert.deepEqual(result.review, []);
 });
+
+
+test('Monaspace Neon, Argon, Krypton, Radon, and Xenon remain distinct families', () => {
+  const subfamilies = ['Neon', 'Argon', 'Krypton', 'Radon', 'Xenon'];
+  const assets = subfamilies.flatMap((name, index) => [
+    { sha256: String(index + 1).repeat(64).slice(0, 64), metadata: { family_name: `Monaspace ${name}`, subfamily_name: 'Regular', weight_class: 400, is_italic: false, extension: '.otf', status: 'parsed' } },
+    { sha256: String(index + 6).repeat(64).slice(0, 64), metadata: { family_name: `Monaspace ${name} NF`, subfamily_name: 'Regular', weight_class: 400, is_italic: false, extension: '.woff2', status: 'parsed' } },
+  ]);
+  const result = planVariantGroups(assets);
+  assert.equal(result.review.length, 0);
+  assert.equal(result.groups.length, 10);
+  assert.deepEqual(result.groups.map((group) => group.family_name).sort(), [
+    'Monaspace Argon', 'Monaspace Argon NF', 'Monaspace Krypton', 'Monaspace Krypton NF',
+    'Monaspace Neon', 'Monaspace Neon NF', 'Monaspace Radon', 'Monaspace Radon NF',
+    'Monaspace Xenon', 'Monaspace Xenon NF',
+  ]);
+});

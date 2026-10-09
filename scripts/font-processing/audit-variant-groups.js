@@ -141,6 +141,13 @@ export function auditVariantGroups(report) {
     const plan = planVariantGroups(uniqueAssets);
     const groups = plan.groups.map(inspectGroup);
     const flaggedGroups = groups.filter((group) => group.review_flags.length > 0);
+    const flaggedGroupAssetIds = new Set(flaggedGroups.flatMap((group) =>
+      group.assets.map((asset) => asset.asset_id || asset.sha256).filter(Boolean)
+    ));
+    const unassignedReviewReasonCounts = plan.review.reduce((counts, entry) => {
+      counts[entry.reason] = (counts[entry.reason] || 0) + 1;
+      return counts;
+    }, {});
     const reviewFlagCounts = flaggedGroups.reduce((counts, group) => {
       for (const flag of group.review_flags) counts[flag] = (counts[flag] || 0) + 1;
       return counts;
@@ -165,12 +172,14 @@ export function auditVariantGroups(report) {
       weight_disagreement_group_count: weightDisagreementGroups.length,
       weight_disagreement_groups: weightDisagreementGroups,
       groups_without_automatic_flags: groups.length - flaggedGroups.length,
-      review_asset_count: plan.review.length,
+      // Grouped assets can still be unsafe. Count every asset in a flagged group
+      // as requiring review instead of reporting zero review assets.
+      review_asset_count: plan.review.length + flaggedGroupAssetIds.size,
+      unassigned_review_asset_count: plan.review.length,
+      flagged_group_asset_count: flaggedGroupAssetIds.size,
       format_conflict_count: groups.reduce((count, group) => count + group.conflicts.length, 0),
-      review_reason_counts: plan.review.reduce((counts, entry) => {
-        counts[entry.reason] = (counts[entry.reason] || 0) + 1;
-        return counts;
-      }, {}),
+      review_reason_counts: unassignedReviewReasonCounts,
+      flagged_group_review_reason_counts: reviewFlagCounts,
       flagged_groups: flaggedGroups,
       groups,
     };
@@ -191,6 +200,8 @@ export function auditVariantGroups(report) {
       planned_group_count: queues.reduce((sum, queue) => sum + queue.planned_group_count, 0),
       flagged_group_count: queues.reduce((sum, queue) => sum + queue.flagged_group_count, 0),
       review_asset_count: queues.reduce((sum, queue) => sum + queue.review_asset_count, 0),
+      unassigned_review_asset_count: queues.reduce((sum, queue) => sum + queue.unassigned_review_asset_count, 0),
+      flagged_group_asset_count: queues.reduce((sum, queue) => sum + queue.flagged_group_asset_count, 0),
       format_conflict_count: queues.reduce((sum, queue) => sum + queue.format_conflict_count, 0),
       weight_disagreement_group_count: queues.reduce((sum, queue) => sum + queue.weight_disagreement_group_count, 0),
       review_flag_counts: queues.reduce((counts, queue) => {

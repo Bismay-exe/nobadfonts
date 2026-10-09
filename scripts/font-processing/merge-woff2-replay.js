@@ -39,6 +39,10 @@ export function mergeWoff2ReplayIntoDiscoveryReport(report, replay) {
         metadata: {
           ...(asset.metadata || {}),
           status: replayAsset.metadata_status,
+          // Clear stale discovery notes after a successful fresh parse.
+          reason: replayAsset.metadata_status === 'parsed'
+            ? null
+            : replayAsset.error || asset.metadata?.reason || null,
           family_name: replayAsset.family_name,
           subfamily_name: replayAsset.subfamily_name,
           full_name: replayAsset.full_name || null,

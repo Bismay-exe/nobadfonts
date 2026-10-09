@@ -648,6 +648,9 @@ test('variant audit preserves weight-class evidence by format without inferring 
   assert.equal(group.assets.find((asset) => asset.extension === '.woff2').metadata.weight_class, 400);
   assert.equal(result.publishable, false);
   assert.equal(result.summary.weight_disagreement_group_count, 1);
+  assert.equal(result.summary.review_asset_count, 3);
+  assert.equal(result.summary.unassigned_review_asset_count, 0);
+  assert.equal(result.summary.flagged_group_asset_count, 3);
   assert.deepEqual(result.summary.review_flag_counts, { weight_class_disagreement: 1, subfamily_weight_class_disagreement: 1 });
   assert.equal(result.queues[0].weight_disagreement_groups.length, 1);
   assert.deepEqual(result.queues[0].weight_disagreement_groups[0].weight_classes_by_format, group.evidence_variation.weight_classes_by_format);
@@ -670,4 +673,30 @@ test('named-weight audit recognizes common weights without confusing Monaspace w
     { relative_path: 'Fixture-SemiWide.woff2', extension: 'woff2', sha256: 'e'.repeat(64), metadata: { status: 'parsed', family_name: 'Fixture', subfamily_name: 'SemiWide', weight_class: 400, is_italic: false, is_variable: false } },
   ] }] });
   assert.equal(widthResult.queues[0].groups[0].evidence_variation.named_weight_mismatches.length, 0);
+});
+
+
+test('ambiguous exporter includes every asset in metadata-contradictory groups with cross-format evidence', () => {
+  const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), 'nbf-gemini-group-review-test-'));
+  try {
+    const report = { queue_items: [{ slug: 'format-weight-conflict', assets: [
+      { source_label: 'otf', relative_path: 'Mono-Bold.otf', extension: 'otf', sha256: 'a'.repeat(64), metadata: { status: 'parsed', family_name: 'Mono', subfamily_name: 'Bold', weight_class: 700, is_italic: false } },
+      { source_label: 'woff', relative_path: 'Mono-Bold.woff', extension: 'woff', sha256: 'b'.repeat(64), metadata: { status: 'parsed', family_name: 'Mono', subfamily_name: 'Bold', weight_class: 400, is_italic: false } },
+      { source_label: 'woff2', relative_path: 'Mono-Bold.woff2', extension: 'woff2', sha256: 'c'.repeat(64), metadata: { status: 'parsed', family_name: 'Mono', subfamily_name: 'Bold', weight_class: 400, is_italic: false } },
+    ] }] };
+    const result = exportAmbiguousAssets(report, outputDir);
+    const queue = result.manifest.queue_items[0];
+    assert.equal(queue.flagged_group_count, 1);
+    assert.equal(queue.flagged_group_asset_count, 3);
+    assert.equal(queue.candidate_count, 3);
+    assert.equal(queue.reason_counts.weight_class_disagreement, 3);
+    const batch = JSON.parse(fs.readFileSync(path.join(outputDir, queue.batch_files[0].file), 'utf8'));
+    assert.equal(batch.length, 3);
+    assert.ok(batch.every((candidate) => candidate.review_reasons.includes('weight_class_disagreement')));
+    assert.ok(batch.every((candidate) => candidate.group_evidence[0].weight_classes_by_format['.woff2'].weight_classes[0] === 400));
+    assert.ok(batch.every((candidate) => !('review_reason' in candidate)));
+    assert.equal(result.manifest.api_calls_performed, false);
+    assert.equal(result.manifest.database_writes_performed, false);
+    assert.equal(result.manifest.uploads_performed, false);
+  } finally { fs.rmSync(outputDir, { recursive: true, force: true }); }
 });
