@@ -90,7 +90,9 @@ export async function validateWoff2FromDiscoveryReport(report, options = {}) {
         const status = asset.metadata?.status || 'unknown';
         itemResult.baseline_woff2_status_counts[status] = (itemResult.baseline_woff2_status_counts[status] || 0) + 1;
       }
+      const woff2SourceLabels = new Set(baselineWoff2.map((asset) => asset.source_label).filter(Boolean));
       const sources = (item.download_sources || []).filter((source) =>
+        woff2SourceLabels.has(source.label) &&
         source.outcome === 'scanned' && /^https?:\/\//i.test(source.original_url || source.normalized_url || '')
       );
       for (const source of sources) {
