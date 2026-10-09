@@ -1,8 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  buildGeminiFallbackRequest,
-  validateGeminiFallbackResponse,
   canonicalFamilyKey,
   canonicalVariantKey,
   deduplicateAssets,
@@ -11,6 +9,7 @@ import {
   planVariantGroups,
   sha256Buffer,
 } from '../scripts/font-processing/core.js';
+import { buildGeminiFallbackRequest, validateGeminiFallbackResponse } from '../scripts/font-processing/gemini-fallback-contract.js';
 
 const hashA = 'a'.repeat(64);
 const hashB = 'b'.repeat(64);
