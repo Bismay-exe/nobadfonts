@@ -33,7 +33,7 @@ export function buildPublishPlan(manifest, { baseDir = process.cwd() } = {}) {
       path: item.file_path,
       archive_label: item.archive_label ?? null,
       relative_path: item.relative_path ?? item.file_path,
-      metadata: item.metadata || {},
+      metadata: { ...(item.metadata || {}), extension: path.extname(filePath) },
     };
   });
 
