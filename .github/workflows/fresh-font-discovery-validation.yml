@@ -1,4 +1,4 @@
-name: Fresh Font Discovery Validation (Read Only)
+name: Fresh Font Metadata Validation (Read Only)
 
 on:
   pull_request:
@@ -39,7 +39,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Install local WOFF2 parser dependencies
+      - name: Install local font metadata parser dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y unzip python3-pip
@@ -59,7 +59,7 @@ jobs:
           unzip -q validation-output/baseline/report.zip -d validation-output/baseline
           find validation-output/baseline -maxdepth 3 -type f -print
 
-      - name: Replay saved report against original font archives (read only)
+      - name: Replay saved report against original font archives (all formats, read only)
         run: |
           mkdir -p validation-output/results
           baseline="$(find validation-output/baseline -type f -name '*.json' -print -quit)"
@@ -72,7 +72,7 @@ jobs:
           cat validation-output/results/merge-summary.json
           cat validation-output/results/grouping-comparison.json
 
-      - name: Upload WOFF2 replay results
+      - name: Upload all-format font metadata replay results
         if: always()
         uses: actions/upload-artifact@v4
         with:
