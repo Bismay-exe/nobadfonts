@@ -157,8 +157,13 @@ The fresh replay workflow now runs the audit against its actual merged Monaspace
 
 The source report identifies the affected webfont assets as coming from the official Monaspace v1.400 release archive `https://github.com/githubnext/monaspace/releases/download/v1.400/monaspace-webfont-nerdfonts-v1.400.zip`. Inspection of the upstream `v1.400` release-preparation script (`scripts/prepare-release.sh`) shows that it packages the already-present `fonts/Web Fonts/NerdFonts Web Fonts` directory into a release ZIP; it does not perform the webfont conversion itself. This confirms that the mismatch exists in the checked-in upstream webfont binaries before release packaging, but does not identify which earlier build step introduced it. The parser reads the embedded OS/2 weight class. The audit now reports a separate `subfamily_weight_class_disagreement` flag whenever a recognizable named subfamily (for example, `Bold`) contradicts the embedded weight class (for example, `400` versus `700`). This is a review signal, not permission to rewrite the original metadata or automatically prefer another format.
 
-The latest workflow completed successfully, including core tests, real-font fixture validation, and Android APK build. No Gemini API calls, uploads, database writes, or queue updates were performed.
+The latest read-only replay, core tests, and real-font fixture validation completed successfully. Android APK builds are now manual-only (`workflow_dispatch`) and do not start on pushes or pull requests. No Gemini API calls, uploads, database writes, or queue updates were performed by the read-only validation.
 
 The audit also preserves `weight_classes_by_format` for each group: each format's asset count, raw embedded weight-class values, and source paths are shown separately. This helps investigate cross-format metadata patterns without replacing the observed value or treating any format as automatically authoritative. A regression test covers an OTF Bold asset reporting 700 alongside WOFF/WOFF2 assets reporting 400; the audit flags the disagreement and preserves all three original values.
 
 The audit's compact summary now includes counts per review flag and a focused list of groups with weight-class disagreements. Each listed group carries its per-format weight values and source paths, so reviewers can prioritize repeated patterns without parsing every asset record manually. These are evidence summaries only; no weight value is inferred or rewritten.
+
+
+## Gemini runner regression coverage
+
+The offline test suite includes mocked-fetch tests for validated-result caching, persistent request-budget enforcement, and fail-closed behavior when the cache is malformed. These tests use a fake API key and a local mocked response; they do not make live Gemini requests. Run them with `npm run test:font-processing`.
