@@ -24,6 +24,8 @@ test('sha256Buffer is deterministic and validates its input', () => {
 
 test('getFontExtension normalizes supported extensions and rejects others', () => {
   assert.equal(getFontExtension('assets/Font.WOFF2'), '.woff2');
+  assert.equal(getFontExtension('ttf'), '.ttf');
+  assert.equal(getFontExtension('woff2'), '.woff2');
   assert.equal(getFontExtension('Font.svg'), null);
 });
 
