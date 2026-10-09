@@ -1,4 +1,3 @@
-import { createClient } from '@supabase/supabase-js';
 import { assertProductionWriteEnabled } from './font-processing/write-gate.js';
 import fs from 'fs';
 import path from 'path';
@@ -13,6 +12,10 @@ try {
   console.error(error instanceof Error ? error.message : String(error));
   process.exit(1);
 }
+
+// Resolve the Supabase SDK only after the write gate, so a blocked invocation
+// can exit without loading credentials, dependencies, or creating a client.
+const { createClient } = await import('@supabase/supabase-js');
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
