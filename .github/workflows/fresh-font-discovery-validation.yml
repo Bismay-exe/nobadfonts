@@ -1,6 +1,12 @@
 name: Fresh Font Discovery Validation (Read Only)
 
 on:
+  pull_request:
+    paths:
+      - 'scripts/font-processing/replay-woff2-discovery.js'
+      - 'scripts/font-processing/parse-woff2-metadata.py'
+      - '.github/workflows/fresh-font-discovery-validation.yml'
+      - 'tests/font-processing-report.test.js'
   workflow_dispatch:
     inputs:
       baseline_run_id:
