@@ -64,8 +64,8 @@ test('uncertain staging object is retained for reconciliation while known batch 
       throw error;
     }
     firstKey = key;
-    f.staged.set(key, { sha256: asset.sha256, sizeBytes: asset.sizeBytes });
-    return f.staged.get(key);
+    f.objects.set(key, { sha256: asset.sha256, sizeBytes: asset.sizeBytes });
+    return f.objects.get(key);
   };
   await assert.rejects(publishStagedBatch({ batchId: 'uncertain-stage', assets: f.assets, rows: f.rows, adapter: f.adapter, sleep: async () => {} }), /read-back timed out/);
   const deletion = f.events.find(([type]) => type === 'delete');
