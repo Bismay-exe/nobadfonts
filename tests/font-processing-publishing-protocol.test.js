@@ -52,3 +52,25 @@ test('publisher must confirm commit and retry delays are bounded', async () => {
   await assert.rejects(publishStagedBatch({ batchId: 'no-commit', assets: f.assets, rows: f.rows, adapter: f.adapter, sleep: async () => {} }), /did not confirm an atomic commit/);
   assert.equal(retryDelayMs(1), 250); assert.equal(retryDelayMs(10), 4000); assert.throws(() => retryDelayMs(0), /positive integer/);
 });
+
+test('uncertain staging object is retained for reconciliation while known batch objects are cleaned', async () => {
+  const f = fixture();
+  let firstKey;
+  f.adapter.stageAsset = async (asset, key) => {
+    if (asset.assetId === 'asset-1') {
+      const error = new Error('read-back timed out after upload');
+      error.stagedObjectMayExist = true;
+      error.stagedKey = key;
+      throw error;
+    }
+    firstKey = key;
+    f.staged.set(key, { sha256: asset.sha256, sizeBytes: asset.sizeBytes });
+    return f.staged.get(key);
+  };
+  await assert.rejects(publishStagedBatch({ batchId: 'uncertain-stage', assets: f.assets, rows: f.rows, adapter: f.adapter, sleep: async () => {} }), /read-back timed out/);
+  const deletion = f.events.find(([type]) => type === 'delete');
+  assert.deepEqual(deletion[1], [firstKey]);
+  const audit = f.events.filter(([type, record]) => type === 'audit' && record.status === 'reconciliation_required').at(-1);
+  assert.ok(audit[1].stagedKeys.some((key) => key.endsWith('/asset-1/variant-1.woff2')));
+  assert.equal(audit[1].retained_uncertain_key?.endsWith('/asset-1/variant-1.woff2'), true);
+});
