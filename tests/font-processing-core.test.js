@@ -132,9 +132,20 @@ test('planVariantGroups sends contradictory family-weight metadata to review', (
         status: 'parsed',
       },
     },
+    {
+      sha256: 'f'.repeat(64),
+      metadata: {
+        family_name: 'Fraunces 144pt Black',
+        subfamily_name: 'Italic',
+        weight_class: 900,
+        is_italic: true,
+        extension: '.otf',
+        status: 'parsed',
+      },
+    },
   ]);
 
   assert.equal(result.groups.length, 0);
-  assert.equal(result.review.length, 1);
-  assert.equal(result.review[0].reason, 'family_name_weight_conflict');
+  assert.equal(result.review.length, 2);
+  assert.deepEqual(result.review.map((item) => item.reason), ['family_name_weight_conflict', 'family_name_weight_conflict']);
 });
