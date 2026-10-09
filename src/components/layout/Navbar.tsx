@@ -13,6 +13,7 @@ import { Download } from "lucide-react";
 import { Squircle } from "react-ios-corners";
 import { useBag } from "../../contexts/BagContext";
 import { DocsSearchModal } from "../docs/DocsSearchModal";
+import Switch from "../ui/ThemeToggle";
 
 export default function Navbar() {
     const { user, profile } = useAuth();
@@ -107,74 +108,67 @@ export default function Navbar() {
                     </svg>
                 ),
             },
+            {
+                name: "Moods",
+                path: "/moods",
+                icon: BookOpen,
+                svg: (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 64 64">
+                        <path fill="currentColor" d="M31.096 62h-4.891s5.02-18.473 5.213-30.574c.014-.838 1.164-.838 1.164 0C32.582 48.862 31.096 62 31.096 62m26.889-40.164c-9.24-6.425-22.98 7.2-24.522 9.138c.873 1.571 6.095 21.527 16.962 20.817c10.104-.658 8.646-12.536 4.267-14.841c5.278.041 11.593-9.343 3.293-15.114" />
+                        <path fill="currentColor" d="M46.571 7.935c-3.203-9.883-13.61-5.449-14.572-.513c-1.323-5.26-11.473-9.185-14.57.521c-3.449 10.808 13.355 20.356 14.56 21.946c1.2-1.264 18.032-11.321 14.582-21.954" />
+                        <path fill="currentColor" d="M6.013 21.836c-8.298 5.771-1.98 15.155 3.295 15.114c-4.38 2.306-5.836 14.183 4.267 14.841c10.868.709 16.065-19.245 16.937-20.816c-1.596-1.938-15.317-15.52-24.499-9.139" />
+                    </svg>
+                ),
+                badge: "NEW",
+            },
             // {
-            //     name: "Moods",
-            //     path: "/moods",
-            //     icon: BookOpen,
+            //     name: "Favourites",
+            //     path: "/favourites",
+            //     icon: Star,
             //     svg: (
-            //         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
-            //             <g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2">
-            //                 <circle cx="12" cy="12" r="10" />
-            //                 <path d="M8 14s1.5 2 4 2 4-2 4-2" />
-            //                 <path d="M9 9h.01M15 9h.01" />
+            //         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 16 16">
+            //             <path fill="currentColor" fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15C-7.534 4.736 3.562-3.248 8 1.314" />
+            //         </svg>
+
+            //     ),
+            // },
+            // {
+            //     name: "Boards",
+            //     path: "/boards",
+            //     icon: LayoutDashboard,
+            //     svg: (
+            //         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
+            //             <path fill="currentColor" fill-rule="evenodd" d="M14.748 0a1.75 1.75 0 0 0-1.75 1.75v4.5c0 .966.784 1.75 1.75 1.75h7.5a1.75 1.75 0 0 0 1.75-1.75v-4.5A1.75 1.75 0 0 0 22.248 0zm0 10a1.75 1.75 0 0 0-1.75 1.75v10.5c0 .967.784 1.75 1.75 1.75h7.5a1.75 1.75 0 0 0 1.75-1.75v-10.5a1.75 1.75 0 0 0-1.75-1.75zM.002 1.75C.002.784.785 0 1.752 0h7.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0 1 9.252 14h-7.5a1.75 1.75 0 0 1-1.75-1.75zM1.752 16a1.75 1.75 0 0 0-1.75 1.75v4.5c0 .966.783 1.75 1.75 1.75h7.5a1.75 1.75 0 0 0 1.75-1.75v-4.5A1.75 1.75 0 0 0 9.252 16z" clip-rule="evenodd" />
+            //         </svg>
+            //     ),
+            // },
+            // {
+            //     name: "Bag",
+            //     path: "/bag",
+            //     icon: Users,
+            //     svg: (
+            //         <svg
+            //             xmlns="http://www.w3.org/2000/svg"
+            //             width="18"
+            //             height="18"
+            //             viewBox="0 0 24 24"
+            //         >
+            //             <g
+            //                 fill="none"
+            //                 stroke="currentColor"
+            //                 stroke-linecap="round"
+            //                 stroke-linejoin="round"
+            //                 stroke-width="2"
+            //             >
+            //                 <path
+            //                     d="M3.977 9.84A2 2 0 0 1 5.971 8h12.058a2 2 0 0 1 1.994 1.84l.803 10A2 2 0 0 1 18.833 22H5.167a2 2 0 0 1-1.993-2.16z"
+            //                     fill="currentColor"
+            //                 />
+            //                 <path d="M16 11V6a4 4 0 0 0-4-4v0a4 4 0 0 0-4 4v5" />
             //             </g>
             //         </svg>
             //     ),
-            //     badge: "NEW",
             // },
-            {
-                name: "Favourites",
-                path: "/favourites",
-                icon: Star,
-                svg: (
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 16 16">
-                        <path fill="currentColor" fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15C-7.534 4.736 3.562-3.248 8 1.314" />
-                    </svg>
-
-                ),
-            },
-            {
-                name: "Boards",
-                path: "/boards",
-                icon: LayoutDashboard,
-                svg: (
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
-                        <g fill="currentColor">
-                            <path d="M2.75391 13.75C2.75048 13.2102 2.75 12.6285 2.75 12C2.75 9.62177 2.75198 7.91326 2.92676 6.61328C3.09865 5.33508 3.42551 4.56472 3.99512 3.99512C4.56472 3.42551 5.33508 3.09864 6.61328 2.92676C7.91326 2.75198 9.62178 2.75 12 2.75C12.8274 2.75 13.5737 2.75404 14.25 2.76172L14.25 13.75L2.75391 13.75Z" />
-                            <path d="M15.75 13.75L15.75 2.79492C16.3613 2.8209 16.9024 2.86164 17.3867 2.92676C18.6649 3.09865 19.4353 3.42551 20.0049 3.99512C20.5745 4.56472 20.9014 5.33508 21.0732 6.61328C21.248 7.91326 21.25 9.62177 21.25 12C21.25 12.6285 21.2495 13.2102 21.2461 13.75L15.75 13.75Z" />
-                            <path fill-rule="evenodd" d="M12 21.25C9.62177 21.25 7.91326 21.248 6.61328 21.0732C5.33508 20.9014 4.56472 20.5745 3.99512 20.0049C3.42551 19.4353 3.09865 18.6649 2.92676 17.3867C2.84442 16.7743 2.80084 16.0711 2.77734 15.25L21.2227 15.25C21.1992 16.0711 21.1556 16.7743 21.0732 17.3867C20.9014 18.6649 20.5745 19.4353 20.0049 20.0049C19.4353 20.5745 18.6649 20.9014 17.3867 21.0732C16.0867 21.248 14.3782 21.25 12 21.25Z" clip-rule="evenodd" />
-                        </g>
-                    </svg>
-
-                ),
-            },
-            {
-                name: "Bag",
-                path: "/bag",
-                icon: Users,
-                svg: (
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="18"
-                        height="18"
-                        viewBox="0 0 24 24"
-                    >
-                        <g
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                        >
-                            <path
-                                d="M3.977 9.84A2 2 0 0 1 5.971 8h12.058a2 2 0 0 1 1.994 1.84l.803 10A2 2 0 0 1 18.833 22H5.167a2 2 0 0 1-1.993-2.16z"
-                                fill="currentColor"
-                            />
-                            <path d="M16 11V6a4 4 0 0 0-4-4v0a4 4 0 0 0-4 4v5" />
-                        </g>
-                    </svg>
-                ),
-            },
             ...(profile?.role === "member" || profile?.role === "admin"
                 ? [
                     {
@@ -215,6 +209,57 @@ export default function Navbar() {
         ],
         [profile?.role],
     );
+
+    const otherLinks = [
+        {
+            name: "Favourites",
+            path: "/favourites",
+            icon: Star,
+            svg: (
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 16 16">
+                    <path fill="currentColor" fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15C-7.534 4.736 3.562-3.248 8 1.314" />
+                </svg>
+
+            ),
+        },
+        {
+            name: "Boards",
+            path: "/boards",
+            icon: LayoutDashboard,
+            svg: (
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
+                    <path fill="currentColor" fill-rule="evenodd" d="M14.748 0a1.75 1.75 0 0 0-1.75 1.75v4.5c0 .966.784 1.75 1.75 1.75h7.5a1.75 1.75 0 0 0 1.75-1.75v-4.5A1.75 1.75 0 0 0 22.248 0zm0 10a1.75 1.75 0 0 0-1.75 1.75v10.5c0 .967.784 1.75 1.75 1.75h7.5a1.75 1.75 0 0 0 1.75-1.75v-10.5a1.75 1.75 0 0 0-1.75-1.75zM.002 1.75C.002.784.785 0 1.752 0h7.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0 1 9.252 14h-7.5a1.75 1.75 0 0 1-1.75-1.75zM1.752 16a1.75 1.75 0 0 0-1.75 1.75v4.5c0 .966.783 1.75 1.75 1.75h7.5a1.75 1.75 0 0 0 1.75-1.75v-4.5A1.75 1.75 0 0 0 9.252 16z" clip-rule="evenodd" />
+                </svg>
+            ),
+        },
+        {
+            name: "Bag",
+            path: "/bag",
+            icon: Users,
+            svg: (
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                >
+                    <g
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                    >
+                        <path
+                            d="M3.977 9.84A2 2 0 0 1 5.971 8h12.058a2 2 0 0 1 1.994 1.84l.803 10A2 2 0 0 1 18.833 22H5.167a2 2 0 0 1-1.993-2.16z"
+                            fill="currentColor"
+                        />
+                        <path d="M16 11V6a4 4 0 0 0-4-4v0a4 4 0 0 0-4 4v5" />
+                    </g>
+                </svg>
+            ),
+        },
+    ]
 
     return (
         <>
@@ -582,12 +627,12 @@ export default function Navbar() {
                                             });
                                             setDesktopMenuOpen((prev) => !prev);
                                         }}
-                                        className="hidden md:flex h-10 w-10 rounded-full bg-foreground/10 backdrop-blur-3xl border border-border/20 items-center justify-center text-foreground overflow-hidden hover:bg-foreground/20 hover:scale-105 transition-transform duration-300 ease-in-out cursor-pointer"
+                                        className={`hidden md:flex h-10 w-10 rounded-full bg-foreground/10 backdrop-blur-3xl border border-border/20 items-center justify-center text-foreground overflow-hidden hover:bg-foreground/20 hover:scale-105 transition-transform duration-300 ease-in-out cursor-pointer ${desktopMenuOpen ? "-rotate-45" : ""}`}
                                         aria-label="Open account menu"
                                         aria-expanded={desktopMenuOpen}
                                     >
                                         {desktopMenuOpen ? (
-                                            <X className="w-5 h-5" />
+                                            <X className="w-5 h-5 rotate-45" />
                                         ) : (
                                             <Menu className="w-5 h-5" />
                                         )}
@@ -599,12 +644,12 @@ export default function Navbar() {
                                             await Haptics.impact({ style: ImpactStyle.Light });
                                             setMobileMenuOpen((prev) => !prev);
                                         }}
-                                        className="md:hidden relative h-10 w-10 flex items-center justify-center rounded-xl bg-foreground/5 backdrop-blur-3xl text-foreground hover:bg-foreground/10 transition-all duration-300 cursor-pointer"
+                                        className={`md:hidden relative h-10 w-10 flex items-center justify-center rounded-xl bg-foreground/5 backdrop-blur-3xl text-foreground hover:bg-foreground/10 transition-all duration-300 cursor-pointer ${mobileMenuOpen ? "-rotate-45" : ""}`}
                                         aria-label={mobileMenuOpen ? "Close navigation" : "Open navigation"}
                                         aria-expanded={mobileMenuOpen}
                                     >
                                         {mobileMenuOpen ? (
-                                            <X className="w-5 h-5" />
+                                            <X className="w-5 h-5 rotate-45" />
                                         ) : (
                                             <Menu className="w-5 h-5" />
                                         )}
@@ -628,7 +673,7 @@ export default function Navbar() {
                         />
 
                         <motion.div
-                            className="fixed right-4 top-18 z-50 hidden md:block w-75 overflow-hidden rounded-3xl border border-border/20 bg-background/50 backdrop-blur-3xl shadow-2xl"
+                            className="fixed right-4 top-18 z-50 hidden md:block w-75 overflow-hidden rounded-3xl border border-border/50 bg-card-background shadow-2xl"
                             initial={{ opacity: 0, y: -8, scale: 0.98 }}
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             exit={{ opacity: 0, y: -8, scale: 0.98 }}
@@ -652,10 +697,48 @@ export default function Navbar() {
                                                     setDesktopMenuOpen(false);
                                                 }}
                                                 className={cn(
-                                                    "flex items-center justify-between rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
+                                                    "flex items-center justify-between rounded-xl px-3 py-2.5 text-sm font-medium transition-colors duration-100 ease-in-out",
                                                     isActive
-                                                        ? "bg-foreground/5 text-foreground"
-                                                        : "text-foreground hover:bg-foreground/5"
+                                                        ? "bg-border text-foreground"
+                                                        : "text-foreground hover:bg-foreground/10"
+                                                )}
+                                            >
+                                                <span className={cn(
+                                                    "font-inter-tight ztext-[2.4rem] zsm:text-[2.7rem] zmd:text-[2rem] zleading-none ztracking-[-0.055em] transition-colors duration-200 flex items-center",
+                                                    isActive ? "text-foreground" : "text-muted group-hover:text-foreground"
+                                                )}>
+                                                    {link.name}
+                                                </span>
+                                                <span className={cn(isActive ? "text-foreground" : "text-muted group-hover:text-foreground")}>
+                                                    {link.svg}
+                                                </span>
+                                            </Link>
+                                        );
+                                    })}
+                                </div>
+
+                                <div className="w-full h-px bg-border/50 my-4" />
+
+                                {/* other links */}
+                                <div className="space-y-0.5">
+                                    {otherLinks.map((link) => {
+                                        const isActive = location.pathname === link.path;
+
+                                        return (
+                                            <Link
+                                                key={link.path}
+                                                to={link.path}
+                                                onClick={async () => {
+                                                    await Haptics.impact({
+                                                        style: ImpactStyle.Light,
+                                                    });
+                                                    setDesktopMenuOpen(false);
+                                                }}
+                                                className={cn(
+                                                    "flex items-center justify-between rounded-xl px-3 py-2.5 text-sm font-medium transition-colors duration-100 ease-in-out",
+                                                    isActive
+                                                        ? "bg-border text-foreground"
+                                                        : "text-foreground hover:bg-foreground/10"
                                                 )}
                                             >
                                                 <span className={cn(
@@ -664,7 +747,7 @@ export default function Navbar() {
                                                 )}>
                                                     {link.name}
                                                     {link.name === "Bag" && bagCount > 0 && (
-                                                        <span className="ml-2 text-xs bg-foreground text-background px-2 py-0.5 rounded-full">
+                                                        <span className="ml-2 text-xs bg-border text-muted px-1.5 py-0.5 rounded-full">
                                                             {bagCount > 99 ? "99+" : bagCount} <span className='ml-0.5 tracking-normal'>fonts</span>
                                                         </span>
                                                     )}
@@ -685,7 +768,9 @@ export default function Navbar() {
                                             Theme
                                         </span>
 
-                                        <button
+                                        <Switch />
+
+                                        {/* <button
                                             type="button"
                                             onClick={async () => {
                                                 await Haptics.impact({
@@ -706,7 +791,7 @@ export default function Navbar() {
                                                     <path fill="currentColor" d="m16 8l.94-2.06L19 5l-2.06-.94L16 2l-.94 2.06L13 5l2.06.94zm4.25-.5l-.55 1.2l-1.2.55l1.2.55l.55 1.2l.55-1.2l1.2-.55l-1.2-.55z" />
                                                 </svg>
                                             )}
-                                        </button>
+                                        </button> */}
                                     </div>
 
 
@@ -791,15 +876,6 @@ export default function Navbar() {
             <AnimatePresence>
                 {mobileMenuOpen && (
                     <>
-                        <motion.div
-                            className="md:hidden fixed inset-0 z-55 bg-black/40 backdrop-blur-[2px]"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            transition={{ duration: 0.2 }}
-                            onClick={() => setMobileMenuOpen(false)}
-                        />
-
                         <motion.aside
                             className="md:hidden fixed z-60 inset-0 md:inset-auto md:right-4 md:top-4 md:bottom-4 md:w-90 bg-background text-foreground md:rounded-[28px] border border-foreground/10 overflow-hidden shadow-2xl"
                             initial={{ opacity: 0, x: 30 }}
@@ -897,6 +973,52 @@ export default function Navbar() {
                                             );
                                         })}
 
+                                        <div className="w-full h-px bg-border my-8" />
+
+                                        {otherLinks.map((link, index) => {
+                                            const isActive = location.pathname === link.path;
+
+                                            return (
+                                                <Link
+                                                    key={link.path}
+                                                    to={link.path}
+                                                    onClick={async () => {
+                                                        await Haptics.impact({
+                                                            style: ImpactStyle.Light,
+                                                        });
+
+                                                        setMobileMenuOpen(false);
+                                                    }}
+                                                    className="group"
+                                                >
+                                                    <motion.div
+                                                        initial={{ opacity: 0, x: 15 }}
+                                                        animate={{ opacity: 1, x: 0 }}
+                                                        transition={{ delay: index * 0.035, duration: 0.3 }}
+                                                        className="flex items-center justify-between py-2 md:py-2.5"
+                                                    >
+                                                        <span
+                                                            className={cn(
+                                                                "font-inter-tight text-[2.4rem] sm:text-[2.7rem] leading-none tracking-[-0.055em] transition-colors duration-200 flex items-center",
+                                                                isActive ? "text-foreground" : "text-muted group-hover:text-foreground"
+                                                            )}
+                                                        >
+                                                            {link.name}
+                                                            {link.name === "Bag" && bagCount > 0 && (
+                                                                <span className="ml-2 text-xl bg-foreground text-background px-2 py-0.5 rounded-full">
+                                                                    {bagCount > 99 ? "99+" : bagCount} <span className='ml-1 tracking-normal'>fonts</span>
+                                                                </span>
+                                                            )}
+                                                        </span>
+
+                                                        <span className={cn(isActive ? "text-foreground" : "text-muted group-hover:text-foreground")}>
+                                                            {link.svg}
+                                                        </span>
+                                                    </motion.div>
+                                                </Link>
+                                            );
+                                        })}
+
                                     </nav>
 
                                     {/* Utilities */}
@@ -928,7 +1050,9 @@ export default function Navbar() {
                                                     Theme
                                                 </span>
 
-                                                <button
+                                                <Switch />
+
+                                                {/* <button
                                                     type="button"
                                                     onClick={async () => {
                                                         await Haptics.impact({
@@ -949,7 +1073,7 @@ export default function Navbar() {
                                                             <path fill="currentColor" d="m16 8l.94-2.06L19 5l-2.06-.94L16 2l-.94 2.06L13 5l2.06.94zm4.25-.5l-.55 1.2l-1.2.55l1.2.55l.55 1.2l.55-1.2l1.2-.55l-1.2-.55z" />
                                                         </svg>
                                                     )}
-                                                </button>
+                                                </button> */}
                                             </div>
                                         </div>
                                     </div>

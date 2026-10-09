@@ -56,20 +56,22 @@ export default function FontHeroHeader({
 
                 <div className="flex flex-wrap gap-3">
                     {/* Favorite Button */}
-                    <Like
-                        liked={isFavorited}
-                        count={font.favorites_count || 0}
+                    <motion.button
+                        whileTap={{ scale: 0.9 }}
                         onClick={onFavorite}
-                        color="Accent"
-                        size={20}
-                        aria-label={isFavorited ? `Remove ${font.name} from favorites` : `Add ${font.name} to favorites`}
-                        className={cn(
-                            "px-4 md:px-6 py-3 rounded-full border transition-all duration-300 cursor-pointer font-bold",
-                            isFavorited
-                                ? "bg-accent/15 border-accent/30 text-accent"
-                                : "bg-foreground/5 border-foreground/10 text-foreground hover:opacity-80"
+                        aria-label={`Save ${font.name} to a board`}
+                        className={cn("flex items-center gap-2 px-4 md:px-6 py-3 rounded-full border transition-all duration-300 cursor-pointer",
+                            isFavorited ? 'bg-accent/25 border-accent/30 text-accent' : 'bg-foreground/5 border-foreground/10 text-foreground hover:opacity-80'
                         )}
-                    />
+                    >
+                        <Like
+                            liked={isFavorited}
+                            count={font.favorites_count || 0}
+                            color="Accent"
+                            size={20}
+                            aria-label={isFavorited ? `Remove ${font.name} from favorites` : `Add ${font.name} to favorites`}
+                        />
+                    </motion.button>
 
                     {/* Save to Board Button — only for logged-in users */}
                     {user && (

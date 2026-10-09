@@ -177,12 +177,12 @@ function groupFontFiles(fontFiles) {
 }
 
 async function processQueue() {
-  console.log('Checking for pending font downloads...\n');
+  console.log('Checking for pending or failed (error) font downloads...\n');
 
   const { data: queueItems, error: fetchError } = await supabase
     .from('font_processing_queue')
     .select('*, fonts(uploaded_by)')
-    .eq('status', 'pending');
+    .in('status', ['pending', 'error']);
 
   if (fetchError) {
     console.error('Failed to fetch queue items:', fetchError.message);
@@ -190,31 +190,43 @@ async function processQueue() {
   }
 
   if (!queueItems || queueItems.length === 0) {
-    console.log('No pending items found.');
+    console.log('No pending or error items found.');
     return;
   }
 
-  console.log(`Found ${queueItems.length} pending item(s).\n`);
+  console.log(`Found ${queueItems.length} item(s) to process (pending or error retry).\n`);
 
   for (const item of queueItems) {
     console.log(`${'='.repeat(60)}`);
-    console.log(`Font: ${item.slug} (ID: ${item.id})`);
+    console.log(`Font: ${item.slug} (ID: ${item.id}) [Status: ${item.status}]`);
     console.log(`${'='.repeat(60)}`);
 
-    // Mark as processing immediately
+    // Mark as processing immediately and reset previous error message
     await supabase
       .from('font_processing_queue')
-      .update({ status: 'processing' })
+      .update({ status: 'processing', error_message: null })
       .eq('id', item.id);
 
-    const userId = item.fonts?.uploaded_by;
+    let userId = item.fonts?.uploaded_by;
     if (!userId) {
-      console.error('  ❌ Cannot determine uploaded_by user_id');
-      await supabase.from('font_processing_queue').update({
-        status: 'error',
-        error_message: 'Could not determine uploaded_by user_id',
-      }).eq('id', item.id);
-      continue;
+      // Attempt fallback to admin profile
+      const { data: adminProfile } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('role', 'admin')
+        .limit(1)
+        .maybeSingle();
+
+      if (adminProfile?.id) {
+        userId = adminProfile.id;
+      } else {
+        console.error('  ❌ Cannot determine uploaded_by user_id');
+        await supabase.from('font_processing_queue').update({
+          status: 'error',
+          error_message: 'Could not determine uploaded_by user_id',
+        }).eq('id', item.id);
+        continue;
+      }
     }
 
     const releaseZips = item.download_urls; // Array of { url, label }

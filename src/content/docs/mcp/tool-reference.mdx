@@ -60,3 +60,34 @@ Recommends harmonious typography pairings tailored to a target design aesthetic.
 | :--- | :--- | :--- | :--- |
 | `primary_font` | `string` | Yes | Name or slug of the primary headline font |
 | `aesthetic` | `string` | No | Mood target (e.g. `minimalist`, `editorial`, `high-tech`, `playful`) |
+
+---
+
+## `upload_font_json`
+
+Creates a new typeface entry in NoBadFonts from a canonical font JSON definition, and enqueues automated binary extraction from GitHub release zip archives.
+
+### Arguments
+
+| Parameter | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `json` | `object` | Yes | Canonical font JSON payload matching the `github-font-output.json` template, including `identity.name` and the `release_zips` array. |
+| `skip_existing` | `boolean` | No | If `true` (default), skips creation gracefully if font already exists in catalog. |
+| `publish_immediately` | `boolean` | No | If `true` (default), marks font as published immediately; if `false`, creates as draft. |
+| `uploader_user_id` | `string` | No | Optional user UUID to assign ownership to (defaults to system admin). |
+| `rationale` | `string` | No | Audit note describing font source or provenance. |
+
+---
+
+## `upload_multiple_fonts_json`
+
+Batch creates multiple fonts in NoBadFonts from generated JSONs and queues automated GitHub release downloads (up to 50 fonts per call). Ideal for discovery pipelines.
+
+### Arguments
+
+| Parameter | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `fonts` | `array` | Yes | Array of font creation objects (`{ json, publish_immediately?, rationale? }`). |
+| `skip_existing` | `boolean` | No | If `true` (default), skips fonts already in the catalog without failing remaining items. |
+| `stop_on_error` | `boolean` | No | If `true`, stops processing on first error; if `false` (default), continues processing remaining fonts. |
+

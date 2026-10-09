@@ -607,6 +607,345 @@ async function handleUpdateMultipleFontsJson(args) {
   };
 }
 
+async function handleUploadFontJson(args) {
+  if (!args.json || typeof args.json !== 'object' || Object.keys(args.json).length === 0) {
+    throw new Error('"json" must be a non-empty canonical font JSON object.');
+  }
+
+  const raw = args.json;
+  const idObj = raw.identity || raw;
+  const name = typeof idObj.name === 'string' ? idObj.name.trim() : '';
+
+  if (!name) {
+    return {
+      isError: true,
+      error_type: 'MISSING_NAME',
+      message: 'Font name is required in "identity.name".'
+    };
+  }
+
+  let slug = typeof idObj.slug === 'string' && idObj.slug.trim()
+    ? idObj.slug.toLowerCase().trim()
+    : name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+
+  if (!slug) slug = 'untitled-font';
+
+  const zipsObj = raw.release_zips || raw.releaseZips;
+  if (!Array.isArray(zipsObj) || zipsObj.length === 0) {
+    return {
+      isError: true,
+      error_type: 'MISSING_RELEASE_ZIPS',
+      message: 'At least one release zip URL is required in "release_zips" for automated font file processing.'
+    };
+  }
+
+  const sanitizedZips = [];
+  for (const z of zipsObj) {
+    const rawUrl = z?.url || z?.download_url;
+    const u = cleanUrl(rawUrl);
+    if (u) {
+      sanitizedZips.push({
+        url: u,
+        label: typeof z?.label === 'string' && z.label.trim() ? z.label.trim() : 'complete'
+      });
+    }
+  }
+
+  if (sanitizedZips.length === 0) {
+    return {
+      isError: true,
+      error_type: 'INVALID_RELEASE_ZIPS',
+      message: 'None of the provided release_zips contain valid URLs.'
+    };
+  }
+
+  const officialObj = raw.official_links || raw;
+  const githubUrl = cleanUrl(officialObj.github_url || raw.github_url);
+
+  // Existence check: check slug
+  const existingBySlug = await supabaseFetch(`fonts?slug=eq.${encodeURIComponent(slug)}&select=id,name,slug&limit=1`);
+  if (existingBySlug && existingBySlug.length > 0) {
+    const existing = existingBySlug[0];
+    if (args.skip_existing !== false) {
+      return {
+        success: true,
+        skipped: true,
+        font_id: existing.id,
+        slug: existing.slug,
+        name: existing.name,
+        message: `Font "${existing.name}" (${existing.slug}) already exists in the catalog. Skipped.`
+      };
+    } else {
+      return {
+        isError: true,
+        error_type: 'CONFLICT_SLUG_EXISTS',
+        message: `Font with slug "${slug}" already exists. Use update_font_json to modify existing fonts.`,
+        existing_font_id: existing.id
+      };
+    }
+  }
+
+  // Existence check: check github_url
+  if (githubUrl) {
+    const existingByGh = await supabaseFetch(`fonts?github_url=eq.${encodeURIComponent(githubUrl)}&select=id,name,slug&limit=1`);
+    if (existingByGh && existingByGh.length > 0) {
+      const existing = existingByGh[0];
+      if (args.skip_existing !== false) {
+        return {
+          success: true,
+          skipped: true,
+          font_id: existing.id,
+          slug: existing.slug,
+          name: existing.name,
+          message: `Font with GitHub repository "${githubUrl}" already exists as "${existing.name}" (${existing.slug}). Skipped.`
+        };
+      }
+    }
+  }
+
+  const classObj = raw.classification || raw;
+  let rawCat = typeof classObj.category === 'string' ? classObj.category.toLowerCase().trim() : '';
+  let category = CATEGORY_ALIASES[rawCat] || rawCat;
+  if (!category || !ALLOWED_CATEGORIES.includes(category)) {
+    category = 'sans';
+  }
+
+  let tags = [];
+  if (Array.isArray(classObj.tags)) {
+    tags = classObj.tags.map(t => String(t).toLowerCase().trim()).filter(Boolean);
+  }
+  if (tags.length === 0) tags = [category];
+
+  const licObj = raw.license || raw;
+  const licenseType = typeof licObj.license_type === 'string' && licObj.license_type.trim()
+    ? licObj.license_type.trim()
+    : (typeof licObj.licenseType === 'string' && licObj.licenseType.trim() ? licObj.licenseType.trim() : 'Unknown License');
+
+  const commercialUse = typeof licObj.commercial_use === 'boolean'
+    ? licObj.commercial_use
+    : (typeof licObj.commercialUse === 'boolean' ? licObj.commercialUse : true);
+
+  // Resolve uploader identity
+  let uploaderId = args.uploader_user_id;
+  if (!uploaderId) {
+    const adminProfiles = await supabaseFetch('profiles?role=eq.admin&select=id&limit=1');
+    if (adminProfiles && adminProfiles.length > 0) {
+      uploaderId = adminProfiles[0].id;
+    } else {
+      const anyProfiles = await supabaseFetch('profiles?select=id&limit=1');
+      if (anyProfiles && anyProfiles.length > 0) {
+        uploaderId = anyProfiles[0].id;
+      }
+    }
+  }
+
+  const creatorObj = raw.creator || raw;
+  const descObj = raw.description || raw;
+  const techObj = raw.technical || raw;
+
+  const canonicalTaxonomy = {
+    identity: {
+      name: name,
+      family_name: idObj.family_name || idObj.familyName || name,
+      slug: slug,
+      version: idObj.version || '1.000',
+      release_year: idObj.release_year ? Number(idObj.release_year) : null,
+    },
+    creator: {
+      designer: creatorObj.designer || null,
+      foundry: creatorObj.foundry || null,
+      publisher: creatorObj.publisher || null,
+    },
+    classification: {
+      category: category,
+      subcategory: classObj.subcategory || null,
+      style: classObj.style || null,
+      tags: tags,
+      mood: Array.isArray(classObj.mood) ? classObj.mood : [],
+      recommended_uses: Array.isArray(classObj.recommended_uses || classObj.recommendedUses)
+        ? (classObj.recommended_uses || classObj.recommendedUses)
+        : [],
+    },
+    description: {
+      description: typeof raw.description === 'string' ? raw.description : (descObj.description || null),
+      history: descObj.history || null,
+      characteristics: descObj.characteristics || null,
+    },
+    license: {
+      distribution_status: licObj.distribution_status || licObj.distributionStatus || (commercialUse ? 'open_source' : 'free'),
+      license_type: licenseType,
+      license_url: cleanUrl(licObj.license_url || licObj.licenseUrl),
+      commercial_use: commercialUse,
+      personal_use: typeof licObj.personal_use === 'boolean' ? licObj.personal_use : true,
+      modification_allowed: typeof licObj.modification_allowed === 'boolean' ? licObj.modification_allowed : true,
+      redistribution_allowed: typeof licObj.redistribution_allowed === 'boolean' ? licObj.redistribution_allowed : true,
+      license_evidence: licObj.license_evidence || licObj.licenseEvidence || null,
+    },
+    official_links: {
+      official_website: cleanUrl(officialObj.official_website || officialObj.officialWebsite),
+      official_font_page: cleanUrl(officialObj.official_font_page || officialObj.officialFontPage),
+      purchase_url: cleanUrl(officialObj.purchase_url || officialObj.purchaseUrl),
+      free_download_url: cleanUrl(officialObj.free_download_url || officialObj.freeDownloadUrl),
+      github_url: githubUrl,
+      google_fonts_url: cleanUrl(officialObj.google_fonts_url || officialObj.googleFontsUrl),
+    },
+    technical: {
+      formats: Array.isArray(techObj.formats) ? techObj.formats : ['TTF', 'OTF', 'WOFF', 'WOFF2'],
+      weights: Array.isArray(techObj.weights) ? techObj.weights : ['Regular'],
+      styles: Array.isArray(techObj.styles) ? techObj.styles : ['Normal'],
+      glyph_count: techObj.glyph_count ? Number(techObj.glyph_count) : null,
+      languages: Array.isArray(techObj.languages) ? techObj.languages : ['Latin'],
+      opentype_features: Array.isArray(techObj.opentype_features || techObj.opentypeFeatures)
+        ? (techObj.opentype_features || techObj.opentypeFeatures)
+        : [],
+    }
+  };
+
+  const isPublished = args.publish_immediately !== false;
+
+  const fontInsertPayload = {
+    name: name,
+    slug: slug,
+    designer: creatorObj.designer || 'Unknown',
+    category: category,
+    tags: tags,
+    description: canonicalTaxonomy.description.description,
+    license_type: licenseType,
+    commercial_use: commercialUse,
+    glyph_count: canonicalTaxonomy.technical.glyph_count,
+    weights: [400],
+    has_italic: false,
+    is_published: isPublished,
+    taxonomy: canonicalTaxonomy,
+    woff2_url: '',
+    zip_url: '',
+    github_url: githubUrl,
+  };
+
+  if (uploaderId) {
+    fontInsertPayload.uploaded_by = uploaderId;
+    fontInsertPayload.user_id = uploaderId;
+  }
+
+  // 1. Insert into fonts table
+  const insertedFonts = await supabaseFetch('fonts', {
+    method: 'POST',
+    headers: { 'Prefer': 'return=representation' },
+    body: JSON.stringify(fontInsertPayload)
+  });
+
+  const insertedFont = insertedFonts?.[0];
+  if (!insertedFont) {
+    return {
+      isError: true,
+      error_type: 'DB_INSERT_FAILED',
+      message: `Failed to insert font "${name}".`
+    };
+  }
+
+  // 2. Queue automated downloads from release zips
+  let queueId = null;
+  try {
+    const queueItems = await supabaseFetch('font_processing_queue', {
+      method: 'POST',
+      headers: { 'Prefer': 'return=representation' },
+      body: JSON.stringify({
+        font_id: insertedFont.id,
+        slug: slug,
+        download_urls: sanitizedZips,
+        status: 'pending'
+      })
+    });
+    queueId = queueItems?.[0]?.id || null;
+  } catch (qErr) {
+    process.stderr.write(`[nobadfonts-mcp] Failed to queue release zips: ${qErr.message}\n`);
+  }
+
+  // 3. Audit log (non-blocking)
+  supabaseFetch('audit_logs', {
+    method: 'POST',
+    body: JSON.stringify({
+      action: 'mcp_font_upload',
+      font_id: insertedFont.id,
+      after_state: canonicalTaxonomy,
+      reason: args.rationale || 'Direct font upload with GitHub release zips via Local MCP',
+      performed_by: uploaderId || 'mcp-local'
+    })
+  }).catch(() => {});
+
+  return {
+    success: true,
+    font_id: insertedFont.id,
+    slug: insertedFont.slug,
+    name: insertedFont.name,
+    queue_id: queueId,
+    status: queueId ? 'queued_for_processing' : 'created_queue_failed',
+    release_zips_count: sanitizedZips.length,
+    message: `✨ Typeface "${insertedFont.name}" (${insertedFont.slug}) successfully created and queued for automated GitHub download and variant extraction.`
+  };
+}
+
+async function handleUploadMultipleFontsJson(args) {
+  if (!args.fonts || !Array.isArray(args.fonts) || args.fonts.length === 0) {
+    throw new Error('"fonts" array must contain at least 1 font payload.');
+  }
+
+  const results = [];
+  let uploadedCount = 0;
+  let skippedCount = 0;
+  let failedCount = 0;
+
+  for (const item of args.fonts) {
+    try {
+      const res = await handleUploadFontJson({
+        json: item.json,
+        skip_existing: args.skip_existing !== false,
+        publish_immediately: item.publish_immediately !== false,
+        rationale: item.rationale
+      });
+
+      if (res.isError) {
+        failedCount++;
+        const fontName = item.json?.identity?.name || item.json?.name || 'unknown';
+        results.push({ name: fontName, status: 'failed', error: res });
+        if (args.stop_on_error) break;
+      } else if (res.skipped) {
+        skippedCount++;
+        results.push({
+          slug: res.slug,
+          name: res.name,
+          font_id: res.font_id,
+          status: 'skipped',
+          reason: res.message
+        });
+      } else {
+        uploadedCount++;
+        results.push({
+          slug: res.slug,
+          name: res.name,
+          font_id: res.font_id,
+          queue_id: res.queue_id,
+          status: 'queued',
+          message: res.message
+        });
+      }
+    } catch (err) {
+      failedCount++;
+      const fontName = item.json?.identity?.name || item.json?.name || 'unknown';
+      results.push({ name: fontName, status: 'failed', error: err.message });
+      if (args.stop_on_error) break;
+    }
+  }
+
+  return {
+    total: args.fonts.length,
+    uploaded: uploadedCount,
+    skipped: skippedCount,
+    failed: failedCount,
+    results
+  };
+}
+
 // ─── 5. Tool Definitions for MCP Registry ───────────────────────────────────
 
 const TOOLS = [
@@ -699,6 +1038,67 @@ const TOOLS = [
         },
         merge_strategy: { type: 'string', enum: ['smart', 'fill_missing', 'force_overwrite'] },
         stop_on_error: { type: 'boolean' }
+      },
+      required: ['fonts']
+    }
+  },
+  {
+    name: 'upload_font_json',
+    description: 'Create a new font in NoBadFonts from a canonical font JSON definition, and queue automated font file extraction from GitHub release zip archives. Supports skip_existing to automatically skip duplicate fonts.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        json: {
+          type: 'object',
+          description: 'Canonical font JSON matching github-font-output.json, including identity.name and release_zips array'
+        },
+        skip_existing: {
+          type: 'boolean',
+          description: 'If true (default), skips creation if font already exists in catalog; if false, returns conflict error'
+        },
+        publish_immediately: {
+          type: 'boolean',
+          description: 'If true (default), marks font as published immediately; if false, creates as draft'
+        },
+        uploader_user_id: {
+          type: 'string',
+          description: 'Optional user UUID to assign ownership to (defaults to system admin)'
+        },
+        rationale: {
+          type: 'string',
+          description: 'Audit note describing font source or provenance'
+        }
+      },
+      required: ['json']
+    }
+  },
+  {
+    name: 'upload_multiple_fonts_json',
+    description: 'Batch create multiple fonts in NoBadFonts from generated JSONs and queue automated GitHub release downloads (up to 50 fonts). Ideal for automated discovery.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        fonts: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              json: { type: 'object' },
+              publish_immediately: { type: 'boolean' },
+              rationale: { type: 'string' }
+            },
+            required: ['json']
+          },
+          description: 'Array of font creation objects'
+        },
+        skip_existing: {
+          type: 'boolean',
+          description: 'If true (default), skips fonts already in catalog; if false, returns error on conflict'
+        },
+        stop_on_error: {
+          type: 'boolean',
+          description: 'If true, stops on first error; if false (default), continues processing'
+        }
       },
       required: ['fonts']
     }
@@ -802,6 +1202,10 @@ export function startMcpServer() {
           });
         } else if (toolName === 'update_multiple_fonts_json') {
           toolOutput = await handleUpdateMultipleFontsJson(args);
+        } else if (toolName === 'upload_font_json') {
+          toolOutput = await handleUploadFontJson(args);
+        } else if (toolName === 'upload_multiple_fonts_json') {
+          toolOutput = await handleUploadMultipleFontsJson(args);
         } else {
           sendResponse(id, null, { code: -32601, message: `Tool not found: "${toolName}"` });
           return;
@@ -843,5 +1247,7 @@ export {
   handleUpdateFontJson,
   handleGetAllFontsFields,
   handleGetFontFields,
-  handleUpdateMultipleFontsJson
+  handleUpdateMultipleFontsJson,
+  handleUploadFontJson,
+  handleUploadMultipleFontsJson
 };

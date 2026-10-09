@@ -469,7 +469,7 @@ function FontCard({
                                         {/* Likes */}
                                         {!hideLike && (
                                             <div
-                                                className={`flex items-center gap-1 ${isExpanded ? "pointer-events-none" : "pointer-events-auto"}`}
+                                                className={`flex items-center gap-1 rounded-full transition-all duration-300 ease-in-out ${isExpanded ? "pointer-events-none backdrop-blur-sm" : "pointer-events-auto"} ${viewMode === 'image' ? 'bg-black/30 text-white' : isFavorited ? 'text-foreground hover:bg-pink-500/10' : 'text-foreground hover:bg-foreground/5'}`}
                                             >
                                                 <Like
                                                     liked={isFavorited}
@@ -482,8 +482,7 @@ function FontCard({
                                                             ? `Remove ${font.name} from favorites`
                                                             : `Add ${font.name} to favorites`
                                                     }
-                                                    className={`flex justify-center items-center gap-1.5 ${isExpanded ? "backdrop-blur-sm" : ""} transition-all duration-300 ease-in-out h-11 px-3 rounded-full pointer-events-auto cursor-pointer font-medium text-[16px]
-                                                    ${viewMode === 'image' ? 'bg-black/30 text-white' : isFavorited ? 'text-pink-500 hover:bg-pink-500/10' : 'text-foreground hover:bg-foreground/5'}`}
+                                                    className={`flex justify-center items-center gap-1.5 h-11 px-3 pointer-events-auto cursor-pointer font-medium text-[16px]`}
                                                 />
                                             </div>
                                         )}
@@ -495,44 +494,14 @@ function FontCard({
                                                     setBoardModalOpen(true);
                                                 }}
                                                 aria-label={`Save ${font.name} to a board`}
-                                                className={`
-                                                    group/save flex items-center justify-center
-                                                    h-11 px-3 rounded-full
-                                                    overflow-hidden
-                                                    pointer-events-auto cursor-pointer
-                                                    transition-all duration-300 ease-out
-                                                    max-w-11 hover:max-w-100
-                                                    ${isExpanded ? "backdrop-blur-sm" : ""}
-                                                    ${viewMode === "image" ? "bg-black/30" : ""}
-                                                `}
+                                                className={`group/save flex items-center justify-center h-11 px-3 rounded-full overflow-hidden pointer-events-auto cursor-pointer transition-all duration-300 ease-out max-w-11 hover:max-w-100 ${isExpanded ? "backdrop-blur-sm" : ""} ${viewMode === "image" ? "bg-black/30" : ""}`}
                                             >
-                                                <svg
-                                                    className="flex h-11 w-5 shrink-0 items-center justify-center"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    width="20"
-                                                    height="20"
-                                                    viewBox="0 0 24 24"
-                                                >
-                                                    <g
-                                                        fill="none"
-                                                        stroke="currentColor"
-                                                        stroke-linecap="round"
-                                                        stroke-width="2"
-                                                    >
+                                                <svg className="flex h-11 w-5 shrink-0 items-center justify-center" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+                                                    <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2">
                                                         <path d="M21 16.0909V11.0975C21 6.80891 21 4.6646 19.682 3.3323C18.364 2 16.2426 2 12 2C7.75736 2 5.63604 2 4.31802 3.3323C3 4.6646 3 6.80891 3 11.0975V16.0909C3 19.1875 3 20.7358 3.73411 21.4123C4.08421 21.735 4.52615 21.9377 4.99692 21.9915C5.98402 22.1045 7.13673 21.0849 9.44216 19.0458C10.4612 18.1445 10.9708 17.6938 11.5603 17.5751C11.8506 17.5166 12.1494 17.5166 12.4397 17.5751C13.0292 17.6938 13.5388 18.1445 14.5578 19.0458C16.8633 21.0849 18.016 22.1045 19.0031 21.9915C19.4739 21.9377 19.9158 21.735 20.2659 21.4123C21 20.7358 21 19.1875 21 16.0909Z" />
                                                     </g>
                                                 </svg>
-                                                <span
-                                                    className="
-                                                        max-w-0 overflow-hidden whitespace-nowrap
-                                                        opacity-0
-                                                        ml-0
-                                                        group-hover/save:max-w-27.5
-                                                        group-hover/save:opacity-100
-                                                        group-hover/save:ml-2
-                                                        transition-all duration-300 ease-out
-                                                    "
-                                                >
+                                                <span className="max-w-0 overflow-hidden whitespace-nowrap opacity-0 ml-0 group-hover/save:max-w-27.5 group-hover/save:opacity-100 group-hover/save:ml-2 transition-all duration-300 ease-out">
                                                     Save to board
                                                 </span>
                                             </button>

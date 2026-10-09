@@ -28,7 +28,7 @@ function Roll({ value, up }: { value: number; up: boolean }) {
                         <AnimatePresence initial={false} mode="popLayout">
                             <motion.span
                                 key={c}
-                                className="lk-digit"
+                                className="lk-digit font-inter font-semibold"
                                 initial={{ y: up ? "100%" : "-100%", opacity: 0 }}
                                 animate={{ y: "0%", opacity: 1 }}
                                 exit={{ y: up ? "-100%" : "100%", opacity: 0 }}
