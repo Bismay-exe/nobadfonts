@@ -98,15 +98,19 @@ function getEmbeddedWeightSuffix(metadata) {
   if (!family || !Number.isInteger(weight) || !['regular', 'italic', 'oblique'].includes(subfamily)) return null;
   const lowerFamily = family.toLocaleLowerCase('en-US');
   for (const candidate of WEIGHT_SUFFIXES) {
-    const suffix = candidate.suffix.toLocaleLowerCase('en-US');
-    if (candidate.weight !== weight || !lowerFamily.endsWith(` ${suffix}`)) continue;
-    const normalizedFamily = family.slice(0, family.length - candidate.suffix.length).trim();
-    if (normalizedFamily) {
-      return {
-        family_name: normalizedFamily,
-        weight,
-        is_italic: metadata.is_italic === true || subfamily === 'italic' || subfamily === 'oblique',
-      };
+    if (candidate.weight !== weight) continue;
+    const suffixes = [candidate.suffix, candidate.suffix.replace(/\\s+/g, '')];
+    for (const suffixValue of suffixes) {
+      const suffix = suffixValue.toLocaleLowerCase('en-US');
+      if (!lowerFamily.endsWith(` ${suffix}`)) continue;
+      const normalizedFamily = family.slice(0, family.length - suffixValue.length).trim();
+      if (normalizedFamily) {
+        return {
+          family_name: normalizedFamily,
+          weight,
+          is_italic: metadata.is_italic === true || subfamily === 'italic' || subfamily === 'oblique',
+        };
+      }
     }
   }
   return null;
