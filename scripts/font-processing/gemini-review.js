@@ -84,7 +84,9 @@ export function validateGeminiReviewResponse(input, request, options = {}) {
   const expected = new Set((request?.candidates || []).map((item) => item.candidate_id));
   const seen = new Set();
   const decisions = parsed.decisions.map((item) => {
-    if (!item || typeof item !== 'object') throw new TypeError('Each Gemini decision must be an object');
+    if (!item || typeof item !== 'object' || Array.isArray(item)) throw new TypeError('Each Gemini decision must be an object');
+    const allowedKeys = new Set(['candidate_id', 'decision', 'relation', 'confidence', 'reason']);
+    if (Object.keys(item).some((key) => !allowedKeys.has(key))) throw new TypeError('Gemini decision contains unexpected fields');
     const candidateId = normalizeText(item.candidate_id);
     if (!expected.has(candidateId)) throw new TypeError(`Unexpected candidate_id: ${candidateId || '(empty)'}`);
     if (seen.has(candidateId)) throw new TypeError(`Duplicate candidate_id: ${candidateId}`);
@@ -94,10 +96,13 @@ export function validateGeminiReviewResponse(input, request, options = {}) {
     if (!Number.isFinite(item.confidence) || item.confidence < 0 || item.confidence > 1) {
       throw new TypeError(`Invalid confidence for ${candidateId}`);
     }
-    if (typeof item.reason !== 'string' || item.reason.length > 300) {
+    if (typeof item.reason !== 'string' || !normalizeText(item.reason) || item.reason.length > 300) {
       throw new TypeError(`Invalid reason for ${candidateId}`);
     }
-    const uncertain = item.confidence < minimumConfidence || item.decision === 'review' || item.relation === 'unknown';
+    const incompatiblePair = (item.decision === 'group' && !['same_family', 'subfamily', 'packaging_duplicate'].includes(item.relation))
+      || (item.decision === 'separate' && item.relation !== 'unrelated')
+      || (item.decision === 'review' && item.relation !== 'unknown');
+    const uncertain = item.confidence < minimumConfidence || item.decision === 'review' || item.relation === 'unknown' || incompatiblePair;
     return {
       candidate_id: candidateId,
       decision: uncertain ? 'review' : item.decision,
