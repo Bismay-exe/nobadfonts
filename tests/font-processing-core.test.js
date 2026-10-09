@@ -126,7 +126,7 @@ test('planVariantGroups routes contradictory family-weight metadata to review', 
       metadata: {
         family_name: 'Example Family Bold',
         subfamily_name: 'Regular',
-        weight_class: 400,
+        weight_class: 600,
         is_italic: false,
         extension: '.ttf',
         status: 'parsed',
