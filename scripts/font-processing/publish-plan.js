@@ -10,12 +10,32 @@ import { createSupabasePublishingAdapter } from './supabase-publishing-adapter.j
 const sha256 = (bytes) => createHash('sha256').update(bytes).digest('hex');
 const normalizeFamily = (value) => String(value || '').normalize('NFKC').trim().replace(/\s+/g, ' ').toLocaleLowerCase('en-US');
 
-export function assertStagingOnly(env = process.env) {
-  if (env.FONT_PROCESSING_TARGET !== 'staging') throw new Error('Publishing runner is staging-only; set FONT_PROCESSING_TARGET=staging explicitly');
-  if (!env.FONT_PROCESSING_STAGING_SUPABASE_URL || !env.FONT_PROCESSING_STAGING_SERVICE_ROLE_KEY) {
-    throw new Error('Missing isolated staging credentials: FONT_PROCESSING_STAGING_SUPABASE_URL and FONT_PROCESSING_STAGING_SERVICE_ROLE_KEY');
+export function resolvePublishingTarget(env = process.env) {
+  const target = env.FONT_PROCESSING_TARGET;
+  if (target === 'staging') {
+    if (!env.FONT_PROCESSING_STAGING_SUPABASE_URL || !env.FONT_PROCESSING_STAGING_SERVICE_ROLE_KEY) {
+      throw new Error('Missing isolated staging credentials: FONT_PROCESSING_STAGING_SUPABASE_URL and FONT_PROCESSING_STAGING_SERVICE_ROLE_KEY');
+    }
+    return { target, url: env.FONT_PROCESSING_STAGING_SUPABASE_URL, serviceRoleKey: env.FONT_PROCESSING_STAGING_SERVICE_ROLE_KEY };
   }
-  return { url: env.FONT_PROCESSING_STAGING_SUPABASE_URL, serviceRoleKey: env.FONT_PROCESSING_STAGING_SERVICE_ROLE_KEY };
+  if (target === 'main') {
+    if (env.FONT_PROCESSING_ALLOW_MAIN_PUBLISHING !== 'true') {
+      throw new Error('Publishing to the main Supabase project requires FONT_PROCESSING_ALLOW_MAIN_PUBLISHING=true as an additional explicit opt-in');
+    }
+    if (!env.FONT_PROCESSING_MAIN_SUPABASE_URL || !env.FONT_PROCESSING_MAIN_SERVICE_ROLE_KEY) {
+      throw new Error('Missing explicit main-project credentials: FONT_PROCESSING_MAIN_SUPABASE_URL and FONT_PROCESSING_MAIN_SERVICE_ROLE_KEY');
+    }
+    return { target, url: env.FONT_PROCESSING_MAIN_SUPABASE_URL, serviceRoleKey: env.FONT_PROCESSING_MAIN_SERVICE_ROLE_KEY };
+  }
+  throw new Error('Set FONT_PROCESSING_TARGET=staging or main explicitly');
+}
+
+export function assertStagingOnly(env = process.env) {
+  if (env.FONT_PROCESSING_TARGET !== 'staging') {
+    throw new Error('This check is staging-only; set FONT_PROCESSING_TARGET=staging explicitly');
+  }
+  const resolved = resolvePublishingTarget(env);
+  return { url: resolved.url, serviceRoleKey: resolved.serviceRoleKey };
 }
 
 export function buildPublishPlan(manifest, { baseDir = process.cwd() } = {}) {
@@ -121,9 +141,12 @@ async function main() {
   }
 
   assertProductionWriteEnabled();
-  const staging = assertStagingOnly(process.env);
+  const destination = resolvePublishingTarget(process.env);
+  if (destination.target === 'main') {
+    console.warn('MAIN PROJECT PUBLISHING EXPLICITLY ENABLED. Verify the reviewed manifest and SQL Editor schema before continuing.');
+  }
   const { createClient } = await import('@supabase/supabase-js');
-  const supabase = createClient(staging.url, staging.serviceRoleKey);
+  const supabase = createClient(destination.url, destination.serviceRoleKey);
   const adapter = createSupabasePublishingAdapter({ supabase });
   const result = await publishStagedBatch({
     batchId: plan.batchId,

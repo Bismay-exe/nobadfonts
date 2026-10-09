@@ -70,3 +70,10 @@ Run it without `--apply` first; this is a local dry run and does not create a Su
 Command: `node scripts/font-processing/publish-plan.js ./manifest.json`
 
 The runner is intentionally separate from the legacy live queue processor. It does not claim Stage 5 release completion: the production queue workflow remains statically disabled, the migration remains unapplied, and a real isolated Supabase staging-project test of Storage + RPC retries/reconciliation is still required. No production writes, uploads, or Gemini calls are authorized by these changes.
+
+
+## Supabase SQL Editor installation and explicit manual publishing
+
+A preflight-checked, copy/run-ready script is maintained at `supabase/sql-editor/font_processing_atomic_publish.sql`. The disposable PostgreSQL CI test executes that exact SQL Editor script, so the copy intended for manual installation is exercised by CI. It verifies that `public.fonts` and the required `public.font_variants` columns exist before creating the ledger and RPC functions. Applying it creates schema/functions only; it does not update existing font rows or upload Storage objects.
+
+The publish-plan runner remains dry-run by default. After reviewing the manifest and applying the SQL script to the intended Supabase project, a manual main-project publish requires all of the following independent settings: `--apply`, `FONT_PROCESSING_ALLOW_WRITES=true`, `FONT_PROCESSING_TARGET=main`, `FONT_PROCESSING_ALLOW_MAIN_PUBLISHING=true`, `FONT_PROCESSING_MAIN_SUPABASE_URL`, and `FONT_PROCESSING_MAIN_SERVICE_ROLE_KEY`. The runner never falls back to `VITE_SUPABASE_URL` or `SUPABASE_SERVICE_ROLE_KEY`. Keep the automatic queue workflow disabled; do not use the legacy filename-based processor for publishing.

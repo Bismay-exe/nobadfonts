@@ -2,7 +2,7 @@
 create role service_role;create role anon;create role authenticated;
 create table public.fonts(id uuid primary key);
 create table public.font_variants(id uuid primary key default gen_random_uuid(),font_id uuid not null references public.fonts(id),variant_name text not null,ttf_url text,otf_url text,woff_url text,woff2_url text,file_size_ttf bigint,file_size_otf bigint,file_size_woff bigint,file_size_woff2 bigint,created_at timestamptz not null default now());
-\i supabase/migrations/20261010000000_font_processing_atomic_publish.sql
+\i supabase/sql-editor/font_processing_atomic_publish.sql
 insert into public.fonts values('11111111-1111-4111-8111-111111111111');
 select public.record_font_processing_batch_state('test-batch','validating','font-processing:test-batch',1,1,'[]'::jsonb,null,null);
 select public.publish_font_processing_batch('test-batch','font-processing:test-batch','aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa','[{"font_id":"11111111-1111-4111-8111-111111111111","variant_name":"Regular","format":"woff2","staging_key":"staging/font-processing/test-batch/asset/regular.woff2","public_url":"https://example.supabase.co/storage/v1/object/public/fonts/staging/font-processing/test-batch/asset/regular.woff2","size_bytes":123}]'::jsonb);

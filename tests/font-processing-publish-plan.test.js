@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { assertStagingOnly, buildPublishPlan } from '../scripts/font-processing/publish-plan.js';
+import { assertStagingOnly, buildPublishPlan, resolvePublishingTarget } from '../scripts/font-processing/publish-plan.js';
 
 const metadata = (family, subfamily, weight) => ({
   family_name: family,
@@ -113,4 +113,31 @@ test('apply-mode configuration accepts only explicit isolated staging credential
     VITE_SUPABASE_URL: 'https://production.supabase.co',
     SUPABASE_SERVICE_ROLE_KEY: 'production-key',
   }), { url: 'https://staging-project.supabase.co', serviceRoleKey: 'staging-key' });
+});
+
+
+test('main publishing requires a separate explicit opt-in and dedicated credentials', () => {
+  assert.throws(() => resolvePublishingTarget({
+    FONT_PROCESSING_TARGET: 'main',
+    FONT_PROCESSING_MAIN_SUPABASE_URL: 'https://main-project.supabase.co',
+    FONT_PROCESSING_MAIN_SERVICE_ROLE_KEY: 'main-key',
+  }), /FONT_PROCESSING_ALLOW_MAIN_PUBLISHING=true/);
+  assert.throws(() => resolvePublishingTarget({
+    FONT_PROCESSING_TARGET: 'main',
+    FONT_PROCESSING_ALLOW_MAIN_PUBLISHING: 'true',
+    VITE_SUPABASE_URL: 'https://production.supabase.co',
+    SUPABASE_SERVICE_ROLE_KEY: 'production-key',
+  }), /Missing explicit main-project credentials/);
+  assert.deepEqual(resolvePublishingTarget({
+    FONT_PROCESSING_TARGET: 'main',
+    FONT_PROCESSING_ALLOW_MAIN_PUBLISHING: 'true',
+    FONT_PROCESSING_MAIN_SUPABASE_URL: 'https://main-project.supabase.co',
+    FONT_PROCESSING_MAIN_SERVICE_ROLE_KEY: 'main-key',
+    VITE_SUPABASE_URL: 'https://production.supabase.co',
+    SUPABASE_SERVICE_ROLE_KEY: 'production-key',
+  }), {
+    target: 'main',
+    url: 'https://main-project.supabase.co',
+    serviceRoleKey: 'main-key',
+  });
 });
