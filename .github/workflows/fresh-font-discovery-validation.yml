@@ -1,0 +1,80 @@
+name: Fresh Font Discovery Validation (Read Only)
+
+on:
+  workflow_dispatch:
+    inputs:
+      queue_id:
+        description: "Queue UUID to rescan; defaults to the saved Monaspace discovery item"
+        required: true
+        type: string
+        default: "65bd9e0f-8d9d-4d02-b6ed-64ba1c2ab8be"
+      baseline_run_id:
+        description: "GitHub Actions run ID containing the saved discovery report"
+        required: true
+        type: string
+        default: "37914579536"
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  fresh-discovery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install read-only discovery tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y unzip python3-pip
+          python3 -m pip install --break-system-packages fonttools brotli
+
+      - name: Download baseline discovery report
+        uses: actions/download-artifact@v4
+        with:
+          name: font-asset-discovery-report
+          repository: ${{ github.repository }}
+          run-id: ${{ inputs.baseline_run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: validation-output/baseline
+
+      - name: Run fresh read-only discovery against selected queue item
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          FONT_PROCESSING_QUEUE_ID: ${{ inputs.queue_id }}
+          FONT_DISCOVERY_OUTPUT_DIR: validation-output/fresh
+        run: node scripts/discover-font-assets.js
+
+      - name: Validate baseline and fresh reports
+        run: |
+          mkdir -p validation-output/summaries
+          baseline="$(find validation-output/baseline -type f -name '*.json' -print -quit)"
+          fresh="$(find validation-output/fresh -type f -name '*.json' -print -quit)"
+          test -n "$baseline"
+          test -n "$fresh"
+          node scripts/font-processing/validate-discovery-report.js "$baseline" validation-output/summaries/baseline-summary.json
+          node scripts/font-processing/validate-discovery-report.js "$fresh" validation-output/summaries/fresh-summary.json
+          node scripts/font-processing/compare-discovery-summaries.js validation-output/summaries/baseline-summary.json validation-output/summaries/fresh-summary.json validation-output/summaries/comparison.json
+          cat validation-output/summaries/comparison.json
+
+      - name: Upload fresh discovery and comparison (read only)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fresh-font-discovery-validation
+          path: validation-output/
+          if-no-files-found: warn
+          retention-days: 14

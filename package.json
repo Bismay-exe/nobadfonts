@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "node scripts/generate-sitemap.js && tsc -b && vite build",
     "lint": "eslint .",
+    "test:font-processing": "node --test tests/font-processing-core.test.js tests/font-processing-report.test.js",
     "preview": "vite preview",
     "generate-sitemap": "node scripts/generate-sitemap.js"
   },

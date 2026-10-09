@@ -1,0 +1,92 @@
+name: Font Processing Real Fixture Validation
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/font-processing/**'
+      - 'tests/font-processing-*.test.js'
+      - 'package.json'
+      - '.github/workflows/font-processing-real-fixtures.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install WOFF2 metadata parser
+        run: python3 -m pip install --break-system-packages fonttools brotli
+
+      - name: Download official Fraunces fixture
+        run: |
+          mkdir -p validation-output/font-fixtures validation-output/monaspace
+          curl --fail --location --retry 3 \
+            'https://raw.githubusercontent.com/googlefonts/fraunces/master/fonts/static/otf/Fraunces144pt-BlackItalic.otf' \
+            --output validation-output/font-fixtures/Fraunces144pt-BlackItalic.otf
+
+      - name: Download official Mona Sans variable fixture
+        run: |
+          curl --fail --location --retry 3 \
+            'https://raw.githubusercontent.com/github/mona-sans/main/fonts/variable/MonaSansVF%5Bwdth%2Cwght%2Copsz%2Cital%5D.ttf' \
+            --output 'validation-output/font-fixtures/MonaSansVF[wdth,wght,opsz,ital].ttf'
+
+      - name: Download official Mona Sans WOFF2 fixture
+        run: |
+          curl --fail --location --retry 3 \
+            'https://raw.githubusercontent.com/github/mona-sans/main/fonts/webfonts/variable/MonaSansVF%5Bwdth%2Copsz%2Cwght%5D.woff2' \
+            --output 'validation-output/font-fixtures/MonaSansVF[wdth,opsz,wght].woff2'
+
+      - name: Parse WOFF2 metadata locally (read only)
+        run: |
+          python3 scripts/font-processing/parse-woff2-metadata.py \
+            'validation-output/font-fixtures/MonaSansVF[wdth,opsz,wght].woff2' \
+            > validation-output/woff2-metadata.json
+          node --input-type=module -e \
+            "import fs from 'node:fs'; const result=JSON.parse(fs.readFileSync('validation-output/woff2-metadata.json','utf8')); if(result.status!=='parsed'||result.is_variable!==true||!result.family_name||!Array.isArray(result.variation_axes)||result.variation_axes.length===0) process.exit(1); console.log(JSON.stringify({status:result.status,family_name:result.family_name,is_variable:result.is_variable,axes:result.variation_axes.length}));"
+
+      - name: Inspect Fraunces and Mona Sans binaries (read only)
+        run: |
+          node scripts/font-processing/validate-font-fixtures.js \
+            validation-output/font-fixtures/Fraunces144pt-BlackItalic.otf \
+            'validation-output/font-fixtures/MonaSansVF[wdth,wght,opsz,ital].ttf' \
+            > validation-output/font-fixture-validation.json
+
+      - name: Download saved seven-archive discovery report
+        uses: actions/download-artifact@v4
+        with:
+          name: font-asset-discovery-report
+          repository: ${{ github.repository }}
+          run-id: 37914579536
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: validation-output/monaspace
+
+      - name: Validate saved Monaspace report (read only)
+        run: |
+          report="$(find validation-output/monaspace -type f -name '*.json' -print -quit)"
+          test -n "$report"
+          node scripts/font-processing/validate-discovery-report.js "$report" validation-output/monaspace-validation.json
+
+      - name: Upload validation results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: font-processing-validation-results
+          path: validation-output/
+          if-no-files-found: warn
+          retention-days: 14

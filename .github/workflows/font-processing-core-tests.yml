@@ -1,0 +1,36 @@
+name: Font Processing Core Tests
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/font-processing/**'
+      - 'tests/font-processing-core.test.js'
+      - 'package.json'
+      - '.github/workflows/font-processing-core-tests.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'scripts/font-processing/**'
+      - 'tests/font-processing-core.test.js'
+      - 'package.json'
+      - '.github/workflows/font-processing-core-tests.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Run isolated core tests
+        run: npm run test:font-processing

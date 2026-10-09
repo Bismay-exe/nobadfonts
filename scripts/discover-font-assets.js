@@ -100,7 +100,18 @@ function guessVariant(filename) {
 
 function parseMetadata(filePath, extension) {
   if (extension === '.woff2') {
-    return { status: 'not_parsed', reason: 'WOFF2 metadata parsing is not enabled in this read-only discovery script' };
+    try {
+      const parserPath = path.join(process.cwd(), 'scripts', 'font-processing', 'parse-woff2-metadata.py');
+      const output = execFileSync('python3', [parserPath, filePath], {
+        encoding: 'utf8',
+        timeout: 30_000,
+        maxBuffer: 2 * 1024 * 1024,
+      });
+      return JSON.parse(output);
+    } catch (error) {
+      const details = error instanceof Error ? error.message : String(error);
+      return { status: 'parse_failed', reason: `WOFF2 parser failed: ${details.slice(0, 500)}` };
+    }
   }
   try {
     const bytes = fs.readFileSync(filePath);
