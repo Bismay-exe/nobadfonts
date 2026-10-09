@@ -1,0 +1,86 @@
+name: Gemini Advisory Smoke Test (Manual Only)
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_live_gemini_request:
+        description: "I approve one live Gemini API request using the configured secret"
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  advisory-smoke-test:
+    if: inputs.confirm_live_gemini_request == true
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate secret is configured (never print it)
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          if [ -z "$GEMINI_API_KEY" ]; then
+            echo "GEMINI_API_KEY is not configured for this repository/workflow."
+            exit 1
+          fi
+          echo "Gemini key is configured."
+
+      - name: Prepare one synthetic candidate
+        run: |
+          mkdir -p validation-output
+          cat > validation-output/gemini-smoke-input.json <<'JSON'
+          [
+            {
+              "asset_id": "manual-smoke-fixture-0001",
+              "relative_path": "Synthetic-Regular.woff2",
+              "extension": "woff2",
+              "metadata": {
+                "family_name": "Synthetic Smoke Test",
+                "subfamily_name": "Regular",
+                "full_name": "Synthetic Smoke Test Regular",
+                "weight_class": 400,
+                "is_italic": false,
+                "is_variable": false,
+                "status": "parsed"
+              }
+            }
+          ]
+          JSON
+
+      - name: Run one budget-limited advisory request
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MAX_REQUESTS: "1"
+          GEMINI_MAX_OUTPUT_TOKENS: "512"
+          GEMINI_MAX_TOTAL_OUTPUT_TOKENS: "512"
+          GEMINI_REVIEW_CACHE_FILE: validation-output/gemini-review-cache.json
+        run: |
+          node scripts/font-processing/run-gemini-review.js \
+            validation-output/gemini-smoke-input.json \
+            validation-output/gemini-smoke-output.json
+
+      - name: Upload smoke-test result (no secrets)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gemini-advisory-smoke-test
+          path: |
+            validation-output/gemini-smoke-input.json
+            validation-output/gemini-smoke-output.json
+          if-no-files-found: warn
+          retention-days: 7
