@@ -77,3 +77,22 @@ GEMINI_API_KEY=your_key node scripts/font-processing/run-gemini-review.js ambigu
 The output is advisory only. It is marked `publishable: false`; no database or Storage writes are performed. Invalid IDs, duplicate decisions, malformed responses, and invalid confidence values are rejected. Low-confidence or omitted candidates are sent to human review. The runner does not update queue statuses or connect to the scheduled production processor.
 
 Do not pass service-role credentials to this script. The API key should be provided through the environment and must never be committed to the repository. Review Gemini's output before using any suggestion; model output is not authoritative evidence for licensing, official links, or factual font metadata.
+
+
+## Export only unresolved candidates for Gemini
+
+After generating a saved discovery report, export only assets that the deterministic grouping core already routed to manual review:
+
+```sh
+node scripts/font-processing/export-ambiguous-assets.js path/to/font-discovery-report.json ./tmp/gemini-review-input
+```
+
+The exporter deduplicates byte-identical assets by SHA-256, runs the deterministic grouping rules, and writes numbered JSON batches of at most 50 candidates plus a manifest. Each candidate contains bounded binary metadata and a stable hash ID; filename guesses and review-reason text are not passed into the model request. The exporter makes no API calls, uploads, or database writes. It refuses to overwrite existing files, so use a fresh output directory for each export.
+
+To review a single batch, provide that batch file to the advisory runner:
+
+```sh
+GEMINI_API_KEY=your_key node scripts/font-processing/run-gemini-review.js ./tmp/gemini-review-input/fixture-font-ambiguous-001.json ./tmp/gemini-review-output-001.json
+```
+
+Run batches deliberately and inspect their outputs. Gemini responses remain advisory, confidence-gated, non-publishable, and subject to human review. This workflow does not apply model decisions to the saved discovery report or production data.
