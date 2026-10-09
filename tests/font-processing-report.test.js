@@ -254,3 +254,13 @@ test('Gemini response omissions become explicit manual-review decisions', () => 
   assert.equal(result.decisions[1].decision, 'review');
   assert.equal(result.decisions[1].publishable, false);
 });
+
+test('Gemini review request bounds batch size and rejects duplicate IDs', () => {
+  assert.throws(() => buildGeminiReviewRequest(
+    Array.from({ length: 51 }, (_, index) => ({ asset_id: `asset-${index}`, metadata: {} })),
+  ), /limited to 50/);
+  assert.throws(() => buildGeminiReviewRequest([
+    { asset_id: 'duplicate', metadata: {} },
+    { asset_id: 'duplicate', metadata: {} },
+  ]), /must be unique/);
+});
