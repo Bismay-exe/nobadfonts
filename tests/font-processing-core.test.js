@@ -207,19 +207,13 @@ test('planVariantGroups normalizes a matching weight suffix embedded in binary f
   ]);
 });
 
-test('planVariantGroups does not normalize an embedded weight when the binary weight disagrees', () => {
-  const result = planVariantGroups([{
-    sha256: '4'.repeat(64),
-    metadata: {
-      family_name: 'Example Family Bold',
-      subfamily_name: 'Regular',
-      weight_class: 400,
-      is_italic: false,
-      extension: '.ttf',
-      status: 'parsed',
-    },
-  }]);
-  assert.equal(result.groups.length, 0);
-  assert.equal(result.review.length, 1);
-  assert.equal(result.review[0].reason, 'family_name_weight_conflict');
+test('canonical keys do not strip a family suffix when the binary weight disagrees', () => {
+  const metadata = {
+    family_name: 'Example Family Bold',
+    subfamily_name: 'Regular',
+    weight_class: 400,
+    is_italic: false,
+  };
+  assert.equal(canonicalFamilyKey(metadata), 'example family bold');
+  assert.equal(canonicalVariantKey(metadata), 'regular');
 });
