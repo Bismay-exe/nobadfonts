@@ -587,3 +587,35 @@ test('Gemini cache key changes when candidate input, model, confidence threshold
     fs.rmSync(tempDir, { recursive: true, force: true });
   }
 });
+
+
+import { auditVariantGroups } from '../scripts/font-processing/audit-variant-groups.js';
+
+test('auditVariantGroups reports evidence disagreements and explicitly does not claim semantic correctness', () => {
+  const result = auditVariantGroups({
+    queue_items: [{
+      slug: 'audit-fixture',
+      assets: [
+        { source_label: 'static', relative_path: 'A-Regular.ttf', extension: 'ttf', sha256: 'a'.repeat(64), size_bytes: 100, metadata: { status: 'parsed', family_name: 'Fixture Sans', subfamily_name: 'Regular', weight_class: 400, is_italic: false, is_variable: false } },
+        { source_label: 'webfont', relative_path: 'A-Regular.woff2', extension: 'woff2', sha256: 'b'.repeat(64), size_bytes: 110, metadata: { status: 'parsed', family_name: 'FIXTURE SANS', subfamily_name: 'Regular', weight_class: 400, is_italic: false, is_variable: false } },
+        { source_label: 'static', relative_path: 'A-Bold.ttf', extension: 'ttf', sha256: 'c'.repeat(64), size_bytes: 120, metadata: { status: 'parsed', family_name: 'Fixture Sans', subfamily_name: 'Bold', weight_class: 700, is_italic: false, is_variable: false } },
+      ],
+    }],
+  });
+
+  assert.equal(result.mode, 'offline-read-only-variant-group-audit');
+  assert.equal(result.publishable, false);
+  assert.equal(result.database_writes_performed, false);
+  assert.equal(result.api_calls_performed, false);
+  assert.equal(result.uploads_performed, false);
+  assert.equal(result.semantic_correctness_claimed, false);
+  assert.equal(result.summary.planned_group_count, 2);
+  assert.equal(result.summary.flagged_group_count, 1);
+  assert.deepEqual(result.queues[0].flagged_groups[0].review_flags, ['raw_family_name_disagreement']);
+  assert.equal(result.queues[0].groups.find((group) => group.variant_key === 'bold').assessment, 'no_automatic_flags_not_semantically_verified');
+  assert.ok(result.limitations.some((item) => item.includes('does not prove')));
+});
+
+test('auditVariantGroups rejects malformed reports', () => {
+  assert.throws(() => auditVariantGroups({}), /queue_items array/);
+});
