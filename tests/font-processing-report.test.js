@@ -473,3 +473,43 @@ test('Gemini runner fails closed on malformed cache files', async () => {
     fs.rmSync(tempDir, { recursive: true, force: true });
   }
 });
+
+
+test('Gemini runner reserves a persistent output-token budget before requests', async () => {
+  const originalFetch = globalThis.fetch;
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'nbf-gemini-token-budget-test-'));
+  const cacheFile = path.join(tempDir, 'cache.json');
+  let fetchCount = 0;
+  try {
+    globalThis.fetch = async () => {
+      fetchCount += 1;
+      return new Response(JSON.stringify({
+        candidates: [{ content: { parts: [{ text: JSON.stringify({ decisions: [
+          { candidate_id: 'token-a', decision: 'review', relation: 'unknown', confidence: 0.2, reason: 'Insufficient evidence.' },
+        ] }) }] } }],
+      }), { status: 200, headers: { 'content-type': 'application/json' } });
+    };
+    await runGeminiReview([{ asset_id: 'token-a', metadata: {} }], {
+      apiKey: 'test-key-not-real',
+      cacheFile,
+      maxRequests: 5,
+      maxOutputTokens: 100,
+      maxTotalOutputTokens: 100,
+    });
+    await assert.rejects(
+      runGeminiReview([{ asset_id: 'token-b', metadata: {} }], {
+        apiKey: 'test-key-not-real',
+        cacheFile,
+        maxRequests: 5,
+        maxOutputTokens: 100,
+        maxTotalOutputTokens: 100,
+      }),
+      /output-token budget exhausted.*no request was sent/,
+    );
+    assert.equal(fetchCount, 1);
+    assert.equal(JSON.parse(fs.readFileSync(cacheFile, 'utf8')).output_tokens_reserved, 100);
+  } finally {
+    globalThis.fetch = originalFetch;
+    fs.rmSync(tempDir, { recursive: true, force: true });
+  }
+});
