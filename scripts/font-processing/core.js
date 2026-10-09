@@ -187,6 +187,7 @@ export function planVariantGroups(assets) {
       && metadata.weight_class != null
       && metadata.weight_class !== 400
       && /(?:^|\s)(?:thin|hairline|extra\s*light|ultra\s*light|light|medium|semi\s*bold|demi\s*bold|extra\s*bold|ultra\s*bold|bold|black|heavy)(?:\s+italic)?$/i.test(metadata.family_name)
+      && !getEmbeddedWeightSuffix(metadata)
       && !/(?:thin|hairline|light|medium|bold|black|heavy)/i.test(metadata.subfamily_name || '');
 
     if (metadata.parser_status === 'not_parsed' || metadata.parser_status === 'parse_failed') {
@@ -214,12 +215,14 @@ export function planVariantGroups(assets) {
     const key = JSON.stringify([familyKey, variantKey]);
     if (!groups.has(key)) {
       groups.set(key, {
-        family_name: metadata.family_name,
-        variant_name: metadata.subfamily_name || (
-          metadata.weight_class != null
-            ? `${WEIGHT_NAMES.get(metadata.weight_class) || `Weight ${metadata.weight_class}`}${metadata.is_italic ? ' Italic' : ''}`
-            : null
-        ),
+        family_name: getEmbeddedWeightSuffix(metadata)?.family_name || metadata.family_name,
+        variant_name: getEmbeddedWeightSuffix(metadata)
+          ? `${WEIGHT_NAMES.get(metadata.weight_class) || `Weight ${metadata.weight_class}`}${getEmbeddedWeightSuffix(metadata).is_italic ? ' Italic' : ''}`
+          : metadata.subfamily_name || (
+            metadata.weight_class != null
+              ? `${WEIGHT_NAMES.get(metadata.weight_class) || `Weight ${metadata.weight_class}`}${metadata.is_italic ? ' Italic' : ''}`
+              : null
+          ),
         variant_key: variantKey,
         assets: [],
         conflicts: [],
