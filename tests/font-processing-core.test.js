@@ -149,3 +149,77 @@ test('planVariantGroups sends contradictory family-weight metadata to review', (
   assert.equal(result.review.length, 2);
   assert.deepEqual(result.review.map((item) => item.reason), ['family_name_weight_conflict', 'family_name_weight_conflict']);
 });
+
+test('planVariantGroups normalizes a matching weight suffix embedded in binary family metadata', () => {
+  const result = planVariantGroups([
+    {
+      sha256: '1'.repeat(64),
+      metadata: {
+        family_name: 'Monaspace Argon Frozen ExtraBold',
+        subfamily_name: 'Regular',
+        full_name: 'Monaspace Argon Frozen ExtraBold',
+        postscript_name: 'MonaspaceArgonFrozen-ExtraBold',
+        weight_class: 800,
+        is_italic: false,
+        extension: '.ttf',
+        status: 'parsed',
+      },
+    },
+    {
+      sha256: '2'.repeat(64),
+      metadata: {
+        family_name: 'Monaspace Argon Frozen ExtraLight',
+        subfamily_name: 'Regular',
+        full_name: 'Monaspace Argon Frozen ExtraLight',
+        postscript_name: 'MonaspaceArgonFrozen-ExtraLight',
+        weight_class: 200,
+        is_italic: false,
+        extension: '.ttf',
+        status: 'parsed',
+      },
+    },
+    {
+      sha256: '3'.repeat(64),
+      metadata: {
+        family_name: 'Monaspace Argon Frozen ExtraBold',
+        subfamily_name: 'Italic',
+        full_name: 'Monaspace Argon Frozen ExtraBold Italic',
+        postscript_name: 'MonaspaceArgonFrozen-ExtraBoldItalic',
+        weight_class: 800,
+        is_italic: true,
+        extension: '.otf',
+        status: 'parsed',
+      },
+    },
+  ]);
+
+  assert.equal(result.review.length, 0);
+  assert.equal(result.groups.length, 3);
+  assert.deepEqual(result.groups.map((group) => group.family_name), [
+    'Monaspace Argon Frozen',
+    'Monaspace Argon Frozen',
+    'Monaspace Argon Frozen',
+  ]);
+  assert.deepEqual(result.groups.map((group) => group.variant_name), [
+    'Extra Bold',
+    'Extra Light',
+    'Extra Bold Italic',
+  ]);
+});
+
+test('planVariantGroups does not normalize an embedded weight when the binary weight disagrees', () => {
+  const result = planVariantGroups([{
+    sha256: '4'.repeat(64),
+    metadata: {
+      family_name: 'Example Family Bold',
+      subfamily_name: 'Regular',
+      weight_class: 400,
+      is_italic: false,
+      extension: '.ttf',
+      status: 'parsed',
+    },
+  }]);
+  assert.equal(result.groups.length, 0);
+  assert.equal(result.review.length, 1);
+  assert.equal(result.review[0].reason, 'family_name_weight_conflict');
+});
