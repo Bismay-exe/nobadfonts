@@ -74,11 +74,6 @@ export function normalizeFontMetadata(metadata = {}) {
   };
 }
 
-export function canonicalFamilyKey(metadata = {}) {
-  const family = normalizeText(metadata.family_name ?? metadata.familyName).toLocaleLowerCase('en-US');
-  return family || null;
-}
-
 const WEIGHT_SUFFIXES = [
   { suffix: 'Extra Light', weight: 200 },
   { suffix: 'Ultra Light', weight: 200 },
@@ -101,105 +96,17 @@ function getEmbeddedWeightSuffix(metadata) {
   const weight = metadata.weight_class ?? metadata.weightClass;
   const subfamily = normalizeText(metadata.subfamily_name ?? metadata.subfamilyName).toLowerCase();
   if (!family || !Number.isInteger(weight) || !['regular', 'italic', 'oblique'].includes(subfamily)) return null;
-
+  const lowerFamily = family.toLocaleLowerCase('en-US');
   for (const candidate of WEIGHT_SUFFIXES) {
-    const suffixPattern = new RegExp(`(?:^|\\s)${candidate.suffix.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\export function canonicalVariantKey(metadata = {}) {
-  const subfamily = normalizeText(metadata.subfamily_name ?? metadata.subfamilyName).toLocaleLowerCase('en-US');
-  const weight = metadata.weight_class ?? metadata.weightClass;
-  const italic = metadata.is_italic ?? metadata.isItalic;
-
-  // Binary subfamily metadata is the strongest label when present. Do not
-  // merge files with different named subfamilies just because weights match.
-  if (subfamily) return subfamily;
-  if (Number.isInteger(weight) && typeof italic === 'boolean') {
-    return `weight-${weight}-${italic ? 'italic' : 'upright'}`;
-  }
-  return null;
-}')}\\s*import { createHash } from 'node:crypto';
-import path from 'node:path';
-
-export const SUPPORTED_FONT_EXTENSIONS = new Set(['.ttf', '.otf', '.woff', '.woff2']);
-
-const WEIGHT_NAMES = new Map([
-  [100, 'Thin'],
-  [200, 'Extra Light'],
-  [300, 'Light'],
-  [400, 'Regular'],
-  [500, 'Medium'],
-  [600, 'Semi Bold'],
-  [700, 'Bold'],
-  [800, 'Extra Bold'],
-  [900, 'Black'],
-]);
-
-const normalizeText = (value) => (
-  typeof value === 'string' ? value.normalize('NFKC').trim().replace(/\s+/g, ' ') : ''
-);
-
-export function sha256Buffer(buffer) {
-  if (!Buffer.isBuffer(buffer) && !(buffer instanceof Uint8Array)) {
-    throw new TypeError('sha256Buffer expects a Buffer or Uint8Array');
-  }
-  return createHash('sha256').update(buffer).digest('hex');
-}
-
-export function getFontExtension(filePath) {
-  const value = String(filePath || '').toLowerCase();
-  const bareExtension = value.startsWith('.') ? value : `.${value}`;
-  const extension = SUPPORTED_FONT_EXTENSIONS.has(value)
-    ? value
-    : SUPPORTED_FONT_EXTENSIONS.has(bareExtension)
-      ? bareExtension
-      : path.extname(value);
-  return SUPPORTED_FONT_EXTENSIONS.has(extension) ? extension : null;
-}
-
-/**
- * Normalize binary metadata without treating filename guesses as authoritative.
- * Unknown values remain null/empty instead of being guessed.
- */
-export function normalizeFontMetadata(metadata = {}) {
-  const weightValue = Number(metadata.weight_class ?? metadata.weightClass);
-  const weightClass = Number.isInteger(weightValue) && weightValue >= 1 && weightValue <= 1000
-    ? weightValue
-    : null;
-
-  const familyName = normalizeText(metadata.family_name ?? metadata.familyName);
-  const subfamilyName = normalizeText(metadata.subfamily_name ?? metadata.subfamilyName);
-  const fullName = normalizeText(metadata.full_name ?? metadata.fullName);
-  const postscriptName = normalizeText(metadata.postscript_name ?? metadata.postScriptName);
-  const extension = getFontExtension(metadata.extension ?? metadata.file_path ?? metadata.filePath);
-
-  return {
-    family_name: familyName || null,
-    subfamily_name: subfamilyName || null,
-    full_name: fullName || null,
-    postscript_name: postscriptName || null,
-    weight_class: weightClass,
-    is_italic: typeof metadata.is_italic === 'boolean'
-      ? metadata.is_italic
-      : typeof metadata.isItalic === 'boolean' ? metadata.isItalic : null,
-    is_variable: typeof metadata.is_variable === 'boolean'
-      ? metadata.is_variable
-      : typeof metadata.isVariable === 'boolean' ? metadata.isVariable : null,
-    glyph_count: Number.isInteger(metadata.glyph_count ?? metadata.glyphCount)
-      && Number(metadata.glyph_count ?? metadata.glyphCount) >= 0
-      ? Number(metadata.glyph_count ?? metadata.glyphCount)
-      : null,
-    extension,
-    parser_status: normalizeText(metadata.status ?? metadata.parser_status) || 'unknown',
-  };
-}
-
-export function canonicalFamilyKey(metadata = {}) {
-  const family = normalizeText(metadata.family_name ?? metadata.familyName).toLocaleLowerCase('en-US');
-  return family || null;
-}
-
-, 'i');
-    if (candidate.weight === weight && suffixPattern.test(family)) {
-      const normalizedFamily = family.replace(suffixPattern, '').trim();
-      if (normalizedFamily) return { family_name: normalizedFamily, weight, is_italic: metadata.is_italic === true || /^(italic|oblique)$/i.test(subfamily) };
+    const suffix = candidate.suffix.toLocaleLowerCase('en-US');
+    if (candidate.weight !== weight || !lowerFamily.endsWith(` ${suffix}`)) continue;
+    const normalizedFamily = family.slice(0, family.length - candidate.suffix.length).trim();
+    if (normalizedFamily) {
+      return {
+        family_name: normalizedFamily,
+        weight,
+        is_italic: metadata.is_italic === true || subfamily === 'italic' || subfamily === 'oblique',
+      };
     }
   }
   return null;
@@ -216,10 +123,8 @@ export function canonicalVariantKey(metadata = {}) {
   const subfamily = normalizeText(metadata.subfamily_name ?? metadata.subfamilyName).toLocaleLowerCase('en-US');
   const weight = embeddedWeight?.weight ?? metadata.weight_class ?? metadata.weightClass;
   const italic = embeddedWeight?.is_italic ?? metadata.is_italic ?? metadata.isItalic;
-
-  // Some real font binaries incorrectly include the weight in the family name
-  // while reporting Regular/Italic as the subfamily. Normalize only when the
-  // suffix agrees with the binary weight class; otherwise retain review.
+  // Some binaries embed weight in family_name but report Regular/Italic as subfamily.
+  // Normalize only when the suffix agrees with the binary weight class.
   if (embeddedWeight) return `weight-${weight}-${italic ? 'italic' : 'upright'}`;
   if (subfamily) return subfamily;
   if (Number.isInteger(weight) && typeof italic === 'boolean') {
@@ -227,7 +132,6 @@ export function canonicalVariantKey(metadata = {}) {
   }
   return null;
 }
-
 /**
  * Deduplicate byte-identical files by SHA-256 while retaining every source.
  * Different hashes are never collapsed because their names/extensions match.
