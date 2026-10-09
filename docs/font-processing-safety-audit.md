@@ -42,7 +42,7 @@ The adapter uploads with `upsert: false`, reads staged objects back to verify SH
 
 Added `scripts/font-processing/publish-plan.js` as a separate, opt-in path that converts a metadata manifest into the atomic publisher's rows using `deduplicateAssets` and `planVariantGroups`. It requires explicit `font_ids` mappings keyed by embedded family name, verifies each file's actual SHA-256 and byte size, deduplicates byte-identical assets, and blocks all writes if any asset needs review, a variant/format collision exists, or a family mapping is missing. It never guesses metadata from filenames.
 
-Run it without `--apply` first; this is a local dry run and does not create a Supabase client. An apply run still requires both `--apply` and `FONT_PROCESSING_ALLOW_WRITES=true`, and uses the staged-object protocol and atomic publish RPC. Example manifest shape:
+Run it without `--apply` first; this is a local dry run and does not create a Supabase client. An apply run still requires both `--apply` and `FONT_PROCESSING_ALLOW_WRITES=true`, plus `FONT_PROCESSING_TARGET=staging`, `FONT_PROCESSING_STAGING_SUPABASE_URL`, and `FONT_PROCESSING_STAGING_SERVICE_ROLE_KEY`. The runner does not fall back to the production `VITE_SUPABASE_URL` or `SUPABASE_SERVICE_ROLE_KEY`; it uses the staged-object protocol and atomic publish RPC. Example manifest shape:
 
 ```json
 {
