@@ -80,3 +80,57 @@ test('validateDiscoveryReport reports archive counts, duplicate hashes, and revi
 test('validateDiscoveryReport rejects invalid input', () => {
   assert.throws(() => validateDiscoveryReport({}), /queue_items array/);
 });
+
+import { compareDiscoverySummaries } from '../scripts/font-processing/compare-discovery-summaries.js';
+
+test('compareDiscoverySummaries reports WOFF2 metadata improvements and review deltas', () => {
+  const baseline = {
+    generated_at: '2026-10-09T09:00:00.000Z',
+    queue_items: [{
+      slug: 'monaspace',
+      asset_count: 10,
+      unique_binary_count: 10,
+      extension_counts: { woff2: 4, ttf: 6 },
+      metadata_status_counts: { parsed: 6, not_parsed: 4 },
+      planned_variant_group_count: 3,
+      review_count: 7,
+      review_reason_counts: { metadata_not_parsed: 4, family_name_weight_conflict: 3 },
+      format_conflict_count: 1,
+      binary_weight_filename_disagreement_count: 0,
+    }],
+  };
+  const fresh = {
+    generated_at: '2026-10-09T10:00:00.000Z',
+    queue_items: [{
+      slug: 'monaspace',
+      asset_count: 10,
+      unique_binary_count: 10,
+      extension_counts: { woff2: 4, ttf: 6 },
+      metadata_status_counts: { parsed: 9, parse_failed: 1 },
+      planned_variant_group_count: 4,
+      review_count: 4,
+      review_reason_counts: { metadata_parse_failed: 1, family_name_weight_conflict: 3 },
+      format_conflict_count: 2,
+      binary_weight_filename_disagreement_count: 1,
+    }],
+  };
+
+  const [result] = compareDiscoverySummaries(baseline, fresh).comparisons;
+  assert.equal(result.status, 'compared');
+  assert.equal(result.asset_count.delta, 0);
+  assert.equal(result.metadata_status_counts.parsed.delta, 3);
+  assert.equal(result.metadata_status_counts.not_parsed.delta, -4);
+  assert.equal(result.metadata_status_counts.parse_failed.delta, 1);
+  assert.equal(result.review_count.delta, -3);
+  assert.equal(result.review_reason_counts.metadata_not_parsed.delta, -4);
+  assert.equal(result.format_conflict_count.delta, 1);
+  assert.equal(result.binary_weight_filename_disagreement_count.delta, 1);
+});
+
+test('compareDiscoverySummaries flags missing baseline/fresh slugs', () => {
+  const result = compareDiscoverySummaries(
+    { queue_items: [{ slug: 'old-font', asset_count: 1 }] },
+    { queue_items: [{ slug: 'new-font', asset_count: 2 }] },
+  );
+  assert.deepEqual(result.comparisons.map((item) => item.status), ['new_in_fresh', 'missing_from_fresh']);
+});
