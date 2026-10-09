@@ -217,3 +217,26 @@ test('canonical keys do not strip a family suffix when the binary weight disagre
   assert.equal(canonicalFamilyKey(metadata), 'example family bold');
   assert.equal(canonicalVariantKey(metadata), 'regular');
 });
+
+
+test('planVariantGroups preserves Monaspace width variants and italic distinctions', () => {
+  const result = planVariantGroups([
+    { sha256: 'a'.repeat(64), metadata: { family_name: 'Monaspace Krypton', subfamily_name: 'Regular', weight_class: 400, is_italic: false, extension: '.woff2', status: 'parsed' } },
+    { sha256: 'b'.repeat(64), metadata: { family_name: 'Monaspace Krypton', subfamily_name: 'SemiWide Regular', weight_class: 400, is_italic: false, extension: '.woff2', status: 'parsed' } },
+    { sha256: 'c'.repeat(64), metadata: { family_name: 'Monaspace Krypton', subfamily_name: 'Wide Regular', weight_class: 400, is_italic: false, extension: '.woff2', status: 'parsed' } },
+    { sha256: 'd'.repeat(64), metadata: { family_name: 'Monaspace Krypton', subfamily_name: 'Regular Italic', weight_class: 400, is_italic: true, extension: '.woff2', status: 'parsed' } },
+    { sha256: 'e'.repeat(64), metadata: { family_name: 'Monaspace Krypton', subfamily_name: 'SemiWide Italic', weight_class: 400, is_italic: true, extension: '.woff2', status: 'parsed' } },
+    { sha256: 'f'.repeat(64), metadata: { family_name: 'Monaspace Krypton', subfamily_name: 'Wide Italic', weight_class: 400, is_italic: true, extension: '.woff2', status: 'parsed' } },
+  ]);
+
+  assert.equal(result.groups.length, 6);
+  assert.deepEqual(result.groups.map((group) => group.variant_key), [
+    'regular',
+    'semiwide regular',
+    'wide regular',
+    'regular italic',
+    'semiwide italic',
+    'wide italic',
+  ]);
+  assert.deepEqual(result.review, []);
+});
