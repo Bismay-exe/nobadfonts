@@ -2,6 +2,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+const SUPPORTED_FONT_EXTENSIONS = new Set(['ttf', 'otf', 'woff', 'woff2']);
+
 export function mergeWoff2ReplayIntoDiscoveryReport(report, replay) {
   if (!report || !Array.isArray(report.queue_items)) throw new TypeError('Expected baseline report queue_items');
   if (!replay || !Array.isArray(replay.queue_items)) throw new TypeError('Expected replay result queue_items');
@@ -12,18 +14,26 @@ export function mergeWoff2ReplayIntoDiscoveryReport(report, replay) {
   updatedReport.queue_items = updatedReport.queue_items.map((item) => {
     const replayItem = replayBySlug.get(item.slug);
     if (!replayItem) return item;
-    const replayAssets = new Map((replayItem.woff2_results || []).map((asset) => [
+    const replayResults = replayItem.font_results || replayItem.woff2_results || [];
+    const replayAssets = new Map(replayResults.map((asset) => [
       JSON.stringify([asset.source_label, asset.relative_path]),
       asset,
     ]));
     let updated = 0;
     let missing = 0;
+    let updatedWoff2 = 0;
+    let missingWoff2 = 0;
     item.assets = (item.assets || []).map((asset) => {
       const ext = String(asset.extension || path.extname(asset.relative_path || '')).toLowerCase().replace(/^\./, '');
-      if (ext !== 'woff2') return asset;
+      if (!SUPPORTED_FONT_EXTENSIONS.has(ext.replace(/^\\./, ''))) return asset;
       const replayAsset = replayAssets.get(JSON.stringify([asset.source_label, asset.relative_path]));
-      if (!replayAsset) { missing += 1; return asset; }
+      if (!replayAsset) {
+        missing += 1;
+        if (ext.replace(/^\\./, '') === 'woff2') missingWoff2 += 1;
+        return asset;
+      }
       updated += 1;
+      if (ext.replace(/^\\./, '') === 'woff2') updatedWoff2 += 1;
       return {
         ...asset,
         metadata: {
@@ -41,7 +51,7 @@ export function mergeWoff2ReplayIntoDiscoveryReport(report, replay) {
         },
       };
     });
-    summary.push({ slug: item.slug, baseline_woff2_count: replayItem.woff2_asset_count_in_baseline, updated_from_replay: updated, missing_replay_matches: missing });
+    summary.push({ slug: item.slug, baseline_font_count: replayItem.font_asset_count_in_baseline ?? replayResults.length, updated_from_replay: updated, missing_replay_matches: missing, baseline_woff2_count: replayItem.woff2_asset_count_in_baseline, updated_woff2_from_replay: updatedWoff2, missing_woff2_replay_matches: missingWoff2 });
     return item;
   });
   return { report: updatedReport, summary };
