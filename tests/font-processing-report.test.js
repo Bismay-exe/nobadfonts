@@ -143,3 +143,44 @@ test('validateWoff2FromDiscoveryReport rejects malformed reports before network 
     /queue_items array/,
   );
 });
+
+import { mergeWoff2ReplayIntoDiscoveryReport } from '../scripts/font-processing/merge-woff2-replay.js';
+
+test('mergeWoff2ReplayIntoDiscoveryReport updates only matching WOFF2 metadata without mutating baseline', () => {
+  const baseline = {
+    queue_items: [{
+      slug: 'example',
+      assets: [
+        { source_label: 'webfont-static', relative_path: 'A.woff2', extension: 'woff2', metadata: { status: 'not_parsed' } },
+        { source_label: 'static', relative_path: 'A.ttf', extension: 'ttf', metadata: { status: 'parsed', family_name: 'Keep Me' } },
+      ],
+    }],
+  };
+  const replay = {
+    queue_items: [{
+      slug: 'example',
+      woff2_asset_count_in_baseline: 1,
+      woff2_results: [{
+        source_label: 'webfont-static', relative_path: 'A.woff2', metadata_status: 'parsed',
+        family_name: 'Example', subfamily_name: 'Bold', full_name: 'Example Bold',
+        postscript_name: 'Example-Bold', weight_class: 700, is_italic: false,
+        is_variable: false, glyph_count: 500, variation_axes: [],
+      }],
+    }],
+  };
+  const result = mergeWoff2ReplayIntoDiscoveryReport(baseline, replay);
+  assert.equal(result.report.queue_items[0].assets[0].metadata.family_name, 'Example');
+  assert.equal(result.report.queue_items[0].assets[0].metadata.status, 'parsed');
+  assert.equal(result.report.queue_items[0].assets[1].metadata.family_name, 'Keep Me');
+  assert.equal(baseline.queue_items[0].assets[0].metadata.status, 'not_parsed');
+  assert.deepEqual(result.summary, [{ slug: 'example', baseline_woff2_count: 1, updated_from_replay: 1, missing_replay_matches: 0 }]);
+});
+
+test('mergeWoff2ReplayIntoDiscoveryReport reports missing replay matches without guessing', () => {
+  const result = mergeWoff2ReplayIntoDiscoveryReport(
+    { queue_items: [{ slug: 'example', assets: [{ source_label: 'x', relative_path: 'missing.woff2', extension: 'woff2', metadata: { status: 'not_parsed' } }] }] },
+    { queue_items: [{ slug: 'example', woff2_asset_count_in_baseline: 1, woff2_results: [] }] },
+  );
+  assert.equal(result.report.queue_items[0].assets[0].metadata.status, 'not_parsed');
+  assert.equal(result.summary[0].missing_replay_matches, 1);
+});
