@@ -10,6 +10,14 @@ import { createSupabasePublishingAdapter } from './supabase-publishing-adapter.j
 const sha256 = (bytes) => createHash('sha256').update(bytes).digest('hex');
 const normalizeFamily = (value) => String(value || '').normalize('NFKC').trim().replace(/\s+/g, ' ').toLocaleLowerCase('en-US');
 
+export function assertStagingOnly(env = process.env) {
+  if (env.FONT_PROCESSING_TARGET !== 'staging') throw new Error('Publishing runner is staging-only; set FONT_PROCESSING_TARGET=staging explicitly');
+  if (!env.FONT_PROCESSING_STAGING_SUPABASE_URL || !env.FONT_PROCESSING_STAGING_SERVICE_ROLE_KEY) {
+    throw new Error('Missing isolated staging credentials: FONT_PROCESSING_STAGING_SUPABASE_URL and FONT_PROCESSING_STAGING_SERVICE_ROLE_KEY');
+  }
+  return { url: env.FONT_PROCESSING_STAGING_SUPABASE_URL, serviceRoleKey: env.FONT_PROCESSING_STAGING_SERVICE_ROLE_KEY };
+}
+
 export function buildPublishPlan(manifest, { baseDir = process.cwd() } = {}) {
   if (!manifest || typeof manifest !== 'object' || Array.isArray(manifest)) throw new Error('Manifest must be a JSON object');
   if (typeof manifest.batch_id !== 'string' || !/^[a-zA-Z0-9][a-zA-Z0-9._-]{0,127}$/.test(manifest.batch_id) || manifest.batch_id.includes('..')) throw new Error('Manifest requires a safe batch_id');
