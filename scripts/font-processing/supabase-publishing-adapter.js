@@ -8,11 +8,11 @@ export function createSupabasePublishingAdapter({supabase,bucket='fonts'}){
   async stageAsset(asset,key){
    assertKey(key.split('/')[2],key);const storage=supabase.storage.from(bucket),expected=asset.sha256.toLowerCase();
    const existing=await storage.download(key);
-   if(!existing.error&&existing.data){const bytes=Buffer.from(await existing.data.arrayBuffer()),digest=hash(bytes);if(digest!==expected||bytes.length!==asset.sizeBytes)throw Error(`Immutable staging key contains different bytes: ${key}`);return {sha256:digest,sizeBytes:bytes.length};}
+   if(!existing.error&&existing.data){const bytes=Buffer.from(await existing.data.arrayBuffer()),digest=hash(bytes);if(digest!==expected||bytes.length!==asset.sizeBytes){const e=Error(`Immutable staging key contains different bytes: ${key}`);e.stagedObjectMayExist=true;e.stagedKey=key;throw e;}return {sha256:digest,sizeBytes:bytes.length};}
    const ext=asset.fileName.split('.').pop().toLowerCase(),types={ttf:'font/ttf',otf:'font/otf',woff:'font/woff',woff2:'font/woff2'};
    const upload=await storage.upload(key,asset.bytes,{contentType:types[ext]||'application/octet-stream',upsert:false,cacheControl:'31536000'});
-   const check=await storage.download(key);if(check.error||!check.data)throw Error(`Storage stage failed: ${upload.error?.message||check.error?.message||key}`);
-   const bytes=Buffer.from(await check.data.arrayBuffer()),digest=hash(bytes);if(digest!==expected||bytes.length!==asset.sizeBytes)throw Error(`Read-back verification failed: ${key}`);return {sha256:digest,sizeBytes:bytes.length};
+   const check=await storage.download(key);if(check.error||!check.data){const e=Error(`Storage stage outcome is uncertain: ${upload.error?.message||check.error?.message||key}`);e.stagedObjectMayExist=true;e.stagedKey=key;throw e;}
+   const bytes=Buffer.from(await check.data.arrayBuffer()),digest=hash(bytes);if(digest!==expected||bytes.length!==asset.sizeBytes){const e=Error(`Read-back verification failed: ${key}`);e.stagedObjectMayExist=true;e.stagedKey=key;throw e;}return {sha256:digest,sizeBytes:bytes.length};
   },
   async publishRows(rows,{batchId,idempotencyKey}){
    if(idempotencyKey!==`font-processing:${batchId}`)throw Error('Invalid publishing idempotency key');
