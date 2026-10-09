@@ -27,3 +27,12 @@ The new `scripts/font-processing/publishing-protocol.js` is dependency-injected 
 A staging failure cleans up only known keys from the current batch. Cleanup failure is recorded as `reconciliation_required`. After database publication starts, network failures can be ambiguous, so staging objects are retained pending idempotency-key reconciliation rather than risking deletion of referenced assets.
 
 **Release blocker remains:** this is the tested protocol contract, not a production Supabase adapter. The legacy processor has not yet been migrated to deterministic metadata-driven rows, and no atomic transaction RPC is wired. The production workflow remains statically disabled. These tests do not authorize production writes, Storage uploads, or Gemini requests.
+
+
+## Stage 5: concrete adapter and atomic transaction
+
+Added a dependency-injected Supabase Storage adapter and a migration defining a durable publishing ledger plus `publish_font_processing_batch`. The RPC changes `font_variants` and marks the batch committed in one PostgreSQL transaction, validates idempotency key, manifest hash, staging prefix, public URL, font ID, format, and size, and rejects reusing a batch ID with a different manifest. Audit updates cannot downgrade a committed batch.
+
+The adapter uploads with `upsert: false`, reads staged objects back to verify SHA-256 and size, then calls the atomic RPC. The migration is committed to this feature branch only and has not been applied to any Supabase project. CI adds a disposable PostgreSQL 17 integration job for successful commit, idempotent replay, and rollback on an invalid later row. Adapter behavior is tested with mocked Storage/RPC.
+
+**Still not production-ready:** `process-ai-fonts.js` is not yet wired to this adapter or the deterministic metadata plan. Keep the production workflow disabled; do not apply the migration to production. An isolated Supabase staging-project test remains required before enabling publishing.
