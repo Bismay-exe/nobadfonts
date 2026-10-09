@@ -642,4 +642,8 @@ test('variant audit preserves weight-class evidence by format without inferring 
   });
   assert.equal(group.assets.find((asset) => asset.extension === '.woff2').metadata.weight_class, 400);
   assert.equal(result.publishable, false);
+  assert.equal(result.summary.weight_disagreement_group_count, 1);
+  assert.deepEqual(result.summary.review_flag_counts, { weight_class_disagreement: 1 });
+  assert.equal(result.queues[0].weight_disagreement_groups.length, 1);
+  assert.deepEqual(result.queues[0].weight_disagreement_groups[0].weight_classes_by_format, group.evidence_variation.weight_classes_by_format);
 });
