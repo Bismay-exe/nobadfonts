@@ -10,7 +10,7 @@ const supabaseUrl = process.env.VITE_SUPABASE_URL;
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const requestedQueueId = process.env.FONT_PROCESSING_QUEUE_ID?.trim() || null;
 const outputDir = process.env.FONT_DISCOVERY_OUTPUT_DIR || 'font-discovery-reports';
-const maxArchiveBytes = Number(process.env.FONT_DISCOVERY_MAX_ARCHIVE_BYTES || 150 * 1024 * 1024);
+const maxArchiveBytes = Number(process.env.FONT_DISCOVERY_MAX_ARCHIVE_BYTES || 700 * 1024 * 1024);
 
 if (!supabaseUrl || !serviceRoleKey) {
   console.error('Missing VITE_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY');
