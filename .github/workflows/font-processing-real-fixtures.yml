@@ -30,7 +30,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Install WOFF2 metadata parser
+      - name: Install font metadata parser dependencies
         run: python3 -m pip install --break-system-packages fonttools brotli
 
       - name: Download official Fraunces fixture
@@ -52,13 +52,19 @@ jobs:
             'https://raw.githubusercontent.com/github/mona-sans/main/fonts/webfonts/variable/MonaSansVF%5Bwdth%2Copsz%2Cwght%5D.woff2' \
             --output 'validation-output/font-fixtures/MonaSansVF[wdth,opsz,wght].woff2'
 
-      - name: Parse WOFF2 metadata locally (read only)
+      - name: Parse OTF, TTF, and WOFF2 metadata locally (read only)
         run: |
+          python3 scripts/font-processing/parse-woff2-metadata.py \
+            validation-output/font-fixtures/Fraunces144pt-BlackItalic.otf \
+            > validation-output/otf-metadata.json
+          python3 scripts/font-processing/parse-woff2-metadata.py \
+            'validation-output/font-fixtures/MonaSansVF[wdth,wght,opsz,ital].ttf' \
+            > validation-output/ttf-metadata.json
           python3 scripts/font-processing/parse-woff2-metadata.py \
             'validation-output/font-fixtures/MonaSansVF[wdth,opsz,wght].woff2' \
             > validation-output/woff2-metadata.json
           node --input-type=module -e \
-            "import fs from 'node:fs'; const result=JSON.parse(fs.readFileSync('validation-output/woff2-metadata.json','utf8')); if(result.status!=='parsed'||result.is_variable!==true||!result.family_name||!Array.isArray(result.variation_axes)||result.variation_axes.length===0) process.exit(1); console.log(JSON.stringify({status:result.status,family_name:result.family_name,is_variable:result.is_variable,axes:result.variation_axes.length}));"
+            "import fs from 'node:fs'; for (const ext of ['otf','ttf','woff2']) { const r=JSON.parse(fs.readFileSync('validation-output/'+ext+'-metadata.json','utf8')); if(r.status!=='parsed'||!r.family_name||!r.subfamily_name||!r.formats?.includes(ext)) throw new Error('Invalid '+ext+' metadata: '+JSON.stringify(r)); if(ext!=='otf'&&r.is_variable!==true) throw new Error(ext+' fixture should be variable'); console.log(JSON.stringify({extension:ext,status:r.status,family_name:r.family_name,subfamily_name:r.subfamily_name,is_variable:r.is_variable,axes:r.variation_axes?.length||0})); }"
 
       - name: Inspect Fraunces and Mona Sans binaries (read only)
         run: |
