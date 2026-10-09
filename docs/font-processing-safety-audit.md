@@ -36,3 +36,37 @@ Added a dependency-injected Supabase Storage adapter and a migration defining a 
 The adapter uploads with `upsert: false`, reads staged objects back to verify SHA-256 and size, then calls the atomic RPC. The migration is committed to this feature branch only and has not been applied to any Supabase project. CI adds a disposable PostgreSQL 17 integration job for successful commit, idempotent replay, and rollback on an invalid later row. Adapter behavior is tested with mocked Storage/RPC.
 
 **Still not production-ready:** `process-ai-fonts.js` is not yet wired to this adapter or the deterministic metadata plan. Keep the production workflow disabled; do not apply the migration to production. An isolated Supabase staging-project test remains required before enabling publishing.
+
+
+## Stage 5 follow-up: deterministic publish-plan runner
+
+Added `scripts/font-processing/publish-plan.js` as a separate, opt-in path that converts a metadata manifest into the atomic publisher's rows using `deduplicateAssets` and `planVariantGroups`. It requires explicit `font_ids` mappings keyed by embedded family name, verifies each file's actual SHA-256 and byte size, deduplicates byte-identical assets, and blocks all writes if any asset needs review, a variant/format collision exists, or a family mapping is missing. It never guesses metadata from filenames.
+
+Run it without `--apply` first; this is a local dry run and does not create a Supabase client. An apply run still requires both `--apply` and `FONT_PROCESSING_ALLOW_WRITES=true`, and uses the staged-object protocol and atomic publish RPC. Example manifest shape:
+
+```json
+{
+  "batch_id": "reviewed-batch-001",
+  "font_ids": {
+    "Mona Sans": "11111111-1111-4111-8111-111111111111"
+  },
+  "assets": [
+    {
+      "file_path": "assets/mona-sans-regular.woff2",
+      "metadata": {
+        "family_name": "Mona Sans",
+        "subfamily_name": "Regular",
+        "weight_class": 400,
+        "is_italic": false,
+        "is_variable": false,
+        "glyph_count": 500,
+        "status": "parsed"
+      }
+    }
+  ]
+}
+```
+
+Command: `node scripts/font-processing/publish-plan.js ./manifest.json`
+
+The runner is intentionally separate from the legacy live queue processor. It does not claim Stage 5 release completion: the production queue workflow remains statically disabled, the migration remains unapplied, and a real isolated Supabase staging-project test of Storage + RPC retries/reconciliation is still required. No production writes, uploads, or Gemini calls are authorized by these changes.
