@@ -150,6 +150,14 @@ export function planVariantGroups(assets) {
       && metadata.weight_class !== 400
       && /(?:^|\\s)(?:thin|hairline|extra\\s*light|ultra\\s*light|light|medium|semi\\s*bold|demi\\s*bold|extra\\s*bold|ultra\\s*bold|bold|black|heavy)(?:\\s+italic)?$/i.test(metadata.family_name);
 
+    if (metadata.parser_status === 'not_parsed' || metadata.parser_status === 'parse_failed') {
+      review.push({
+        asset_id: asset.asset_id ?? asset.sha256 ?? null,
+        reason: metadata.parser_status === 'not_parsed' ? 'metadata_not_parsed' : 'metadata_parse_failed',
+      });
+      continue;
+    }
+
     if (!familyKey || !variantKey || !metadata.extension || familyWeightConflict) {
       review.push({
         asset_id: asset.asset_id ?? asset.sha256 ?? null,
