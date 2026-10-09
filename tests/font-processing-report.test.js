@@ -525,7 +525,7 @@ test('Gemini cache key changes when candidate input, model, confidence threshold
       fetchCount += 1;
       const body = JSON.parse(options.body);
       const userText = body.contents[0].parts[0].text;
-      const ids = [...userText.matchAll(/"asset_id":"([^"]+)"/g)].map((m) => m[1]);
+      const ids = [...userText.matchAll(/"candidate_id":"([^"]+)"/g)].map((m) => m[1]);
       const uniqueId = ids[0] || `cache-key-${fetchCount}`;
       return new Response(JSON.stringify({
         candidates: [{ content: { parts: [{ text: JSON.stringify({ decisions: [{
