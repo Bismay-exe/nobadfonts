@@ -184,3 +184,50 @@ test('mergeWoff2ReplayIntoDiscoveryReport reports missing replay matches without
   assert.equal(result.report.queue_items[0].assets[0].metadata.status, 'not_parsed');
   assert.equal(result.summary[0].missing_replay_matches, 1);
 });
+
+import { buildGeminiReviewRequest, validateGeminiReviewResponse } from '../scripts/font-processing/gemini-review.js';
+
+test('Gemini review request contains only normalized evidence and explicit conservative instructions', () => {
+  const request = buildGeminiReviewRequest([{
+    asset_id: 'asset-1',
+    relative_path: 'Monaspace Argon Bold.woff2',
+    metadata: { family_name: 'Monaspace Argon', subfamily_name: 'Bold', weight_class: 700, extension: '.woff2', status: 'parsed' },
+  }]);
+  assert.equal(request.model_task, 'classify_ambiguous_font_relationships');
+  assert.match(request.system_instruction, /untrusted data/);
+  assert.equal(request.candidates[0].candidate_id, 'asset-1');
+  assert.equal(request.response_schema.additionalProperties, false);
+});
+
+test('Gemini review response downgrades low confidence to human review and is never publishable', () => {
+  const request = buildGeminiReviewRequest([
+    { asset_id: 'asset-1', metadata: { family_name: 'Mona Sans' } },
+    { asset_id: 'asset-2', metadata: { family_name: 'Mona Sans' } },
+  ]);
+  const result = validateGeminiReviewResponse({
+    decisions: [
+      { candidate_id: 'asset-1', decision: 'group', relation: 'same_family', confidence: 0.99, reason: 'Names and metadata align.' },
+      { candidate_id: 'asset-2', decision: 'group', relation: 'same_family', confidence: 0.6, reason: 'Evidence is incomplete.' },
+    ],
+  }, request);
+  assert.equal(result.decisions[0].decision, 'group');
+  assert.equal(result.decisions[0].requires_human_review, true);
+  assert.equal(result.decisions[1].decision, 'review');
+  assert.equal(result.decisions[1].relation, 'unknown');
+  assert.equal(result.publishable, false);
+  assert.equal(result.database_writes_performed, false);
+  assert.deepEqual(result.missing_candidate_ids, []);
+});
+
+test('Gemini review response rejects unexpected or duplicate candidate IDs', () => {
+  const request = buildGeminiReviewRequest([{ asset_id: 'asset-1', metadata: {} }]);
+  assert.throws(() => validateGeminiReviewResponse({
+    decisions: [{ candidate_id: 'unexpected', decision: 'review', relation: 'unknown', confidence: 0, reason: 'No evidence.' }],
+  }, request), /Unexpected candidate_id/);
+  assert.throws(() => validateGeminiReviewResponse({
+    decisions: [
+      { candidate_id: 'asset-1', decision: 'review', relation: 'unknown', confidence: 0, reason: 'No evidence.' },
+      { candidate_id: 'asset-1', decision: 'review', relation: 'unknown', confidence: 0, reason: 'No evidence.' },
+    ],
+  }, request), /Duplicate candidate_id/);
+});
