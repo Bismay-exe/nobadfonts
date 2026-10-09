@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { buildPublishPlan } from '../scripts/font-processing/publish-plan.js';
+import { assertStagingOnly, buildPublishPlan } from '../scripts/font-processing/publish-plan.js';
 
 const metadata = (family, subfamily, weight) => ({
   family_name: family,
@@ -95,3 +95,22 @@ test('refuses manifest asset paths that escape the manifest directory', () => fi
     fs.rmSync(outside, { force: true });
   }
 }));
+
+test('apply-mode configuration accepts only explicit isolated staging credentials', () => {
+  assert.throws(() => assertStagingOnly({
+    VITE_SUPABASE_URL: 'https://production.supabase.co',
+    SUPABASE_SERVICE_ROLE_KEY: 'production-key',
+  }), /staging-only/);
+  assert.throws(() => assertStagingOnly({
+    FONT_PROCESSING_TARGET: 'staging',
+    VITE_SUPABASE_URL: 'https://production.supabase.co',
+    SUPABASE_SERVICE_ROLE_KEY: 'production-key',
+  }), /isolated staging credentials/);
+  assert.deepEqual(assertStagingOnly({
+    FONT_PROCESSING_TARGET: 'staging',
+    FONT_PROCESSING_STAGING_SUPABASE_URL: 'https://staging-project.supabase.co',
+    FONT_PROCESSING_STAGING_SERVICE_ROLE_KEY: 'staging-key',
+    VITE_SUPABASE_URL: 'https://production.supabase.co',
+    SUPABASE_SERVICE_ROLE_KEY: 'production-key',
+  }), { url: 'https://staging-project.supabase.co', serviceRoleKey: 'staging-key' });
+});
