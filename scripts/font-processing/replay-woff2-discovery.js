@@ -5,6 +5,7 @@ import crypto from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
+const SUPPORTED_FONT_EXTENSIONS = new Set(['.ttf', '.otf', '.woff', '.woff2']);
 const MAX_ARCHIVE_BYTES = Number(process.env.FONT_DISCOVERY_MAX_ARCHIVE_BYTES || 700 * 1024 * 1024);
 const fetchTimeoutMs = 60_000;
 
@@ -77,6 +78,8 @@ export async function validateWoff2FromDiscoveryReport(report, options = {}) {
         baseline_asset_count: Array.isArray(item.assets) ? item.assets.length : 0,
         source_count: Array.isArray(item.download_sources) ? item.download_sources.length : 0,
         archives: [],
+        font_asset_count_in_baseline: 0,
+        font_results: [],
         woff2_asset_count_in_baseline: 0,
         baseline_woff2_status_counts: {},
         fresh_woff2_status_counts: {},
@@ -90,9 +93,9 @@ export async function validateWoff2FromDiscoveryReport(report, options = {}) {
         const status = asset.metadata?.status || 'unknown';
         itemResult.baseline_woff2_status_counts[status] = (itemResult.baseline_woff2_status_counts[status] || 0) + 1;
       }
-      const woff2SourceLabels = new Set(baselineWoff2.map((asset) => asset.source_label).filter(Boolean));
+      const fontSourceLabels = new Set(baselineFontAssets.map((asset) => asset.source_label).filter(Boolean));
       const sources = (item.download_sources || []).filter((source) =>
-        woff2SourceLabels.has(source.label) &&
+        fontSourceLabels.has(source.label) &&
         source.outcome === 'scanned' && /^https?:\/\//i.test(source.original_url || source.normalized_url || '')
       );
       for (const source of sources) {
@@ -100,7 +103,7 @@ export async function validateWoff2FromDiscoveryReport(report, options = {}) {
         const label = source.label || 'source';
         const archivePath = path.join(workRoot, `${safeLabel(label)}.zip`);
         const extractDir = path.join(workRoot, `${safeLabel(label)}-extracted`);
-        const archiveResult = { label, url, status: 'pending', archive_bytes: null, archive_sha256: null, baseline_archive_sha256: null, woff2_files_found: 0, error: null };
+        const archiveResult = { label, url, status: 'pending', archive_bytes: null, archive_sha256: null, baseline_archive_sha256: null, font_files_found: 0, woff2_files_found: 0, error: null };
         itemResult.archives.push(archiveResult);
         try {
           const downloaded = await downloadArchive(url, archivePath);
@@ -119,18 +122,19 @@ export async function validateWoff2FromDiscoveryReport(report, options = {}) {
           assertSafeZipEntries(entries);
           fs.mkdirSync(extractDir, { recursive: true });
           execFileSync('unzip', ['-o', '-q', archivePath, '-d', extractDir], { stdio: 'pipe' });
-          const woff2Paths = [];
+          const fontPaths = [];
           const walk = (dir) => {
             for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
               const fullPath = path.join(dir, entry.name);
               if (entry.isDirectory()) walk(fullPath);
-              else if (entry.isFile() && path.extname(entry.name).toLowerCase() === '.woff2') woff2Paths.push(fullPath);
+              else if (entry.isFile() && SUPPORTED_FONT_EXTENSIONS.has(path.extname(entry.name).toLowerCase())) fontPaths.push(fullPath);
             }
           };
           walk(extractDir);
-          archiveResult.woff2_files_found = woff2Paths.length;
+          archiveResult.font_files_found = fontPaths.length;
+          archiveResult.woff2_files_found = fontPaths.filter((filePath) => path.extname(filePath).toLowerCase() === '.woff2').length;
           archiveResult.status = 'scanned';
-          for (const filePath of woff2Paths) {
+          for (const filePath of fontPaths) {
             const relativePath = path.relative(extractDir, filePath).split(path.sep).join('/');
             const metadata = parseWoff2(parserPath, filePath);
             const baselineAsset = baselineWoff2.find((asset) =>
@@ -139,6 +143,7 @@ export async function validateWoff2FromDiscoveryReport(report, options = {}) {
             const record = {
               source_label: label,
               relative_path: relativePath,
+              extension: path.extname(filePath).toLowerCase().slice(1),
               sha256: sha256(fs.readFileSync(filePath)),
               size_bytes: fs.statSync(filePath).size,
               metadata_status: metadata.status,
@@ -154,8 +159,11 @@ export async function validateWoff2FromDiscoveryReport(report, options = {}) {
               hash_matches_baseline: baselineAsset ? baselineAsset.sha256 === sha256(fs.readFileSync(filePath)) : null,
               error: metadata.status === 'parse_failed' ? metadata.reason || null : null,
             };
-            itemResult.woff2_results.push(record);
-            itemResult.fresh_woff2_status_counts[metadata.status] = (itemResult.fresh_woff2_status_counts[metadata.status] || 0) + 1;
+            itemResult.font_results.push(record);
+            if (record.extension === 'woff2') {
+              itemResult.woff2_results.push(record);
+              itemResult.fresh_woff2_status_counts[metadata.status] = (itemResult.fresh_woff2_status_counts[metadata.status] || 0) + 1;
+            }
           }
         } catch (error) {
           archiveResult.status = 'error';
@@ -166,7 +174,12 @@ export async function validateWoff2FromDiscoveryReport(report, options = {}) {
           fs.rmSync(extractDir, { recursive: true, force: true });
         }
       }
+      itemResult.font_results.sort((a, b) => a.source_label.localeCompare(b.source_label) || a.relative_path.localeCompare(b.relative_path));
       itemResult.woff2_results.sort((a, b) => a.source_label.localeCompare(b.source_label) || a.relative_path.localeCompare(b.relative_path));
+      itemResult.font_fresh_parse_success_count = itemResult.font_results.filter((asset) => asset.metadata_status === 'parsed').length;
+      itemResult.font_parse_failed_count = itemResult.font_results.filter((asset) => asset.metadata_status !== 'parsed').length;
+      itemResult.font_matching_baseline_hash_count = itemResult.font_results.filter((asset) => asset.hash_matches_baseline === true).length;
+      itemResult.font_hash_mismatch_count = itemResult.font_results.filter((asset) => asset.hash_matches_baseline === false).length;
       itemResult.woff2_fresh_parse_success_count = itemResult.woff2_results.filter((asset) => asset.metadata_status === 'parsed').length;
       itemResult.woff2_parse_failed_count = itemResult.woff2_results.filter((asset) => asset.metadata_status !== 'parsed').length;
       itemResult.woff2_matching_baseline_hash_count = itemResult.woff2_results.filter((asset) => asset.hash_matches_baseline === true).length;
@@ -193,6 +206,11 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.a
       else process.stdout.write(output);
       const summary = result.queue_items.map((item) => ({
         slug: item.slug,
+        baseline_font_asset_count: item.font_asset_count_in_baseline,
+        font_fresh_parse_success_count: item.font_fresh_parse_success_count,
+        font_parse_failed_count: item.font_parse_failed_count,
+        font_matching_baseline_hash_count: item.font_matching_baseline_hash_count,
+        font_hash_mismatch_count: item.font_hash_mismatch_count,
         baseline_woff2_asset_count: item.woff2_asset_count_in_baseline,
         fresh_woff2_status_counts: item.fresh_woff2_status_counts,
         fresh_parse_success_count: item.woff2_fresh_parse_success_count,
