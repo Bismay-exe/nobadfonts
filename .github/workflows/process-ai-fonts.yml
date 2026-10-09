@@ -1,34 +1,38 @@
 name: Process AI Fonts Queue
 
+# Intentionally manual and disabled pending the isolated publishing gate (Stage 5).
+# The legacy processor also requires two explicit write flags if run directly.
 on:
-  schedule:
-    # Run every 10 minutes
-    - cron: '*/10 * * * *'
-  workflow_dispatch: # Allow manual triggering from GitHub UI
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: process-ai-fonts-production
+  cancel-in-progress: false
 
 jobs:
   process-fonts:
+    if: ${{ false }}
     runs-on: ubuntu-latest
-    
+    timeout-minutes: 30
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
-
+        uses: actions/checkout@v4
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: '18'
-
+          node-version: '22'
       - name: Install System Dependencies (woff2 + unzip)
         run: |
           sudo apt-get update
           sudo apt-get install -y woff2 unzip
-
       - name: Install NPM Dependencies
         run: npm ci
-
       - name: Run Processing Script
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-        run: node scripts/process-ai-fonts.js
+          FONT_PROCESSING_ALLOW_WRITES: 'true'
+        run: node scripts/process-ai-fonts.js --apply

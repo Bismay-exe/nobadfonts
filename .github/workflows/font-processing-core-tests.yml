@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - 'scripts/font-processing/**'
+      - 'scripts/process-ai-fonts.js'
+      - '.github/workflows/process-ai-fonts.yml'
       - 'tests/**'
       - 'package.json'
       - 'package-lock.json'
@@ -13,6 +15,8 @@ on:
       - main
     paths:
       - 'scripts/font-processing/**'
+      - 'scripts/process-ai-fonts.js'
+      - '.github/workflows/process-ai-fonts.yml'
       - 'tests/**'
       - 'package.json'
       - '.github/workflows/font-processing-core-tests.yml'
