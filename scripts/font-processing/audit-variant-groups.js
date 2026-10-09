@@ -20,6 +20,27 @@ function unique(values) {
   return [...new Set(values.filter((value) => value !== null && value !== undefined && value !== ''))].sort();
 }
 
+const NAMED_WEIGHT_CLASSES = [
+  { pattern: /(?:^|\\s)(?:extra\\s*light|ultra\\s*light|extralight|ultralight)(?:\\s|$)/i, weight: 200 },
+  { pattern: /(?:^|\\s)(?:semi\\s*bold|demi\\s*bold|semibold|demibold)(?:\\s|$)/i, weight: 600 },
+  { pattern: /(?:^|\\s)(?:extra\\s*bold|ultra\\s*bold|extrabold|ultrabold)(?:\\s|$)/i, weight: 800 },
+  { pattern: /(?:^|\\s)(?:hairline|thin)(?:\\s|$)/i, weight: 100 },
+  { pattern: /(?:^|\\s)light(?:\\s|$)/i, weight: 300 },
+  { pattern: /(?:^|\\s)regular(?:\\s|$)/i, weight: 400 },
+  { pattern: /(?:^|\\s)medium(?:\\s|$)/i, weight: 500 },
+  { pattern: /(?:^|\\s)bold(?:\\s|$)/i, weight: 700 },
+  { pattern: /(?:^|\\s)(?:black|heavy)(?:\\s|$)/i, weight: 900 },
+];
+
+function getNamedWeightMismatch(metadata) {
+  const subfamily = String(metadata?.subfamily_name || '').trim();
+  const embeddedWeight = metadata?.weight_class;
+  if (!subfamily || !Number.isInteger(embeddedWeight)) return null;
+  const namedWeight = NAMED_WEIGHT_CLASSES.find((entry) => entry.pattern.test(subfamily));
+  if (!namedWeight || namedWeight.weight === embeddedWeight) return null;
+  return { subfamily_name: subfamily, named_weight_class: namedWeight.weight, embedded_weight_class: embeddedWeight };
+}
+
 function inspectGroup(group) {
   const assets = group.assets || [];
   const familyNames = unique(assets.map((asset) => asset.metadata?.family_name));
@@ -43,10 +64,20 @@ function inspectGroup(group) {
     ]),
   );
   const flags = [];
+  const namedWeightMismatches = assets.flatMap((asset) => {
+    const mismatch = getNamedWeightMismatch(asset.metadata);
+    return mismatch ? [{
+      asset_id: asset.asset_id || asset.sha256 || null,
+      extension: asset.extension || null,
+      source_paths: unique((asset.sources || []).map((source) => source.relative_path)),
+      ...mismatch,
+    }] : [];
+  });
 
   if (familyNames.length > 1) flags.push('raw_family_name_disagreement');
   if (subfamilies.length > 1) flags.push('raw_subfamily_disagreement');
   if (weights.length > 1) flags.push('weight_class_disagreement');
+  if (namedWeightMismatches.length > 0) flags.push('subfamily_weight_class_disagreement');
   if (italicValues.length > 1) flags.push('italic_flag_disagreement');
   if (variableValues.length > 1) flags.push('variable_flag_disagreement');
   if ((group.conflicts || []).length > 0) flags.push('same_format_binary_conflict');
@@ -80,6 +111,7 @@ function inspectGroup(group) {
       },
     })),
     evidence_variation: {
+      named_weight_mismatches: namedWeightMismatches,
       family_names: familyNames,
       subfamilies,
       weight_classes: weights,
