@@ -85,9 +85,14 @@ export async function validateWoff2FromDiscoveryReport(report, options = {}) {
         fresh_woff2_status_counts: {},
         woff2_results: [],
       };
-      const baselineWoff2 = (item.assets || []).filter((asset) =>
+      const baselineFontAssets = (item.assets || []).filter((asset) => {
+        const ext = String(asset.extension || path.extname(asset.relative_path || '')).toLowerCase();
+        return SUPPORTED_FONT_EXTENSIONS.has(ext.startsWith('.') ? ext : `.${ext}`);
+      });
+      const baselineWoff2 = baselineFontAssets.filter((asset) =>
         String(asset.extension || path.extname(asset.relative_path || '')).toLowerCase().replace(/^\./, '') === 'woff2'
       );
+      itemResult.font_asset_count_in_baseline = baselineFontAssets.length;
       itemResult.woff2_asset_count_in_baseline = baselineWoff2.length;
       for (const asset of baselineWoff2) {
         const status = asset.metadata?.status || 'unknown';
@@ -113,7 +118,7 @@ export async function validateWoff2FromDiscoveryReport(report, options = {}) {
           if (source.archive_sha256 && source.archive_sha256 !== downloaded.sha256) {
             archiveResult.archive_hash_changed = true;
             itemResult.warnings = itemResult.warnings || [];
-            itemResult.warnings.push(`Archive hash changed for source "${label}"; fresh WOFF2 metadata was parsed from the current archive.`);
+            itemResult.warnings.push(`Archive hash changed for source "${label}"; fresh font metadata was parsed from the current archive.`);
           } else {
             archiveResult.archive_hash_changed = false;
           }
@@ -137,7 +142,7 @@ export async function validateWoff2FromDiscoveryReport(report, options = {}) {
           for (const filePath of fontPaths) {
             const relativePath = path.relative(extractDir, filePath).split(path.sep).join('/');
             const metadata = parseWoff2(parserPath, filePath);
-            const baselineAsset = baselineWoff2.find((asset) =>
+            const baselineAsset = baselineFontAssets.find((asset) =>
               asset.source_label === label && asset.relative_path === relativePath
             );
             const record = {
