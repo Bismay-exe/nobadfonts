@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-"""Read-only WOFF2 metadata extractor using fontTools. Prints one JSON object."""
+"""Read-only OpenType/TrueType/WOFF/WOFF2 metadata extractor using fontTools."""
 import json
+import os
 import sys
 from fontTools.ttLib import TTFont
 
@@ -31,11 +32,11 @@ def main(path):
     weight = getattr(os2, "usWeightClass", None)
     selection = getattr(os2, "fsSelection", 0)
     mac_style = getattr(head, "macStyle", 0)
-    # Prefer typographic family/subfamily names (IDs 16/17) when present;
-    # legacy IDs 1/2 may incorrectly bake the weight into the family name.
+    # Prefer typographic family/subfamily names (IDs 16/17) when present.
     family = name_value(font, 16) or name_value(font, 1)
     subfamily = name_value(font, 17) or name_value(font, 2)
     italic = bool((selection & 1) or (mac_style & 2) or (post and post.italicAngle) or (subfamily and ("italic" in subfamily.lower() or "oblique" in subfamily.lower())))
+    extension = os.path.splitext(path)[1].lower().lstrip(".")
     result = {
         "status": "parsed",
         "family_name": family,
@@ -48,7 +49,7 @@ def main(path):
         "is_italic": italic,
         "is_variable": bool(fvar),
         "glyph_count": len(font.getBestCmap() or {}),
-        "formats": ["woff2"],
+        "formats": [extension] if extension else [],
         "variation_axes": [
             {
                 "tag": axis.axisTag,
@@ -64,7 +65,7 @@ def main(path):
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("Usage: parse-woff2-metadata.py <font.woff2>", file=sys.stderr)
+        print("Usage: parse-woff2-metadata.py <font-file>", file=sys.stderr)
         sys.exit(2)
     try:
         main(sys.argv[1])
