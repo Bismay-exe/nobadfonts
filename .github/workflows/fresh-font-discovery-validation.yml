@@ -9,11 +9,11 @@ on:
       - 'tests/font-processing-report.test.js'
   workflow_dispatch:
     inputs:
-      baseline_run_id:
-        description: "GitHub Actions run ID containing the saved discovery report"
+      baseline_artifact_id:
+        description: "GitHub Actions artifact ID for the saved discovery report"
         required: true
         type: string
-        default: "37914579536"
+        default: "11608622180"
 
 permissions:
   contents: read
@@ -42,14 +42,19 @@ jobs:
           sudo apt-get install -y unzip python3-pip
           python3 -m pip install --break-system-packages fonttools brotli
 
-      - name: Download saved discovery report
-        uses: actions/download-artifact@v4
-        with:
-          name: font-asset-discovery-report
-          repository: ${{ github.repository }}
-          run-id: ${{ inputs.baseline_run_id }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          path: validation-output/baseline
+      - name: Download saved discovery artifact using GitHub API
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BASELINE_ARTIFACT_ID: ${{ inputs.baseline_artifact_id }}
+        run: |
+          mkdir -p validation-output/baseline
+          curl --fail --location --retry 3 \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/$BASELINE_ARTIFACT_ID/zip" \
+            --output validation-output/baseline/report.zip
+          unzip -q validation-output/baseline/report.zip -d validation-output/baseline
+          find validation-output/baseline -maxdepth 3 -type f -print
 
       - name: Replay saved report against original font archives (read only)
         run: |
