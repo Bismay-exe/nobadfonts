@@ -11,10 +11,13 @@ export function buildGeminiReviewRequest(assets) {
   if (!Array.isArray(assets) || assets.length === 0) {
     throw new TypeError('Expected a non-empty array of ambiguous font assets');
   }
+  if (assets.length > 50) throw new RangeError('Gemini review batches are limited to 50 candidates');
   const candidates = assets.map((asset, index) => {
     const metadata = asset?.metadata || {};
+    const candidateId = normalizeText(asset?.asset_id || asset?.sha256 || `candidate-${index + 1}`);
+    if (!candidateId || candidateId.length > 128) throw new TypeError('Candidate IDs must be 1-128 characters');
     return {
-      candidate_id: normalizeText(asset?.asset_id || asset?.sha256 || `candidate-${index + 1}`),
+      candidate_id: candidateId,
       file_name: normalizeText(asset?.relative_path || asset?.filename || ''),
       extension: normalizeText(metadata.extension || asset?.extension || ''),
       family_name: normalizeText(metadata.family_name || ''),
@@ -28,6 +31,8 @@ export function buildGeminiReviewRequest(assets) {
       parser_status: normalizeText(metadata.status || metadata.parser_status || 'unknown'),
     };
   });
+  const ids = candidates.map((candidate) => candidate.candidate_id);
+  if (new Set(ids).size !== ids.length) throw new TypeError('Candidate IDs must be unique within a Gemini review batch');
 
   return {
     model_task: 'classify_ambiguous_font_relationships',
