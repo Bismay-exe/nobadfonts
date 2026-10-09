@@ -18,7 +18,14 @@ export function buildPublishPlan(manifest, { baseDir = process.cwd() } = {}) {
 
   const assets = manifest.assets.map((item, index) => {
     if (!item || typeof item !== 'object' || typeof item.file_path !== 'string' || !item.file_path.trim()) throw new Error(`Asset ${index} requires file_path`);
-    const filePath = path.resolve(baseDir, item.file_path);
+    const resolvedBase = path.resolve(baseDir);
+    const filePath = path.resolve(resolvedBase, item.file_path);
+    const relativePath = path.relative(resolvedBase, filePath);
+    if (!relativePath || relativePath === '.' || relativePath.startsWith(`..${path.sep}`) || relativePath === '..' || path.isAbsolute(relativePath)) {
+      throw new Error(`Asset ${index} file_path must resolve to a file inside the manifest directory`);
+    }
+    const stat = fs.statSync(filePath);
+    if (!stat.isFile()) throw new Error(`Asset ${index} file_path must be a regular file`);
     const bytes = fs.readFileSync(filePath);
     const actualHash = sha256(bytes);
     if (item.sha256 && String(item.sha256).toLowerCase() !== actualHash) throw new Error(`SHA-256 mismatch for ${item.file_path}`);
