@@ -113,11 +113,9 @@ async function main() {
   }
 
   assertProductionWriteEnabled();
+  const staging = assertStagingOnly(process.env);
   const { createClient } = await import('@supabase/supabase-js');
-  const supabaseUrl = process.env.VITE_SUPABASE_URL;
-  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!supabaseUrl || !supabaseKey) throw new Error('Missing VITE_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY');
-  const supabase = createClient(supabaseUrl, supabaseKey);
+  const supabase = createClient(staging.url, staging.serviceRoleKey);
   const adapter = createSupabasePublishingAdapter({ supabase });
   const result = await publishStagedBatch({
     batchId: plan.batchId,
