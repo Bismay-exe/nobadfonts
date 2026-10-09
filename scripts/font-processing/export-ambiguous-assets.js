@@ -45,7 +45,6 @@ export function exportAmbiguousAssets(report, outputDir, options = {}) {
     const uniqueAssets = deduplicateAssets(assets);
     const plan = planVariantGroups(uniqueAssets);
     const assetById = new Map(uniqueAssets.map((asset) => [asset.asset_id, asset]));
-    const reviewById = new Map(plan.review.map((review) => [review.asset_id, review.reason]));
     const candidates = plan.review.map((review) => {
       const asset = assetById.get(review.asset_id);
       if (!asset) throw new Error(`Review candidate missing from normalized assets: ${review.asset_id}`);
