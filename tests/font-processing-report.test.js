@@ -310,3 +310,52 @@ test('Gemini review request bounds free-form fields and strips untrusted variati
   ]);
   assert.throws(() => validateGeminiReviewResponse({ decisions: [], publishable: true }, request), /unexpected top-level fields/);
 });
+
+
+test('Gemini runner validates a successful mocked API response without production side effects', async () => {
+  const originalFetch = globalThis.fetch;
+  const originalKey = process.env.GEMINI_API_KEY;
+  try {
+    let capturedUrl = '';
+    let capturedOptions;
+    globalThis.fetch = async (url, options) => {
+      capturedUrl = String(url);
+      capturedOptions = options;
+      return new Response(JSON.stringify({
+        candidates: [{ content: { parts: [{ text: JSON.stringify({ decisions: [
+          { candidate_id: 'asset-1', decision: 'group', relation: 'same_family', confidence: 0.99, reason: 'Binary family and variant metadata agree.' },
+        ] }) }] } }],
+        usageMetadata: { promptTokenCount: 120, candidatesTokenCount: 30 },
+      }), { status: 200, headers: { 'content-type': 'application/json' } });
+    };
+    delete process.env.GEMINI_API_KEY;
+    const result = await runGeminiReview([
+      { asset_id: 'asset-1', relative_path: 'Example-Regular.woff2', metadata: { family_name: 'Example', subfamily_name: 'Regular', status: 'parsed' } },
+    ], { apiKey: 'test-key-not-real', model: 'mock-model' });
+
+    assert.match(capturedUrl, /models\/mock-model:generateContent$/);
+    assert.equal(capturedOptions.headers['x-goog-api-key'], 'test-key-not-real');
+    assert.equal(result.decisions[0].decision, 'group');
+    assert.equal(result.publishable, false);
+    assert.equal(result.database_writes_performed, false);
+    assert.equal(result.uploads_performed, false);
+    assert.deepEqual(result.usage_metadata, { promptTokenCount: 120, candidatesTokenCount: 30 });
+  } finally {
+    globalThis.fetch = originalFetch;
+    if (originalKey === undefined) delete process.env.GEMINI_API_KEY;
+    else process.env.GEMINI_API_KEY = originalKey;
+  }
+});
+
+test('Gemini runner surfaces API failures and never returns publishable results', async () => {
+  const originalFetch = globalThis.fetch;
+  try {
+    globalThis.fetch = async () => new Response('quota exceeded', { status: 429, statusText: 'Too Many Requests' });
+    await assert.rejects(
+      runGeminiReview([{ asset_id: 'asset-1', metadata: {} }], { apiKey: 'test-key-not-real' }),
+      /HTTP 429/,
+    );
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
