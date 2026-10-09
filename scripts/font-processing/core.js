@@ -139,14 +139,22 @@ export function planVariantGroups(assets) {
     const familyKey = canonicalFamilyKey(metadata);
     const variantKey = canonicalVariantKey(metadata);
 
-    if (!familyKey || !variantKey || !metadata.extension) {
+    const familyWeightConflict = metadata.family_name
+      && metadata.subfamily_name?.toLocaleLowerCase('en-US') === 'regular'
+      && metadata.weight_class != null
+      && metadata.weight_class !== 400
+      && /(?:^|\\s)(?:thin|hairline|extra\\s*light|ultra\\s*light|light|medium|semi\\s*bold|demi\\s*bold|extra\\s*bold|ultra\\s*bold|bold|black|heavy)(?:\\s+italic)?$/i.test(metadata.family_name);
+
+    if (!familyKey || !variantKey || !metadata.extension || familyWeightConflict) {
       review.push({
         asset_id: asset.asset_id ?? asset.sha256 ?? null,
-        reason: !familyKey
-          ? 'missing_family_metadata'
-          : !variantKey
-            ? 'missing_subfamily_or_weight_metadata'
-            : 'unsupported_or_unknown_extension',
+        reason: familyWeightConflict
+          ? 'family_name_weight_conflict'
+          : !familyKey
+            ? 'missing_family_metadata'
+            : !variantKey
+              ? 'missing_subfamily_or_weight_metadata'
+              : 'unsupported_or_unknown_extension',
       });
       continue;
     }
