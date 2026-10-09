@@ -23,39 +23,61 @@ export function mergeWoff2ReplayIntoDiscoveryReport(report, replay) {
     let missing = 0;
     let updatedWoff2 = 0;
     let missingWoff2 = 0;
+    let hashMismatch = 0;
+    let hashMismatchWoff2 = 0;
     item.assets = (item.assets || []).map((asset) => {
       const ext = String(asset.extension || path.extname(asset.relative_path || '')).toLowerCase().replace(/^\./, '');
       if (!SUPPORTED_FONT_EXTENSIONS.has(ext)) return asset;
       const replayAsset = replayAssets.get(JSON.stringify([asset.source_label, asset.relative_path]));
-      if (!replayAsset) {
+      // Path equality is not enough: if the binary changed since the baseline was
+      // captured, its fresh metadata must not be attached to the old asset record.
+      if (!replayAsset || replayAsset.hash_matches_baseline !== true) {
         missing += 1;
         if (ext === 'woff2') missingWoff2 += 1;
+        if (replayAsset?.hash_matches_baseline === false) {
+          hashMismatch += 1;
+          if (ext === 'woff2') hashMismatchWoff2 += 1;
+        }
         return asset;
       }
       updated += 1;
       if (ext === 'woff2') updatedWoff2 += 1;
+      const parsedSuccessfully = replayAsset.metadata_status === 'parsed';
       return {
         ...asset,
         metadata: {
           ...(asset.metadata || {}),
           status: replayAsset.metadata_status,
-          // Clear stale discovery notes after a successful fresh parse.
-          reason: replayAsset.metadata_status === 'parsed'
+          // Clear stale discovery notes after a successful fresh parse. On parse
+          // failure, retain existing metadata rather than replacing it with nulls.
+          reason: parsedSuccessfully
             ? null
             : replayAsset.error || asset.metadata?.reason || null,
-          family_name: replayAsset.family_name,
-          subfamily_name: replayAsset.subfamily_name,
-          full_name: replayAsset.full_name || null,
-          postscript_name: replayAsset.postscript_name || null,
-          weight_class: replayAsset.weight_class,
-          is_italic: replayAsset.is_italic,
-          is_variable: replayAsset.is_variable,
-          glyph_count: replayAsset.glyph_count,
-          variation_axes: replayAsset.variation_axes,
+          ...(parsedSuccessfully ? {
+            family_name: replayAsset.family_name ?? null,
+            subfamily_name: replayAsset.subfamily_name ?? null,
+            full_name: replayAsset.full_name ?? null,
+            postscript_name: replayAsset.postscript_name ?? null,
+            weight_class: replayAsset.weight_class ?? null,
+            is_italic: replayAsset.is_italic ?? null,
+            is_variable: replayAsset.is_variable ?? null,
+            glyph_count: replayAsset.glyph_count ?? null,
+            variation_axes: Array.isArray(replayAsset.variation_axes) ? replayAsset.variation_axes : [],
+          } : {}),
         },
       };
     });
-    summary.push({ slug: item.slug, baseline_font_count: replayItem.font_asset_count_in_baseline ?? replayResults.length, updated_from_replay: updated, missing_replay_matches: missing, baseline_woff2_count: replayItem.woff2_asset_count_in_baseline, updated_woff2_from_replay: updatedWoff2, missing_woff2_replay_matches: missingWoff2 });
+    summary.push({
+      slug: item.slug,
+      baseline_font_count: replayItem.font_asset_count_in_baseline ?? replayResults.length,
+      updated_from_replay: updated,
+      missing_replay_matches: missing,
+      hash_mismatch_replay_matches: hashMismatch,
+      baseline_woff2_count: replayItem.woff2_asset_count_in_baseline,
+      updated_woff2_from_replay: updatedWoff2,
+      missing_woff2_replay_matches: missingWoff2,
+      hash_mismatch_woff2_replay_matches: hashMismatchWoff2,
+    });
     return item;
   });
   return { report: updatedReport, summary };

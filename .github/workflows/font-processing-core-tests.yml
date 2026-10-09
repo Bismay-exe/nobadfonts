@@ -6,6 +6,7 @@ on:
       - 'scripts/font-processing/**'
       - 'tests/**'
       - 'package.json'
+      - 'package-lock.json'
       - '.github/workflows/font-processing-core-tests.yml'
   push:
     branches:
@@ -23,6 +24,7 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -32,5 +34,5 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Run isolated core tests
+      - name: Run isolated font-processing regression tests
         run: npm run test:font-processing

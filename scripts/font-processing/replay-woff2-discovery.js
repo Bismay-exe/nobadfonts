@@ -172,6 +172,8 @@ export async function validateWoff2FromDiscoveryReport(report, options = {}) {
               metadata_status: metadata.status,
               family_name: metadata.family_name || null,
               subfamily_name: metadata.subfamily_name || null,
+              full_name: metadata.full_name || null,
+              postscript_name: metadata.postscript_name || null,
               weight_class: metadata.weight_class ?? null,
               is_italic: metadata.is_italic ?? null,
               is_variable: metadata.is_variable ?? null,

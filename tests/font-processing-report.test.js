@@ -146,12 +146,12 @@ test('validateWoff2FromDiscoveryReport rejects malformed reports before network 
 
 import { mergeWoff2ReplayIntoDiscoveryReport } from '../scripts/font-processing/merge-woff2-replay.js';
 
-test('mergeWoff2ReplayIntoDiscoveryReport updates matching font metadata without mutating baseline', () => {
+test('mergeWoff2ReplayIntoDiscoveryReport applies only hash-matched metadata and preserves all extracted names', () => {
   const baseline = {
     queue_items: [{
       slug: 'example',
       assets: [
-        { source_label: 'webfont-static', relative_path: 'A.woff2', extension: 'woff2', metadata: { status: 'not_parsed' } },
+        { source_label: 'webfont-static', relative_path: 'A.woff2', extension: 'woff2', sha256: hashA, metadata: { status: 'not_parsed', reason: 'old parser note' } },
         { source_label: 'static', relative_path: 'A.ttf', extension: 'ttf', metadata: { status: 'parsed', family_name: 'Keep Me' } },
       ],
     }],
@@ -159,9 +159,10 @@ test('mergeWoff2ReplayIntoDiscoveryReport updates matching font metadata without
   const replay = {
     queue_items: [{
       slug: 'example',
+      font_asset_count_in_baseline: 1,
       woff2_asset_count_in_baseline: 1,
-      woff2_results: [{
-        source_label: 'webfont-static', relative_path: 'A.woff2', metadata_status: 'parsed',
+      font_results: [{
+        source_label: 'webfont-static', relative_path: 'A.woff2', hash_matches_baseline: true, metadata_status: 'parsed',
         family_name: 'Example', subfamily_name: 'Bold', full_name: 'Example Bold',
         postscript_name: 'Example-Bold', weight_class: 700, is_italic: false,
         is_variable: false, glyph_count: 500, variation_axes: [],
@@ -169,11 +170,78 @@ test('mergeWoff2ReplayIntoDiscoveryReport updates matching font metadata without
     }],
   };
   const result = mergeWoff2ReplayIntoDiscoveryReport(baseline, replay);
-  assert.equal(result.report.queue_items[0].assets[0].metadata.family_name, 'Example');
-  assert.equal(result.report.queue_items[0].assets[0].metadata.status, 'parsed');
+  const merged = result.report.queue_items[0].assets[0].metadata;
+  assert.equal(merged.family_name, 'Example');
+  assert.equal(merged.full_name, 'Example Bold');
+  assert.equal(merged.postscript_name, 'Example-Bold');
+  assert.equal(merged.reason, null);
+  assert.equal(merged.status, 'parsed');
   assert.equal(result.report.queue_items[0].assets[1].metadata.family_name, 'Keep Me');
   assert.equal(baseline.queue_items[0].assets[0].metadata.status, 'not_parsed');
-  assert.deepEqual(result.summary, [{ slug: 'example', baseline_font_count: 1, updated_from_replay: 1, missing_replay_matches: 1, baseline_woff2_count: 1, updated_woff2_from_replay: 1, missing_woff2_replay_matches: 0 }]);
+  assert.deepEqual(result.summary, [{
+    slug: 'example', baseline_font_count: 1, updated_from_replay: 1, missing_replay_matches: 1,
+    hash_mismatch_replay_matches: 0, baseline_woff2_count: 1, updated_woff2_from_replay: 1,
+    missing_woff2_replay_matches: 0, hash_mismatch_woff2_replay_matches: 0,
+  }]);
+});
+
+test('mergeWoff2ReplayIntoDiscoveryReport refuses metadata from changed binaries', () => {
+  const baseline = {
+    queue_items: [{
+      slug: 'example',
+      assets: [{
+        source_label: 'webfont-static', relative_path: 'A.woff2', extension: 'woff2',
+        sha256: hashA, metadata: { status: 'not_parsed', family_name: 'Baseline Family' },
+      }],
+    }],
+  };
+  const replay = {
+    queue_items: [{
+      slug: 'example',
+      font_asset_count_in_baseline: 1,
+      woff2_asset_count_in_baseline: 1,
+      font_results: [{
+        source_label: 'webfont-static', relative_path: 'A.woff2', hash_matches_baseline: false,
+        metadata_status: 'parsed', family_name: 'Changed Binary Family', subfamily_name: 'Regular',
+      }],
+    }],
+  };
+  const result = mergeWoff2ReplayIntoDiscoveryReport(baseline, replay);
+  assert.equal(result.report.queue_items[0].assets[0].metadata.family_name, 'Baseline Family');
+  assert.equal(result.report.queue_items[0].assets[0].metadata.status, 'not_parsed');
+  assert.equal(result.summary[0].updated_from_replay, 0);
+  assert.equal(result.summary[0].missing_replay_matches, 1);
+  assert.equal(result.summary[0].hash_mismatch_replay_matches, 1);
+  assert.equal(result.summary[0].hash_mismatch_woff2_replay_matches, 1);
+});
+
+test('mergeWoff2ReplayIntoDiscoveryReport preserves known metadata when parsing fails', () => {
+  const baseline = {
+    queue_items: [{
+      slug: 'example',
+      assets: [{
+        source_label: 'static', relative_path: 'A.ttf', extension: 'ttf',
+        sha256: hashA, metadata: { status: 'parsed', family_name: 'Known Family', full_name: 'Known Family Regular', weight_class: 400 },
+      }],
+    }],
+  };
+  const replay = {
+    queue_items: [{
+      slug: 'example',
+      font_asset_count_in_baseline: 1,
+      font_results: [{
+        source_label: 'static', relative_path: 'A.ttf', hash_matches_baseline: true,
+        metadata_status: 'parse_failed', error: 'broken fixture', family_name: null, full_name: null, weight_class: null,
+      }],
+    }],
+  };
+  const result = mergeWoff2ReplayIntoDiscoveryReport(baseline, replay);
+  const metadata = result.report.queue_items[0].assets[0].metadata;
+  assert.equal(metadata.status, 'parse_failed');
+  assert.equal(metadata.reason, 'broken fixture');
+  assert.equal(metadata.family_name, 'Known Family');
+  assert.equal(metadata.full_name, 'Known Family Regular');
+  assert.equal(metadata.weight_class, 400);
 });
 
 test('mergeWoff2ReplayIntoDiscoveryReport reports missing replay matches without guessing', () => {
@@ -183,6 +251,7 @@ test('mergeWoff2ReplayIntoDiscoveryReport reports missing replay matches without
   );
   assert.equal(result.report.queue_items[0].assets[0].metadata.status, 'not_parsed');
   assert.equal(result.summary[0].missing_replay_matches, 1);
+  assert.equal(result.summary[0].hash_mismatch_replay_matches, 0);
 });
 
 import { buildGeminiReviewRequest, validateGeminiReviewResponse } from '../scripts/font-processing/gemini-review.js';
