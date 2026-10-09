@@ -635,6 +635,11 @@ test('variant audit preserves weight-class evidence by format without inferring 
 
   const [group] = result.queues[0].groups;
   assert.ok(group.review_flags.includes('weight_class_disagreement'));
+  assert.ok(group.review_flags.includes('subfamily_weight_class_disagreement'));
+  assert.deepEqual(group.evidence_variation.named_weight_mismatches, [
+    { asset_id: 'f'.repeat(64), extension: '.woff', source_paths: ['Mono-Bold.woff'], subfamily_name: 'Bold', named_weight_class: 700, embedded_weight_class: 400 },
+    { asset_id: '9'.repeat(64), extension: '.woff2', source_paths: ['Mono-Bold.woff2'], subfamily_name: 'Bold', named_weight_class: 700, embedded_weight_class: 400 },
+  ]);
   assert.deepEqual(group.evidence_variation.weight_classes_by_format, {
     '.otf': { asset_count: 1, weight_classes: [700], source_paths: ['Mono-Bold.otf'] },
     '.woff': { asset_count: 1, weight_classes: [400], source_paths: ['Mono-Bold.woff'] },
@@ -643,7 +648,7 @@ test('variant audit preserves weight-class evidence by format without inferring 
   assert.equal(group.assets.find((asset) => asset.extension === '.woff2').metadata.weight_class, 400);
   assert.equal(result.publishable, false);
   assert.equal(result.summary.weight_disagreement_group_count, 1);
-  assert.deepEqual(result.summary.review_flag_counts, { weight_class_disagreement: 1 });
+  assert.deepEqual(result.summary.review_flag_counts, { weight_class_disagreement: 1, subfamily_weight_class_disagreement: 1 });
   assert.equal(result.queues[0].weight_disagreement_groups.length, 1);
   assert.deepEqual(result.queues[0].weight_disagreement_groups[0].weight_classes_by_format, group.evidence_variation.weight_classes_by_format);
 });
