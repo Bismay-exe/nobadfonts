@@ -54,6 +54,19 @@ node scripts/font-processing/validate-font-fixtures.js path/to/font.otf path/to/
 - The saved Monaspace report contains 1,485 assets across seven archive packages. All 1,485 hashes are distinct in this report; 1,060 assets have parsed metadata and 425 WOFF2 assets are not parsed by the discovery script.
 - In the dry run, 1,123 Monaspace assets are routed to review (698 family/weight naming ambiguities and 425 unparsed WOFF2 files). The remaining 362 assets form 183 tentative variant groups, with 82 format conflicts flagged. These are review findings, not approval to publish.
 
+## Fresh all-format archive replay results (2026-10-09)
+
+The read-only replay workflow subsequently downloaded and parsed the original seven archive sources again, then compared the results against the saved report. The uploaded artifact `fresh-font-discovery-validation` recorded:
+
+- 1,485 baseline font assets and 1,485 fresh parsed assets.
+- 1,485/1,485 source/path matches with matching SHA-256 hashes; zero missing replay matches.
+- All 425 baseline WOFF2 assets parsed successfully; zero font parse failures and zero failed archives.
+- Extension counts remained stable: 420 OTF, 215 TTF, 425 WOFF, and 425 WOFF2.
+- The deterministic summary changed from 637 to 635 planned variant groups. Reported format conflicts changed from 82 to zero, and binary-weight/filename disagreements changed from 345 to zero.
+- The candidate-export manifest reported zero unresolved candidates for the replayed Monaspace report, so no Gemini request was needed. The exporter explicitly recorded no API calls, database writes, or uploads.
+
+These are results from the saved archive replay and deterministic local grouping only. They do not prove that every grouping is semantically correct, approve the 635 groups for publication, or authorize production writes. Review the artifact and any future grouping changes before creating a separate publish plan.
+
 ## Explicit non-goals
 
 - No Gemini calls, Supabase client, uploads, database mutations, or queue status updates.
