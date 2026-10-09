@@ -264,3 +264,27 @@ test('Gemini review request bounds batch size and rejects duplicate IDs', () => 
     { asset_id: 'duplicate', metadata: {} },
   ]), /must be unique/);
 });
+
+
+test('Gemini review rejects extra fields and downgrades inconsistent decision-relation pairs', () => {
+  const request = buildGeminiReviewRequest([
+    { asset_id: 'asset-a', metadata: { family_name: 'Family A' } },
+    { asset_id: 'asset-b', metadata: { family_name: 'Family B' } },
+  ]);
+  assert.throws(() => validateGeminiReviewResponse({
+    decisions: [{ candidate_id: 'asset-a', decision: 'group', relation: 'same_family', confidence: 0.99, reason: 'Names align.', publishable: true }],
+  }, request), /unexpected fields/);
+
+  const result = validateGeminiReviewResponse({
+    decisions: [
+      { candidate_id: 'asset-a', decision: 'group', relation: 'unrelated', confidence: 0.99, reason: 'These appear unrelated.' },
+      { candidate_id: 'asset-b', decision: 'separate', relation: 'same_family', confidence: 0.99, reason: 'These appear related.' },
+    ],
+  }, request);
+  assert.deepEqual(result.decisions.map((item) => [item.decision, item.relation]), [
+    ['review', 'unknown'],
+    ['review', 'unknown'],
+  ]);
+  assert.equal(result.publishable, false);
+  assert.equal(result.database_writes_performed, false);
+});
