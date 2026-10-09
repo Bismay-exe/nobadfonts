@@ -7,6 +7,8 @@ on:
       - 'scripts/font-processing/merge-woff2-replay.js'
       - 'scripts/font-processing/compare-discovery-summaries.js'
       - 'scripts/font-processing/validate-discovery-report.js'
+      - 'scripts/font-processing/core.js'
+      - 'scripts/font-processing/export-ambiguous-assets.js'
       - 'scripts/font-processing/parse-woff2-metadata.py'
       - '.github/workflows/fresh-font-discovery-validation.yml'
       - 'tests/font-processing-report.test.js'
