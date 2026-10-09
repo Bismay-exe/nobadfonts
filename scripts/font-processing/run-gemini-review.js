@@ -6,11 +6,11 @@ import { buildGeminiReviewRequest, validateGeminiReviewResponse } from './gemini
 
 const DEFAULT_MODEL = 'gemini-2.5-flash';
 const MAX_INPUT_BYTES = 2 * 1024 * 1024;
-const CACHE_VERSION = 1;
+const CACHE_VERSION = 2;
 const DEFAULT_MAX_REQUESTS = 1;
 
 function readCache(cacheFile) {
-  if (!cacheFile || !fs.existsSync(cacheFile)) return { version: CACHE_VERSION, requests_used: 0, entries: {} };
+  if (!cacheFile || !fs.existsSync(cacheFile)) return { version: CACHE_VERSION, requests_used: 0, output_tokens_reserved: 0, entries: {} };
   let cache;
   try {
     cache = JSON.parse(fs.readFileSync(cacheFile, 'utf8'));
@@ -18,7 +18,7 @@ function readCache(cacheFile) {
     throw new Error('Gemini cache is malformed; refusing to call the API or overwrite it.');
   }
   if (!cache || cache.version !== CACHE_VERSION || !Number.isSafeInteger(cache.requests_used)
-    || cache.requests_used < 0 || !cache.entries || typeof cache.entries !== 'object'
+    || cache.requests_used < 0 || !Number.isSafeInteger(cache.output_tokens_reserved) || cache.output_tokens_reserved < 0 || !cache.entries || typeof cache.entries !== 'object'
     || Array.isArray(cache.entries)) {
     throw new Error('Gemini cache has an unsupported or invalid structure; refusing to call the API.');
   }
@@ -35,6 +35,24 @@ function writeCache(cacheFile, cache) {
   } finally {
     if (fs.existsSync(tempFile)) fs.rmSync(tempFile, { force: true });
   }
+}
+
+function getMaxOutputTokens(options) {
+  const raw = options.maxOutputTokens ?? process.env.GEMINI_MAX_OUTPUT_TOKENS ?? 4096;
+  const value = typeof raw === 'number' ? raw : Number(raw);
+  if (!Number.isSafeInteger(value) || value < 1 || value > 4096) {
+    throw new RangeError('GEMINI_MAX_OUTPUT_TOKENS must be an integer between 1 and 4096.');
+  }
+  return value;
+}
+
+function getMaxTotalOutputTokens(options) {
+  const raw = options.maxTotalOutputTokens ?? process.env.GEMINI_MAX_TOTAL_OUTPUT_TOKENS ?? 4096;
+  const value = typeof raw === 'number' ? raw : Number(raw);
+  if (!Number.isSafeInteger(value) || value < 1) {
+    throw new RangeError('GEMINI_MAX_TOTAL_OUTPUT_TOKENS must be a positive integer.');
+  }
+  return value;
 }
 
 function getMaxRequests(options) {
@@ -106,7 +124,7 @@ export async function runGeminiReview(input, options = {}) {
           generationConfig: {
             responseMimeType: 'application/json',
             temperature: 0,
-            maxOutputTokens: 4096,
+            maxOutputTokens,
           },
         }),
       },
@@ -159,7 +177,7 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.a
         missing_candidate_ids: result.missing_candidate_ids.length,
         cache_hit: result.cache.hit,
         requests_used: readCache(cacheFile).requests_used,
-        max_requests: getMaxRequests({}),
+        max_requests: getMaxRequests({}),\n        output_tokens_reserved: readCache(cacheFile).output_tokens_reserved,\n        max_total_output_tokens: getMaxTotalOutputTokens({}),
         publishable: result.publishable,
         database_writes_performed: result.database_writes_performed,
         uploads_performed: result.uploads_performed,
