@@ -38,5 +38,8 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Check production processor syntax
+        run: node --check scripts/process-ai-fonts.js
+
       - name: Run isolated font-processing regression tests
         run: npm run test:font-processing
