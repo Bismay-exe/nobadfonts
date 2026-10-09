@@ -119,14 +119,14 @@ test('planVariantGroups does not merge unrelated subfamilies', () => {
 });
 
 
-test('planVariantGroups sends contradictory family-weight metadata to review', () => {
+test('planVariantGroups routes contradictory family-weight metadata to review', () => {
   const result = planVariantGroups([
     {
       sha256: 'e'.repeat(64),
       metadata: {
-        family_name: 'Monaspace Argon Frozen ExtraBold',
+        family_name: 'Example Family Bold',
         subfamily_name: 'Regular',
-        weight_class: 800,
+        weight_class: 400,
         is_italic: false,
         extension: '.ttf',
         status: 'parsed',
@@ -135,10 +135,10 @@ test('planVariantGroups sends contradictory family-weight metadata to review', (
     {
       sha256: 'f'.repeat(64),
       metadata: {
-        family_name: 'Fraunces 144pt Black',
-        subfamily_name: 'Italic',
-        weight_class: 900,
-        is_italic: true,
+        family_name: 'Another Family Black',
+        subfamily_name: 'Regular',
+        weight_class: 700,
+        is_italic: false,
         extension: '.otf',
         status: 'parsed',
       },
