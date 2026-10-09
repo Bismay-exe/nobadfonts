@@ -9,6 +9,7 @@ on:
       - 'scripts/font-processing/validate-discovery-report.js'
       - 'scripts/font-processing/core.js'
       - 'scripts/font-processing/export-ambiguous-assets.js'
+      - 'scripts/font-processing/audit-variant-groups.js'
       - 'scripts/font-processing/parse-woff2-metadata.py'
       - '.github/workflows/fresh-font-discovery-validation.yml'
       - 'tests/font-processing-report.test.js'
@@ -71,6 +72,28 @@ jobs:
           node scripts/font-processing/merge-woff2-replay.js "$baseline" validation-output/results/woff2-replay.json validation-output/results/merged-report.json validation-output/results/merge-summary.json
           node scripts/font-processing/validate-discovery-report.js validation-output/results/merged-report.json validation-output/results/fresh-summary.json
           node scripts/font-processing/compare-discovery-summaries.js validation-output/results/baseline-summary.json validation-output/results/fresh-summary.json validation-output/results/grouping-comparison.json
+          node scripts/font-processing/audit-variant-groups.js validation-output/results/merged-report.json validation-output/results/variant-group-audit.json
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const audit = JSON.parse(fs.readFileSync('validation-output/results/variant-group-audit.json', 'utf8'));
+          console.log(JSON.stringify({
+            mode: audit.mode,
+            publishable: audit.publishable,
+            database_writes_performed: audit.database_writes_performed,
+            api_calls_performed: audit.api_calls_performed,
+            uploads_performed: audit.uploads_performed,
+            semantic_correctness_claimed: audit.semantic_correctness_claimed,
+            summary: audit.summary,
+            queues: audit.queues.map((queue) => ({
+              slug: queue.slug,
+              planned_group_count: queue.planned_group_count,
+              flagged_group_count: queue.flagged_group_count,
+              review_asset_count: queue.review_asset_count,
+              format_conflict_count: queue.format_conflict_count,
+              review_reason_counts: queue.review_reason_counts,
+            })),
+          }, null, 2));
+          NODE
           cat validation-output/results/merge-summary.json
           cat validation-output/results/grouping-comparison.json
 
