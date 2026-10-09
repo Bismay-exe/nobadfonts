@@ -28,6 +28,20 @@ function inspectGroup(group) {
   const italicValues = unique(assets.map((asset) => asset.metadata?.is_italic));
   const variableValues = unique(assets.map((asset) => asset.metadata?.is_variable));
   const extensions = unique(assets.map((asset) => asset.extension));
+  const weightEvidenceByFormat = Object.fromEntries(
+    extensions.map((extension) => [
+      extension,
+      {
+        asset_count: assets.filter((asset) => asset.extension === extension).length,
+        weight_classes: unique(assets
+          .filter((asset) => asset.extension === extension)
+          .map((asset) => asset.metadata?.weight_class)),
+        source_paths: unique(assets
+          .filter((asset) => asset.extension === extension)
+          .flatMap((asset) => (asset.sources || []).map((source) => source.relative_path))),
+      },
+    ]),
+  );
   const flags = [];
 
   if (familyNames.length > 1) flags.push('raw_family_name_disagreement');
@@ -69,6 +83,7 @@ function inspectGroup(group) {
       family_names: familyNames,
       subfamilies,
       weight_classes: weights,
+      weight_classes_by_format: weightEvidenceByFormat,
       italic_flags: italicValues,
       variable_flags: variableValues,
     },
