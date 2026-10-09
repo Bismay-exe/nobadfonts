@@ -1,7 +1,20 @@
 const ALLOWED_DECISIONS = new Set(['group', 'separate', 'review']);
 const ALLOWED_RELATIONS = new Set(['same_family', 'subfamily', 'packaging_duplicate', 'unrelated', 'unknown']);
 
-const normalizeText = (value) => typeof value === 'string' ? value.trim().replace(/\s+/g, ' ') : '';
+const normalizeText = (value) => typeof value === 'string' ? value.normalize('NFKC').trim().replace(/\\s+/g, ' ') : '';
+const boundedText = (value, maxLength) => normalizeText(value).slice(0, maxLength);
+
+function safeVariationAxes(value) {
+  if (!Array.isArray(value)) return [];
+  return value.slice(0, 16)
+    .filter((axis) => axis && typeof axis === 'object' && !Array.isArray(axis))
+    .map((axis) => ({
+      tag: typeof axis.tag === 'string' && /^[a-zA-Z0-9]{1,8}$/.test(axis.tag) ? axis.tag : null,
+      min: Number.isFinite(axis.min) ? axis.min : null,
+      default: Number.isFinite(axis.default) ? axis.default : null,
+      max: Number.isFinite(axis.max) ? axis.max : null,
+    }));
+}
 
 /**
  * Build a minimal, untrusted-data-safe classification request for ambiguous
