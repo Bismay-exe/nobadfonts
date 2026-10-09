@@ -619,3 +619,27 @@ test('auditVariantGroups reports evidence disagreements and explicitly does not 
 test('auditVariantGroups rejects malformed reports', () => {
   assert.throws(() => auditVariantGroups({}), /queue_items array/);
 });
+
+
+test('variant audit preserves weight-class evidence by format without inferring a correction', () => {
+  const result = auditVariantGroups({
+    queue_items: [{
+      slug: 'format-weight-evidence',
+      assets: [
+        { source_label: 'static', relative_path: 'Mono-Bold.otf', extension: 'otf', sha256: 'e'.repeat(64), size_bytes: 100, metadata: { status: 'parsed', family_name: 'Mono', subfamily_name: 'Bold', weight_class: 700, is_italic: false, is_variable: false } },
+        { source_label: 'webfont', relative_path: 'Mono-Bold.woff', extension: 'woff', sha256: 'f'.repeat(64), size_bytes: 90, metadata: { status: 'parsed', family_name: 'Mono', subfamily_name: 'Bold', weight_class: 400, is_italic: false, is_variable: false } },
+        { source_label: 'webfont', relative_path: 'Mono-Bold.woff2', extension: 'woff2', sha256: '9'.repeat(64), size_bytes: 85, metadata: { status: 'parsed', family_name: 'Mono', subfamily_name: 'Bold', weight_class: 400, is_italic: false, is_variable: false } },
+      ],
+    }],
+  });
+
+  const [group] = result.queues[0].groups;
+  assert.ok(group.review_flags.includes('weight_class_disagreement'));
+  assert.deepEqual(group.evidence_variation.weight_classes_by_format, {
+    '.otf': { asset_count: 1, weight_classes: [700], source_paths: ['Mono-Bold.otf'] },
+    '.woff': { asset_count: 1, weight_classes: [400], source_paths: ['Mono-Bold.woff'] },
+    '.woff2': { asset_count: 1, weight_classes: [400], source_paths: ['Mono-Bold.woff2'] },
+  });
+  assert.equal(group.assets.find((asset) => asset.extension === '.woff2').metadata.weight_class, 400);
+  assert.equal(result.publishable, false);
+});
