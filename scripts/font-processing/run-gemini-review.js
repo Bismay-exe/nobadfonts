@@ -8,9 +8,12 @@ const DEFAULT_MODEL = 'gemini-2.5-flash';
 const MAX_INPUT_BYTES = 2 * 1024 * 1024;
 const CACHE_VERSION = 2;
 const DEFAULT_MAX_REQUESTS = 1;
+const DEFAULT_MAX_TOTAL_OUTPUT_TOKENS = 4096;
 
 function readCache(cacheFile) {
-  if (!cacheFile || !fs.existsSync(cacheFile)) return { version: CACHE_VERSION, requests_used: 0, output_tokens_reserved: 0, entries: {} };
+  if (!cacheFile || !fs.existsSync(cacheFile)) {
+    return { version: CACHE_VERSION, requests_used: 0, output_tokens_reserved: 0, entries: {} };
+  }
   let cache;
   try {
     cache = JSON.parse(fs.readFileSync(cacheFile, 'utf8'));
@@ -18,7 +21,8 @@ function readCache(cacheFile) {
     throw new Error('Gemini cache is malformed; refusing to call the API or overwrite it.');
   }
   if (!cache || cache.version !== CACHE_VERSION || !Number.isSafeInteger(cache.requests_used)
-    || cache.requests_used < 0 || !Number.isSafeInteger(cache.output_tokens_reserved) || cache.output_tokens_reserved < 0 || !cache.entries || typeof cache.entries !== 'object'
+    || cache.requests_used < 0 || !Number.isSafeInteger(cache.output_tokens_reserved)
+    || cache.output_tokens_reserved < 0 || !cache.entries || typeof cache.entries !== 'object'
     || Array.isArray(cache.entries)) {
     throw new Error('Gemini cache has an unsupported or invalid structure; refusing to call the API.');
   }
@@ -37,36 +41,33 @@ function writeCache(cacheFile, cache) {
   }
 }
 
+function getPositiveInteger(value, label) {
+  const number = typeof value === 'number' ? value : Number(value);
+  if (!Number.isSafeInteger(number) || number < 1) throw new RangeError(`${label} must be a positive integer.`);
+  return number;
+}
+
+function getMaxRequests(options) {
+  return getPositiveInteger(options.maxRequests ?? process.env.GEMINI_MAX_REQUESTS ?? DEFAULT_MAX_REQUESTS, 'GEMINI_MAX_REQUESTS');
+}
+
 function getMaxOutputTokens(options) {
-  const raw = options.maxOutputTokens ?? process.env.GEMINI_MAX_OUTPUT_TOKENS ?? 4096;
-  const value = typeof raw === 'number' ? raw : Number(raw);
-  if (!Number.isSafeInteger(value) || value < 1 || value > 4096) {
-    throw new RangeError('GEMINI_MAX_OUTPUT_TOKENS must be an integer between 1 and 4096.');
-  }
+  const value = getPositiveInteger(options.maxOutputTokens ?? process.env.GEMINI_MAX_OUTPUT_TOKENS ?? 4096, 'GEMINI_MAX_OUTPUT_TOKENS');
+  if (value > 4096) throw new RangeError('GEMINI_MAX_OUTPUT_TOKENS must not exceed 4096.');
   return value;
 }
 
 function getMaxTotalOutputTokens(options) {
-  const raw = options.maxTotalOutputTokens ?? process.env.GEMINI_MAX_TOTAL_OUTPUT_TOKENS ?? 4096;
-  const value = typeof raw === 'number' ? raw : Number(raw);
-  if (!Number.isSafeInteger(value) || value < 1) {
-    throw new RangeError('GEMINI_MAX_TOTAL_OUTPUT_TOKENS must be a positive integer.');
-  }
-  return value;
-}
-
-function getMaxRequests(options) {
-  const raw = options.maxRequests ?? process.env.GEMINI_MAX_REQUESTS ?? DEFAULT_MAX_REQUESTS;
-  const value = typeof raw === 'number' ? raw : Number(raw);
-  if (!Number.isSafeInteger(value) || value < 1) {
-    throw new RangeError('GEMINI_MAX_REQUESTS must be a positive integer.');
-  }
-  return value;
+  return getPositiveInteger(
+    options.maxTotalOutputTokens ?? process.env.GEMINI_MAX_TOTAL_OUTPUT_TOKENS ?? DEFAULT_MAX_TOTAL_OUTPUT_TOKENS,
+    'GEMINI_MAX_TOTAL_OUTPUT_TOKENS',
+  );
 }
 
 export async function runGeminiReview(input, options = {}) {
   const model = options.model || process.env.GEMINI_MODEL || DEFAULT_MODEL;
   const minimumConfidence = options.minimumConfidence ?? 0.85;
+  const maxOutputTokens = getMaxOutputTokens(options);
   const request = buildGeminiReviewRequest(input);
   const cacheFile = options.cacheFile || null;
   const cache = readCache(cacheFile);
@@ -74,6 +75,7 @@ export async function runGeminiReview(input, options = {}) {
     cache_version: CACHE_VERSION,
     model,
     minimum_confidence: minimumConfidence,
+    max_output_tokens: maxOutputTokens,
     system_instruction: request.system_instruction,
     response_schema: request.response_schema,
     candidates: request.candidates,
@@ -87,16 +89,22 @@ export async function runGeminiReview(input, options = {}) {
   }
 
   const maxRequests = getMaxRequests(options);
+  const maxTotalOutputTokens = getMaxTotalOutputTokens(options);
   if (cacheFile && cache.requests_used >= maxRequests) {
-    throw new Error(`Gemini request budget exhausted (${cache.requests_used}/${maxRequests}); no request was sent. Use a higher GEMINI_MAX_REQUESTS only after reviewing the batch plan.`);
+    throw new Error(`Gemini request budget exhausted (${cache.requests_used}/${maxRequests}); no request was sent. Increase GEMINI_MAX_REQUESTS only after reviewing the batch plan.`);
   }
+  if (cacheFile && cache.output_tokens_reserved + maxOutputTokens > maxTotalOutputTokens) {
+    throw new Error(`Gemini output-token budget exhausted (${cache.output_tokens_reserved} reserved + ${maxOutputTokens} requested > ${maxTotalOutputTokens}); no request was sent.`);
+  }
+
   const apiKey = options.apiKey || process.env.GEMINI_API_KEY;
   if (!apiKey) throw new Error('Missing GEMINI_API_KEY; no request was sent.');
 
-  // Count an attempted request before network access, so failures and timeouts
-  // cannot be retried indefinitely under the same persistent budget.
+  // Reserve budget before network access, so failures and timeouts cannot be
+  // retried indefinitely under the same persistent cache/budget file.
   if (cacheFile) {
     cache.requests_used += 1;
+    cache.output_tokens_reserved += maxOutputTokens;
     writeCache(cacheFile, cache);
   }
 
@@ -170,14 +178,17 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.a
       const cacheFile = process.env.GEMINI_REVIEW_CACHE_FILE || path.resolve('.cache/font-processing/gemini-review-cache.json');
       const result = await runGeminiReview(input, { cacheFile });
       fs.writeFileSync(outputPath, JSON.stringify(result, null, 2) + '\n', { flag: 'wx' });
+      const cache = readCache(cacheFile);
       console.log(JSON.stringify({
         mode: result.mode,
         model: result.model,
         decisions: result.decisions.length,
         missing_candidate_ids: result.missing_candidate_ids.length,
         cache_hit: result.cache.hit,
-        requests_used: readCache(cacheFile).requests_used,
-        max_requests: getMaxRequests({}),\n        output_tokens_reserved: readCache(cacheFile).output_tokens_reserved,\n        max_total_output_tokens: getMaxTotalOutputTokens({}),
+        requests_used: cache.requests_used,
+        max_requests: getMaxRequests({}),
+        output_tokens_reserved: cache.output_tokens_reserved,
+        max_total_output_tokens: getMaxTotalOutputTokens({}),
         publishable: result.publishable,
         database_writes_performed: result.database_writes_performed,
         uploads_performed: result.uploads_performed,
