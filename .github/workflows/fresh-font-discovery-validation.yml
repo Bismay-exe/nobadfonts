@@ -62,6 +62,12 @@ jobs:
           baseline="$(find validation-output/baseline -type f -name '*.json' -print -quit)"
           test -n "$baseline"
           node scripts/font-processing/replay-woff2-discovery.js "$baseline" validation-output/results/woff2-replay.json
+          node scripts/font-processing/validate-discovery-report.js "$baseline" validation-output/results/baseline-summary.json
+          node scripts/font-processing/merge-woff2-replay.js "$baseline" validation-output/results/woff2-replay.json validation-output/results/merged-report.json validation-output/results/merge-summary.json
+          node scripts/font-processing/validate-discovery-report.js validation-output/results/merged-report.json validation-output/results/fresh-summary.json
+          node scripts/font-processing/compare-discovery-summaries.js validation-output/results/baseline-summary.json validation-output/results/fresh-summary.json validation-output/results/grouping-comparison.json
+          cat validation-output/results/merge-summary.json
+          cat validation-output/results/grouping-comparison.json
 
       - name: Upload WOFF2 replay results
         if: always()
