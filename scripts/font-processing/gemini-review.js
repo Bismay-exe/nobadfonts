@@ -103,9 +103,21 @@ export function validateGeminiReviewResponse(input, request, options = {}) {
       publishable: false,
     };
   });
+  const missingCandidateIds = [...expected].filter((id) => !seen.has(id));
+  for (const candidateId of missingCandidateIds) {
+    decisions.push({
+      candidate_id: candidateId,
+      decision: 'review',
+      relation: 'unknown',
+      confidence: 0,
+      reason: 'Model omitted this candidate; manual review is required.',
+      requires_human_review: true,
+      publishable: false,
+    });
+  }
   return {
     decisions,
-    missing_candidate_ids: [...expected].filter((id) => !seen.has(id)),
+    missing_candidate_ids: missingCandidateIds,
     publishable: false,
     database_writes_performed: false,
   };
