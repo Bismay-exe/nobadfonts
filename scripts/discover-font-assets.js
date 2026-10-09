@@ -45,6 +45,22 @@ function cleanHttpUrl(value) {
   }
 }
 
+function safeDisplayUrl(value) {
+  const normalized = cleanHttpUrl(value);
+  if (!normalized) return null;
+  try {
+    const url = new URL(normalized);
+    // Keep credentials and signed query parameters out of downloadable reports.
+    url.username = '';
+    url.password = '';
+    url.search = '';
+    url.hash = '';
+    return url.toString();
+  } catch {
+    return null;
+  }
+}
+
 function safeSegment(value) {
   return String(value || 'asset').replace(/[^a-zA-Z0-9._-]+/g, '_').slice(0, 100);
 }
@@ -201,8 +217,8 @@ async function main() {
         const label = String(source?.label || `source-${index + 1}`);
         const sourceReport = {
           label,
-          original_url: source?.url ?? null,
-          normalized_url: url,
+          original_url: safeDisplayUrl(source?.url),
+          normalized_url: safeDisplayUrl(url),
           outcome: 'pending',
           archive_bytes: null,
           archive_sha256: null,
@@ -249,7 +265,7 @@ async function main() {
             const variant = guessVariant(path.basename(filePath));
             itemReport.assets.push({
               source_label: label,
-              source_url: url,
+              source_url: safeDisplayUrl(url),
               archive_sha256: downloadInfo.sha256,
               relative_path: relativePath,
               filename: path.basename(filePath),
