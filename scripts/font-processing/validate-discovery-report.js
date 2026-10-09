@@ -106,7 +106,7 @@ if (process.argv[1] && import.meta.url === new URL(`file://${path.resolve(proces
     try {
       const report = JSON.parse(fs.readFileSync(inputPath, 'utf8'));
       const summary = validateDiscoveryReport(report);
-      const output = JSON.stringify(summary, null, 2) + '\\n';
+      const output = JSON.stringify(summary, null, 2) + '\n';
       if (process.argv[3]) fs.writeFileSync(process.argv[3], output, { flag: 'wx' });
       else process.stdout.write(output);
     } catch (error) {
