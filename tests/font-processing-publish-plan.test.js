@@ -81,3 +81,17 @@ test('deduplicates byte-identical source assets but rejects distinct assets in s
     ],
   }, { baseDir: dir }), /variant\/format conflict/);
 }));
+
+test('refuses manifest asset paths that escape the manifest directory', () => fixture((dir) => {
+  const outside = path.join(path.dirname(dir), 'outside-font.woff2');
+  fs.writeFileSync(outside, Buffer.from('outside-font-bytes'));
+  try {
+    assert.throws(() => buildPublishPlan({
+      batch_id: 'test-batch-path',
+      font_ids: {},
+      assets: [{ file_path: '../outside-font.woff2', metadata: metadata('Mona Sans', 'Regular', 400) }],
+    }, { baseDir: dir }), /inside the manifest directory/);
+  } finally {
+    fs.rmSync(outside, { force: true });
+  }
+}));
