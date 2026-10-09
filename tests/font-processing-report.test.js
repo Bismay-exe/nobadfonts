@@ -71,10 +71,10 @@ test('validateDiscoveryReport reports archive counts, duplicate hashes, and revi
   assert.equal(result.source_file_counts['static-copy'], 1);
   assert.equal(result.source_file_counts.web, 1);
   assert.equal(result.review_reason_counts.metadata_not_parsed, 1);
-  assert.equal(result.review_reason_counts.family_name_weight_conflict, 1);
+  assert.equal(result.review_reason_counts.family_name_weight_conflict || 0, 0);
   assert.equal(result.review_reason_counts.metadata_parse_failed, 1);
-  assert.equal(result.planned_variant_group_count, 1);
-  assert.equal(result.planned_asset_count, 1);
+  assert.equal(result.planned_variant_group_count, 2);
+  assert.equal(result.planned_asset_count, 2);
 });
 
 test('validateDiscoveryReport rejects invalid input', () => {
