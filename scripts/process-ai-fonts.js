@@ -331,17 +331,21 @@ async function processQueue() {
     console.log(`Font: ${item.slug} (ID: ${item.id}) [Status: ${item.status}]`);
     console.log(`${'='.repeat(60)}`);
 
-    const { data: claimed, error: claimError } = await supabase.from('font_processing_queue')
-      .update({ status: 'processing', error_message: null }).eq('id', item.id).eq('status', item.status)
-      .select('id').maybeSingle();
-    if (claimError) throw new Error(`Failed to claim queue item ${item.id}: ${claimError.message}`);
-    if (!claimed) {
-      console.log(`Skipping ${item.slug}: another worker already claimed or changed its status.`);
-      continue;
+    if (!REPORT_ONLY) {
+      const { data: claimed, error: claimError } = await supabase.from('font_processing_queue')
+        .update({ status: 'processing', error_message: null }).eq('id', item.id).eq('status', item.status)
+        .select('id').maybeSingle();
+      if (claimError) throw new Error(`Failed to claim queue item ${item.id}: ${claimError.message}`);
+      if (!claimed) {
+        console.log(`Skipping ${item.slug}: another worker already claimed or changed its status.`);
+        continue;
+      }
+    } else {
+      console.log('  Report-only mode: queue item will not be claimed or updated.');
     }
 
     let userId = item.fonts?.uploaded_by;
-    if (!userId) {
+    if (!REPORT_ONLY && !userId) {
       // Attempt fallback to admin profile
       const { data: adminProfile } = await supabase
         .from('profiles')
@@ -362,12 +366,13 @@ async function processQueue() {
     const releaseZips = item.download_urls; // Array of { url, label }
     if (!Array.isArray(releaseZips) || releaseZips.length === 0) {
       console.error('  ❌ No release zips found in download_urls');
-      await updateQueueStatus(item.id, 'error', 'No release zips provided');
+      if (!REPORT_ONLY) await updateQueueStatus(item.id, 'error', 'No release zips provided');
       continue;
     }
 
     if (typeof item.slug !== 'string' || !/^[a-zA-Z0-9][a-zA-Z0-9._-]{0,127}$/.test(item.slug) || item.slug.includes('..')) {
-      await updateQueueStatus(item.id, 'error', 'Unsafe font slug; refusing filesystem or Storage writes');
+      if (!REPORT_ONLY) await updateQueueStatus(item.id, 'error', 'Unsafe font slug; refusing filesystem or Storage writes');
+      console.error('  ❌ Unsafe font slug; refusing filesystem or Storage writes');
       continue;
     }
     const tmpDir = path.join(process.cwd(), 'tmp_fonts', item.slug);
@@ -407,26 +412,46 @@ async function processQueue() {
       }
     }
 
-    if (archiveErrors.length) {
+    if (archiveErrors.length && !REPORT_ONLY) {
       await updateQueueStatus(item.id, 'error', `Archive preflight failed; no assets uploaded. ${archiveErrors.slice(0, 3).join('; ')}`.slice(0, 1000));
       fs.rmSync(tmpDir, { recursive: true, force: true });
       continue;
     }
     if (allFontFiles.length === 0) {
       console.error('  ❌ No font files found in any zip');
-      await updateQueueStatus(item.id, 'error', 'No font files found in provided release zips');
+      if (!REPORT_ONLY) await updateQueueStatus(item.id, 'error', 'No font files found in provided release zips');
       fs.rmSync(tmpDir, { recursive: true, force: true });
       continue;
     }
 
     console.log(`\n  Total font files found across all zips: ${allFontFiles.length}`);
 
-    // Step 2: Group by variant name
-    const { groups: variantGroups, conflicts } = groupFontFiles(allFontFiles);
-    console.log(`  Identified ${variantGroups.size} tentative variant(s).\n`);
-    if (conflicts.length) {
-      const sample = conflicts.slice(0, 5).map(c => `${c.variant_name} .${c.extension}: ${path.basename(c.first_path)} vs ${path.basename(c.conflicting_path)}`).join('; ');
-      const message = `Ambiguous filename grouping found ${conflicts.length} same-variant/same-format collisions. No assets uploaded. ${sample}`.slice(0, 1000);
+    // Step 2: Parse binary metadata and preserve the most specific logical variant names.
+    let metadataByPath;
+    try {
+      metadataByPath = inspectFontFiles(allFontFiles);
+    } catch (error) {
+      const message = `Local font metadata extraction failed; no assets uploaded: ${error.message}`.slice(0, 1000);
+      console.error(`  ❌ ${message}`);
+      if (!REPORT_ONLY) await updateQueueStatus(item.id, 'error', message);
+      fs.rmSync(tmpDir, { recursive: true, force: true });
+      continue;
+    }
+
+    const grouped = groupFontFiles(allFontFiles, metadataByPath);
+    const variantGroups = grouped.groups;
+    console.log(`  Identified ${variantGroups.length} metadata-derived variant(s).\\n`);
+
+    if (REPORT_ONLY) {
+      writeInventoryReport(item, allFontFiles, metadataByPath, grouped, archiveErrors);
+      fs.rmSync(tmpDir, { recursive: true, force: true });
+      continue;
+    }
+
+    if (grouped.review.length || grouped.conflicts.length) {
+      const reviewSample = grouped.review.slice(0, 3).map((entry) => `${path.basename(entry.path)}: ${entry.reason}`).join('; ');
+      const conflictSample = grouped.conflicts.slice(0, 3).map((entry) => `${entry.variant_name} .${entry.extension}: ${path.basename(entry.first_path)} vs ${path.basename(entry.conflicting_path)}`).join('; ');
+      const message = `Metadata preflight blocked all uploads. Review items: ${grouped.review.length}; distinct format collisions: ${grouped.conflicts.length}. ${[reviewSample, conflictSample].filter(Boolean).join('; ')}. Run with --report-only to inspect the full inventory.`.slice(0, 1000);
       console.error(`  ❌ ${message}`);
       await updateQueueStatus(item.id, 'error', message);
       fs.rmSync(tmpDir, { recursive: true, force: true });
@@ -437,8 +462,10 @@ async function processQueue() {
     let hasErrors = false;
 
     // Step 3: Process each variant — independently (one failure doesn't stop others)
-    for (const [variantName, formats] of variantGroups) {
-      console.log(`  Variant: "${variantName}"`);
+    for (const group of variantGroups) {
+      const variantName = group.variant_name;
+      const formats = Object.fromEntries(Object.entries(group.formats).map(([ext, entry]) => [ext, entry.path]));
+      console.log(`  Family: "${group.family_name}" — variant: "${variantName}"`);
 
       // Generate WOFF2 if missing and we have TTF or OTF
       if (!formats.woff2 && (formats.ttf || formats.otf)) {
