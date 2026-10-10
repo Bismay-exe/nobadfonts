@@ -1,0 +1,163 @@
+[
+  {
+    "asset_id": "7a7e1e1a36e0f898b4f27e0b1be474bba80c5205e158621a870327cc841ba313",
+    "relative_path": "Fraunces144pt-BlackItalic.otf",
+    "extension": "otf",
+    "metadata": {
+      "family_name": "Fraunces 144pt",
+      "subfamily_name": "Black Italic",
+      "full_name": "Fraunces 144pt Black Italic",
+      "postscript_name": "Fraunces144pt-BlackItalic",
+      "weight_class": 900,
+      "is_italic": true,
+      "is_variable": false,
+      "status": "parsed"
+    }
+  },
+  {
+    "asset_id": "ade8e0e711f2798266e12f02b271aba1c345c5a38be4e98cb72d198248ccc8a7",
+    "relative_path": "MonaSansVF[wdth,wght,opsz,ital].ttf",
+    "extension": "ttf",
+    "metadata": {
+      "family_name": "Mona Sans VF",
+      "subfamily_name": "Regular",
+      "full_name": "Mona Sans VF",
+      "postscript_name": "MonaSansVF-Regular",
+      "weight_class": 400,
+      "is_italic": false,
+      "is_variable": true,
+      "variation_axes": [
+        {"tag": "wdth", "min": 75, "default": 100, "max": 125},
+        {"tag": "wght", "min": 200, "default": 200, "max": 900},
+        {"tag": "opsz", "min": 0, "default": 0, "max": 100},
+        {"tag": "ital", "min": 0, "default": 0, "max": 1}
+      ],
+      "status": "parsed"
+    }
+  },
+  {
+    "asset_id": "875ad1fab0c1f4854927fa8086963fb6ddd4608b04a58b267cddf8a9d78f80d3",
+    "relative_path": "MonaSansVF[wdth,opsz,wght].woff2",
+    "extension": "woff2",
+    "metadata": {
+      "family_name": "Mona Sans VF",
+      "subfamily_name": "Regular",
+      "full_name": "Mona Sans VF",
+      "postscript_name": "MonaSansVF-Regular",
+      "weight_class": 400,
+      "is_italic": false,
+      "is_variable": true,
+      "variation_axes": [
+        {"tag": "wdth", "min": 75, "default": 100, "max": 125},
+        {"tag": "wght", "min": 200, "default": 200, "max": 900},
+        {"tag": "opsz", "min": 0, "default": 0, "max": 100}
+      ],
+      "status": "parsed"
+    }
+  },
+  {
+    "asset_id": "cc4fc5323bd2edcc8dadd5087ed1f0c88eadd026912f38d8f93c03097f687553",
+    "relative_path": "Frozen Fonts/Monaspace Argon/MonaspaceArgonFrozen-Bold.ttf",
+    "extension": "ttf",
+    "metadata": {
+      "family_name": "Monaspace Argon Frozen",
+      "subfamily_name": "Bold",
+      "full_name": "Monaspace Argon Frozen Bold",
+      "postscript_name": "MonaspaceArgonFrozen-Bold",
+      "weight_class": 700,
+      "is_italic": false,
+      "is_variable": false,
+      "status": "parsed"
+    }
+  },
+  {
+    "asset_id": "44763270a586fd1dba0d5a0318159050913c09cd97c8627c2b1cb425f9c54cc0",
+    "relative_path": "Frozen Fonts/Monaspace Argon/MonaspaceArgonFrozen-BoldItalic.ttf",
+    "extension": "ttf",
+    "metadata": {
+      "family_name": "Monaspace Argon Frozen",
+      "subfamily_name": "Bold Italic",
+      "full_name": "Monaspace Argon Frozen Bold Italic",
+      "postscript_name": "MonaspaceArgonFrozen-BoldItalic",
+      "weight_class": 700,
+      "is_italic": true,
+      "is_variable": false,
+      "status": "parsed"
+    }
+  },
+  {
+    "asset_id": "c10f8bac0b0c77b7d92d5d4a6963cd3cf9fe4d2d0bb703d101218c11f6a8b4a7",
+    "relative_path": "Frozen Fonts/Monaspace Argon/MonaspaceArgonFrozen-ExtraBold.ttf",
+    "extension": "ttf",
+    "metadata": {
+      "family_name": "Monaspace Argon Frozen",
+      "subfamily_name": "ExtraBold",
+      "full_name": "Monaspace Argon Frozen ExtraBold",
+      "postscript_name": "MonaspaceArgonFrozen-ExtraBold",
+      "weight_class": 800,
+      "is_italic": false,
+      "is_variable": false,
+      "status": "parsed"
+    }
+  },
+  {
+    "asset_id": "e8de58222bb3ff085a84e067211089cc172120cafdfa3ffa727cf6413d29b88a",
+    "relative_path": "NerdFonts/Monaspace Krypton/MonaspaceKryptonNF-Bold.otf",
+    "extension": "otf",
+    "metadata": {
+      "family_name": "Monaspace Krypton NF",
+      "subfamily_name": "Bold",
+      "full_name": "Monaspace Krypton NF Bold",
+      "postscript_name": "MonaspaceKryptonNF-Bold",
+      "weight_class": 700,
+      "is_italic": false,
+      "is_variable": false,
+      "status": "parsed"
+    }
+  },
+  {
+    "asset_id": "b740bf3ec9cf21e3d90a969349dd745110c4275d4176873fcce862c51d9332bf",
+    "relative_path": "NerdFonts Web Fonts/Monaspace Krypton/MonaspaceKryptonNF-Bold.woff",
+    "extension": "woff",
+    "metadata": {
+      "family_name": "Monaspace Krypton NF",
+      "subfamily_name": "Bold",
+      "full_name": "Monaspace Krypton NF Bold",
+      "postscript_name": "MonaspaceKryptonNF-Bold",
+      "weight_class": 400,
+      "is_italic": false,
+      "is_variable": false,
+      "status": "parsed"
+    }
+  },
+  {
+    "asset_id": "fcb43c20841770474fc7721a9608381d9ea7629121f8b5ad8b0c4a577877ecef",
+    "relative_path": "NerdFonts Web Fonts/Monaspace Krypton/MonaspaceKryptonNF-Bold.woff2",
+    "extension": "woff2",
+    "metadata": {
+      "family_name": "Monaspace Krypton NF",
+      "subfamily_name": "Bold",
+      "full_name": "Monaspace Krypton NF Bold",
+      "postscript_name": "MonaspaceKryptonNF-Bold",
+      "weight_class": 400,
+      "is_italic": false,
+      "is_variable": false,
+      "status": "parsed"
+    }
+  },
+  {
+    "asset_id": "3661738d18771be5656964c4e7a098d55c9944ca2e76d3a415f15cbfc105bdbd",
+    "relative_path": "NerdFonts/Monaspace Neon/MonaspaceNeonNF-Bold.otf",
+    "extension": "otf",
+    "metadata": {
+      "family_name": "Monaspace Neon NF",
+      "subfamily_name": "Bold",
+      "full_name": "Monaspace Neon NF Bold",
+      "postscript_name": "MonaspaceNeonNF-Bold",
+      "weight_class": 700,
+      "is_italic": false,
+      "is_variable": false,
+      "status": "parsed"
+    }
+  }
+]
