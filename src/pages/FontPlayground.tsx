@@ -112,7 +112,6 @@ export default function FontPlayground() {
         supabase
             .from('fonts')
             .select('id, name, slug, font_variants(variant_name, woff2_url, woff_url)')
-            .neq('family_role', 'parent')
             .order('name')
             .limit(200)
             .then(({ data }) => {
