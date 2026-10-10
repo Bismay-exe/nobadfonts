@@ -24,7 +24,7 @@ if (process.argv[2] === '--review-report') {
     const input = JSON.parse(fs.readFileSync(inputPath, 'utf8'));
     const result = await reviewDiscoveryReport(input, { live, slug });
     fs.mkdirSync(path.dirname(path.resolve(outputPath)), { recursive: true });
-    fs.writeFileSync(outputPath, JSON.stringify(result, null, 2) + '\\n', { flag: 'wx' });
+    fs.writeFileSync(outputPath, JSON.stringify(result, null, 2) + '\n', { flag: 'wx' });
     console.log(JSON.stringify({
       mode: result.mode,
       queue_items: result.queue_items.length,
