@@ -262,9 +262,9 @@ async function resolveAmbiguousVariantNames(fontFiles, metadataByPath) {
       const payload = await response.json();
       const text = payload?.candidates?.[0]?.content?.parts?.map((part) => part.text || '').join('').trim();
       if (!text) throw new Error('Gemini returned no classification text');
-      const parsed = JSON.parse(text.replace(/^\`\`\`(?:json)?\\s*/i, '').replace(/\\s*\`\`\`$/, ''));
+      const parsed = JSON.parse(text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, ''));
       if (parsed.confidence === 'high' && typeof parsed.variant_name === 'string' && parsed.variant_name.trim() && parsed.variant_name.trim().length <= 120) {
-        metadata.variant_name_override = parsed.variant_name.trim().replace(/\\s+/g, ' ');
+        metadata.variant_name_override = parsed.variant_name.trim().replace(/\s+/g, ' ');
         metadata.variant_name_source = 'gemini_fallback';
         metadata.gemini_reason = typeof parsed.reason === 'string' ? parsed.reason.slice(0, 240) : null;
         metadata.gemini_review_required = false;
@@ -391,7 +391,7 @@ function writeInventoryReport(item, fontFiles, metadataByPath, grouped, archiveE
     duplicates: grouped.duplicateAssets,
   };
   const outputPath = path.join(reportDir, `${String(item.slug).replace(/[^a-zA-Z0-9._-]/g, '-')}-${String(item.id).replace(/[^a-zA-Z0-9._-]/g, '-')}.json`);
-  fs.writeFileSync(outputPath, JSON.stringify(report, null, 2) + '\\n');
+  fs.writeFileSync(outputPath, JSON.stringify(report, null, 2) + '\n');
   console.log(`  Inventory report saved: ${outputPath}`);
   console.log(`  Inventory summary: ${assets.length} assets, ${grouped.groups.length} variants, ${grouped.review.length} review item(s), ${grouped.conflicts.length} collision(s), ${grouped.duplicateAssets.length} duplicate(s)`);
   return outputPath;
