@@ -24,7 +24,7 @@ function validateProposedLabel(value, label) {
  * variant names can affect the proposed grouping. All other decisions remain
  * review cases. This function never calls an API or writes to external systems.
  */
-export function mergeGeminiReview({ assets, review, minimumConfidence = 0.85 } = {}) {
+export function mergeGeminiReview({ assets, review, minimumConfidence = 0.85, candidateIds = null } = {}) {
   if (!Array.isArray(assets)) throw new TypeError('assets must be an array');
   if (!review || !Array.isArray(review.decisions)) {
     throw new TypeError('review must contain a decisions array');
@@ -40,30 +40,39 @@ export function mergeGeminiReview({ assets, review, minimumConfidence = 0.85 } =
   }
 
   const assetsById = new Map(assets.map((asset, index) => [ids[index], asset]));
+  const candidates = candidateIds == null ? new Set(ids) : new Set(candidateIds.map(normalizeText));
+  for (const id of candidates) {
+    if (!assetsById.has(id)) throw new TypeError(`Unknown Gemini candidate ID: ${id || '(empty)'}`);
+  }
   const seenDecisionIds = new Set();
   const decisionsById = new Map();
 
   for (const decision of review.decisions) {
     const id = normalizeText(decision?.candidate_id);
-    if (!assetsById.has(id)) throw new TypeError(`Gemini decision references unknown asset: ${id || '(empty)'}`);
+    if (!assetsById.has(id) || !candidates.has(id)) throw new TypeError(`Gemini decision references unknown or unselected asset: ${id || '(empty)'}`);
     if (seenDecisionIds.has(id)) throw new TypeError(`Duplicate Gemini decision for asset: ${id}`);
     seenDecisionIds.add(id);
     decisionsById.set(id, decision);
   }
 
-  const deterministicAssets = assets.map((asset) => ({
+  const withExtension = (asset) => ({
     ...asset,
-    metadata: { ...(asset.metadata || {}) },
-  }));
-  const proposedAssets = assets.map((asset) => ({
-    ...asset,
-    metadata: { ...(asset.metadata || {}) },
-  }));
+    metadata: {
+      ...(asset.metadata || {}),
+      extension: asset.metadata?.extension || asset.extension || null,
+    },
+  });
+  const deterministicAssets = assets.map(withExtension);
+  const proposedAssets = assets.map(withExtension);
   const outcomes = [];
 
   for (let index = 0; index < assets.length; index += 1) {
     const id = ids[index];
     const decision = decisionsById.get(id);
+    if (!candidates.has(id)) {
+      outcomes.push({ asset_id: id, status: 'not_reviewed', reason: 'not_selected_for_gemini_review' });
+      continue;
+    }
     if (!decision) {
       outcomes.push({ asset_id: id, status: 'needs_human_review', reason: 'gemini_decision_missing' });
       continue;
@@ -127,6 +136,7 @@ export function mergeGeminiReview({ assets, review, minimumConfidence = 0.85 } =
       input_asset_count: assets.length,
       proposed_decision_count: outcomes.filter((item) => item.status === 'proposed').length,
       review_required_count: outcomes.filter((item) => item.status === 'needs_human_review').length,
+      not_reviewed_count: outcomes.filter((item) => item.status === 'not_reviewed').length,
       deterministic_group_count: deterministic.groups.length,
       proposed_group_count: proposed.groups.length,
       deterministic_review_count: deterministic.review.length,
