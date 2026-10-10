@@ -23,13 +23,13 @@ export function useFont(id: string | undefined) {
         // Fetch font data
         const { data: fontData, error: fontError } = await supabase
           .from('fonts')
-          .select('*, font_variants(*)')
+          .select('*, font_variants(*), parent_font:fonts!fonts_parent_font_id_fkey(id, name, slug, family_role, parent_font_id), subfamilies:fonts!fonts_parent_font_id_fkey(id, name, slug, family_role, parent_font_id)')
           .eq(column, id)
           .order('id', { foreignTable: 'font_variants', ascending: true })
           .single();
 
         if (fontError) throw fontError;
-        setFont(fontData);
+        setFont(fontData as Font);
 
         // Check favorite status if user is logged in
         const { data: { session } } = await supabase.auth.getSession();

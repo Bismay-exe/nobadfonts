@@ -5,6 +5,10 @@ on:
     paths:
       - 'scripts/font-processing/**'
       - 'scripts/process-ai-fonts.js'
+      - 'scripts/generate-sitemap.js'
+      - 'src/**'
+      - 'api/sitemap.ts'
+      - 'supabase/migrations/**'
       - '.github/workflows/process-ai-fonts.yml'
       - 'tests/**'
       - 'package.json'
@@ -16,6 +20,10 @@ on:
     paths:
       - 'scripts/font-processing/**'
       - 'scripts/process-ai-fonts.js'
+      - 'scripts/generate-sitemap.js'
+      - 'src/**'
+      - 'api/sitemap.ts'
+      - 'supabase/migrations/**'
       - '.github/workflows/process-ai-fonts.yml'
       - 'tests/**'
       - 'package.json'
@@ -28,7 +36,7 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -38,11 +46,17 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Install dependencies
+        run: npm ci
+
       - name: Check production processor syntax
         run: node --check scripts/process-ai-fonts.js
 
       - name: Run isolated font-processing regression tests
         run: npm run test:font-processing
+
+      - name: Type-check and build web application
+        run: npm run build
 
   publishing-rpc-integration:
     runs-on: ubuntu-latest
@@ -68,3 +82,28 @@ jobs:
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
         run: psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f tests/font-processing-publish-rpc.integration.sql
+
+  family-hierarchy-migration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install PostgreSQL client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+      - name: Validate family hierarchy migration in disposable PostgreSQL
+        env:
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
+        run: psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f tests/font-family-hierarchy-migration.integration.sql

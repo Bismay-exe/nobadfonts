@@ -6,6 +6,39 @@ import { createWriteStream, mkdirSync } from 'fs';
 import { pipeline } from 'stream/promises';
 import { createUnzip } from 'zlib';
 
+// Read-only Gemini review mode is handled before the production write gate and
+// before loading the Supabase SDK. It never touches the production queue.
+if (process.argv[2] === '--review-report') {
+  const args = process.argv.slice(3);
+  const positional = args.filter((arg) => !arg.startsWith('--'));
+  const live = args.includes('--live');
+  const slugArg = args.find((arg) => arg.startsWith('--slug='));
+  const slug = slugArg ? slugArg.slice('--slug='.length) : null;
+  const [inputPath, outputPath] = positional;
+  if (!inputPath || !outputPath || path.resolve(inputPath) === path.resolve(outputPath)) {
+    console.error('Usage: node scripts/process-ai-fonts.js --review-report <input.json> <output.json> [--slug=<queue-slug>] [--live]');
+    process.exit(2);
+  }
+  try {
+    const { reviewDiscoveryReport } = await import('./font-processing/review-discovery-with-gemini.js');
+    const input = JSON.parse(fs.readFileSync(inputPath, 'utf8'));
+    const result = await reviewDiscoveryReport(input, { live, slug });
+    fs.mkdirSync(path.dirname(path.resolve(outputPath)), { recursive: true });
+    fs.writeFileSync(outputPath, JSON.stringify(result, null, 2) + '\n', { flag: 'wx' });
+    console.log(JSON.stringify({
+      mode: result.mode,
+      queue_items: result.queue_items.length,
+      publishable: result.publishable,
+      database_writes_performed: result.database_writes_performed,
+      uploads_performed: result.uploads_performed,
+    }, null, 2));
+    process.exit(0);
+  } catch (error) {
+    console.error(error instanceof Error ? error.message : String(error));
+    process.exit(1);
+  }
+}
+
 try {
   assertProductionWriteEnabled();
 } catch (error) {

@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useState, useEffect, useRef, useMemo } from 'react';
 import SocialShareCard from '../components/fonts/SocialShareCard';
 import ShareModal from '../components/fonts/ShareModal';
@@ -30,6 +30,7 @@ import {
 import AdminOgImageManager from '../components/fonts/AdminOgImageManager';
 import ContextPreview from '../components/fonts/ContextPreview';
 import LoadingState from '../components/shared/LoadingState';
+import FontFamilyOverview from '../components/font-details/FontFamilyOverview';
 import { usePageReady } from '../components/transitions/PageTransition';
 
 export default function FontDetails() {
@@ -80,7 +81,7 @@ export default function FontDetails() {
 
             if (data) {
                 const similar = (data as any[])
-                    .filter(f => f.id !== font.id)
+                    .filter(f => f.id !== font.id && f.family_role !== 'parent')
                     .slice(0, 4);
                 setSimilarFonts(similar as Font[]);
             }
@@ -345,6 +346,8 @@ export default function FontDetails() {
         );
     }
 
+    if (font.family_role === 'parent') return <FontFamilyOverview font={font} />;
+
     const fontSlug = font.slug || id;
     const fontCanonicalUrl = `/fonts/${fontSlug}`;
     const fontSchema = [
@@ -432,6 +435,16 @@ export default function FontDetails() {
             />
 
             <div className="max-w-480 mx-auto pt-16 md:pt-24 px-4 md:px-8 space-y-6 md:space-y-12">
+                {font.parent_font && (
+                    <Link
+                        to={`/fonts/${font.parent_font.slug}`}
+                        className="inline-flex items-center gap-2 text-sm text-muted transition-colors hover:text-foreground"
+                    >
+                        <span aria-hidden="true">←</span>
+                        Part of {font.parent_font.name}
+                    </Link>
+                )}
+
                 {/* 1. Hero Header & Gallery */}
                 <div id="overview" className="scroll-mt-24 space-y-6 md:space-y-12">
                     <FontHeroHeader

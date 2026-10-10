@@ -296,6 +296,8 @@ export type Database = {
           is_published: boolean | null
           license_type: string
           name: string
+          parent_font_id: string | null
+          family_role: 'standalone' | 'parent' | 'subfamily'
           preview_image_url: string | null
           research_status: string | null
           slug: string
@@ -303,11 +305,11 @@ export type Database = {
           updated_at: string | null
           github_url: string | null
           weights: number[] | null
-          woff2_url: string
+          woff2_url: string | null
           woff_url: string | null
           ttf_url: string | null
           otf_url: string | null
-          zip_url: string
+          zip_url: string | null
           gallery_images: string[] | null
           file_size_image_preview: number | null
           gallery_image_sizes: number[] | null
@@ -341,6 +343,8 @@ export type Database = {
           is_published?: boolean | null
           license_type: string
           name: string
+          parent_font_id?: string | null
+          family_role?: 'standalone' | 'parent' | 'subfamily'
           preview_image_url?: string | null
           research_status?: string | null
           slug: string
@@ -348,8 +352,8 @@ export type Database = {
           updated_at?: string | null
           github_url?: string | null
           weights?: number[] | null
-          woff2_url: string
-          zip_url: string
+          woff2_url?: string | null
+          zip_url?: string | null
           gallery_images?: string[] | null
           og_image_url?: string | null
           og_image_variant_id?: string | null
@@ -380,14 +384,16 @@ export type Database = {
           is_published?: boolean | null
           license_type?: string
           name?: string
+          parent_font_id?: string | null
+          family_role?: 'standalone' | 'parent' | 'subfamily'
           preview_image_url?: string | null
           research_status?: string | null
           slug?: string
           tags?: string[] | null
           updated_at?: string | null
           weights?: number[] | null
-          woff2_url?: string
-          zip_url?: string
+          woff2_url?: string | null
+          zip_url?: string | null
           gallery_images?: string[] | null
           og_image_url?: string | null
           og_image_variant_id?: string | null
@@ -395,7 +401,15 @@ export type Database = {
           og_image_variant_signature?: string | null
           og_image_generated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fonts_parent_font_id_fkey"
+            columns: ["parent_font_id"]
+            isOneToOne: false
+            referencedRelation: "fonts"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       research_jobs: {
         Row: {

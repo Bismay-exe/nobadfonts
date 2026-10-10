@@ -69,27 +69,35 @@ These are results from the saved archive replay and deterministic local grouping
 
 ## Explicit non-goals
 
-- No Gemini calls, Supabase client, uploads, database mutations, or queue status updates.
+- No Supabase client, uploads, database mutations, or queue status updates in the deterministic core or Gemini review mode.
+- No Gemini API calls unless a user explicitly passes `--live` to the read-only report-review command.
 - No filename-based guess is used to fill missing binary metadata.
 - No static instances are synthesized from variable-font metadata.
 - No automatic publishing is performed.
 
-This core is intentionally not wired into the scheduled production workflow. Any later publishing path must have its own isolated tests and explicit review.
+The read-only Gemini review is integrated with the existing processor entry point, but it is deliberately separate from the production queue-processing path. Any later publishing path must have its own isolated tests and explicit review.
 
+## Gemini-assisted grouping review (read only)
 
-## Gemini advisory review (isolated)
+The Gemini review is integrated with the existing processor entry point through a separate report-review mode. It does not enter the production queue-processing path and does not load the Supabase client.
 
-The Gemini stage is deliberately separate from deterministic parsing and grouping. It accepts only a bounded JSON list of ambiguous candidates and sends extracted metadata—not font binaries or Supabase credentials—to the Gemini API. It requires `GEMINI_API_KEY`; `GEMINI_MODEL` can override the default `gemini-2.5-flash`.
-
-Create an input JSON array containing candidate objects with `asset_id`, `relative_path`, and a `metadata` object, then run:
+Run deterministic validation without any Gemini API call:
 
 ```sh
-GEMINI_API_KEY=your_key node scripts/font-processing/run-gemini-review.js ambiguous-assets.json gemini-review.json
+node scripts/process-ai-fonts.js --review-report discovery-report.json gemini-review-report.json
 ```
 
-The output is advisory only. It is marked `publishable: false`; no database or Storage writes are performed. Invalid IDs, duplicate decisions, malformed responses, and invalid confidence values are rejected. Low-confidence or omitted candidates are sent to human review. The runner does not update queue statuses or connect to the scheduled production processor.
+To explicitly approve one live Gemini request for one queue item, pass its exact slug and `--live`:
 
-Do not pass service-role credentials to this script. The API key should be provided through the environment and must never be committed to the repository. Review Gemini's output before using any suggestion; model output is not authoritative evidence for licensing, official links, or factual font metadata.
+```sh
+GEMINI_API_KEY=your_key node scripts/process-ai-fonts.js --review-report discovery-report.json gemini-review-report.json --slug=font-slug --live
+```
+
+The live review is limited to one request of at most 50 candidates per invocation. Candidates beyond that limit remain review cases. The runner uses the existing cache and request/token safeguards. The report records deterministic grouping, audit findings, advisory decisions, and proposed grouping separately.
+
+The review mode performs no Supabase reads or writes, no queue status changes, no font binary uploads, no metadata publishing, and no Storage operations. Its output always declares `publishable: false`, `database_writes_performed: false`, and `uploads_performed: false`. It refuses to overwrite an existing output file. Gemini suggestions are never treated as proof; decisions with missing labels, invalid relationships, or insufficient confidence remain review cases.
+
+The normal production queue processor remains protected by the explicit write gate and the disabled production workflow. This read-only integration does not enable or authorize publishing.
 
 
 ## Export only unresolved candidates for Gemini
@@ -172,3 +180,16 @@ The offline test suite includes mocked-fetch tests for validated-result caching,
 ## Exporter and audit regression coverage
 
 Offline tests verify that ambiguous candidates are split into bounded JSON batches, omit review-reason prose from model input, preserve only extracted metadata, refuse to overwrite existing output, and record that no API/database/storage side effects occurred. Named-weight audit tests cover common named weights and confirm that the Monaspace width label `SemiWide` is not mistaken for the weight `Bold`. All tests use synthetic fixtures and make no live API requests.
+
+
+## Parent-family and subfamily records
+
+The migration `supabase/migrations/20261010000001_font_family_hierarchy.sql` adds `family_role` and `parent_font_id` to `public.fonts`. It changes schema only; it does not create Monaspace records or apply itself to any database.
+
+- `standalone`: an ordinary font record with no parent.
+- `parent`: a family overview record with no parent and no requirement for a primary binary or ZIP URL.
+- `subfamily`: a named design such as Monaspace Neon or Monaspace Krypton, linked to a parent record through `parent_font_id`. Its own `font_variants` rows remain attached to that subfamily's `font_id`.
+
+The database trigger requires a subfamily to reference a record whose role is `parent`, and prevents changing a parent to another role while children still reference it. The frontend loads parent/child relationships on the font details route and renders a family overview for parent records. Parent records are excluded from ordinary font listings, selectors, and sitemap listings.
+
+Do not apply the migration or create/publish Monaspace records until the schema and actual font assets have been reviewed. No production schema change, row creation, binary upload, or metadata publishing was performed as part of this implementation.
