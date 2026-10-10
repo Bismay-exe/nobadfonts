@@ -595,30 +595,43 @@ async function processQueue() {
         if (!filePath || !fs.existsSync(filePath)) continue;
 
         const storageVariant = variantName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'variant';
-        const storagePath = `${userId}/${item.slug}/variants/${storageVariant}/${item.slug}-${storageVariant}.${ext}`;
 
         try {
           const fileBuffer = fs.readFileSync(filePath);
           const fileSize = fs.statSync(filePath).size;
+          const fileSha256 = createHash('sha256').update(fileBuffer).digest('hex');
+          // Content-addressed paths make retries idempotent and prevent silently
+          // overwriting a different binary already referenced by a legacy row.
+          const storagePath = `${userId}/${item.slug}/variants/${storageVariant}/${item.slug}-${storageVariant}-${fileSha256.slice(0, 16)}.${ext}`;
 
+          let reusedExisting = false;
           const { error: uploadError } = await supabase.storage
             .from('fonts')
             .upload(storagePath, fileBuffer, {
-              upsert: true,
+              upsert: false,
               contentType: CONTENT_TYPES[ext] || 'application/octet-stream',
             });
 
           if (uploadError) {
-            console.warn(`    ⚠️ Storage upload failed .${ext}: ${uploadError.message}`);
-            hasErrors = true;
-            continue;
+            // A retry may find its own already-uploaded content-addressed object.
+            // Reuse it only after reading the actual bytes back and hashing them.
+            const { data: existingObject, error: readError } = await supabase.storage.from('fonts').download(storagePath);
+            if (readError || !existingObject) {
+              throw new Error(`Storage upload failed and existing object could not be verified: ${uploadError.message}; ${readError?.message || 'object unavailable'}`);
+            }
+            const existingBytes = Buffer.from(await existingObject.arrayBuffer());
+            const existingHash = createHash('sha256').update(existingBytes).digest('hex');
+            if (existingHash !== fileSha256 || existingBytes.length !== fileSize) {
+              throw new Error('Existing content-addressed Storage object does not match source bytes; refusing overwrite');
+            }
+            reusedExisting = true;
           }
 
           const { data: { publicUrl } } = supabase.storage.from('fonts').getPublicUrl(storagePath);
           variantData[`${ext}_url`] = publicUrl;
           variantData[`file_size_${ext}`] = fileSize;
           anyUploaded = true;
-          console.log(`    ✓ Uploaded .${ext} (${(fileSize / 1024).toFixed(1)} KB)`);
+          console.log(`    ✓ ${reusedExisting ? 'Reused verified' : 'Uploaded'} .${ext} (${(fileSize / 1024).toFixed(1)} KB)`);
         } catch (err) {
           console.warn(`    ⚠️ Upload error .${ext}: ${err.message}`);
           hasErrors = true;
@@ -627,13 +640,25 @@ async function processQueue() {
 
       // Save to font_variants table
       if (anyUploaded) {
-        const { data: existing } = await supabase
+        const { data: existingRows, error: lookupError } = await supabase
           .from('font_variants')
           .select('id')
           .eq('font_id', item.font_id)
           .eq('variant_name', variantName)
-          .maybeSingle();
+          .limit(2);
 
+        if (lookupError) {
+          console.warn(`    ⚠️ Existing variant lookup failed: ${lookupError.message}`);
+          hasErrors = true;
+          continue;
+        }
+        if ((existingRows || []).length > 1) {
+          console.warn(`    ⚠️ Found duplicate legacy rows for "${variantName}"; refusing to insert or arbitrarily update either row.`);
+          hasErrors = true;
+          continue;
+        }
+
+        const existing = existingRows?.[0] || null;
         const { error: dbError } = existing
           ? await supabase.from('font_variants').update(variantData).eq('id', existing.id)
           : await supabase.from('font_variants').insert([variantData]);
@@ -642,7 +667,7 @@ async function processQueue() {
           console.warn(`    ⚠️ DB save failed: ${dbError.message}`);
           hasErrors = true;
         } else {
-          console.log(`    ✅ Saved to database`);
+          console.log(`    ✅ ${existing ? 'Updated existing' : 'Inserted new'} variant row`);
           totalUploaded++;
         }
       } else {
