@@ -459,7 +459,11 @@ async function processQueue() {
     const releaseZips = item.download_urls; // Array of { url, label }
     if (!Array.isArray(releaseZips) || releaseZips.length === 0) {
       console.error('  ❌ No release zips found in download_urls');
-      if (!REPORT_ONLY) await updateQueueStatus(item.id, 'error', 'No release zips provided');
+      if (REPORT_ONLY) {
+        writeInventoryReport(item, [], {}, { groups: [], review: [], conflicts: [], duplicateAssets: [] }, ['No release zips provided in download_urls']);
+      } else {
+        await updateQueueStatus(item.id, 'error', 'No release zips provided');
+      }
       continue;
     }
 
