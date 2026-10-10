@@ -36,7 +36,7 @@ jobs:
           mkdir -p "$RUNNER_TEMP/font-processing-supabase"
           cd "$RUNNER_TEMP/font-processing-supabase"
           supabase init
-          supabase start -x studio,mailpit,edge-runtime,analytics,vector
+          supabase start -x studio,mailpit,functions,analytics,vector,imgproxy,logflare
           supabase status -o env > "$RUNNER_TEMP/supabase-env"
       - name: Prepare disposable schema and storage bucket
         shell: bash
