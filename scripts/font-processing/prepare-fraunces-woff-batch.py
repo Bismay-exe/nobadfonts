@@ -12,6 +12,7 @@ import hashlib
 import json
 import sys
 import urllib.error
+import urllib.parse
 import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
@@ -114,8 +115,8 @@ def main() -> int:
             subfamily_name = name_value(font, 2)
             full_name = name_value(font, 4)
             postscript_name = name_value(font, 6)
-            weight_class = int(font[" OS/2 "].usWeightClass) if " OS/2 " in font else None
-            is_italic = bool(font["post"].italicAngle) if "post" in font else False
+            weight_class = int(font["OS/2"].usWeightClass) if "OS/2" in font else None
+            is_italic = bool(font["OS/2"].fsSelection & 0x01) if "OS/2" in font else (bool(font["post"].italicAngle) if "post" in font else False)
             font.flavor = "woff"
             font.save(woff_path)
         finally:
