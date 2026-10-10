@@ -68,6 +68,8 @@ test('Gemini runner caches validated advisory output and does not call fetch on 
     assert.match(requestedUrl, /\/v1beta\/models\/gemini-3\.8-flash:generateContent$/);
     assert.equal(first.model, 'gemini-3.8-flash');
     assert.equal(requestedBody.generationConfig.responseMimeType, 'application/json');
+    assert.deepEqual(requestedBody.generationConfig.thinkingConfig, { thinkingLevel: 'LOW' });
+    assert.equal('temperature' in requestedBody.generationConfig, false);
     assert.equal(requestedBody.generationConfig.responseSchema.type, 'OBJECT');
     assert.deepEqual(requestedBody.generationConfig.responseSchema.required, ['decisions']);
     assert.deepEqual(requestedBody.generationConfig.responseSchema.properties.decisions.items.required,
