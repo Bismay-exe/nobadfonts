@@ -1,7 +1,7 @@
 import { planVariantGroups } from './core.js';
 
 const normalizeText = (value) => (
-  typeof value === 'string' ? value.normalize('NFKC').trim().replace(/\\s+/g, ' ') : ''
+  typeof value === 'string' ? value.normalize('NFKC').trim().replace(/\s+/g, ' ') : ''
 );
 
 function assetId(asset) {
