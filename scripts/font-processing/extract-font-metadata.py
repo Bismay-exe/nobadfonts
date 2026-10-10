@@ -35,7 +35,7 @@ def name_value(font: TTFont, ids: tuple[int, ...]) -> str | None:
             1 if record.platformID == 0 and record.langID == 0 else
             2 if record.platformID == 3 else 3
         )
-        records.append((priority, record.nameID, value))
+        records.append((priority, ids.index(record.nameID), value))
     if not records:
         return None
     records.sort(key=lambda row: (row[0], row[1]))
