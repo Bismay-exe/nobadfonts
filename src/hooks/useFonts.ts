@@ -34,7 +34,9 @@ export function useFonts({ query, categories, sortBy = 'trending' }: FontFilterP
       if (error) throw error;
 
       // Manually fetch variants for these fonts since RPC doesn't include them
-      let fontsWithVariants = (data || []).filter((f: any) => f && typeof f === 'object');
+      const rawFonts = (data || []).filter((f: any) => f && typeof f === 'object');
+      // Parent-family records organize subfamilies and are shown on their own overview route.
+      let fontsWithVariants = rawFonts.filter((f: any) => f.family_role !== 'parent');
 
       if (fontsWithVariants.length > 0) {
         const fontIds = fontsWithVariants.map((f: any) => f.id);
@@ -62,8 +64,8 @@ export function useFonts({ query, categories, sortBy = 'trending' }: FontFilterP
         setFonts(fontsWithVariants);
       }
 
-      setHasMore(fontsWithVariants.length === initialLimit);
-      setOffset(currentOffset + fontsWithVariants.length);
+      setHasMore(rawFonts.length === initialLimit);
+      setOffset(currentOffset + rawFonts.length);
 
     } catch (err: any) {
       console.error('Error fetching fonts:', err);
