@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { reconcileNerdFontCrossFormatWeights } from './reconcile-nerdfont-cross-format.js';
 
 const SUPPORTED_FONT_EXTENSIONS = new Set(['ttf', 'otf', 'woff', 'woff2']);
 
@@ -80,7 +81,8 @@ export function mergeWoff2ReplayIntoDiscoveryReport(report, replay) {
     });
     return item;
   });
-  return { report: updatedReport, summary };
+  const reconciled = reconcileNerdFontCrossFormatWeights(updatedReport);
+  return { report: reconciled.report, summary, metadataReconciliation: reconciled.summary };
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.argv[1])) {
