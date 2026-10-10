@@ -400,10 +400,15 @@ function writeInventoryReport(item, fontFiles, metadataByPath, grouped, archiveE
 async function processQueue() {
   console.log('Checking for pending or failed (error) font downloads...\n');
 
-  const { data: queueItems, error: fetchError } = await supabase
+  let queueQuery = supabase
     .from('font_processing_queue')
-    .select('*, fonts(uploaded_by)')
-    .in('status', ['pending', 'error']);
+    .select('*, fonts(uploaded_by)');
+  if (REPORT_ONLY && process.env.FONT_PROCESSING_REPORT_SLUG) {
+    queueQuery = queueQuery.eq('slug', process.env.FONT_PROCESSING_REPORT_SLUG);
+  } else {
+    queueQuery = queueQuery.in('status', ['pending', 'error']);
+  }
+  const { data: queueItems, error: fetchError } = await queueQuery;
 
   if (fetchError) throw new Error(`Failed to fetch queue items: ${fetchError.message}`);
 
@@ -507,7 +512,11 @@ async function processQueue() {
     }
     if (allFontFiles.length === 0) {
       console.error('  ❌ No font files found in any zip');
-      if (!REPORT_ONLY) await updateQueueStatus(item.id, 'error', 'No font files found in provided release zips');
+      if (REPORT_ONLY) {
+        writeInventoryReport(item, [], {}, { groups: [], review: [], conflicts: [], duplicateAssets: [] }, archiveErrors);
+      } else {
+        await updateQueueStatus(item.id, 'error', 'No font files found in provided release zips');
+      }
       fs.rmSync(tmpDir, { recursive: true, force: true });
       continue;
     }
