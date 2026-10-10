@@ -192,9 +192,9 @@ function inspectFontFiles(fontFiles) {
 }
 
 function hasFilenameOnlyVariantDetail(filePath, metadata) {
-  const stem = path.basename(filePath, path.extname(filePath)).normalize('NFKC').toLocaleLowerCase('en-US');
+  const stem = path.basename(filePath, path.extname(filePath)).normalize('NFKC').replace(/([a-z])([A-Z])/g, '$1 $2').toLocaleLowerCase('en-US');
   const embedded = [metadata?.family_name, metadata?.full_name, metadata?.subfamily_name]
-    .filter(Boolean).join(' ').normalize('NFKC').toLocaleLowerCase('en-US');
+    .filter(Boolean).join(' ').normalize('NFKC').replace(/([a-z])([A-Z])/g, '$1 $2').toLocaleLowerCase('en-US');
   const normalizeTokens = (value) => value.match(/[a-z]+|[0-9]+/g) || [];
   const embeddedTokens = new Set(normalizeTokens(embedded));
   const filenameTokens = normalizeTokens(stem);
@@ -250,9 +250,9 @@ async function resolveAmbiguousVariantNames(fontFiles, metadataByPath) {
     ].join('\n');
 
     try {
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(apiKey)}`, {
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
         body: JSON.stringify({
           contents: [{ role: 'user', parts: [{ text: prompt }] }],
           generationConfig: { temperature: 0, responseMimeType: 'application/json' },
