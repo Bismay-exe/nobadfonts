@@ -42,7 +42,8 @@ export default async function handler(req: any, res: any) {
             const { data: fonts } = await supabase
                 .from('fonts')
                 .select('id, slug, updated_at')
-                .eq('is_published', true);
+                .eq('is_published', true)
+            .neq('family_role', 'parent');
 
             if (fonts && fonts.length > 0) {
                 for (const font of fonts) {
