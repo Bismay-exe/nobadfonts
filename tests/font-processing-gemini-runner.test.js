@@ -51,8 +51,10 @@ test('Gemini runner caches validated advisory output and does not call fetch on 
   const originalFetch = globalThis.fetch;
   let requests = 0;
   let requestedUrl = '';
-  globalThis.fetch = async (url) => {
+  let requestedBody;
+  globalThis.fetch = async (url, init) => {
     requestedUrl = String(url);
+    requestedBody = JSON.parse(init.body);
     requests += 1;
     return successfulResponse();
   };
@@ -65,6 +67,11 @@ test('Gemini runner caches validated advisory output and does not call fetch on 
     assert.equal(requests, 1);
     assert.match(requestedUrl, /\/v1beta\/models\/gemini-3\.8-flash:generateContent$/);
     assert.equal(first.model, 'gemini-3.8-flash');
+    assert.equal(requestedBody.generationConfig.responseMimeType, 'application/json');
+    assert.equal(requestedBody.generationConfig.responseSchema.type, 'OBJECT');
+    assert.deepEqual(requestedBody.generationConfig.responseSchema.required, ['decisions']);
+    assert.deepEqual(requestedBody.generationConfig.responseSchema.properties.decisions.items.required,
+      ['candidate_id', 'decision', 'relation', 'confidence', 'reason']);
     assert.equal(first.cache.hit, false);
     assert.equal(second.cache.hit, true);
     assert.equal(second.publishable, false);
