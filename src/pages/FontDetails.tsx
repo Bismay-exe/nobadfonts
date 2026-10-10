@@ -81,7 +81,7 @@ export default function FontDetails() {
 
             if (data) {
                 const similar = (data as any[])
-                    .filter(f => f.id !== font.id)
+                    .filter(f => f.id !== font.id && f.family_role !== 'parent')
                     .slice(0, 4);
                 setSimilarFonts(similar as Font[]);
             }
