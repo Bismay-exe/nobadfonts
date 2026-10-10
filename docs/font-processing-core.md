@@ -67,9 +67,10 @@ The read-only replay workflow subsequently downloaded and parsed the original se
 
 These are results from the saved archive replay and deterministic local grouping only. They do not prove that every grouping is semantically correct, approve the 635 groups for publication, or authorize production writes. Review the artifact and any future grouping changes before creating a separate publish plan.
 
-## Explicit non-goals
+## Core boundaries
 
-- No Gemini calls, Supabase client, uploads, database mutations, or queue status updates.
+- The deterministic core never calls Gemini, loads a Supabase client, uploads assets, mutates the database, or updates queue status.
+- The separate report-review mode can make a Gemini request only when `--live` is explicitly supplied.
 - No filename-based guess is used to fill missing binary metadata.
 - No static instances are synthesized from variable-font metadata.
 - No automatic publishing is performed.
@@ -93,7 +94,7 @@ To explicitly approve one live Gemini request for one queue item, pass its exact
 GEMINI_API_KEY=your_key node scripts/process-ai-fonts.js --review-report discovery-report.json gemini-review-report.json --slug=font-slug --live
 ```
 
-The live review is limited to one request of at most 50 candidates per invocation. Candidates beyond that limit remain review cases. The runner uses the existing cache and request/token safeguards. The report records the deterministic grouping, audit findings, advisory decisions, and proposed grouping separately.
+The live review is limited to one request of at most 50 candidates per invocation. Candidates beyond that limit remain review cases. The runner uses the existing cache and request/token safeguards. The report records the deterministic grouping, audit findings, advisory decisions, and proposed grouping separately. The end-to-end read-only behavior is covered by `tests/font-processing-gemini-review.test.js`, including a mocked Gemini response; regular tests do not call the live API.
 
 The review mode performs no Supabase reads or writes, no queue status changes, no font binary uploads, no metadata publishing, and no Storage operations. Its output always declares `publishable: false`, `database_writes_performed: false`, and `uploads_performed: false`. It refuses to overwrite an existing output file. Gemini suggestions are never treated as proof; decisions with missing labels, invalid relationships, or insufficient confidence remain review cases.
 
