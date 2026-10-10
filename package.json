@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "node scripts/generate-sitemap.js && tsc -b && vite build",
     "lint": "eslint .",
-    "test:font-processing": "node --test tests/font-processing-core.test.js tests/font-processing-report.test.js tests/font-processing-gemini-runner.test.js tests/font-processing-gemini-grouping.test.js tests/font-processing-gemini-discovery.test.js tests/font-processing-export.test.js tests/font-processing-write-gate.test.js tests/font-processing-publishing-protocol.test.js tests/font-processing-supabase-adapter.test.js tests/font-processing-publish-plan.test.js tests/font-processing-publish-end-to-end.test.js tests/font-processing-cross-format-reconciliation.test.js",
+    "test:font-processing": "node --test tests/font-processing-core.test.js tests/font-processing-report.test.js tests/font-processing-gemini-runner.test.js tests/font-processing-gemini-grouping.test.js tests/font-processing-gemini-review.test.js tests/font-processing-gemini-discovery.test.js tests/font-processing-export.test.js tests/font-processing-write-gate.test.js tests/font-processing-publishing-protocol.test.js tests/font-processing-supabase-adapter.test.js tests/font-processing-publish-plan.test.js tests/font-processing-publish-end-to-end.test.js tests/font-processing-cross-format-reconciliation.test.js",
     "preview": "vite preview",
     "generate-sitemap": "node scripts/generate-sitemap.js"
   },
