@@ -2,15 +2,20 @@ import { assertProductionWriteEnabled } from './font-processing/write-gate.js';
 import fs from 'fs';
 import path from 'path';
 import { execFileSync } from 'child_process';
+import { createHash } from 'node:crypto';
 import { createWriteStream, mkdirSync } from 'fs';
 import { pipeline } from 'stream/promises';
 import { createUnzip } from 'zlib';
 
-try {
-  assertProductionWriteEnabled();
-} catch (error) {
-  console.error(error instanceof Error ? error.message : String(error));
-  process.exit(1);
+const REPORT_ONLY = process.argv.includes('--report-only');
+
+if (!REPORT_ONLY) {
+  try {
+    assertProductionWriteEnabled();
+  } catch (error) {
+    console.error(error instanceof Error ? error.message : String(error));
+    process.exit(1);
+  }
 }
 
 // Resolve the Supabase SDK only after the write gate, so a blocked invocation
@@ -141,53 +146,167 @@ function scanFontFiles(dir) {
 }
 
 /**
- * Extracts the variant name from a font filename.
- * e.g. "MonaSans-BoldItalic.ttf" -> "Bold Italic"
- *      "Cabinet_Grotesk_Variable.ttf" -> "Variable"
- *      "Gidole-Regular.ttf" -> "Regular"
+ * Derive a logical variant from embedded metadata. Full-name suffixes retain
+ * optical-size and softness distinctions that a filename split would lose.
+ * Variable fonts are identified from their fvar axes, not a guessed filename.
  */
-function extractVariantName(filename) {
+function deriveVariantName(metadata, filename) {
+  if (metadata?.is_variable && metadata.variation_axes?.length) {
+    const axes = metadata.variation_axes.map((axis) => axis.tag).filter(Boolean);
+    if (axes.length) return `Variable (${axes.join(', ')})`;
+  }
+
+  const family = String(metadata?.family_name || '').trim();
+  const fullName = String(metadata?.full_name || '').trim();
+  if (family && fullName && fullName.toLocaleLowerCase('en-US').startsWith(family.toLocaleLowerCase('en-US'))) {
+    const suffix = fullName.slice(family.length).replace(/^[\\s_-]+/, '').trim();
+    if (suffix) return suffix.replace(/\\s+/g, ' ');
+  }
+
+  const subfamily = String(metadata?.subfamily_name || '').trim();
+  if (subfamily) return subfamily.replace(/\\s+/g, ' ');
+
+  // Filename fallback is for the inventory report only; missing metadata is
+  // separately flagged and blocks publishing rather than being silently trusted.
   const base = path.basename(filename, path.extname(filename));
-
-  // Try splitting on hyphen first: FontName-VariantName
-  const hyphenIdx = base.indexOf('-');
-  if (hyphenIdx !== -1) {
-    const after = base.slice(hyphenIdx + 1);
-    return after
-      .replace(/([a-z])([A-Z])/g, '$1 $2') // CamelCase -> Camel Case
-      .replace(/[_-]+/g, ' ')
-      .trim() || 'Regular';
-  }
-
-  // Try underscore: Font_Name_Variant
-  const parts = base.split('_');
-  if (parts.length > 1) {
-    return parts.slice(1).join(' ').trim() || 'Regular';
-  }
-
-  // Single word — treat as Regular
-  return 'Regular';
+  const suffix = base.includes('-') ? base.slice(base.indexOf('-') + 1) : base;
+  return suffix.replace(/[._-]+/g, ' ').replace(/([a-z])([A-Z])/g, '$1 $2').trim() || 'Unknown';
 }
 
 /**
- * Groups font files by variant name and format.
- * Returns a Map: variantName -> { ttf?, otf?, woff?, woff2? }
+ * Parse the actual font binaries with FontTools, then group by embedded family
+ * and the most specific available style name. Byte-identical copies of the
+ * same variant/format are deduplicated; distinct collisions are retained in
+ * the report and block uploads rather than silently dropping an asset.
  */
-function groupFontFiles(fontFiles) {
+function inspectFontFiles(fontFiles) {
+  const python = process.platform === 'win32' ? 'python' : (process.env.PYTHON || 'python3');
+  const helperPath = path.join(process.cwd(), 'scripts', 'font-processing', 'extract-font-metadata.py');
+  const stdout = execFileSync(python, [helperPath], {
+    input: JSON.stringify(fontFiles.map((file) => path.resolve(file))),
+    encoding: 'utf8',
+    maxBuffer: 32 * 1024 * 1024,
+    stdio: ['pipe', 'pipe', 'pipe'],
+  });
+  return JSON.parse(stdout);
+}
+
+function groupFontFiles(fontFiles, metadataByPath) {
   const groups = new Map();
   const conflicts = [];
+  const review = [];
+  const duplicateAssets = [];
+  const hashes = new Map();
+
   for (const filePath of fontFiles) {
     const ext = path.extname(filePath).toLowerCase().slice(1);
-    const variantName = extractVariantName(filePath);
-    if (!groups.has(variantName)) groups.set(variantName, {});
-    const group = groups.get(variantName);
-    if (group[ext]) {
-      conflicts.push({ variant_name: variantName, extension: ext, first_path: group[ext], conflicting_path: filePath });
+    const absolutePath = path.resolve(filePath);
+    const metadata = metadataByPath[absolutePath];
+    const bytes = fs.readFileSync(filePath);
+    const sha256 = createHash('sha256').update(bytes).digest('hex');
+    const variantName = deriveVariantName(metadata, filePath);
+    const familyName = String(metadata?.family_name || '').trim();
+
+    if (!metadata || metadata.parser_status !== 'parsed' || !familyName || variantName === 'Unknown') {
+      review.push({
+        path: filePath,
+        sha256,
+        reason: metadata?.parser_error || metadata?.parser_status || 'missing_embedded_family_or_variant',
+        family_name: familyName || null,
+        variant_name: variantName,
+        metadata: metadata || null,
+      });
       continue;
     }
-    group[ext] = filePath;
+
+    const key = JSON.stringify([familyName.toLocaleLowerCase('en-US'), variantName.toLocaleLowerCase('en-US')]);
+    if (!groups.has(key)) {
+      groups.set(key, {
+        family_name: familyName,
+        variant_name: variantName,
+        is_variable: metadata.is_variable === true,
+        variation_axes: metadata.variation_axes || [],
+        formats: {},
+        assets: [],
+      });
+    }
+    const group = groups.get(key);
+    const existing = group.formats[ext];
+    if (existing) {
+      if (existing.sha256 === sha256) {
+        existing.duplicate_paths.push(filePath);
+        duplicateAssets.push({ variant_name: variantName, extension: ext, sha256, kept_path: existing.path, duplicate_path: filePath });
+        continue;
+      }
+      conflicts.push({
+        family_name: familyName,
+        variant_name: variantName,
+        extension: ext,
+        first_path: existing.path,
+        conflicting_path: filePath,
+        first_sha256: existing.sha256,
+        conflicting_sha256: sha256,
+        reason: 'multiple_distinct_assets_for_same_variant_and_format',
+      });
+      group.assets.push({ path: filePath, extension: ext, sha256, metadata });
+      continue;
+    }
+
+    group.formats[ext] = { path: filePath, sha256, metadata, duplicate_paths: [] };
+    group.assets.push({ path: filePath, extension: ext, sha256, metadata });
+    hashes.set(sha256, (hashes.get(sha256) || 0) + 1);
   }
-  return { groups, conflicts };
+
+  return { groups: [...groups.values()], conflicts, review, duplicateAssets };
+}
+
+function writeInventoryReport(item, fontFiles, metadataByPath, grouped, archiveErrors = []) {
+  const reportDir = path.join(process.cwd(), 'font-processing-reports');
+  mkdirSync(reportDir, { recursive: true });
+  const assets = fontFiles.map((filePath) => {
+    const metadata = metadataByPath[path.resolve(filePath)] || null;
+    const bytes = fs.readFileSync(filePath);
+    return {
+      path: path.relative(process.cwd(), filePath).split(path.sep).join('/'),
+      extension: path.extname(filePath).toLowerCase(),
+      size_bytes: bytes.length,
+      sha256: createHash('sha256').update(bytes).digest('hex'),
+      metadata,
+    };
+  });
+  const report = {
+    generated_at: new Date().toISOString(),
+    mode: 'report-only',
+    database_writes_performed: false,
+    storage_uploads_performed: false,
+    queue_item: { id: item.id, slug: item.slug, font_id: item.font_id, original_status: item.status },
+    archive_errors: archiveErrors,
+    asset_count: assets.length,
+    variant_count: grouped.groups.length,
+    review_count: grouped.review.length,
+    conflict_count: grouped.conflicts.length,
+    duplicate_count: grouped.duplicateAssets.length,
+    assets,
+    variants: grouped.groups.map((group) => ({
+      family_name: group.family_name,
+      variant_name: group.variant_name,
+      is_variable: group.is_variable,
+      variation_axes: group.variation_axes,
+      formats: Object.fromEntries(Object.entries(group.formats).map(([ext, entry]) => [ext, {
+        path: path.relative(process.cwd(), entry.path).split(path.sep).join('/'),
+        sha256: entry.sha256,
+        duplicate_paths: entry.duplicate_paths.map((value) => path.relative(process.cwd(), value).split(path.sep).join('/')),
+      }])),
+    })),
+    review: grouped.review,
+    conflicts: grouped.conflicts,
+    duplicates: grouped.duplicateAssets,
+  };
+  const outputPath = path.join(reportDir, `${String(item.slug).replace(/[^a-zA-Z0-9._-]/g, '-')}-${String(item.id).replace(/[^a-zA-Z0-9._-]/g, '-')}.json`);
+  fs.writeFileSync(outputPath, JSON.stringify(report, null, 2) + '\\n');
+  console.log(`  Inventory report saved: ${outputPath}`);
+  console.log(`  Inventory summary: ${assets.length} assets, ${grouped.groups.length} variants, ${grouped.review.length} review item(s), ${grouped.conflicts.length} collision(s), ${grouped.duplicateAssets.length} duplicate(s)`);
+  return outputPath;
 }
 
 async function processQueue() {
