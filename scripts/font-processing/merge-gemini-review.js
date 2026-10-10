@@ -10,7 +10,7 @@ function assetId(asset) {
 
 function validateProposedLabel(value, label) {
   const normalized = normalizeText(value);
-  if (!normalized || normalized.length > 128 || /[\\r\\n\\0]/.test(normalized)) {
+  if (!normalized || normalized.length > 128 || /[\r\n\0]/.test(normalized)) {
     throw new TypeError(`Invalid ${label} in Gemini proposal`);
   }
   return normalized;
@@ -49,7 +49,7 @@ export function mergeGeminiReview({ assets, review, minimumConfidence = 0.85, ca
 
   for (const decision of review.decisions) {
     const id = normalizeText(decision?.candidate_id);
-    if (!assetsById.has(id) || !candidates.has(id)) throw new TypeError(`Gemini decision references unknown or unselected asset: ${id || '(empty)'}`);
+    if (!assetsById.has(id) || !candidates.has(id)) throw new TypeError(`Gemini decision references unknown asset or unselected candidate: ${id || '(empty)'}`);
     if (seenDecisionIds.has(id)) throw new TypeError(`Duplicate Gemini decision for asset: ${id}`);
     seenDecisionIds.add(id);
     decisionsById.set(id, decision);
