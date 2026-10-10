@@ -1,27 +1,34 @@
-name: Fresh Font Discovery Validation (Read Only)
+name: Fresh Font Metadata Validation (Read Only)
 
 on:
+  pull_request:
+    paths:
+      - 'scripts/font-processing/replay-woff2-discovery.js'
+      - 'scripts/font-processing/merge-woff2-replay.js'
+      - 'scripts/font-processing/compare-discovery-summaries.js'
+      - 'scripts/font-processing/validate-discovery-report.js'
+      - 'scripts/font-processing/core.js'
+      - 'scripts/font-processing/export-ambiguous-assets.js'
+      - 'scripts/font-processing/audit-variant-groups.js'
+      - 'scripts/font-processing/parse-woff2-metadata.py'
+      - '.github/workflows/fresh-font-discovery-validation.yml'
+      - 'tests/font-processing-report.test.js'
   workflow_dispatch:
     inputs:
-      queue_id:
-        description: "Queue UUID to rescan; defaults to the saved Monaspace discovery item"
+      baseline_artifact_id:
+        description: "GitHub Actions artifact ID for the saved discovery report"
         required: true
         type: string
-        default: "65bd9e0f-8d9d-4d02-b6ed-64ba1c2ab8be"
-      baseline_run_id:
-        description: "GitHub Actions run ID containing the saved discovery report"
-        required: true
-        type: string
-        default: "37914579536"
+        default: "11608622180"
 
 permissions:
   contents: read
   actions: read
 
 jobs:
-  fresh-discovery:
+  replay-discovery:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -35,42 +42,83 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Install read-only discovery tools
+      - name: Install local font metadata parser dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y unzip python3-pip
           python3 -m pip install --break-system-packages fonttools brotli
 
-      - name: Download baseline discovery report
-        uses: actions/download-artifact@v4
-        with:
-          name: font-asset-discovery-report
-          repository: ${{ github.repository }}
-          run-id: ${{ inputs.baseline_run_id }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          path: validation-output/baseline
-
-      - name: Run fresh read-only discovery against selected queue item
+      - name: Download saved discovery artifact using GitHub API
         env:
-          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          FONT_PROCESSING_QUEUE_ID: ${{ inputs.queue_id }}
-          FONT_DISCOVERY_OUTPUT_DIR: validation-output/fresh
-        run: node scripts/discover-font-assets.js
-
-      - name: Validate baseline and fresh reports
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BASELINE_ARTIFACT_ID: ${{ inputs.baseline_artifact_id || '11608622180' }}
         run: |
-          mkdir -p validation-output/summaries
-          baseline="$(find validation-output/baseline -type f -name '*.json' -print -quit)"
-          fresh="$(find validation-output/fresh -type f -name '*.json' -print -quit)"
-          test -n "$baseline"
-          test -n "$fresh"
-          node scripts/font-processing/validate-discovery-report.js "$baseline" validation-output/summaries/baseline-summary.json
-          node scripts/font-processing/validate-discovery-report.js "$fresh" validation-output/summaries/fresh-summary.json
-          node scripts/font-processing/compare-discovery-summaries.js validation-output/summaries/baseline-summary.json validation-output/summaries/fresh-summary.json validation-output/summaries/comparison.json
-          cat validation-output/summaries/comparison.json
+          mkdir -p validation-output/baseline
+          curl --fail --location --retry 3 \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/$BASELINE_ARTIFACT_ID/zip" \
+            --output validation-output/baseline/report.zip
+          unzip -q validation-output/baseline/report.zip -d validation-output/baseline
+          find validation-output/baseline -maxdepth 3 -type f -print
 
-      - name: Upload fresh discovery and comparison (read only)
+      - name: Replay saved report against original font archives (all formats, read only)
+        run: |
+          mkdir -p validation-output/results
+          baseline="$(find validation-output/baseline -type f -name '*.json' -print -quit)"
+          test -n "$baseline"
+          node scripts/font-processing/replay-woff2-discovery.js "$baseline" validation-output/results/woff2-replay.json
+          node scripts/font-processing/validate-discovery-report.js "$baseline" validation-output/results/baseline-summary.json
+          node scripts/font-processing/merge-woff2-replay.js "$baseline" validation-output/results/woff2-replay.json validation-output/results/merged-report.json validation-output/results/merge-summary.json
+          node scripts/font-processing/validate-discovery-report.js validation-output/results/merged-report.json validation-output/results/fresh-summary.json
+          node scripts/font-processing/compare-discovery-summaries.js validation-output/results/baseline-summary.json validation-output/results/fresh-summary.json validation-output/results/grouping-comparison.json
+          node scripts/font-processing/audit-variant-groups.js validation-output/results/merged-report.json validation-output/results/variant-group-audit.json
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const audit = JSON.parse(fs.readFileSync('validation-output/results/variant-group-audit.json', 'utf8'));
+          console.log(JSON.stringify({
+            mode: audit.mode,
+            publishable: audit.publishable,
+            database_writes_performed: audit.database_writes_performed,
+            api_calls_performed: audit.api_calls_performed,
+            uploads_performed: audit.uploads_performed,
+            semantic_correctness_claimed: audit.semantic_correctness_claimed,
+            summary: audit.summary,
+            queues: audit.queues.map((queue) => ({
+              slug: queue.slug,
+              planned_group_count: queue.planned_group_count,
+              flagged_group_count: queue.flagged_group_count,
+              review_asset_count: queue.review_asset_count,
+              format_conflict_count: queue.format_conflict_count,
+              review_reason_counts: queue.review_reason_counts,
+            })),
+          }, null, 2));
+          NODE
+          cat validation-output/results/merge-summary.json
+          cat validation-output/results/grouping-comparison.json
+
+      - name: Export unresolved candidates for bounded Gemini review (no API calls)
+        run: |
+          node scripts/font-processing/export-ambiguous-assets.js validation-output/results/merged-report.json validation-output/gemini-review-input
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const m = JSON.parse(fs.readFileSync('validation-output/gemini-review-input/manifest.json', 'utf8'));
+          console.log(JSON.stringify({
+            mode: m.mode,
+            api_calls_performed: m.api_calls_performed,
+            database_writes_performed: m.database_writes_performed,
+            uploads_performed: m.uploads_performed,
+            output_files: m.output_files,
+            queues: m.queue_items.map((q) => ({
+              slug: q.slug,
+              candidate_count: q.candidate_count,
+              reason_counts: q.reason_counts,
+              batches: q.batch_files.length,
+            })),
+          }, null, 2));
+          NODE
+
+      - name: Upload all-format font metadata replay results
         if: always()
         uses: actions/upload-artifact@v4
         with:

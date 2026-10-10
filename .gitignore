@@ -28,5 +28,7 @@ dist-ssr
 .env.*
 !.env.example
 
-
 /nobadfonts-cli/
+
+# Local font-processing caches and generated review outputs
+.cache/

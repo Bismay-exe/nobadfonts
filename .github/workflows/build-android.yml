@@ -3,6 +3,7 @@ name: Build Android APK
 permissions:
   contents: write
 
+# APK builds are expensive and should only run when explicitly requested.
 on:
   workflow_dispatch:
 
@@ -41,9 +42,7 @@ jobs:
       - name: Update Android version
         run: |
           BUILD_NUMBER=${{ github.run_number }}
-
           sed -i "s/versionCode [0-9]*/versionCode $BUILD_NUMBER/" android/app/build.gradle
-
           sed -i "s/versionName \".*\"/versionName \"0.$BUILD_NUMBER\"/" android/app/build.gradle
 
       - name: Make gradlew executable

@@ -99,57 +99,19 @@ function guessVariant(filename) {
 }
 
 function parseMetadata(filePath, extension) {
-  if (extension === '.woff2') {
-    try {
-      const parserPath = path.join(process.cwd(), 'scripts', 'font-processing', 'parse-woff2-metadata.py');
-      const output = execFileSync('python3', [parserPath, filePath], {
-        encoding: 'utf8',
-        timeout: 30_000,
-        maxBuffer: 2 * 1024 * 1024,
-      });
-      return JSON.parse(output);
-    } catch (error) {
-      const details = error instanceof Error ? error.message : String(error);
-      return { status: 'parse_failed', reason: `WOFF2 parser failed: ${details.slice(0, 500)}` };
-    }
-  }
   try {
-    const bytes = fs.readFileSync(filePath);
-    const arrayBuffer = bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength);
-    const font = opentype.parse(arrayBuffer);
-    const getName = (field) => {
-      const value = font.names?.[field];
-      if (!value) return null;
-      if (typeof value === 'string') return value;
-      return value.en || Object.values(value).find((v) => typeof v === 'string') || null;
-    };
-    const weight = font.tables?.os2?.usWeightClass ?? null;
-    const subfamily = getName('fontSubfamily') || null;
-    return {
-      status: 'parsed',
-      family_name: getName('fontFamily'),
-      full_name: getName('fullName'),
-      subfamily_name: subfamily,
-      postscript_name: getName('postScriptName'),
-      version: getName('version'),
-      designer_hint: getName('designer'),
-      weight_class: weight,
-      is_italic: Boolean(
-        (font.tables?.os2?.fsSelection && (font.tables.os2.fsSelection & 1)) ||
-        (font.tables?.head?.macStyle && (font.tables.head.macStyle & 2)) ||
-        /italic|oblique/i.test(subfamily || '')
-      ),
-      is_variable: Boolean(font.tables?.fvar),
-      glyph_count: font.numGlyphs ?? null,
-      opentype_features: [
-        ...new Set([
-          ...(font.tables?.gsub?.features || []).map((feature) => feature.tag).filter(Boolean),
-          ...(font.tables?.gpos?.features || []).map((feature) => feature.tag).filter(Boolean),
-        ]),
-      ].sort(),
-    };
+    // Use the same name-table precedence for every font format. Different
+    // parsers previously returned inconsistent family/subfamily metadata.
+    const parserPath = path.join(process.cwd(), 'scripts', 'font-processing', 'parse-woff2-metadata.py');
+    const output = execFileSync('python3', [parserPath, filePath], {
+      encoding: 'utf8',
+      timeout: 30_000,
+      maxBuffer: 2 * 1024 * 1024,
+    });
+    return JSON.parse(output);
   } catch (error) {
-    return { status: 'parse_failed', reason: error instanceof Error ? error.message : String(error) };
+    const details = error instanceof Error ? error.message : String(error);
+    return { status: 'parse_failed', reason: `Font metadata parser failed for ${extension}: ${details.slice(0, 500)}` };
   }
 }
 

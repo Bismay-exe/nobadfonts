@@ -1,10 +1,21 @@
-import { createClient } from '@supabase/supabase-js';
+import { assertProductionWriteEnabled } from './font-processing/write-gate.js';
 import fs from 'fs';
 import path from 'path';
-import { execSync } from 'child_process';
+import { execFileSync } from 'child_process';
 import { createWriteStream, mkdirSync } from 'fs';
 import { pipeline } from 'stream/promises';
 import { createUnzip } from 'zlib';
+
+try {
+  assertProductionWriteEnabled();
+} catch (error) {
+  console.error(error instanceof Error ? error.message : String(error));
+  process.exit(1);
+}
+
+// Resolve the Supabase SDK only after the write gate, so a blocked invocation
+// can exit without loading credentials, dependencies, or creating a client.
+const { createClient } = await import('@supabase/supabase-js');
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -15,6 +26,14 @@ if (!supabaseUrl || !supabaseKey) {
 }
 
 const supabase = createClient(supabaseUrl, supabaseKey);
+
+async function updateQueueStatus(id, status, errorMessage = null) {
+  const { data, error } = await supabase.from('font_processing_queue')
+    .update({ status, error_message: errorMessage }).eq('id', id).eq('status', 'processing')
+    .select('id').maybeSingle();
+  if (error) throw new Error(`Failed to update queue item ${id} to ${status}: ${error.message}`);
+  if (!data) throw new Error(`Queue item ${id} was not in processing state; refusing transition to ${status}`);
+}
 
 // Font formats we keep
 const FONT_EXTENSIONS = new Set(['.ttf', '.otf', '.woff', '.woff2']);
@@ -88,7 +107,7 @@ async function downloadFile(url, destPath) {
 function extractZip(zipPath, destDir) {
   mkdirSync(destDir, { recursive: true });
   try {
-    execSync(`unzip -o -q "${zipPath}" -d "${destDir}"`, { stdio: 'pipe' });
+    execFileSync('unzip', ['-o', '-q', zipPath, '-d', destDir], { stdio: 'pipe' });
   } catch (err) {
     // unzip exits non-zero even on warnings, check if files were extracted
     if (!fs.existsSync(destDir)) throw new Error(`Extraction failed: ${err.message}`);
@@ -156,24 +175,19 @@ function extractVariantName(filename) {
  */
 function groupFontFiles(fontFiles) {
   const groups = new Map();
-
+  const conflicts = [];
   for (const filePath of fontFiles) {
-    const ext = path.extname(filePath).toLowerCase().slice(1); // 'ttf', 'otf', etc.
+    const ext = path.extname(filePath).toLowerCase().slice(1);
     const variantName = extractVariantName(filePath);
-
-    if (!groups.has(variantName)) {
-      groups.set(variantName, {});
-    }
-
+    if (!groups.has(variantName)) groups.set(variantName, {});
     const group = groups.get(variantName);
-
-    // Only keep the first file found for each format (avoid duplicates across zips)
-    if (!group[ext]) {
-      group[ext] = filePath;
+    if (group[ext]) {
+      conflicts.push({ variant_name: variantName, extension: ext, first_path: group[ext], conflicting_path: filePath });
+      continue;
     }
+    group[ext] = filePath;
   }
-
-  return groups;
+  return { groups, conflicts };
 }
 
 async function processQueue() {
@@ -184,10 +198,7 @@ async function processQueue() {
     .select('*, fonts(uploaded_by)')
     .in('status', ['pending', 'error']);
 
-  if (fetchError) {
-    console.error('Failed to fetch queue items:', fetchError.message);
-    return;
-  }
+  if (fetchError) throw new Error(`Failed to fetch queue items: ${fetchError.message}`);
 
   if (!queueItems || queueItems.length === 0) {
     console.log('No pending or error items found.');
@@ -201,11 +212,14 @@ async function processQueue() {
     console.log(`Font: ${item.slug} (ID: ${item.id}) [Status: ${item.status}]`);
     console.log(`${'='.repeat(60)}`);
 
-    // Mark as processing immediately and reset previous error message
-    await supabase
-      .from('font_processing_queue')
-      .update({ status: 'processing', error_message: null })
-      .eq('id', item.id);
+    const { data: claimed, error: claimError } = await supabase.from('font_processing_queue')
+      .update({ status: 'processing', error_message: null }).eq('id', item.id).eq('status', item.status)
+      .select('id').maybeSingle();
+    if (claimError) throw new Error(`Failed to claim queue item ${item.id}: ${claimError.message}`);
+    if (!claimed) {
+      console.log(`Skipping ${item.slug}: another worker already claimed or changed its status.`);
+      continue;
+    }
 
     let userId = item.fonts?.uploaded_by;
     if (!userId) {
@@ -221,10 +235,7 @@ async function processQueue() {
         userId = adminProfile.id;
       } else {
         console.error('  ❌ Cannot determine uploaded_by user_id');
-        await supabase.from('font_processing_queue').update({
-          status: 'error',
-          error_message: 'Could not determine uploaded_by user_id',
-        }).eq('id', item.id);
+        await updateQueueStatus(item.id, 'error', 'Could not determine uploaded_by user_id');
         continue;
       }
     }
@@ -232,28 +243,28 @@ async function processQueue() {
     const releaseZips = item.download_urls; // Array of { url, label }
     if (!Array.isArray(releaseZips) || releaseZips.length === 0) {
       console.error('  ❌ No release zips found in download_urls');
-      await supabase.from('font_processing_queue').update({
-        status: 'error',
-        error_message: 'No release zips provided',
-      }).eq('id', item.id);
+      await updateQueueStatus(item.id, 'error', 'No release zips provided');
       continue;
     }
 
+    if (typeof item.slug !== 'string' || !/^[a-zA-Z0-9][a-zA-Z0-9._-]{0,127}$/.test(item.slug) || item.slug.includes('..')) {
+      await updateQueueStatus(item.id, 'error', 'Unsafe font slug; refusing filesystem or Storage writes');
+      continue;
+    }
     const tmpDir = path.join(process.cwd(), 'tmp_fonts', item.slug);
     mkdirSync(tmpDir, { recursive: true });
-
     let allFontFiles = [];
+    const archiveErrors = [];
 
     // Step 1: Download and extract all zips, collect all font files
-    for (const zip of releaseZips) {
+    for (const [zipIndex, zip] of releaseZips.entries()) {
       const zipUrl = cleanUrl(zip.url);
-      const label = zip.label || 'zip';
-
+      const rawLabel = String(zip.label || 'zip');
+      const label = `zip-${zipIndex + 1}-${rawLabel.replace(/[^a-zA-Z0-9._-]+/g, '-').replace(/\.\.+/g, '.').slice(0, 64)}`;
       if (!zipUrl) {
-        console.warn(`  ⚠️ Skipping invalid zip URL for "${label}": ${zip.url}`);
+        archiveErrors.push(`Invalid URL for archive "${label}"`);
         continue;
       }
-
       const zipPath = path.join(tmpDir, `${label}.zip`);
       const extractDir = path.join(tmpDir, `extracted_${label}`);
 
@@ -272,16 +283,19 @@ async function processQueue() {
         // Remove zip to save space
         fs.unlinkSync(zipPath);
       } catch (err) {
+        archiveErrors.push(`Archive "${label}" failed: ${err.message}`);
         console.warn(`  ⚠️ Failed to process zip "${label}": ${err.message}`);
       }
     }
 
+    if (archiveErrors.length) {
+      await updateQueueStatus(item.id, 'error', `Archive preflight failed; no assets uploaded. ${archiveErrors.slice(0, 3).join('; ')}`.slice(0, 1000));
+      fs.rmSync(tmpDir, { recursive: true, force: true });
+      continue;
+    }
     if (allFontFiles.length === 0) {
       console.error('  ❌ No font files found in any zip');
-      await supabase.from('font_processing_queue').update({
-        status: 'error',
-        error_message: 'No font files found in provided release zips',
-      }).eq('id', item.id);
+      await updateQueueStatus(item.id, 'error', 'No font files found in provided release zips');
       fs.rmSync(tmpDir, { recursive: true, force: true });
       continue;
     }
@@ -289,8 +303,16 @@ async function processQueue() {
     console.log(`\n  Total font files found across all zips: ${allFontFiles.length}`);
 
     // Step 2: Group by variant name
-    const variantGroups = groupFontFiles(allFontFiles);
-    console.log(`  Identified ${variantGroups.size} variant(s):\n`);
+    const { groups: variantGroups, conflicts } = groupFontFiles(allFontFiles);
+    console.log(`  Identified ${variantGroups.size} tentative variant(s).\n`);
+    if (conflicts.length) {
+      const sample = conflicts.slice(0, 5).map(c => `${c.variant_name} .${c.extension}: ${path.basename(c.first_path)} vs ${path.basename(c.conflicting_path)}`).join('; ');
+      const message = `Ambiguous filename grouping found ${conflicts.length} same-variant/same-format collisions. No assets uploaded. ${sample}`.slice(0, 1000);
+      console.error(`  ❌ ${message}`);
+      await updateQueueStatus(item.id, 'error', message);
+      fs.rmSync(tmpDir, { recursive: true, force: true });
+      continue;
+    }
 
     let totalUploaded = 0;
     let hasErrors = false;
@@ -305,7 +327,7 @@ async function processQueue() {
         const woff2Path = sourceFile.replace(/\.(ttf|otf)$/i, '.woff2');
         try {
           console.log(`    Generating WOFF2 from .${formats.ttf ? 'ttf' : 'otf'}...`);
-          execSync(`woff2_compress "${sourceFile}"`, { stdio: 'pipe' });
+          execFileSync('woff2_compress', [sourceFile], { stdio: 'pipe' });
           // woff2_compress outputs to same directory with .woff2 extension
           const expectedWoff2 = sourceFile.replace(/\.(ttf|otf)$/i, '.woff2');
           if (fs.existsSync(expectedWoff2)) {
@@ -328,7 +350,8 @@ async function processQueue() {
       for (const [ext, filePath] of Object.entries(formats)) {
         if (!filePath || !fs.existsSync(filePath)) continue;
 
-        const storagePath = `${userId}/${item.slug}/variants/${variantName}/${item.slug}-${variantName.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.${ext}`;
+        const storageVariant = variantName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'variant';
+        const storagePath = `${userId}/${item.slug}/variants/${storageVariant}/${item.slug}-${storageVariant}.${ext}`;
 
         try {
           const fileBuffer = fs.readFileSync(filePath);
@@ -389,11 +412,9 @@ async function processQueue() {
       fs.rmSync(tmpDir, { recursive: true, force: true });
     } catch {}
 
-    const finalStatus = hasErrors ? 'completed_with_warnings' : 'completed';
-    await supabase
-      .from('font_processing_queue')
-      .update({ status: finalStatus })
-      .eq('id', item.id);
+    const finalStatus = hasErrors ? 'error' : 'completed';
+    const finalError = hasErrors ? 'One or more variant uploads or database writes failed; inspect Storage and font_variants before retrying.' : null;
+    await updateQueueStatus(item.id, finalStatus, finalError);
 
     console.log(`\n✅ Done: ${item.slug} — ${totalUploaded}/${variantGroups.size} variants saved [${finalStatus}]\n`);
   }

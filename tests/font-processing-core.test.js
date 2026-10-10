@@ -119,14 +119,14 @@ test('planVariantGroups does not merge unrelated subfamilies', () => {
 });
 
 
-test('planVariantGroups sends contradictory family-weight metadata to review', () => {
+test('planVariantGroups routes contradictory family-weight metadata to review', () => {
   const result = planVariantGroups([
     {
       sha256: 'e'.repeat(64),
       metadata: {
-        family_name: 'Monaspace Argon Frozen ExtraBold',
+        family_name: 'Example Family Bold',
         subfamily_name: 'Regular',
-        weight_class: 800,
+        weight_class: 600,
         is_italic: false,
         extension: '.ttf',
         status: 'parsed',
@@ -135,10 +135,10 @@ test('planVariantGroups sends contradictory family-weight metadata to review', (
     {
       sha256: 'f'.repeat(64),
       metadata: {
-        family_name: 'Fraunces 144pt Black',
-        subfamily_name: 'Italic',
-        weight_class: 900,
-        is_italic: true,
+        family_name: 'Another Family Black',
+        subfamily_name: 'Regular',
+        weight_class: 700,
+        is_italic: false,
         extension: '.otf',
         status: 'parsed',
       },
@@ -148,4 +148,112 @@ test('planVariantGroups sends contradictory family-weight metadata to review', (
   assert.equal(result.groups.length, 0);
   assert.equal(result.review.length, 2);
   assert.deepEqual(result.review.map((item) => item.reason), ['family_name_weight_conflict', 'family_name_weight_conflict']);
+});
+
+test('planVariantGroups normalizes a matching weight suffix embedded in binary family metadata', () => {
+  const result = planVariantGroups([
+    {
+      sha256: '1'.repeat(64),
+      metadata: {
+        family_name: 'Monaspace Argon Frozen ExtraBold',
+        subfamily_name: 'Regular',
+        full_name: 'Monaspace Argon Frozen ExtraBold',
+        postscript_name: 'MonaspaceArgonFrozen-ExtraBold',
+        weight_class: 800,
+        is_italic: false,
+        extension: '.ttf',
+        status: 'parsed',
+      },
+    },
+    {
+      sha256: '2'.repeat(64),
+      metadata: {
+        family_name: 'Monaspace Argon Frozen ExtraLight',
+        subfamily_name: 'Regular',
+        full_name: 'Monaspace Argon Frozen ExtraLight',
+        postscript_name: 'MonaspaceArgonFrozen-ExtraLight',
+        weight_class: 200,
+        is_italic: false,
+        extension: '.ttf',
+        status: 'parsed',
+      },
+    },
+    {
+      sha256: '3'.repeat(64),
+      metadata: {
+        family_name: 'Monaspace Argon Frozen ExtraBold',
+        subfamily_name: 'Italic',
+        full_name: 'Monaspace Argon Frozen ExtraBold Italic',
+        postscript_name: 'MonaspaceArgonFrozen-ExtraBoldItalic',
+        weight_class: 800,
+        is_italic: true,
+        extension: '.otf',
+        status: 'parsed',
+      },
+    },
+  ]);
+
+  assert.equal(result.review.length, 0);
+  assert.equal(result.groups.length, 3);
+  assert.deepEqual(result.groups.map((group) => group.family_name), [
+    'Monaspace Argon Frozen',
+    'Monaspace Argon Frozen',
+    'Monaspace Argon Frozen',
+  ]);
+  assert.deepEqual(result.groups.map((group) => group.variant_name), [
+    'Extra Bold',
+    'Extra Light',
+    'Extra Bold Italic',
+  ]);
+});
+
+test('canonical keys do not strip a family suffix when the binary weight disagrees', () => {
+  const metadata = {
+    family_name: 'Example Family Bold',
+    subfamily_name: 'Regular',
+    weight_class: 400,
+    is_italic: false,
+  };
+  assert.equal(canonicalFamilyKey(metadata), 'example family bold');
+  assert.equal(canonicalVariantKey(metadata), 'regular');
+});
+
+
+test('planVariantGroups preserves Monaspace width variants and italic distinctions', () => {
+  const result = planVariantGroups([
+    { sha256: 'a'.repeat(64), metadata: { family_name: 'Monaspace Krypton', subfamily_name: 'Regular', weight_class: 400, is_italic: false, extension: '.woff2', status: 'parsed' } },
+    { sha256: 'b'.repeat(64), metadata: { family_name: 'Monaspace Krypton', subfamily_name: 'SemiWide Regular', weight_class: 400, is_italic: false, extension: '.woff2', status: 'parsed' } },
+    { sha256: 'c'.repeat(64), metadata: { family_name: 'Monaspace Krypton', subfamily_name: 'Wide Regular', weight_class: 400, is_italic: false, extension: '.woff2', status: 'parsed' } },
+    { sha256: 'd'.repeat(64), metadata: { family_name: 'Monaspace Krypton', subfamily_name: 'Regular Italic', weight_class: 400, is_italic: true, extension: '.woff2', status: 'parsed' } },
+    { sha256: 'e'.repeat(64), metadata: { family_name: 'Monaspace Krypton', subfamily_name: 'SemiWide Italic', weight_class: 400, is_italic: true, extension: '.woff2', status: 'parsed' } },
+    { sha256: 'f'.repeat(64), metadata: { family_name: 'Monaspace Krypton', subfamily_name: 'Wide Italic', weight_class: 400, is_italic: true, extension: '.woff2', status: 'parsed' } },
+  ]);
+
+  assert.equal(result.groups.length, 6);
+  assert.deepEqual(result.groups.map((group) => group.variant_key), [
+    'regular',
+    'semiwide regular',
+    'wide regular',
+    'regular italic',
+    'semiwide italic',
+    'wide italic',
+  ]);
+  assert.deepEqual(result.review, []);
+});
+
+
+test('Monaspace Neon, Argon, Krypton, Radon, and Xenon remain distinct families', () => {
+  const subfamilies = ['Neon', 'Argon', 'Krypton', 'Radon', 'Xenon'];
+  const assets = subfamilies.flatMap((name, index) => [
+    { sha256: String(index + 1).repeat(64).slice(0, 64), metadata: { family_name: `Monaspace ${name}`, subfamily_name: 'Regular', weight_class: 400, is_italic: false, extension: '.otf', status: 'parsed' } },
+    { sha256: String(index + 6).repeat(64).slice(0, 64), metadata: { family_name: `Monaspace ${name} NF`, subfamily_name: 'Regular', weight_class: 400, is_italic: false, extension: '.woff2', status: 'parsed' } },
+  ]);
+  const result = planVariantGroups(assets);
+  assert.equal(result.review.length, 0);
+  assert.equal(result.groups.length, 10);
+  assert.deepEqual(result.groups.map((group) => group.family_name).sort(), [
+    'Monaspace Argon', 'Monaspace Argon NF', 'Monaspace Krypton', 'Monaspace Krypton NF',
+    'Monaspace Neon', 'Monaspace Neon NF', 'Monaspace Radon', 'Monaspace Radon NF',
+    'Monaspace Xenon', 'Monaspace Xenon NF',
+  ]);
 });

@@ -74,25 +74,68 @@ export function normalizeFontMetadata(metadata = {}) {
   };
 }
 
+const WEIGHT_SUFFIXES = [
+  { suffix: 'Extra Light', weight: 200 },
+  { suffix: 'Ultra Light', weight: 200 },
+  { suffix: 'Semi Bold', weight: 600 },
+  { suffix: 'Demi Bold', weight: 600 },
+  { suffix: 'Extra Bold', weight: 800 },
+  { suffix: 'Ultra Bold', weight: 800 },
+  { suffix: 'Hairline', weight: 100 },
+  { suffix: 'Thin', weight: 100 },
+  { suffix: 'Light', weight: 300 },
+  { suffix: 'Regular', weight: 400 },
+  { suffix: 'Medium', weight: 500 },
+  { suffix: 'Bold', weight: 700 },
+  { suffix: 'Black', weight: 900 },
+  { suffix: 'Heavy', weight: 900 },
+];
+
+function getEmbeddedWeightSuffix(metadata) {
+  const family = normalizeText(metadata.family_name ?? metadata.familyName);
+  const weight = metadata.weight_class ?? metadata.weightClass;
+  const subfamily = normalizeText(metadata.subfamily_name ?? metadata.subfamilyName).toLowerCase();
+  if (!family || !Number.isInteger(weight) || !['regular', 'italic', 'oblique'].includes(subfamily)) return null;
+  const lowerFamily = family.toLocaleLowerCase('en-US');
+  for (const candidate of WEIGHT_SUFFIXES) {
+    if (candidate.weight !== weight) continue;
+    const suffixes = [candidate.suffix, candidate.suffix.split(' ').join('')];
+    for (const suffixValue of suffixes) {
+      const suffix = suffixValue.toLocaleLowerCase('en-US');
+      if (!lowerFamily.endsWith(` ${suffix}`)) continue;
+      const normalizedFamily = family.slice(0, family.length - suffixValue.length).trim();
+      if (normalizedFamily) {
+        return {
+          family_name: normalizedFamily,
+          weight,
+          is_italic: metadata.is_italic === true || subfamily === 'italic' || subfamily === 'oblique',
+        };
+      }
+    }
+  }
+  return null;
+}
+
 export function canonicalFamilyKey(metadata = {}) {
-  const family = normalizeText(metadata.family_name ?? metadata.familyName).toLocaleLowerCase('en-US');
+  const embeddedWeight = getEmbeddedWeightSuffix(metadata);
+  const family = normalizeText(embeddedWeight?.family_name ?? metadata.family_name ?? metadata.familyName).toLocaleLowerCase('en-US');
   return family || null;
 }
 
 export function canonicalVariantKey(metadata = {}) {
+  const embeddedWeight = getEmbeddedWeightSuffix(metadata);
   const subfamily = normalizeText(metadata.subfamily_name ?? metadata.subfamilyName).toLocaleLowerCase('en-US');
-  const weight = metadata.weight_class ?? metadata.weightClass;
-  const italic = metadata.is_italic ?? metadata.isItalic;
-
-  // Binary subfamily metadata is the strongest label when present. Do not
-  // merge files with different named subfamilies just because weights match.
+  const weight = embeddedWeight?.weight ?? metadata.weight_class ?? metadata.weightClass;
+  const italic = embeddedWeight?.is_italic ?? metadata.is_italic ?? metadata.isItalic;
+  // Some binaries embed weight in family_name but report Regular/Italic as subfamily.
+  // Normalize only when the suffix agrees with the binary weight class.
+  if (embeddedWeight) return `weight-${weight}-${italic ? 'italic' : 'upright'}`;
   if (subfamily) return subfamily;
   if (Number.isInteger(weight) && typeof italic === 'boolean') {
     return `weight-${weight}-${italic ? 'italic' : 'upright'}`;
   }
   return null;
 }
-
 /**
  * Deduplicate byte-identical files by SHA-256 while retaining every source.
  * Different hashes are never collapsed because their names/extensions match.
@@ -148,6 +191,7 @@ export function planVariantGroups(assets) {
       && metadata.weight_class != null
       && metadata.weight_class !== 400
       && /(?:^|\s)(?:thin|hairline|extra\s*light|ultra\s*light|light|medium|semi\s*bold|demi\s*bold|extra\s*bold|ultra\s*bold|bold|black|heavy)(?:\s+italic)?$/i.test(metadata.family_name)
+      && !getEmbeddedWeightSuffix(metadata)
       && !/(?:thin|hairline|light|medium|bold|black|heavy)/i.test(metadata.subfamily_name || '');
 
     if (metadata.parser_status === 'not_parsed' || metadata.parser_status === 'parse_failed') {
@@ -175,12 +219,14 @@ export function planVariantGroups(assets) {
     const key = JSON.stringify([familyKey, variantKey]);
     if (!groups.has(key)) {
       groups.set(key, {
-        family_name: metadata.family_name,
-        variant_name: metadata.subfamily_name || (
-          metadata.weight_class != null
-            ? `${WEIGHT_NAMES.get(metadata.weight_class) || `Weight ${metadata.weight_class}`}${metadata.is_italic ? ' Italic' : ''}`
-            : null
-        ),
+        family_name: getEmbeddedWeightSuffix(metadata)?.family_name || metadata.family_name,
+        variant_name: getEmbeddedWeightSuffix(metadata)
+          ? `${WEIGHT_NAMES.get(metadata.weight_class) || `Weight ${metadata.weight_class}`}${getEmbeddedWeightSuffix(metadata).is_italic ? ' Italic' : ''}`
+          : metadata.subfamily_name || (
+            metadata.weight_class != null
+              ? `${WEIGHT_NAMES.get(metadata.weight_class) || `Weight ${metadata.weight_class}`}${metadata.is_italic ? ' Italic' : ''}`
+              : null
+          ),
         variant_key: variantKey,
         assets: [],
         conflicts: [],
