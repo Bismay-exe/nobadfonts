@@ -4,7 +4,7 @@ Stage 4 safety hardening. Production publishing remains disabled pending Stage 5
 
 ## Risks found and addressed
 
-- The production queue workflow previously ran every ten minutes with a service-role key. Its schedule is removed and the job is disabled pending approval of the publishing gate.
+- The production queue workflow previously ran every ten minutes with a service-role key. Its schedule is removed; the current manual workflow only produces a read-only inventory. Publishing remains disabled.
 - Direct execution of `scripts/process-ai-fonts.js` now requires both `--apply` and `FONT_PROCESSING_ALLOW_WRITES=true`.
 - Concurrent workers could claim the same pending/error item. Claims now conditionally update the observed status.
 - Filename grouping silently discarded the second file for a guessed variant/format. Such collisions now fail closed before upload.
@@ -26,7 +26,7 @@ The new `scripts/font-processing/publishing-protocol.js` is dependency-injected 
 
 A staging failure cleans up only known keys from the current batch. Cleanup failure is recorded as `reconciliation_required`. After database publication starts, network failures can be ambiguous, so staging objects are retained pending idempotency-key reconciliation rather than risking deletion of referenced assets.
 
-**Release blocker remains:** this is the tested protocol contract, not a production Supabase adapter. The legacy processor has not yet been migrated to deterministic metadata-driven rows, and no atomic transaction RPC is wired. The production workflow remains statically disabled. These tests do not authorize production writes, Storage uploads, or Gemini requests.
+**Release blocker remains:** this is the tested protocol contract, not a production Supabase adapter. The legacy processor has not yet been migrated to deterministic metadata-driven rows, and no atomic transaction RPC is wired. The workflow is now manually dispatched for read-only inventory only. These tests do not authorize production writes, Storage uploads, or Gemini requests.
 
 
 ## Stage 5: concrete adapter and atomic transaction
@@ -69,14 +69,14 @@ Run it without `--apply` first; this is a local dry run and does not create a Su
 
 Command: `node scripts/font-processing/publish-plan.js ./manifest.json`
 
-The runner is intentionally separate from the legacy live queue processor. It does not claim Stage 5 release completion: the production queue workflow remains statically disabled, the migration remains unapplied, and a real isolated Supabase staging-project test of Storage + RPC retries/reconciliation is still required. No production writes, uploads, or Gemini calls are authorized by these changes.
+The runner is intentionally separate from the legacy live queue processor. It does not claim Stage 5 release completion: the queue workflow is read-only, the migration remains unapplied, and a real isolated Supabase staging-project test of Storage + RPC retries/reconciliation is still required. No production writes, uploads, or Gemini calls are authorized by these changes.
 
 
 ## Supabase SQL Editor installation and explicit manual publishing
 
 A preflight-checked, copy/run-ready script is maintained at `supabase/sql-editor/font_processing_atomic_publish.sql`. The disposable PostgreSQL CI test executes that exact SQL Editor script, so the copy intended for manual installation is exercised by CI. It verifies that `public.fonts` and the required `public.font_variants` columns exist before creating the ledger and RPC functions. Applying it creates schema/functions only; it does not update existing font rows or upload Storage objects.
 
-The publish-plan runner remains dry-run by default. After reviewing the manifest and applying the SQL script to the intended Supabase project, a manual main-project publish requires all of the following independent settings: `--apply`, `FONT_PROCESSING_ALLOW_WRITES=true`, `FONT_PROCESSING_TARGET=main`, `FONT_PROCESSING_ALLOW_MAIN_PUBLISHING=true`, `FONT_PROCESSING_MAIN_SUPABASE_URL`, and `FONT_PROCESSING_MAIN_SERVICE_ROLE_KEY`. The runner never falls back to `VITE_SUPABASE_URL` or `SUPABASE_SERVICE_ROLE_KEY`. Keep the automatic queue workflow disabled; do not use the legacy filename-based processor for publishing.
+The publish-plan runner remains dry-run by default. After reviewing the manifest and applying the SQL script to the intended Supabase project, a manual main-project publish requires all of the following independent settings: `--apply`, `FONT_PROCESSING_ALLOW_WRITES=true`, `FONT_PROCESSING_TARGET=main`, `FONT_PROCESSING_ALLOW_MAIN_PUBLISHING=true`, `FONT_PROCESSING_MAIN_SUPABASE_URL`, and `FONT_PROCESSING_MAIN_SERVICE_ROLE_KEY`. The runner never falls back to `VITE_SUPABASE_URL` or `SUPABASE_SERVICE_ROLE_KEY`. Keep automatic publishing disabled; the current workflow must remain report-only until the staged publisher is explicitly wired and approved.
 
 
 ## Importer fix: metadata-driven variant preservation
