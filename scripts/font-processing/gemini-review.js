@@ -56,6 +56,8 @@ export function buildGeminiReviewRequest(assets) {
       'Use only the supplied candidates. Do not assume that archive/package names are font families.',
       'Keep Monaspace-style subfamilies distinct when the evidence indicates different named designs.',
       'When evidence is insufficient or contradictory, choose decision="review" and relation="unknown".',
+      'For a proposed grouping, return proposed_family_name and proposed_variant_name using the best-supported embedded metadata names; preserve distinct named designs such as Monaspace Neon, Argon, Krypton, Radon, and Xenon.',
+      'Do not invent names. If you cannot confidently assign both proposed labels, choose decision="review".',
       'Return only a JSON object matching the requested schema.',
     ].join(' '),
     response_schema: {
@@ -75,6 +77,9 @@ export function buildGeminiReviewRequest(assets) {
               relation: { type: 'string', enum: ['same_family', 'subfamily', 'packaging_duplicate', 'unrelated', 'unknown'] },
               confidence: { type: 'number', minimum: 0, maximum: 1 },
               reason: { type: 'string', maxLength: 300 },
+              proposed_family_name: { type: 'string', maxLength: 128 },
+              proposed_variant_name: { type: 'string', maxLength: 128 },
+              related_candidate_ids: { type: 'array', maxItems: 50, uniqueItems: true, items: { type: 'string' } },
             },
           },
         },
@@ -101,7 +106,7 @@ export function validateGeminiReviewResponse(input, request, options = {}) {
   const seen = new Set();
   const decisions = parsed.decisions.map((item) => {
     if (!item || typeof item !== 'object' || Array.isArray(item)) throw new TypeError('Each Gemini decision must be an object');
-    const allowedKeys = new Set(['candidate_id', 'decision', 'relation', 'confidence', 'reason']);
+    const allowedKeys = new Set(['candidate_id', 'decision', 'relation', 'confidence', 'reason', 'proposed_family_name', 'proposed_variant_name', 'related_candidate_ids']);
     if (Object.keys(item).some((key) => !allowedKeys.has(key))) throw new TypeError('Gemini decision contains unexpected fields');
     const candidateId = normalizeText(item.candidate_id);
     if (!expected.has(candidateId)) throw new TypeError(`Unexpected candidate_id: ${candidateId || '(empty)'}`);
@@ -115,6 +120,25 @@ export function validateGeminiReviewResponse(input, request, options = {}) {
     if (typeof item.reason !== 'string' || !normalizeText(item.reason) || item.reason.length > 300) {
       throw new TypeError(`Invalid reason for ${candidateId}`);
     }
+    const proposedFamily = item.proposed_family_name === undefined ? undefined : normalizeText(item.proposed_family_name);
+    const proposedVariant = item.proposed_variant_name === undefined ? undefined : normalizeText(item.proposed_variant_name);
+    if (proposedFamily !== undefined && (!proposedFamily || proposedFamily.length > 128)) {
+      throw new TypeError(`Invalid proposed_family_name for ${candidateId}`);
+    }
+    if (proposedVariant !== undefined && (!proposedVariant || proposedVariant.length > 128)) {
+      throw new TypeError(`Invalid proposed_variant_name for ${candidateId}`);
+    }
+    let relatedCandidateIds;
+    if (item.related_candidate_ids !== undefined) {
+      if (!Array.isArray(item.related_candidate_ids) || item.related_candidate_ids.length > 50) {
+        throw new TypeError(`Invalid related_candidate_ids for ${candidateId}`);
+      }
+      relatedCandidateIds = item.related_candidate_ids.map(normalizeText);
+      if (relatedCandidateIds.some((relatedId) => !expected.has(relatedId) || relatedId === candidateId)
+        || new Set(relatedCandidateIds).size !== relatedCandidateIds.length) {
+        throw new TypeError(`Invalid related_candidate_ids for ${candidateId}`);
+      }
+    }
     const incompatiblePair = (item.decision === 'group' && !['same_family', 'subfamily', 'packaging_duplicate'].includes(item.relation))
       || (item.decision === 'separate' && item.relation !== 'unrelated')
       || (item.decision === 'review' && item.relation !== 'unknown');
@@ -127,6 +151,9 @@ export function validateGeminiReviewResponse(input, request, options = {}) {
       reason: normalizeText(item.reason),
       requires_human_review: true,
       publishable: false,
+      ...(proposedFamily !== undefined ? { proposed_family_name: proposedFamily } : {}),
+      ...(proposedVariant !== undefined ? { proposed_variant_name: proposedVariant } : {}),
+      ...(relatedCandidateIds !== undefined ? { related_candidate_ids: relatedCandidateIds } : {}),
     };
   });
   const missingCandidateIds = [...expected].filter((id) => !seen.has(id));
