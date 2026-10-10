@@ -3,9 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { execFileSync } from 'child_process';
 import { createHash } from 'node:crypto';
-import { createWriteStream, mkdirSync } from 'fs';
-import { pipeline } from 'stream/promises';
-import { createUnzip } from 'zlib';
+import { mkdirSync } from 'fs';
 
 const REPORT_ONLY = process.argv.includes('--report-only');
 
@@ -18,8 +16,8 @@ if (!REPORT_ONLY) {
   }
 }
 
-// Resolve the Supabase SDK only after the write gate, so a blocked invocation
-// can exit without loading credentials, dependencies, or creating a client.
+// Resolve the Supabase SDK after the apply-mode write gate. Report-only mode
+// reads the queue but never claims items or writes queue, Storage, or font rows.
 const { createClient } = await import('@supabase/supabase-js');
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL;
@@ -284,7 +282,6 @@ function groupFontFiles(fontFiles, metadataByPath) {
   const conflicts = [];
   const review = [];
   const duplicateAssets = [];
-  const hashes = new Map();
 
   for (const filePath of fontFiles) {
     const ext = path.extname(filePath).toLowerCase().slice(1);
@@ -342,7 +339,6 @@ function groupFontFiles(fontFiles, metadataByPath) {
 
     group.formats[ext] = { path: filePath, sha256, metadata, duplicate_paths: [] };
     group.assets.push({ path: filePath, extension: ext, sha256, metadata });
-    hashes.set(sha256, (hashes.get(sha256) || 0) + 1);
   }
 
   return { groups: [...groups.values()], conflicts, review, duplicateAssets };
@@ -542,7 +538,7 @@ async function processQueue() {
 
     const grouped = groupFontFiles(allFontFiles, metadataByPath);
     const variantGroups = grouped.groups;
-    console.log(`  Identified ${variantGroups.length} metadata-derived variant(s).\\n`);
+    console.log(`  Identified ${variantGroups.length} metadata-derived variant(s).\n`);
 
     if (REPORT_ONLY) {
       writeInventoryReport(item, allFontFiles, metadataByPath, grouped, archiveErrors);
