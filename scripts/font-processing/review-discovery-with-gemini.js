@@ -102,10 +102,13 @@ export async function reviewDiscoveryReport(report, options = {}) {
         minimumConfidence: options.minimumConfidence ?? 0.85,
       });
       gemini.candidates_not_sent = Math.max(0, candidateIds.length - candidates.length);
+      // Only mark candidates actually sent to Gemini as reviewed. Candidates
+      // beyond the per-request cap must remain explicitly not_reviewed, not be
+      // mislabeled as missing model decisions that require human review.
       merged = mergeGeminiReview({
         assets: uniqueAssets,
         review: gemini,
-        candidateIds,
+        candidateIds: [...selectedIds],
         minimumConfidence: options.minimumConfidence ?? 0.85,
       });
     } else if (live && selected) {
