@@ -96,8 +96,8 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.a
       const replay = JSON.parse(fs.readFileSync(replayPath, 'utf8'));
       const result = mergeWoff2ReplayIntoDiscoveryReport(baseline, replay);
       fs.writeFileSync(outputPath, JSON.stringify(result.report, null, 2) + '\n', { flag: 'wx' });
-      if (summaryPath) fs.writeFileSync(summaryPath, JSON.stringify({ database_writes_performed: false, summary: result.summary }, null, 2) + '\n', { flag: 'wx' });
-      else process.stdout.write(JSON.stringify(result.summary, null, 2) + '\n');
+      if (summaryPath) fs.writeFileSync(summaryPath, JSON.stringify({ database_writes_performed: false, summary: result.summary, metadata_reconciliation: result.metadataReconciliation }, null, 2) + '\n', { flag: 'wx' });
+      else process.stdout.write(JSON.stringify({ summary: result.summary, metadata_reconciliation: result.metadataReconciliation }, null, 2) + '\n');
     } catch (error) {
       console.error(error instanceof Error ? error.stack || error.message : String(error));
       process.exitCode = 1;
