@@ -1,0 +1,39 @@
+name: Prepare Fraunces WOFF Batch
+
+# Manual only. This workflow prepares and hashes files; it never publishes to Supabase.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: prepare-fraunces-woff-batch
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install font conversion dependency
+        run: python -m pip install --disable-pip-version-check "fonttools>=4.55,<5"
+
+      - name: Download source fonts and prepare WOFF batch
+        run: python scripts/font-processing/prepare-fraunces-woff-batch.py --output-dir fraunces-woff-batch
+
+      - name: Upload prepared batch
+        uses: actions/upload-artifact@v4
+        with:
+          name: fraunces-woff-batch
+          path: fraunces-woff-batch/
+          if-no-files-found: error
+          retention-days: 14
