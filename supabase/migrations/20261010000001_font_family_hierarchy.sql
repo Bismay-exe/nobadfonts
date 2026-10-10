@@ -64,9 +64,11 @@ begin
     raise exception 'Only subfamilies may set parent_font_id';
   end if;
 
-  if tg_op = 'UPDATE' and old.family_role = 'parent' and new.family_role <> 'parent'
-    and exists (select 1 from public.fonts child where child.parent_font_id = old.id) then
-    raise exception 'A parent family with subfamilies cannot change its family_role';
+  if tg_op = 'UPDATE' then
+    if old.family_role = 'parent' and new.family_role <> 'parent'
+      and exists (select 1 from public.fonts child where child.parent_font_id = old.id) then
+      raise exception 'A parent family with subfamilies cannot change its family_role';
+    end if;
   end if;
 
   return new;
