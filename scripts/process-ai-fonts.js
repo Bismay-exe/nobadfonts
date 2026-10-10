@@ -191,6 +191,94 @@ function inspectFontFiles(fontFiles) {
   return JSON.parse(stdout);
 }
 
+function hasFilenameOnlyVariantDetail(filePath, metadata) {
+  const stem = path.basename(filePath, path.extname(filePath)).normalize('NFKC').toLocaleLowerCase('en-US');
+  const embedded = [metadata?.family_name, metadata?.full_name, metadata?.subfamily_name]
+    .filter(Boolean).join(' ').normalize('NFKC').toLocaleLowerCase('en-US');
+  const normalizeTokens = (value) => value.match(/[a-z]+|[0-9]+/g) || [];
+  const embeddedTokens = new Set(normalizeTokens(embedded));
+  const filenameTokens = normalizeTokens(stem);
+  const extraTokens = filenameTokens.filter((token) => !embeddedTokens.has(token));
+  return extraTokens.length > 0;
+}
+
+/**
+ * Gemini is an optional naming fallback, never a binary parser. It receives
+ * only local name-table metadata and a filename, and is called only when the
+ * filename carries style detail that the embedded full/subfamily names omit.
+ * If unavailable or uncertain, the asset remains blocked for review.
+ */
+async function resolveAmbiguousVariantNames(fontFiles, metadataByPath) {
+  const apiKey = process.env.GEMINI_API_KEY;
+  const model = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
+  const pending = fontFiles.filter((filePath) => {
+    const metadata = metadataByPath[path.resolve(filePath)];
+    return metadata?.parser_status === 'parsed'
+      && metadata.family_name
+      && metadata.subfamily_name
+      && hasFilenameOnlyVariantDetail(filePath, metadata);
+  });
+
+  if (!pending.length) return;
+  if (!apiKey) {
+    for (const filePath of pending) {
+      metadataByPath[path.resolve(filePath)].gemini_review_required = true;
+      metadataByPath[path.resolve(filePath)].gemini_review_reason = 'filename_contains_style_detail_missing_from_embedded_names';
+    }
+    console.log(`  ${pending.length} asset(s) have filename-only style detail; Gemini fallback is not configured, so they will be blocked for review.`);
+    return;
+  }
+
+  for (const filePath of pending) {
+    const metadata = metadataByPath[path.resolve(filePath)];
+    const prompt = [
+      'Classify one font file using its filename and embedded OpenType name metadata.',
+      'Do not invent facts. Return only JSON: {"variant_name":"string or null","confidence":"high|low","reason":"short string"}.',
+      'Preserve optical-size labels (such as 9pt, 72pt, 144pt), softness labels (Soft, SuperSoft), italic distinctions, and variable axis distinctions.',
+      'If the intended style cannot be determined confidently, use variant_name null and confidence low.',
+      JSON.stringify({
+        filename: path.basename(filePath),
+        family_name: metadata.family_name,
+        subfamily_name: metadata.subfamily_name,
+        full_name: metadata.full_name,
+        postscript_name: metadata.postscript_name,
+        weight_class: metadata.weight_class,
+        is_italic: metadata.is_italic,
+        is_variable: metadata.is_variable,
+        variation_axes: metadata.variation_axes,
+      }),
+    ].join('\n');
+
+    try {
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(apiKey)}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ role: 'user', parts: [{ text: prompt }] }],
+          generationConfig: { temperature: 0, responseMimeType: 'application/json' },
+        }),
+      });
+      if (!response.ok) throw new Error(`Gemini HTTP ${response.status}`);
+      const payload = await response.json();
+      const text = payload?.candidates?.[0]?.content?.parts?.map((part) => part.text || '').join('').trim();
+      if (!text) throw new Error('Gemini returned no classification text');
+      const parsed = JSON.parse(text.replace(/^\`\`\`(?:json)?\\s*/i, '').replace(/\\s*\`\`\`$/, ''));
+      if (parsed.confidence === 'high' && typeof parsed.variant_name === 'string' && parsed.variant_name.trim() && parsed.variant_name.trim().length <= 120) {
+        metadata.variant_name_override = parsed.variant_name.trim().replace(/\\s+/g, ' ');
+        metadata.variant_name_source = 'gemini_fallback';
+        metadata.gemini_reason = typeof parsed.reason === 'string' ? parsed.reason.slice(0, 240) : null;
+        metadata.gemini_review_required = false;
+      } else {
+        metadata.gemini_review_required = true;
+        metadata.gemini_review_reason = typeof parsed.reason === 'string' ? parsed.reason.slice(0, 240) : 'Gemini could not classify confidently';
+      }
+    } catch (error) {
+      metadata.gemini_review_required = true;
+      metadata.gemini_review_reason = `Gemini fallback failed: ${error.message}`.slice(0, 240);
+    }
+  }
+}
+
 function groupFontFiles(fontFiles, metadataByPath) {
   const groups = new Map();
   const conflicts = [];
@@ -204,14 +292,14 @@ function groupFontFiles(fontFiles, metadataByPath) {
     const metadata = metadataByPath[absolutePath];
     const bytes = fs.readFileSync(filePath);
     const sha256 = createHash('sha256').update(bytes).digest('hex');
-    const variantName = deriveVariantName(metadata, filePath);
+    const variantName = metadata?.variant_name_override || deriveVariantName(metadata, filePath);
     const familyName = String(metadata?.family_name || '').trim();
 
-    if (!metadata || metadata.parser_status !== 'parsed' || !familyName || variantName === 'Unknown') {
+    if (!metadata || metadata.parser_status !== 'parsed' || !familyName || variantName === 'Unknown' || metadata.gemini_review_required) {
       review.push({
         path: filePath,
         sha256,
-        reason: metadata?.parser_error || metadata?.parser_status || 'missing_embedded_family_or_variant',
+        reason: metadata?.gemini_review_reason || metadata?.parser_error || metadata?.parser_status || 'missing_embedded_family_or_variant',
         family_name: familyName || null,
         variant_name: variantName,
         metadata: metadata || null,
@@ -430,6 +518,7 @@ async function processQueue() {
     let metadataByPath;
     try {
       metadataByPath = inspectFontFiles(allFontFiles);
+      await resolveAmbiguousVariantNames(allFontFiles, metadataByPath);
     } catch (error) {
       const message = `Local font metadata extraction failed; no assets uploaded: ${error.message}`.slice(0, 1000);
       console.error(`  ❌ ${message}`);
