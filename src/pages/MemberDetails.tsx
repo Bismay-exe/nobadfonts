@@ -101,7 +101,8 @@ export default function MemberDetails() {
                 .from('fonts')
                 .select('*, font_variants(*)')
                 .eq('uploaded_by', profileData.id)
-                .eq('is_published', true);
+                .eq('is_published', true)
+                    .neq('family_role', 'parent');
 
             if (fontsError) console.error('Error fetching fonts:', fontsError);
             else setFonts(fontsData || []);
