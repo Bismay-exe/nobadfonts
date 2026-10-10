@@ -56,6 +56,7 @@ export default function DesignerFonts() {
                     .select('*, font_variants(*)')
                     .eq('designer', decodeURIComponent(designerName))
                     .eq('is_published', true)
+                    .neq('family_role', 'parent')
                     .order('created_at', { ascending: false });
 
                 if (error) throw error;
