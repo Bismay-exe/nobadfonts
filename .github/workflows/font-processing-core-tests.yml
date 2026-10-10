@@ -82,3 +82,28 @@ jobs:
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
         run: psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f tests/font-processing-publish-rpc.integration.sql
+
+  family-hierarchy-migration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install PostgreSQL client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+      - name: Validate family hierarchy migration in disposable PostgreSQL
+        env:
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
+        run: psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f tests/font-family-hierarchy-migration.integration.sql
