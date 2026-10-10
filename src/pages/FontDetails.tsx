@@ -30,6 +30,7 @@ import {
 import AdminOgImageManager from '../components/fonts/AdminOgImageManager';
 import ContextPreview from '../components/fonts/ContextPreview';
 import LoadingState from '../components/shared/LoadingState';
+import FontFamilyOverview from '../components/font-details/FontFamilyOverview';
 import { usePageReady } from '../components/transitions/PageTransition';
 
 export default function FontDetails() {
@@ -344,6 +345,8 @@ export default function FontDetails() {
             </main>
         );
     }
+
+    if (font.family_role === 'parent') return <FontFamilyOverview font={font} />;
 
     const fontSlug = font.slug || id;
     const fontCanonicalUrl = `/fonts/${fontSlug}`;
