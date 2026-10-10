@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { reconcileNerdFontCrossFormatWeights } from './reconcile-nerdfont-cross-format.js';
 
 const SUPPORTED_FONT_EXTENSIONS = new Set(['ttf', 'otf', 'woff', 'woff2']);
 
@@ -80,7 +81,8 @@ export function mergeWoff2ReplayIntoDiscoveryReport(report, replay) {
     });
     return item;
   });
-  return { report: updatedReport, summary };
+  const reconciled = reconcileNerdFontCrossFormatWeights(updatedReport);
+  return { report: reconciled.report, summary, metadataReconciliation: reconciled.summary };
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.argv[1])) {
@@ -94,8 +96,8 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.a
       const replay = JSON.parse(fs.readFileSync(replayPath, 'utf8'));
       const result = mergeWoff2ReplayIntoDiscoveryReport(baseline, replay);
       fs.writeFileSync(outputPath, JSON.stringify(result.report, null, 2) + '\n', { flag: 'wx' });
-      if (summaryPath) fs.writeFileSync(summaryPath, JSON.stringify({ database_writes_performed: false, summary: result.summary }, null, 2) + '\n', { flag: 'wx' });
-      else process.stdout.write(JSON.stringify(result.summary, null, 2) + '\n');
+      if (summaryPath) fs.writeFileSync(summaryPath, JSON.stringify({ database_writes_performed: false, summary: result.summary, metadata_reconciliation: result.metadataReconciliation }, null, 2) + '\n', { flag: 'wx' });
+      else process.stdout.write(JSON.stringify({ summary: result.summary, metadata_reconciliation: result.metadataReconciliation }, null, 2) + '\n');
     } catch (error) {
       console.error(error instanceof Error ? error.stack || error.message : String(error));
       process.exitCode = 1;

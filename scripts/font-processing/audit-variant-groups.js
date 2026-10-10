@@ -64,6 +64,16 @@ function inspectGroup(group) {
     ]),
   );
   const flags = [];
+  const nameTableMismatchAssets = assets.flatMap((asset) => asset.metadata_reconciliation?.unresolved_name_table_mismatch
+    ? [{
+      asset_id: asset.asset_id || asset.sha256 || null,
+      extension: asset.extension || null,
+      source_paths: unique((asset.sources || []).map((source) => source.relative_path)),
+      reference_path: asset.metadata_reconciliation.source_path || null,
+      previous_weight_class: asset.metadata_reconciliation.previous_weight_class ?? null,
+      reconciled_weight_class: asset.metadata_reconciliation.reconciled_weight_class ?? null,
+    }]
+    : []);
   const namedWeightMismatches = assets.flatMap((asset) => {
     const mismatch = getNamedWeightMismatch(asset.metadata);
     return mismatch ? [{
@@ -77,6 +87,7 @@ function inspectGroup(group) {
   if (familyNames.length > 1) flags.push('raw_family_name_disagreement');
   if (subfamilies.length > 1) flags.push('raw_subfamily_disagreement');
   if (weights.length > 1) flags.push('weight_class_disagreement');
+  if (nameTableMismatchAssets.length > 0) flags.push('cross_format_name_table_mismatch');
   if (namedWeightMismatches.length > 0) flags.push('subfamily_weight_class_disagreement');
   if (italicValues.length > 1) flags.push('italic_flag_disagreement');
   if (variableValues.length > 1) flags.push('variable_flag_disagreement');
@@ -112,6 +123,7 @@ function inspectGroup(group) {
     })),
     evidence_variation: {
       named_weight_mismatches: namedWeightMismatches,
+      cross_format_name_table_mismatches: nameTableMismatchAssets,
       family_names: familyNames,
       subfamilies,
       weight_classes: weights,
@@ -139,6 +151,12 @@ export function auditVariantGroups(report) {
     const assets = rawAssets.map(normalizeAsset);
     const uniqueAssets = deduplicateAssets(assets);
     const plan = planVariantGroups(uniqueAssets);
+    const rawByHash = new Map(rawAssets.map((asset) => [asset.sha256, asset]));
+    for (const group of plan.groups) {
+      for (const groupedAsset of group.assets) {
+        groupedAsset.metadata_reconciliation = rawByHash.get(groupedAsset.sha256)?.metadata?.weight_class_reconciliation ?? null;
+      }
+    }
     const groups = plan.groups.map(inspectGroup);
     const flaggedGroups = groups.filter((group) => group.review_flags.length > 0);
     const flaggedGroupAssetIds = new Set(flaggedGroups.flatMap((group) =>
