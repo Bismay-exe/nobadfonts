@@ -67,7 +67,8 @@ async function generateSitemap() {
         const { data: fonts, error: fontsError } = await supabase
             .from('fonts')
             .select('id, slug, updated_at')
-            .eq('is_published', true);
+            .eq('is_published', true)
+            .neq('family_role', 'parent');
 
         if (fontsError) {
             console.error('Error fetching fonts:', fontsError);
