@@ -5,6 +5,10 @@ on:
     paths:
       - 'scripts/font-processing/**'
       - 'scripts/process-ai-fonts.js'
+      - 'scripts/generate-sitemap.js'
+      - 'src/**'
+      - 'api/sitemap.ts'
+      - 'supabase/migrations/**'
       - '.github/workflows/process-ai-fonts.yml'
       - 'tests/**'
       - 'package.json'
@@ -16,6 +20,10 @@ on:
     paths:
       - 'scripts/font-processing/**'
       - 'scripts/process-ai-fonts.js'
+      - 'scripts/generate-sitemap.js'
+      - 'src/**'
+      - 'api/sitemap.ts'
+      - 'supabase/migrations/**'
       - '.github/workflows/process-ai-fonts.yml'
       - 'tests/**'
       - 'package.json'
@@ -28,7 +36,7 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -38,11 +46,17 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Install dependencies
+        run: npm ci
+
       - name: Check production processor syntax
         run: node --check scripts/process-ai-fonts.js
 
       - name: Run isolated font-processing regression tests
         run: npm run test:font-processing
+
+      - name: Type-check and build web application
+        run: npm run build
 
   publishing-rpc-integration:
     runs-on: ubuntu-latest
