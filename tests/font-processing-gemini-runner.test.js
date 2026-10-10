@@ -129,3 +129,30 @@ test('Gemini runner fails closed on a malformed persistent cache without network
     temp.cleanup();
   }
 });
+
+test('Gemini runner reports malformed model JSON with finish reason instead of a raw parser crash', async () => {
+  const temp = temporaryCache();
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async () => new Response(JSON.stringify({
+    candidates: [{
+      finishReason: 'STOP',
+      content: { parts: [{ text: '{"decisions":[{"candidate_id":"fixture-bold-woff2","reason":"unfinished' }] },
+    }],
+  }), { status: 200, headers: { 'content-type': 'application/json' } });
+
+  try {
+    await assert.rejects(
+      runGeminiReview(candidates, {
+        cacheFile: temp.cacheFile,
+        apiKey: 'test-key-not-used-on-network',
+        maxRequests: 1,
+        maxOutputTokens: 100,
+        maxTotalOutputTokens: 100,
+      }),
+      /Gemini returned invalid JSON \(finishReason=STOP\): The response did not conform to the requested JSON structure/,
+    );
+  } finally {
+    globalThis.fetch = originalFetch;
+    temp.cleanup();
+  }
+});
