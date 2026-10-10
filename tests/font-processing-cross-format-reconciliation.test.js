@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { reconcileNerdFontCrossFormatWeights } from '../scripts/font-processing/reconcile-nerdfont-cross-format.js';
+import { auditVariantGroups } from '../scripts/font-processing/audit-variant-groups.js';
 
 function asset(source_label, relative_path, extension, weight_class, subfamily_name = 'Bold') {
   return {
@@ -52,4 +53,18 @@ test('does not reconcile when sibling evidence is missing or ambiguous', () => {
   const result = reconcileNerdFontCrossFormatWeights({ queue_items: [{ slug: 'monaspace', assets: [otf1, otf2, woff] }] });
   assert.equal(result.report.queue_items[0].assets[2].metadata.weight_class, 400);
   assert.equal(result.summary[0].reconciled_asset_count, 0);
+});
+
+test('keeps reconciled files blocked when full-name/PostScript metadata still disagrees', () => {
+  const input = { queue_items: [{ slug: 'monaspace', assets: [
+    asset('nerdfonts', 'NerdFonts/Monaspace Krypton/MonaspaceKryptonNF-Bold.otf', '.otf', 700),
+    asset('webfont-nerdfonts', 'NerdFonts Web Fonts/Monaspace Krypton/MonaspaceKryptonNF-Bold.woff', '.woff', 400),
+    asset('webfont-nerdfonts', 'NerdFonts Web Fonts/Monaspace Krypton/MonaspaceKryptonNF-Bold.woff2', '.woff2', 400),
+  ] }] };
+  const { report } = reconcileNerdFontCrossFormatWeights(input);
+  const audit = auditVariantGroups(report);
+  assert.equal(audit.queues[0].weight_disagreement_group_count, 0);
+  assert.equal(audit.queues[0].flagged_group_count, 1);
+  assert.equal(audit.queues[0].review_flag_counts.cross_format_name_table_mismatch, 1);
+  assert.equal(audit.publishable, false);
 });
