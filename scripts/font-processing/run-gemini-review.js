@@ -4,7 +4,7 @@ import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { buildGeminiReviewRequest, validateGeminiReviewResponse } from './gemini-review.js';
 
-const DEFAULT_MODEL = 'gemini-2.5-flash';
+const DEFAULT_MODEL = 'gemini-3.8-flash';
 const MAX_INPUT_BYTES = 2 * 1024 * 1024;
 const CACHE_VERSION = 2;
 const DEFAULT_MAX_REQUESTS = 1;
