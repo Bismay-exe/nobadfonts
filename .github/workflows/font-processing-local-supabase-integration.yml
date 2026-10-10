@@ -21,31 +21,23 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: npm
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Install Supabase CLI
-        uses: supabase/setup-cli@v1
+      - run: npm ci
+      - uses: supabase/setup-cli@v1
         with:
           version: latest
-
       - name: Start disposable local Supabase
         shell: bash
         run: |
+          set -euo pipefail
           mkdir -p "$RUNNER_TEMP/font-processing-supabase"
           cd "$RUNNER_TEMP/font-processing-supabase"
           supabase init
           supabase start -x studio,mailpit,edge-runtime,analytics,vector
           supabase status -o env > "$RUNNER_TEMP/supabase-env"
-          cat "$RUNNER_TEMP/supabase-env" >> "$GITHUB_ENV"
-
       - name: Prepare disposable schema and storage bucket
         shell: bash
         run: |
@@ -53,24 +45,17 @@ jobs:
           source "$RUNNER_TEMP/supabase-env"
           psql "$DB_URL" -v ON_ERROR_STOP=1 <<'SQL'
           create table public.fonts (id uuid primary key);
-          create table public.font_variants (
-            id uuid primary key default gen_random_uuid(),
-            font_id uuid not null references public.fonts(id),
-            variant_name text not null,
-            ttf_url text, otf_url text, woff_url text, woff2_url text,
-            file_size_ttf bigint, file_size_otf bigint, file_size_woff bigint, file_size_woff2 bigint,
-            created_at timestamptz not null default now()
-          );
+          create table public.font_variants (id uuid primary key default gen_random_uuid(), font_id uuid not null references public.fonts(id), variant_name text not null, ttf_url text, otf_url text, woff_url text, woff2_url text, file_size_ttf bigint, file_size_otf bigint, file_size_woff bigint, file_size_woff2 bigint, created_at timestamptz not null default now());
           insert into public.fonts(id) values ('11111111-1111-4111-8111-111111111111');
-          insert into storage.buckets(id, name, public)
-          values ('fonts', 'fonts', true)
-          on conflict (id) do update set public = excluded.public;
+          insert into storage.buckets(id, name, public) values ('fonts', 'fonts', true) on conflict (id) do update set public = excluded.public;
           SQL
           psql "$DB_URL" -v ON_ERROR_STOP=1 -f "$GITHUB_WORKSPACE/supabase/sql-editor/font_processing_atomic_publish.sql"
-
       - name: Test actual Storage and atomic publishing RPC
-        env:
-          LOCAL_SUPABASE_URL: ${{ env.API_URL }}
-          LOCAL_SUPABASE_SERVICE_ROLE_KEY: ${{ env.SERVICE_ROLE_KEY }}
-          LOCAL_SUPABASE_FONT_ID: 11111111-1111-4111-8111-111111111111
-        run: node --test tests/font-processing-local-supabase.integration.test.js
+        shell: bash
+        run: |
+          set -euo pipefail
+          source "$RUNNER_TEMP/supabase-env"
+          export LOCAL_SUPABASE_URL="$API_URL"
+          export LOCAL_SUPABASE_SERVICE_ROLE_KEY="$SERVICE_ROLE_KEY"
+          export LOCAL_SUPABASE_FONT_ID="11111111-1111-4111-8111-111111111111"
+          node --test tests/font-processing-local-supabase.integration.test.js
