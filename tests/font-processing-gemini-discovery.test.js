@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { execFileSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 import { reviewDiscoveryReport } from '../scripts/font-processing/review-discovery-with-gemini.js';
 
 const hash = 'a'.repeat(64);
@@ -104,4 +106,33 @@ test('live mode requires a target slug and never sends a request without explici
     () => reviewDiscoveryReport(report(), { live: true, apiKey: 'test-only-key' }),
     /requires --slug/,
   );
+});
+
+test('existing processor entry point runs report review without Supabase credentials or write flags', () => {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'nobadfonts-review-cli-'));
+  const inputPath = path.join(directory, 'input.json');
+  const outputPath = path.join(directory, 'output.json');
+  const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+  const processorPath = path.join(repoRoot, 'scripts/process-ai-fonts.js');
+  const env = { ...process.env };
+  delete env.VITE_SUPABASE_URL;
+  delete env.SUPABASE_SERVICE_ROLE_KEY;
+  delete env.FONT_PROCESSING_ALLOW_WRITES;
+
+  try {
+    fs.writeFileSync(inputPath, JSON.stringify({ queue_items: [] }));
+    execFileSync(process.execPath, [
+      processorPath,
+      '--review-report',
+      inputPath,
+      outputPath,
+    ], { cwd: repoRoot, env, encoding: 'utf8' });
+    const result = JSON.parse(fs.readFileSync(outputPath, 'utf8'));
+    assert.equal(result.mode, 'read-only-deterministic-review');
+    assert.equal(result.database_writes_performed, false);
+    assert.equal(result.uploads_performed, false);
+    assert.equal(result.publishable, false);
+  } finally {
+    fs.rmSync(directory, { recursive: true, force: true });
+  }
 });
