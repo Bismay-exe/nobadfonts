@@ -100,3 +100,14 @@ The review mode performs no Supabase reads or writes, no queue status changes, n
 
 The normal production queue processor remains protected by the explicit write gate and the disabled production workflow. This read-only integration does not enable or authorize publishing.
 
+## Parent-family and subfamily records
+
+The migration `supabase/migrations/20261010000001_font_family_hierarchy.sql` adds `family_role` and `parent_font_id` to `public.fonts`. It changes schema only; it does not insert Monaspace records or apply itself to any database.
+
+- `standalone`: an ordinary font record with no parent.
+- `parent`: a family overview record with no parent and no requirement for a primary binary or ZIP URL.
+- `subfamily`: a named design such as Monaspace Neon or Monaspace Krypton, linked to a parent record through `parent_font_id`. Its own `font_variants` rows remain attached to that subfamily's `font_id`.
+
+The database trigger requires a subfamily to reference a record whose role is `parent`, and prevents changing a parent to another role while children still reference it. The frontend loads parent/child relationships on the font details route and renders a family overview for parent records. Parent records are excluded from ordinary font selectors and sitemap listings.
+
+Do not apply the migration or create/publish the Monaspace records until the schema and the actual font assets have been reviewed. No production schema change, row creation, binary upload, or metadata publishing was performed as part of this implementation.
