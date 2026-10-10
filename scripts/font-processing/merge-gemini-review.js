@@ -1,4 +1,4 @@
-import { deduplicateAssets, planVariantGroups } from './core.js';
+import { planVariantGroups } from './core.js';
 
 const normalizeText = (value) => (
   typeof value === 'string' ? value.normalize('NFKC').trim().replace(/\\s+/g, ' ') : ''
@@ -121,8 +121,8 @@ export function mergeGeminiReview({ assets, review, minimumConfidence = 0.85, ca
     });
   }
 
-  const deterministic = planVariantGroups(deduplicateAssets(deterministicAssets));
-  const proposed = planVariantGroups(deduplicateAssets(proposedAssets));
+  const deterministic = planVariantGroups(deterministicAssets);
+  const proposed = planVariantGroups(proposedAssets);
 
   return {
     mode: 'gemini_advisory_grouping',
