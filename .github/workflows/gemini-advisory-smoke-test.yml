@@ -66,8 +66,8 @@ jobs:
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GEMINI_MAX_REQUESTS: "1"
-          GEMINI_MAX_OUTPUT_TOKENS: "512"
-          GEMINI_MAX_TOTAL_OUTPUT_TOKENS: "512"
+          GEMINI_MAX_OUTPUT_TOKENS: "1024"
+          GEMINI_MAX_TOTAL_OUTPUT_TOKENS: "1024"
           GEMINI_REVIEW_CACHE_FILE: validation-output/gemini-review-cache.json
         run: |
           node scripts/font-processing/run-gemini-review.js \
