@@ -77,3 +77,16 @@ The runner is intentionally separate from the legacy live queue processor. It do
 A preflight-checked, copy/run-ready script is maintained at `supabase/sql-editor/font_processing_atomic_publish.sql`. The disposable PostgreSQL CI test executes that exact SQL Editor script, so the copy intended for manual installation is exercised by CI. It verifies that `public.fonts` and the required `public.font_variants` columns exist before creating the ledger and RPC functions. Applying it creates schema/functions only; it does not update existing font rows or upload Storage objects.
 
 The publish-plan runner remains dry-run by default. After reviewing the manifest and applying the SQL script to the intended Supabase project, a manual main-project publish requires all of the following independent settings: `--apply`, `FONT_PROCESSING_ALLOW_WRITES=true`, `FONT_PROCESSING_TARGET=main`, `FONT_PROCESSING_ALLOW_MAIN_PUBLISHING=true`, `FONT_PROCESSING_MAIN_SUPABASE_URL`, and `FONT_PROCESSING_MAIN_SERVICE_ROLE_KEY`. The runner never falls back to `VITE_SUPABASE_URL` or `SUPABASE_SERVICE_ROLE_KEY`. Keep the automatic queue workflow disabled; do not use the legacy filename-based processor for publishing.
+
+
+## Importer fix: metadata-driven variant preservation
+
+The manual GitHub Actions workflow now runs a **read-only inventory** by default. It does not claim queue items, change queue statuses, upload to Storage, or update `font_variants`. An optional exact `font_slug` input allows inspecting a previously completed queue item without resetting it.
+
+The importer now reads local OpenType metadata before grouping assets. It uses typographic family/subfamily names, full names, weight/italic metadata, and variable-font axis tags to preserve distinct optical-size, Soft/SuperSoft, italic, and variable-axis styles. It calculates SHA-256 for each file, deduplicates only byte-identical copies within the same variant/format, and reports distinct same-format collisions rather than silently dropping one. Missing/incomplete metadata or unresolved ambiguity blocks the write path.
+
+Gemini is an optional fallback only when the filename contains style details absent from the embedded names. It receives text metadata and the filename, never font binaries. A missing key, failed response, or low-confidence answer leaves the asset in the review report and blocks processing.
+
+Storage uploads now use content-addressed paths with `upsert: false`; a retry reuses an existing object only after downloading and verifying its actual bytes and SHA-256. Existing `font_variants` rows are looked up with a bounded result set: exactly one row is reused, no rows creates a new row, and duplicate legacy rows block that variant instead of triggering an accidental duplicate insert.
+
+The workflow remains manual-only and produces a JSON artifact. It is not a production publishing workflow. The legacy `--apply` path still is not wired to the atomic staged publisher and must not be enabled for production publishing.
