@@ -132,6 +132,39 @@ test('Gemini runner fails closed on a malformed persistent cache without network
   }
 });
 
+test('Gemini runner reports a clear timeout when the API request is aborted', async () => {
+  const temp = temporaryCache();
+  const originalFetch = globalThis.fetch;
+  let requests = 0;
+  globalThis.fetch = async (_url, init) => {
+    requests += 1;
+    return new Promise((resolve, reject) => {
+      const fail = () => reject(new DOMException('This operation was aborted', 'AbortError'));
+      if (init.signal.aborted) fail();
+      else init.signal.addEventListener('abort', fail, { once: true });
+    });
+  };
+
+  try {
+    await assert.rejects(
+      runGeminiReview(candidates, {
+        cacheFile: temp.cacheFile,
+        apiKey: 'test-key-not-used-on-network',
+        maxRequests: 1,
+        maxOutputTokens: 100,
+        maxTotalOutputTokens: 100,
+        timeoutMs: 5,
+      }),
+      /Gemini API request timed out after 5 ms/,
+    );
+    assert.equal(requests, 1);
+    assert.equal(JSON.parse(fs.readFileSync(temp.cacheFile, 'utf8')).requests_used, 1);
+  } finally {
+    globalThis.fetch = originalFetch;
+    temp.cleanup();
+  }
+});
+
 test('Gemini runner reports malformed model JSON with finish reason instead of a raw parser crash', async () => {
   const temp = temporaryCache();
   const originalFetch = globalThis.fetch;
