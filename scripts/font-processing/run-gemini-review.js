@@ -131,6 +131,29 @@ export async function runGeminiReview(input, options = {}) {
           }],
           generationConfig: {
             responseMimeType: 'application/json',
+            responseSchema: {
+              type: 'OBJECT',
+              required: ['decisions'],
+              properties: {
+                decisions: {
+                  type: 'ARRAY',
+                  items: {
+                    type: 'OBJECT',
+                    required: ['candidate_id', 'decision', 'relation', 'confidence', 'reason'],
+                    properties: {
+                      candidate_id: { type: 'STRING' },
+                      decision: { type: 'STRING', enum: ['group', 'separate', 'review'] },
+                      relation: { type: 'STRING', enum: ['same_family', 'subfamily', 'packaging_duplicate', 'unrelated', 'unknown'] },
+                      confidence: { type: 'NUMBER' },
+                      reason: { type: 'STRING' },
+                      proposed_family_name: { type: 'STRING' },
+                      proposed_variant_name: { type: 'STRING' },
+                      related_candidate_ids: { type: 'ARRAY', items: { type: 'STRING' } },
+                    },
+                  },
+                },
+              },
+            },
             temperature: 0,
             maxOutputTokens,
           },
@@ -142,9 +165,25 @@ export async function runGeminiReview(input, options = {}) {
       throw new Error(`Gemini API returned HTTP ${response.status}: ${detail}`);
     }
     const payload = await response.json();
-    const responseText = payload.candidates?.[0]?.content?.parts?.map((part) => part.text || '').join('');
-    if (!responseText) throw new Error('Gemini returned no response text.');
-    const validated = validateGeminiReviewResponse(responseText, request, { minimumConfidence });
+    const candidate = payload.candidates?.[0];
+    const responseText = candidate?.content?.parts?.map((part) => part.text || '').join('');
+    if (!responseText) {
+      const finishReason = candidate?.finishReason || 'unknown';
+      throw new Error(`Gemini returned no response text (finishReason=${finishReason}).`);
+    }
+    let validated;
+    try {
+      validated = validateGeminiReviewResponse(responseText, request, { minimumConfidence });
+    } catch (error) {
+      if (error instanceof SyntaxError) {
+        const finishReason = candidate?.finishReason || 'unknown';
+        const hint = finishReason === 'MAX_TOKENS'
+          ? 'The response hit the output-token limit; increase GEMINI_MAX_OUTPUT_TOKENS within the 4096-token cap or reduce the response.'
+          : 'The response did not conform to the requested JSON structure; the request now uses Gemini structured output to prevent this.';
+        throw new Error(`Gemini returned invalid JSON (finishReason=${finishReason}): ${hint}`);
+      }
+      throw error;
+    }
     const result = {
       model,
       generated_at: new Date().toISOString(),
