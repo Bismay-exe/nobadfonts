@@ -64,10 +64,17 @@ function getMaxTotalOutputTokens(options) {
   );
 }
 
+function getRequestTimeoutMs(options) {
+  const timeoutMs = getPositiveInteger(options.timeoutMs ?? process.env.GEMINI_TIMEOUT_MS ?? 45_000, 'GEMINI_TIMEOUT_MS');
+  if (timeoutMs > 180_000) throw new RangeError('GEMINI_TIMEOUT_MS must not exceed 180000 (3 minutes).');
+  return timeoutMs;
+}
+
 export async function runGeminiReview(input, options = {}) {
   const model = options.model || process.env.GEMINI_MODEL || DEFAULT_MODEL;
   const minimumConfidence = options.minimumConfidence ?? 0.85;
   const maxOutputTokens = getMaxOutputTokens(options);
+  const requestTimeoutMs = getRequestTimeoutMs(options);
   const request = buildGeminiReviewRequest(input);
   const cacheFile = options.cacheFile || null;
   const cache = readCache(cacheFile);
@@ -109,7 +116,7 @@ export async function runGeminiReview(input, options = {}) {
   }
 
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), options.timeoutMs || 45_000);
+  const timeout = setTimeout(() => controller.abort(), requestTimeoutMs);
   try {
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
@@ -200,6 +207,11 @@ export async function runGeminiReview(input, options = {}) {
       writeCache(cacheFile, cache);
     }
     return { ...result, cache: { hit: false, key: cacheKey } };
+  } catch (error) {
+    if (controller.signal.aborted || error?.name === 'AbortError') {
+      throw new Error(`Gemini API request timed out after ${requestTimeoutMs} ms. The request budget was reserved, so inspect the run before trying another live request.`);
+    }
+    throw error;
   } finally {
     clearTimeout(timeout);
   }
