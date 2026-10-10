@@ -1,38 +1,64 @@
 name: Process AI Fonts Queue
 
-# Intentionally manual and disabled pending the isolated publishing gate (Stage 5).
-# The legacy processor also requires two explicit write flags if run directly.
+# Manual, read-only inventory only. Publishing remains disabled until the
+# separate staged publisher is explicitly approved and wired to this workflow.
 on:
   workflow_dispatch:
+    inputs:
+      font_slug:
+        description: "Optional exact queue slug (includes completed items for inspection)"
+        required: false
+        type: string
 
 permissions:
   contents: read
 
 concurrency:
-  group: process-ai-fonts-production
+  group: process-ai-fonts-read-only-inventory
   cancel-in-progress: false
 
 jobs:
-  process-fonts:
-    if: ${{ false }}
+  inventory:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - name: Checkout Repository
+      - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Setup Node.js
+
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
-      - name: Install System Dependencies (woff2 + unzip)
+          node-version: "22"
+          cache: npm
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install archive and font metadata dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y woff2 unzip
-      - name: Install NPM Dependencies
+          sudo apt-get install -y unzip
+          python -m pip install --disable-pip-version-check "fonttools[woff]>=4.55,<5"
+
+      - name: Install Node dependencies
         run: npm ci
-      - name: Run Processing Script
+
+      - name: Build read-only font inventory
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          FONT_PROCESSING_ALLOW_WRITES: 'true'
-        run: node scripts/process-ai-fonts.js --apply
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
+          FONT_PROCESSING_REPORT_SLUG: ${{ inputs.font_slug }}
+        run: node scripts/process-ai-fonts.js --report-only
+
+      - name: Upload inventory reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: font-processing-inventory
+          path: font-processing-reports/
+          if-no-files-found: warn
+          retention-days: 14
