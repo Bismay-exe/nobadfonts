@@ -13,8 +13,12 @@ const Footer: React.FC = memo(() => {
     }, []);
 
     return (
-        <footer className="pt-8 bg-background text-muted font-sans selection:bg-foreground selection:text-background relative z-0">
-            <div className="max-w-480 mx-auto pb-10 z-10 px-4 md:px-8">
+        <footer className="bg-card-background text-muted relative z-0">
+
+            <div className="h-20 w-full bg-background rounded-b-[4rem] shadow-[0px_24px_40px_20px] shadow-muted/40"></div>
+
+
+            <div className="max-w-480 mx-auto py-10 z-10 px-4 md:px-8">
 
                 {/* <div className=''>
                     <div className='hidden h-20rem w-20rem relative'>

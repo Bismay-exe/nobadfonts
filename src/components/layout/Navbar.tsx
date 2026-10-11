@@ -4,7 +4,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { useState, useEffect, useMemo } from "react";
 import { cn } from "../../lib/utils";
-import { Type, Combine, Terminal, Users, Shield, Plus, Sun, Moon, UserRound, BookOpen, Search, X, Menu, Star, ShieldAlert, LayoutDashboard } from "lucide-react";
+import { Type, Combine, Terminal, Users, Shield, Plus, Sun, Moon, UserRound, BookOpen, Search, X, Menu, Star, ShieldAlert, LayoutDashboard, Bot } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useTheme } from "../../contexts/ThemeContext";
 import { Haptics, ImpactStyle } from "@capacitor/haptics";
@@ -259,6 +259,17 @@ export default function Navbar() {
                 </svg>
             ),
         },
+        {
+            name: "MCP",
+            path: "/mcp",
+            icon: Bot,
+            svg: (
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 16 16">
+                    <path fill="currentColor" d="M9.052 1.684a1 1 0 0 1 1.896.633l-4 12a1 1 0 0 1-1.896-.633zM3.293 4.293a1 1 0 1 1 1.414 1.414L2.414 8l2.293 2.293a1 1 0 1 1-1.414 1.414l-3-3a1 1 0 0 1 0-1.414zm8 0a1 1 0 0 1 1.414 0l3 3a1 1 0 0 1 0 1.414l-3 3a1 1 0 0 1-1.414-1.414L13.586 8l-2.293-2.293a1 1 0 0 1 0-1.414" />
+                </svg>
+            ),
+            badge: "Soon",
+        },
     ]
 
     return (
@@ -318,24 +329,23 @@ export default function Navbar() {
                                             />
                                         </svg>
                                     </div>
-                                    <span
+                                    {/* <span
                                         className={cn(
-                                            `${inDocs ? "" : "hidden sm:block"}`,
-                                            "font-advine text-3xl transition-all duration-300 ease-in-out",
+                                            `${inDocs ? "" : "hidden zsm:block"}`,
+                                            "font-inter-tight text-3xl transition-all duration-300 ease-in-out",
                                             "text-foreground",
                                         )}
                                     >
                                         NoBadFonts
-                                    </span>
+                                    </span> */}
                                 </Link>
                             </div>
 
                             {/* Desktop Navigation */}
-                            <div
-                                className={cn(
-                                    "hidden md:flex items-center gap-1 ",
-                                    isScrolled ? "" : "",
-                                )}
+                            <div className={cn(
+                                "hidden zxl:flex items-center gap-1 ",
+                                isScrolled ? "" : "",
+                            )}
                             >
                                 {navLinks.map((link) => {
                                     // const Icon = link.icon;
@@ -452,9 +462,12 @@ export default function Navbar() {
 
                             {/* Docs Search */}
                             {inDocs && (
-                                <button
-                                    type="button"
-                                    onClick={() => setSearchOpen(true)}
+                                <motion.button
+                                    whileTap={{ scale: 0.95 }}
+                                    onClick={async () => {
+                                        await Haptics.impact({ style: ImpactStyle.Light });
+                                        setSearchOpen(true)
+                                    }}
                                     className="relative h-10 px-4 flex items-center justify-center gap-1 rounded-xl bg-foreground/5 backdrop-blur-3xl text-muted hover:text-foreground hover:bg-foreground/10 transition-all duration-300 ease-in-out cursor-pointer group"
                                 >
                                     <Search size={18} strokeWidth={3} />
@@ -462,11 +475,7 @@ export default function Navbar() {
                                         Search
                                     </span>
                                     <kbd
-                                        className="hidden sm:flex text-[10px] font-mono px-1 py-0.5 rounded-md"
-                                        style={{
-                                            backgroundColor: "var(--color-muted)",
-                                            color: "var(--color-muted)",
-                                        }}
+                                        className="hidden sm:flex bg-foreground/10 text-[10px] font-mono px-1 py-0.5 rounded-md"
                                     >
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
@@ -502,75 +511,75 @@ export default function Navbar() {
                                             />
                                         </svg>
                                     </kbd>
-                                </button>
+                                </motion.button>
                             )}
 
-                            {!inDocs && (
-                                <>
-                                    {/* Bag Button */}
-                                    <motion.button
-                                        whileTap={{ scale: 0.95 }}
-                                        onClick={async () => {
-                                            await Haptics.impact({ style: ImpactStyle.Light });
-                                            navigate("/bag");
-                                        }}
-                                        className="relative h-10 w-10 flex items-center justify-center rounded-full bg-foreground/5 backdrop-blur-3xl text-foreground hover:bg-foreground/10 transition-all cursor-pointer group"
-                                        title="Font Bag"
-                                        aria-label={`Font Bag — ${bagCount} font${bagCount !== 1 ? "s" : ""}`}
+                            {/* {!inDocs && (
+                                <> */}
+                            {/* Bag Button */}
+                            <motion.button
+                                whileTap={{ scale: 0.95 }}
+                                onClick={async () => {
+                                    await Haptics.impact({ style: ImpactStyle.Light });
+                                    navigate("/bag");
+                                }}
+                                className="relative h-10 w-10 flex items-center justify-center rounded-full bg-foreground/5 backdrop-blur-3xl text-foreground hover:bg-foreground/10 transition-all cursor-pointer group"
+                                title="Font Bag"
+                                aria-label={`Font Bag — ${bagCount} font${bagCount !== 1 ? "s" : ""}`}
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="18"
+                                    height="18"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <g
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
                                     >
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            width="18"
-                                            height="18"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <g
-                                                fill="none"
-                                                stroke="currentColor"
-                                                stroke-linecap="round"
-                                                stroke-linejoin="round"
-                                                stroke-width="2"
-                                            >
-                                                <path
-                                                    d="M3.977 9.84A2 2 0 0 1 5.971 8h12.058a2 2 0 0 1 1.994 1.84l.803 10A2 2 0 0 1 18.833 22H5.167a2 2 0 0 1-1.993-2.16z"
-                                                    fill="currentColor"
-                                                />
-                                                <path d="M16 11V6a4 4 0 0 0-4-4v0a4 4 0 0 0-4 4v5" />
-                                            </g>
-                                        </svg>
-                                        {bagCount > 0 && (
-                                            <span className="absolute -top-1 -right-1 min-w-4.5 h-4.5 px-1 bg-foreground text-background text-[12px] font-inter-tight font-semibold rounded-full flex items-center justify-center">
-                                                {bagCount > 99 ? "99+" : bagCount}
-                                            </span>
-                                        )}
-                                    </motion.button>
+                                        <path
+                                            d="M3.977 9.84A2 2 0 0 1 5.971 8h12.058a2 2 0 0 1 1.994 1.84l.803 10A2 2 0 0 1 18.833 22H5.167a2 2 0 0 1-1.993-2.16z"
+                                            fill="currentColor"
+                                        />
+                                        <path d="M16 11V6a4 4 0 0 0-4-4v0a4 4 0 0 0-4 4v5" />
+                                    </g>
+                                </svg>
+                                {bagCount > 0 && (
+                                    <span className="absolute -top-1 -right-1 min-w-4.5 h-4.5 px-1 bg-foreground text-background text-[12px] font-inter-tight font-semibold rounded-full flex items-center justify-center">
+                                        {bagCount > 99 ? "99+" : bagCount}
+                                    </span>
+                                )}
+                            </motion.button>
 
-                                    {user ? (
+                            {user ? (
+                                <>
+                                    {profile?.role === "admin" && (
                                         <>
-                                            {profile?.role === "admin" && (
-                                                <Squircle
-                                                    radius={20}
-                                                    className="hidden sm:block bg-accent/20 backdrop-blur-3xl hover:bg-accent/30 transition-all duration-300 ease-in-out"
-                                                >
-                                                    <Link
-                                                        to="/admin"
-                                                        onClick={async () => {
-                                                            await Haptics.impact({
-                                                                style: ImpactStyle.Light,
-                                                            });
-                                                        }}
-                                                        className="flex items-center justify-center h-10 w-10 text-accent"
-                                                    >
-                                                        <Shield
-                                                            size={18}
-                                                            className="fill-accent"
-                                                        />
-                                                    </Link>
-                                                </Squircle>
-                                            )}
                                             <Squircle
                                                 radius={20}
-                                                className="hidden sm:block bg-foreground hover:bg-muted transition-colors duration-300 ease-in-out"
+                                                className="hidden zsm:block bg-accent/20 backdrop-blur-3xl hover:bg-accent/30 transition-all duration-300 ease-in-out"
+                                            >
+                                                <Link
+                                                    to="/admin"
+                                                    onClick={async () => {
+                                                        await Haptics.impact({
+                                                            style: ImpactStyle.Light,
+                                                        });
+                                                    }}
+                                                    className="flex items-center justify-center h-10 w-10 text-accent"
+                                                >
+                                                    <Shield
+                                                        size={18}
+                                                        className="fill-accent"
+                                                    />
+                                                </Link>
+                                            </Squircle>
+                                            <Squircle
+                                                radius={20}
+                                                className="hidden zsm:block bg-foreground hover:bg-muted transition-colors duration-300 ease-in-out"
                                             >
                                                 <Link
                                                     to="/upload"
@@ -583,83 +592,85 @@ export default function Navbar() {
                                                     <span>Upload</span>
                                                 </Link>
                                             </Squircle>
-                                            <Link
-                                                to="/profile"
-                                                onClick={async () => {
-                                                    await Haptics.impact({ style: ImpactStyle.Light });
-                                                }}
-                                                className="h-10 w-10 rounded-full bg-foreground/10 backdrop-blur-3xl border border-border/20 flex items-center justify-center text-foreground overflow-hidden hover:bg-foreground/20 hover:scale-105 transition-transform duration-300 ease-in-out"
-                                            >
-                                                {profile?.avatar_url ? (
-                                                    <img
-                                                        src={profile.avatar_url}
-                                                        alt={
-                                                            profile?.full_name
-                                                                ? `${profile.full_name}'s avatar`
-                                                                : "User profile avatar"
-                                                        }
-                                                        className="h-full w-full object-cover"
-                                                    />
-                                                ) : (
-                                                    <UserRound size={18} className="fill-current" />
-                                                )}
-                                            </Link>
                                         </>
-                                    ) : (
-                                        <Squircle
-                                            radius={20}
-                                            className="bg-foreground hover:bg-muted transition-colors duration-300 ease-in-out"
-                                        >
-                                            <Link
-                                                to="/auth"
-                                                className="flex items-center justify-center text-background px-5 py-2 rounded-full font-bold text-sm"
-                                            >
-                                                Login
-                                            </Link>
-                                        </Squircle>
                                     )}
-
-                                    <button
-                                        type="button"
-                                        onClick={async () => {
-                                            await Haptics.impact({
-                                                style: ImpactStyle.Light,
-                                            });
-                                            setDesktopMenuOpen((prev) => !prev);
-                                        }}
-                                        className={`hidden md:flex h-10 w-10 rounded-full bg-foreground/10 backdrop-blur-3xl border border-border/20 items-center justify-center text-foreground overflow-hidden hover:bg-foreground/20 hover:scale-105 transition-transform duration-300 ease-in-out cursor-pointer ${desktopMenuOpen ? "-rotate-45" : ""}`}
-                                        aria-label="Open account menu"
-                                        aria-expanded={desktopMenuOpen}
-                                    >
-                                        {desktopMenuOpen ? (
-                                            <X className="w-5 h-5 rotate-45" />
-                                        ) : (
-                                            <Menu className="w-5 h-5" />
-                                        )}
-                                    </button>
-
-                                    <button
-                                        type="button"
+                                    <Link
+                                        to="/profile"
                                         onClick={async () => {
                                             await Haptics.impact({ style: ImpactStyle.Light });
-                                            setMobileMenuOpen((prev) => !prev);
                                         }}
-                                        className={`md:hidden relative h-10 w-10 flex items-center justify-center rounded-xl bg-foreground/5 backdrop-blur-3xl text-foreground hover:bg-foreground/10 transition-all duration-300 cursor-pointer ${mobileMenuOpen ? "-rotate-45" : ""}`}
-                                        aria-label={mobileMenuOpen ? "Close navigation" : "Open navigation"}
-                                        aria-expanded={mobileMenuOpen}
+                                        className="h-10 w-10 rounded-full bg-foreground/10 backdrop-blur-3xl border border-border/20 flex items-center justify-center text-foreground overflow-hidden hover:bg-foreground/20 hover:scale-105 transition-transform duration-300 ease-in-out"
                                     >
-                                        {mobileMenuOpen ? (
-                                            <X className="w-5 h-5 rotate-45" />
+                                        {profile?.avatar_url ? (
+                                            <img
+                                                src={profile.avatar_url}
+                                                alt={
+                                                    profile?.full_name
+                                                        ? `${profile.full_name}'s avatar`
+                                                        : "User profile avatar"
+                                                }
+                                                className="h-full w-full object-cover"
+                                            />
                                         ) : (
-                                            <Menu className="w-5 h-5" />
+                                            <UserRound size={18} className="fill-current" />
                                         )}
-                                    </button>
+                                    </Link>
                                 </>
+                            ) : (
+                                <Squircle
+                                    radius={20}
+                                    className="bg-foreground hover:bg-muted transition-colors duration-300 ease-in-out"
+                                >
+                                    <Link
+                                        to="/auth"
+                                        className="flex items-center justify-center text-background px-5 py-2 rounded-full font-bold text-sm"
+                                    >
+                                        Login
+                                    </Link>
+                                </Squircle>
                             )}
+
+                            <button
+                                type="button"
+                                onClick={async () => {
+                                    await Haptics.impact({
+                                        style: ImpactStyle.Light,
+                                    });
+                                    setDesktopMenuOpen((prev) => !prev);
+                                }}
+                                className={`hidden md:flex h-10 w-10 rounded-full bg-foreground/10 backdrop-blur-3xl border border-border/20 items-center justify-center text-foreground overflow-hidden hover:bg-foreground/20 hover:scale-105 transition-transform duration-300 ease-in-out cursor-pointer ${desktopMenuOpen ? "-rotate-45" : ""}`}
+                                aria-label="Open account menu"
+                                aria-expanded={desktopMenuOpen}
+                            >
+                                {desktopMenuOpen ? (
+                                    <X className="w-5 h-5 rotate-45" />
+                                ) : (
+                                    <Menu className="w-5 h-5" />
+                                )}
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={async () => {
+                                    await Haptics.impact({ style: ImpactStyle.Light });
+                                    setMobileMenuOpen((prev) => !prev);
+                                }}
+                                className={`md:hidden relative h-10 w-10 flex items-center justify-center rounded-xl bg-foreground/5 backdrop-blur-3xl text-foreground hover:bg-foreground/10 transition-all duration-300 cursor-pointer ${mobileMenuOpen ? "-rotate-45" : ""}`}
+                                aria-label={mobileMenuOpen ? "Close navigation" : "Open navigation"}
+                                aria-expanded={mobileMenuOpen}
+                            >
+                                {mobileMenuOpen ? (
+                                    <X className="w-5 h-5 rotate-45" />
+                                ) : (
+                                    <Menu className="w-5 h-5" />
+                                )}
+                            </button>
+                            {/* </>
+                            )} */}
                         </div>
                     </div>
                 </div>
-            </nav>
+            </nav >
 
             <AnimatePresence>
                 {desktopMenuOpen && (
@@ -704,7 +715,7 @@ export default function Navbar() {
                                                 )}
                                             >
                                                 <span className={cn(
-                                                    "font-inter-tight ztext-[2.4rem] zsm:text-[2.7rem] zmd:text-[2rem] zleading-none ztracking-[-0.055em] transition-colors duration-200 flex items-center",
+                                                    "font-inter-tight ztext-[2.4rem] zsm:text-[2.7rem] zmd:text-[2rem] zleading-none transition-colors duration-200 flex items-center",
                                                     isActive ? "text-foreground" : "text-muted group-hover:text-foreground"
                                                 )}>
                                                     {link.name}
@@ -717,7 +728,7 @@ export default function Navbar() {
                                     })}
                                 </div>
 
-                                <div className="w-full h-px bg-border/50 my-4" />
+                                <div className="w-full h-px bg-card-background my-4" />
 
                                 {/* other links */}
                                 <div className="space-y-0.5">
@@ -742,7 +753,7 @@ export default function Navbar() {
                                                 )}
                                             >
                                                 <span className={cn(
-                                                    "font-inter-tight ztext-[2.4rem] zsm:text-[2.7rem] zmd:text-[2rem] zleading-none ztracking-[-0.055em] transition-colors duration-200 flex items-center",
+                                                    "font-inter-tight ztext-[2.4rem] zsm:text-[2.7rem] zmd:text-[2rem] zleading-none transition-colors duration-200 flex items-center",
                                                     isActive ? "text-foreground" : "text-muted group-hover:text-foreground"
                                                 )}>
                                                     {link.name}
@@ -883,10 +894,10 @@ export default function Navbar() {
                             exit={{ opacity: 0, x: 20 }}
                             transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
                         >
-                            <div className="relative h-full flex flex-col">
+                            <div className="relative h-full flex flex-col justify-start overflow-y-auto">
 
                                 {/* Header */}
-                                <div className="flex items-center justify-between px-6 md:px-7 pt-[calc(1.5rem+env(safe-area-inset-top))] md:pt-6">
+                                <div className="sticky top-0 flex items-center justify-between px-6 md:px-7 pt-[calc(1.5rem+env(safe-area-inset-top))] md:pt-6">
 
                                     <Link
                                         to="/"
@@ -907,9 +918,9 @@ export default function Navbar() {
                                             </svg>
                                         </div>
 
-                                        <span className="font-advine text-2xl text-foreground">
+                                        {/* <span className="font-advine text-2xl text-foreground">
                                             NoBadFonts
-                                        </span>
+                                        </span> */}
                                     </Link>
 
                                     <button
@@ -923,102 +934,99 @@ export default function Navbar() {
 
                                 </div>
 
-
                                 {/* Navigation */}
-                                <div className="px-6 md:px-7 pt-10 md:pt-12 overflow-y-auto flex-1">
+                                <div className="px-6 md:px-7 pt-10 md:pt-12">
 
-                                    <nav className="flex flex-col">
+                                    <nav className="flex flex-col sm:flex-row sm:gap-4 justify-between sm:items-start">
+                                        <div className="flex-1">
+                                            {navLinks.map((link, index) => {
+                                                const isActive = location.pathname === link.path;
 
-                                        {navLinks.map((link, index) => {
-                                            const isActive = location.pathname === link.path;
+                                                return (
+                                                    <Link
+                                                        key={link.path}
+                                                        to={link.path}
+                                                        onClick={async () => {
+                                                            await Haptics.impact({
+                                                                style: ImpactStyle.Light,
+                                                            });
 
-                                            return (
-                                                <Link
-                                                    key={link.path}
-                                                    to={link.path}
-                                                    onClick={async () => {
-                                                        await Haptics.impact({
-                                                            style: ImpactStyle.Light,
-                                                        });
-
-                                                        setMobileMenuOpen(false);
-                                                    }}
-                                                    className="group"
-                                                >
-                                                    <motion.div
-                                                        initial={{ opacity: 0, x: 15 }}
-                                                        animate={{ opacity: 1, x: 0 }}
-                                                        transition={{ delay: index * 0.035, duration: 0.3 }}
-                                                        className="flex items-center justify-between py-2 md:py-2.5"
+                                                            setMobileMenuOpen(false);
+                                                        }}
+                                                        className="group"
                                                     >
-                                                        <span
-                                                            className={cn(
-                                                                "font-inter-tight text-[2.4rem] sm:text-[2.7rem] md:text-[2rem] leading-none tracking-[-0.055em] transition-colors duration-200 flex items-center",
-                                                                isActive ? "text-foreground" : "text-muted group-hover:text-foreground"
-                                                            )}
+                                                        <motion.div
+                                                            initial={{ opacity: 0, x: 15 }}
+                                                            animate={{ opacity: 1, x: 0 }}
+                                                            transition={{ delay: index * 0.035, duration: 0.3 }}
+                                                            className="flex sm:flex-row-reverse items-center justify-between sm:justify-end sm:gap-4 py-2 md:py-2.5"
                                                         >
-                                                            {link.name}
-                                                            {link.name === "Bag" && bagCount > 0 && (
-                                                                <span className="ml-2 text-xl bg-foreground text-black px-2 py-0.5 rounded-full">
-                                                                    {bagCount > 99 ? "99+" : bagCount} <span className='ml-1 tracking-normal'>fonts</span>
-                                                                </span>
-                                                            )}
-                                                        </span>
+                                                            <span
+                                                                className={cn(
+                                                                    "font-inter-tight text-[2rem] sm:text-[2rem] leading-none transition-colors duration-200 flex items-center",
+                                                                    isActive ? "text-foreground" : "text-muted/60 group-hover:text-foreground"
+                                                                )}
+                                                            >
+                                                                {link.name}
+                                                            </span>
 
-                                                        <span className={cn(isActive ? "text-foreground" : "text-muted group-hover:text-foreground")}>
-                                                            {link.svg}
-                                                        </span>
-                                                    </motion.div>
-                                                </Link>
-                                            );
-                                        })}
+                                                            <span className={cn("sm:hiddenz", isActive ? "text-foreground" : "text-muted/60 group-hover:text-foreground")}>
+                                                                {link.svg}
+                                                            </span>
+                                                        </motion.div>
+                                                    </Link>
+                                                );
+                                            })}
+                                        </div>
+                                        <div className="w-full sm:w-px h-px sm:h-full bg-border my-8 sm:my-0 sm:mx-4" />
+                                        <div className="flex-1 bg-card-background px-6 py-4 rounded-3xl">
+                                            {otherLinks.map((link, index) => {
+                                                const isActive = location.pathname === link.path;
 
-                                        <div className="w-full h-px bg-border my-8" />
+                                                return (
+                                                    <Link
+                                                        key={link.path}
+                                                        to={link.path}
+                                                        onClick={async () => {
+                                                            await Haptics.impact({
+                                                                style: ImpactStyle.Light,
+                                                            });
 
-                                        {otherLinks.map((link, index) => {
-                                            const isActive = location.pathname === link.path;
-
-                                            return (
-                                                <Link
-                                                    key={link.path}
-                                                    to={link.path}
-                                                    onClick={async () => {
-                                                        await Haptics.impact({
-                                                            style: ImpactStyle.Light,
-                                                        });
-
-                                                        setMobileMenuOpen(false);
-                                                    }}
-                                                    className="group"
-                                                >
-                                                    <motion.div
-                                                        initial={{ opacity: 0, x: 15 }}
-                                                        animate={{ opacity: 1, x: 0 }}
-                                                        transition={{ delay: index * 0.035, duration: 0.3 }}
-                                                        className="flex items-center justify-between py-2 md:py-2.5"
+                                                            setMobileMenuOpen(false);
+                                                        }}
+                                                        className="group"
                                                     >
-                                                        <span
-                                                            className={cn(
-                                                                "font-inter-tight text-[2.4rem] sm:text-[2.7rem] leading-none tracking-[-0.055em] transition-colors duration-200 flex items-center",
-                                                                isActive ? "text-foreground" : "text-muted group-hover:text-foreground"
-                                                            )}
+                                                        <motion.div
+                                                            initial={{ opacity: 0, x: 15 }}
+                                                            animate={{ opacity: 1, x: 0 }}
+                                                            transition={{ delay: index * 0.035, duration: 0.3 }}
+                                                            className="flex items-center justify-between py-2 md:py-2.5"
                                                         >
-                                                            {link.name}
-                                                            {link.name === "Bag" && bagCount > 0 && (
-                                                                <span className="ml-2 text-xl bg-foreground text-background px-2 py-0.5 rounded-full">
-                                                                    {bagCount > 99 ? "99+" : bagCount} <span className='ml-1 tracking-normal'>fonts</span>
+                                                            <span
+                                                                className={cn(
+                                                                    "font-inter-tight text-[2rem] sm:text-[2rem] leading-none transition-colors duration-200 flex items-center",
+                                                                    isActive ? "text-foreground" : "text-muted/60 group-hover:text-foreground"
+                                                                )}
+                                                            >
+                                                                {link.name}
+                                                                {link.name === "Bag" && bagCount > 0 && (
+                                                                    <span className="ml-2 text-lg bg-foreground/90 text-background tracking-normal px-2 py-0 rounded-full">
+                                                                        {bagCount > 99 ? "99+" : bagCount} <span className='ml-1'>fonts</span>
+                                                                    </span>
+                                                                )}
+                                                                <span className="ml-2 text-lg bg-muted/30 text-muted/95 tracking-normal lowercase px-2 py-0 rounded-full">
+                                                                    {link.badge}
                                                                 </span>
-                                                            )}
-                                                        </span>
+                                                            </span>
 
-                                                        <span className={cn(isActive ? "text-foreground" : "text-muted group-hover:text-foreground")}>
-                                                            {link.svg}
-                                                        </span>
-                                                    </motion.div>
-                                                </Link>
-                                            );
-                                        })}
-
+                                                            <span className={cn(isActive ? "text-foreground" : "text-muted/60 group-hover:text-foreground")}>
+                                                                {link.svg}
+                                                            </span>
+                                                        </motion.div>
+                                                    </Link>
+                                                );
+                                            })}
+                                        </div>
                                     </nav>
 
                                     {/* Utilities */}
@@ -1045,12 +1053,14 @@ export default function Navbar() {
                                             </button> */}
 
                                             {/* Theme */}
-                                            <div className="flex items-center justify-between rounded-xl py-2.5 transition-colors text-foreground">
-                                                <span className="font-inter-tight text-[2.4rem] sm:text-[2.7rem] md:text-[2rem] leading-none tracking-[-0.055em] transition-colors duration-200 flex items-center">
+                                            <div className="flex items-center justify-between sm:justify-start gap-4 rounded-xl py-2.5 transition-colors text-foreground">
+                                                <span className="font-inter-tight text-[2rem] sm:text-[2rem] md:text-[2rem] leading-none transition-colors duration-200 flex items-center">
                                                     Theme
                                                 </span>
 
-                                                <Switch />
+                                                <div className="sm:bg-card-background sm:aspect-square sm:h-full sm:p-3 flex justify-center items-center rounded-full">
+                                                    <Switch />
+                                                </div>
 
                                                 {/* <button
                                                     type="button"
@@ -1077,67 +1087,66 @@ export default function Navbar() {
                                             </div>
                                         </div>
                                     </div>
-                                </div>
 
+                                    {/* Account / Social Panel */}
+                                    <div className="mb-4 md:mb-5 rounded-3xl bg-card-background hover:bg-foreground/8 transition-colors duration-300 ease-in-out overflow-hidden">
+                                        {user ? (
+                                            <>
+                                                {/* Profile */}
+                                                <Link
+                                                    to="/profile"
+                                                    onClick={async () => {
+                                                        await Haptics.impact({
+                                                            style: ImpactStyle.Light,
+                                                        });
 
-                                {/* Account / Social Panel */}
-                                <div className="mx-4 md:mx-5 mb-4 md:mb-5 rounded-3xl bg-card-background hover:bg-foreground/8 transition-colors duration-300 ease-in-out overflow-hidden">
-                                    {user ? (
-                                        <>
-                                            {/* Profile */}
-                                            <Link
-                                                to="/profile"
-                                                onClick={async () => {
-                                                    await Haptics.impact({
-                                                        style: ImpactStyle.Light,
-                                                    });
+                                                        setMobileMenuOpen(false);
+                                                    }}
+                                                    className="flex items-center gap-3 px-5 py-4 transition-colors"
+                                                >
+                                                    <div className="h-14 w-14 rounded-full overflow-hidden bg-foreground/10 flex items-center justify-center shrink-0">
+                                                        {profile?.avatar_url ? (
+                                                            <img
+                                                                src={profile.avatar_url}
+                                                                alt={profile?.full_name ? `${profile.full_name}'s avatar` : "User profile avatar"}
+                                                                className="h-full w-full object-cover"
+                                                            />
+                                                        ) : (
+                                                            <UserRound size={19} />
+                                                        )}
+                                                    </div>
 
-                                                    setMobileMenuOpen(false);
-                                                }}
-                                                className="flex items-center gap-3 px-5 py-4 transition-colors"
-                                            >
-                                                <div className="h-11 w-11 rounded-full overflow-hidden bg-foreground/10 flex items-center justify-center shrink-0">
-                                                    {profile?.avatar_url ? (
-                                                        <img
-                                                            src={profile.avatar_url}
-                                                            alt={profile?.full_name ? `${profile.full_name}'s avatar` : "User profile avatar"}
-                                                            className="h-full w-full object-cover"
-                                                        />
-                                                    ) : (
-                                                        <UserRound size={19} />
-                                                    )}
-                                                </div>
+                                                    <div className="min-w-0">
+                                                        <p className="font-medium truncate">
+                                                            {profile?.full_name || "Your profile"}
+                                                        </p>
 
-                                                <div className="min-w-0">
-                                                    <p className="font-medium truncate">
-                                                        {profile?.full_name || "Your profile"}
-                                                    </p>
+                                                        <p className="text-sm text-muted truncate">
+                                                            {profile?.email || "Your email"}
+                                                        </p>
+                                                    </div>
+                                                </Link>
+                                            </>
+                                        ) : (
+                                            <>
+                                                {/* Login */}
+                                                <Link
+                                                    to="/auth"
+                                                    onClick={async () => {
+                                                        await Haptics.impact({
+                                                            style: ImpactStyle.Light,
+                                                        });
 
-                                                    <p className="text-sm text-muted truncate">
-                                                        {profile?.email || "Your email"}
-                                                    </p>
-                                                </div>
-                                            </Link>
-                                        </>
-                                    ) : (
-                                        <>
-                                            {/* Login */}
-                                            <Link
-                                                to="/auth"
-                                                onClick={async () => {
-                                                    await Haptics.impact({
-                                                        style: ImpactStyle.Light,
-                                                    });
-
-                                                    setMobileMenuOpen(false);
-                                                }}
-                                                className="flex items-center justify-between px-5 py-5 font-medium hover:bg-foreground/5 transition-colors"
-                                            >
-                                                <span>Sign in</span>
-                                                <span>→</span>
-                                            </Link>
-                                        </>
-                                    )}
+                                                        setMobileMenuOpen(false);
+                                                    }}
+                                                    className="flex items-center justify-between px-5 py-5 font-medium hover:bg-foreground/5 transition-colors"
+                                                >
+                                                    <span>Sign in</span>
+                                                    <span>→</span>
+                                                </Link>
+                                            </>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         </motion.aside>

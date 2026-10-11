@@ -15,10 +15,10 @@ body {
 
 :root {
   /* Light Theme */
-  --color-background: #ffffff;
+  --color-card-background: #ffffff;
   --color-foreground: #09090b;
   --color-muted: #717179;
-  --color-card-background: #f0f0f0;
+  --color-background: #f0f0f0;
   --color-card-foreground: #09090b;
   --color-border: #e4e4e7;
   --color-accent: #ff90e8;
