@@ -260,7 +260,7 @@ import path from 'node:path';
 import { exportAmbiguousAssets } from '../scripts/font-processing/export-ambiguous-assets.js';
 
 test('ambiguous candidate exporter writes bounded local batches without API or database side effects', () => {
-  const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), 'nbf-gemini-export-test-'));
+  const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), 'nbf-candidate-export-test-'));
   try {
     const report = {
       queue_items: [{
@@ -296,7 +296,7 @@ test('ambiguous candidate exporter writes bounded local batches without API or d
 
 
 test('ambiguous candidate exporter emits an empty manifest when deterministic metadata needs no review', () => {
-  const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), 'nbf-gemini-empty-export-test-'));
+  const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), 'nbf-empty-candidate-export-test-'));
   try {
     const report = {
       queue_items: [{
@@ -413,7 +413,7 @@ test('named-weight audit recognizes common weights without confusing Monaspace w
 
 
 test('ambiguous exporter includes every asset in metadata-contradictory groups with cross-format evidence', () => {
-  const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), 'nbf-gemini-group-review-test-'));
+  const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), 'nbf-metadata-review-test-'));
   try {
     const report = { queue_items: [{ slug: 'format-weight-conflict', assets: [
       { source_label: 'otf', relative_path: 'Mono-Bold.otf', extension: 'otf', sha256: 'a'.repeat(64), metadata: { status: 'parsed', family_name: 'Mono', subfamily_name: 'Bold', weight_class: 700, is_italic: false } },
