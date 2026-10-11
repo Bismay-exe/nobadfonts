@@ -70,11 +70,20 @@ function getRequestTimeoutMs(options) {
   return timeoutMs;
 }
 
+function getThinkingLevel(options) {
+  const level = String(options.thinkingLevel ?? process.env.GEMINI_THINKING_LEVEL ?? 'LOW').toUpperCase();
+  if (!['MINIMAL', 'LOW', 'MEDIUM', 'HIGH'].includes(level)) {
+    throw new RangeError('GEMINI_THINKING_LEVEL must be MINIMAL, LOW, MEDIUM, or HIGH.');
+  }
+  return level;
+}
+
 export async function runGeminiReview(input, options = {}) {
   const model = options.model || process.env.GEMINI_MODEL || DEFAULT_MODEL;
   const minimumConfidence = options.minimumConfidence ?? 0.85;
   const maxOutputTokens = getMaxOutputTokens(options);
   const requestTimeoutMs = getRequestTimeoutMs(options);
+  const thinkingLevel = getThinkingLevel(options);
   const request = buildGeminiReviewRequest(input);
   const cacheFile = options.cacheFile || null;
   const cache = readCache(cacheFile);
@@ -160,9 +169,9 @@ export async function runGeminiReview(input, options = {}) {
                 },
               },
             },
-            // Gemini 3.8 Flash counts internal thinking tokens against maxOutputTokens.
-            // LOW is sufficient for this constrained metadata classification task.
-            thinkingConfig: { thinkingLevel: 'LOW' },
+            // Thinking tokens count against maxOutputTokens. The workflow can
+            // select a lower supported thinking level for latency-sensitive validation.
+            thinkingConfig: { thinkingLevel },
             maxOutputTokens,
           },
         }),

@@ -64,6 +64,8 @@ jobs:
       - name: Run one budget-limited real-font advisory request
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: "gemini-3.6-flash"
+          GEMINI_THINKING_LEVEL: "MINIMAL"
           GEMINI_MAX_REQUESTS: "1"
           GEMINI_MAX_OUTPUT_TOKENS: "2048"
           GEMINI_MAX_TOTAL_OUTPUT_TOKENS: "2048"
@@ -84,7 +86,7 @@ jobs:
           const expected = new Set(input.map((candidate) => candidate.asset_id));
           const decisions = output.decisions || [];
           const actual = decisions.map((decision) => decision.candidate_id);
-          if (output.model !== 'gemini-3.8-flash') throw new Error(`Unexpected model: ${output.model}`);
+          if (output.model !== 'gemini-3.6-flash') throw new Error(`Unexpected model: ${output.model}`);
           if (decisions.length !== expected.size || new Set(actual).size !== expected.size
             || actual.some((id) => !expected.has(id))) {
             throw new Error(`Expected exactly one decision for each of 10 candidates; got ${decisions.length}`);
