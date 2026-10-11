@@ -24,7 +24,7 @@ function normalizeAsset(asset) {
 }
 
 /**
- * Export only deterministic-core review cases to bounded Gemini input batches.
+ * Export only deterministic-core review cases to bounded local review batches.
  * This is a local file operation: no API calls, database writes, or uploads.
  */
 export function exportAmbiguousAssets(report, outputDir, options = {}) {
@@ -118,7 +118,7 @@ export function exportAmbiguousAssets(report, outputDir, options = {}) {
 
   const manifest = {
     generated_at: new Date().toISOString(),
-    mode: 'local-gemini-review-input-export',
+    mode: 'local-ambiguous-review-input-export',
     api_calls_performed: false,
     database_writes_performed: false,
     uploads_performed: false,

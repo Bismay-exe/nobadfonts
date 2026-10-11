@@ -141,3 +141,52 @@ test('main publishing requires a separate explicit opt-in and dedicated credenti
     serviceRoleKey: 'main-key',
   });
 });
+
+test('nests sub-families under a parent family via per-font classification override', () => fixture((dir) => {
+  // A "Monaspace" family with sub-families Xenon and Radon, each regular + bold.
+  // Embedded family names differ per sub-family; the override declares the parent.
+  const files = {
+    'xenon-regular.otf': ['Monaspace Xenon', 'Regular', 400, { family: 'Monaspace', sub_family: 'Xenon' }],
+    'xenon-bold.otf': ['Monaspace Xenon', 'Bold', 700, { family: 'Monaspace', sub_family: 'Xenon' }],
+    'radon-regular.otf': ['Monaspace Radon', 'Regular', 400, { family: 'Monaspace', sub_family: 'Radon' }],
+    'radon-bold.otf': ['Monaspace Radon', 'Bold', 700, { family: 'Monaspace', sub_family: 'Radon' }],
+  };
+  const assets = Object.entries(files).map(([file, [family, sub, weight, classification]]) => {
+    fs.writeFileSync(path.join(dir, file), Buffer.from(`bytes-${file}`));
+    return { file_path: file, classification, metadata: metadata(family, sub, weight) };
+  });
+  const plan = buildPublishPlan({
+    batch_id: 'monaspace-batch',
+    font_ids: {
+      Monaspace: {
+        Xenon: '22222222-2222-4222-8222-222222222222',
+        Radon: '33333333-3333-4333-8333-333333333333',
+      },
+    },
+    assets,
+  }, { baseDir: dir });
+
+  // Four distinct variants: Xenon Regular/Bold, Radon Regular/Bold — none dropped.
+  assert.equal(plan.summary.variantCount, 4);
+  assert.equal(plan.rows.length, 4);
+  const xenon = plan.rows.filter((r) => r.font_id === '22222222-2222-4222-8222-222222222222');
+  const radon = plan.rows.filter((r) => r.font_id === '33333333-3333-4333-8333-333333333333');
+  assert.deepEqual(xenon.map((r) => r.variant_name).sort(), ['Bold', 'Regular']);
+  assert.deepEqual(radon.map((r) => r.variant_name).sort(), ['Bold', 'Regular']);
+}));
+
+test('a variant classification override wins over embedded metadata', () => fixture((dir) => {
+  fs.writeFileSync(path.join(dir, 'duo.otf'), Buffer.from('duo-bytes'));
+  const plan = buildPublishPlan({
+    batch_id: 'override-variant-batch',
+    font_ids: { 'Arial Mono': { Neon: '44444444-4444-4444-8444-444444444444' } },
+    assets: [{
+      file_path: 'duo.otf',
+      classification: { family: 'Arial Mono', sub_family: 'Neon', variant: 'Terminal Duo' },
+      metadata: metadata('Arial Mono Neon', 'Regular', 400),
+    }],
+  }, { baseDir: dir });
+  assert.equal(plan.rows.length, 1);
+  assert.equal(plan.rows[0].variant_name, 'Terminal Duo');
+  assert.equal(plan.rows[0].font_id, '44444444-4444-4444-8444-444444444444');
+}));
