@@ -60,7 +60,7 @@ test('Gemini runner caches validated advisory output and does not call fetch on 
   };
 
   try {
-    const options = { cacheFile: temp.cacheFile, apiKey: 'test-key-not-used-on-network', maxRequests: 1, maxOutputTokens: 100, maxTotalOutputTokens: 100 };
+    const options = { cacheFile: temp.cacheFile, apiKey: 'test-key-not-used-on-network', maxRequests: 1, maxOutputTokens: 100, maxTotalOutputTokens: 100, thinkingLevel: 'MINIMAL' };
     const first = await runGeminiReview(candidates, options);
     const second = await runGeminiReview(candidates, options);
 
@@ -68,7 +68,7 @@ test('Gemini runner caches validated advisory output and does not call fetch on 
     assert.match(requestedUrl, /\/v1beta\/models\/gemini-3\.8-flash:generateContent$/);
     assert.equal(first.model, 'gemini-3.8-flash');
     assert.equal(requestedBody.generationConfig.responseMimeType, 'application/json');
-    assert.deepEqual(requestedBody.generationConfig.thinkingConfig, { thinkingLevel: 'LOW' });
+    assert.deepEqual(requestedBody.generationConfig.thinkingConfig, { thinkingLevel: 'MINIMAL' });
     assert.equal('temperature' in requestedBody.generationConfig, false);
     assert.equal(requestedBody.generationConfig.responseSchema.type, 'OBJECT');
     assert.deepEqual(requestedBody.generationConfig.responseSchema.required, ['decisions']);
