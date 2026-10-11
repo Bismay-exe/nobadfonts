@@ -24,7 +24,7 @@ test('ambiguous exporter creates bounded sanitized batches and a non-mutating ma
   const outputDir = path.join(directory, 'out');
   try {
     const result = exportAmbiguousAssets(fixtureReport(), outputDir, { batchSize: 1 });
-    assert.equal(result.manifest.mode, 'local-gemini-review-input-export');
+    assert.equal(result.manifest.mode, 'local-ambiguous-review-input-export');
     assert.equal(result.manifest.api_calls_performed, false);
     assert.equal(result.manifest.database_writes_performed, false);
     assert.equal(result.manifest.uploads_performed, false);

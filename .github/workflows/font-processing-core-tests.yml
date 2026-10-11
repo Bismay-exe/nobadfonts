@@ -4,12 +4,10 @@ on:
   pull_request:
     paths:
       - 'scripts/font-processing/**'
-      - 'scripts/process-ai-fonts.js'
       - 'scripts/generate-sitemap.js'
       - 'src/**'
       - 'api/sitemap.ts'
       - 'supabase/migrations/**'
-      - '.github/workflows/process-ai-fonts.yml'
       - 'tests/**'
       - 'package.json'
       - 'package-lock.json'
@@ -19,12 +17,10 @@ on:
       - main
     paths:
       - 'scripts/font-processing/**'
-      - 'scripts/process-ai-fonts.js'
       - 'scripts/generate-sitemap.js'
       - 'src/**'
       - 'api/sitemap.ts'
       - 'supabase/migrations/**'
-      - '.github/workflows/process-ai-fonts.yml'
       - 'tests/**'
       - 'package.json'
       - '.github/workflows/font-processing-core-tests.yml'
@@ -49,8 +45,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Check production processor syntax
-        run: node --check scripts/process-ai-fonts.js
+      - name: Check publishing pipeline syntax
+        run: node --check scripts/font-processing/publish-plan.js
 
       - name: Run isolated font-processing regression tests
         run: npm run test:font-processing

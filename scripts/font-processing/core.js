@@ -19,6 +19,24 @@ const normalizeText = (value) => (
   typeof value === 'string' ? value.normalize('NFKC').trim().replace(/\s+/g, ' ') : ''
 );
 
+const normalizeKey = (value) => normalizeText(value).toLocaleLowerCase('en-US');
+
+/**
+ * Read an explicit per-font classification override supplied by the operator or
+ * MCP-generated queue JSON. This is the authoritative escape hatch for fonts
+ * whose embedded name table cannot be split into family / sub-family reliably
+ * (e.g. a "Monaspace" parent with "Xenon"/"Radon"/… sub-families). Returns null
+ * when no override fields are present so metadata stays the source of truth.
+ */
+export function normalizeOverride(raw) {
+  const source = raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {};
+  const family = normalizeText(source.family ?? source.family_name);
+  const subFamily = normalizeText(source.sub_family ?? source.subfamily ?? source.subfamily_name);
+  const variant = normalizeText(source.variant ?? source.variant_name);
+  if (!family && !subFamily && !variant) return null;
+  return { family: family || null, sub_family: subFamily || null, variant: variant || null };
+}
+
 export function sha256Buffer(buffer) {
   if (!Buffer.isBuffer(buffer) && !(buffer instanceof Uint8Array)) {
     throw new TypeError('sha256Buffer expects a Buffer or Uint8Array');
@@ -71,6 +89,8 @@ export function normalizeFontMetadata(metadata = {}) {
       : null,
     extension,
     parser_status: normalizeText(metadata.status ?? metadata.parser_status) || 'unknown',
+    // Preserved so classification survives dedupe/normalize round-trips.
+    overrides: normalizeOverride(metadata.overrides ?? metadata.classification),
   };
 }
 
@@ -116,13 +136,54 @@ function getEmbeddedWeightSuffix(metadata) {
   return null;
 }
 
-export function canonicalFamilyKey(metadata = {}) {
+/**
+ * Resolve the three-tier identity of a font asset:
+ *   parent_family  – the grouping family when this font is a named sub-family
+ *                    (e.g. "Monaspace"); null for standalone families.
+ *   subfamily_name – the sub-family label (e.g. "Xenon"); null for standalone.
+ *   font_name      – the font record this asset belongs to. For a sub-family it
+ *                    is the sub-family; otherwise the standalone family.
+ *
+ * Precedence: an explicit override wins; otherwise the embedded typographic
+ * family name (OpenType name ID 16, falling back to ID 1) is treated as a
+ * standalone family. Sub-family nesting is never guessed from metadata alone —
+ * it requires an override — so unrelated families are never flattened together.
+ */
+export function resolveFamilyNames(metadata = {}) {
+  const override = normalizeOverride(metadata.overrides ?? metadata.classification) || {};
   const embeddedWeight = getEmbeddedWeightSuffix(metadata);
-  const family = normalizeText(embeddedWeight?.family_name ?? metadata.family_name ?? metadata.familyName).toLocaleLowerCase('en-US');
-  return family || null;
+  const embeddedFamily = normalizeText(
+    embeddedWeight?.family_name ?? metadata.family_name ?? metadata.familyName,
+  ) || null;
+
+  if (override.sub_family) {
+    const parent = override.family || embeddedFamily || null;
+    return { parent_family: parent, subfamily_name: override.sub_family, font_name: override.sub_family };
+  }
+  if (override.family) {
+    return { parent_family: null, subfamily_name: null, font_name: override.family };
+  }
+  return { parent_family: null, subfamily_name: null, font_name: embeddedFamily };
+}
+
+export function canonicalParentFamilyKey(metadata = {}) {
+  const { parent_family } = resolveFamilyNames(metadata);
+  return parent_family ? normalizeKey(parent_family) : null;
+}
+
+export function canonicalSubFamilyKey(metadata = {}) {
+  const { subfamily_name } = resolveFamilyNames(metadata);
+  return subfamily_name ? normalizeKey(subfamily_name) : null;
+}
+
+export function canonicalFamilyKey(metadata = {}) {
+  const { font_name } = resolveFamilyNames(metadata);
+  return font_name ? normalizeKey(font_name) : null;
 }
 
 export function canonicalVariantKey(metadata = {}) {
+  const override = normalizeOverride(metadata.overrides ?? metadata.classification);
+  if (override?.variant) return normalizeKey(override.variant);
   const embeddedWeight = getEmbeddedWeightSuffix(metadata);
   const subfamily = normalizeText(metadata.subfamily_name ?? metadata.subfamilyName).toLocaleLowerCase('en-US');
   const weight = embeddedWeight?.weight ?? metadata.weight_class ?? metadata.weightClass;
@@ -133,6 +194,23 @@ export function canonicalVariantKey(metadata = {}) {
   if (subfamily) return subfamily;
   if (Number.isInteger(weight) && typeof italic === 'boolean') {
     return `weight-${weight}-${italic ? 'italic' : 'upright'}`;
+  }
+  return null;
+}
+
+/**
+ * Human-readable variant label for a resolved group.
+ */
+function variantDisplayName(metadata = {}) {
+  const override = normalizeOverride(metadata.overrides ?? metadata.classification);
+  if (override?.variant) return override.variant;
+  const embeddedWeight = getEmbeddedWeightSuffix(metadata);
+  if (embeddedWeight) {
+    return `${WEIGHT_NAMES.get(metadata.weight_class) || `Weight ${metadata.weight_class}`}${embeddedWeight.is_italic ? ' Italic' : ''}`;
+  }
+  if (metadata.subfamily_name) return metadata.subfamily_name;
+  if (metadata.weight_class != null) {
+    return `${WEIGHT_NAMES.get(metadata.weight_class) || `Weight ${metadata.weight_class}`}${metadata.is_italic ? ' Italic' : ''}`;
   }
   return null;
 }
@@ -184,7 +262,10 @@ export function planVariantGroups(assets) {
 
   for (const asset of assets) {
     const metadata = normalizeFontMetadata(asset.metadata || {});
+    const names = resolveFamilyNames(metadata);
     const familyKey = canonicalFamilyKey(metadata);
+    const subFamilyKey = canonicalSubFamilyKey(metadata);
+    const parentKey = canonicalParentFamilyKey(metadata);
     const variantKey = canonicalVariantKey(metadata);
 
     const familyWeightConflict = metadata.family_name
@@ -216,17 +297,18 @@ export function planVariantGroups(assets) {
       continue;
     }
 
-    const key = JSON.stringify([familyKey, variantKey]);
+    const key = JSON.stringify([parentKey || '', familyKey, variantKey]);
     if (!groups.has(key)) {
       groups.set(key, {
-        family_name: getEmbeddedWeightSuffix(metadata)?.family_name || metadata.family_name,
-        variant_name: getEmbeddedWeightSuffix(metadata)
-          ? `${WEIGHT_NAMES.get(metadata.weight_class) || `Weight ${metadata.weight_class}`}${getEmbeddedWeightSuffix(metadata).is_italic ? ' Italic' : ''}`
-          : metadata.subfamily_name || (
-            metadata.weight_class != null
-              ? `${WEIGHT_NAMES.get(metadata.weight_class) || `Weight ${metadata.weight_class}`}${metadata.is_italic ? ' Italic' : ''}`
-              : null
-          ),
+        parent_family_name: names.parent_family,
+        subfamily_name: names.subfamily_name,
+        is_subfamily: Boolean(names.subfamily_name),
+        font_name: names.font_name,
+        // family_name is the font record this group publishes under: the
+        // sub-family when nested, otherwise the standalone family. Retained
+        // under this name for the publish layer and existing report consumers.
+        family_name: names.font_name,
+        variant_name: variantDisplayName(metadata),
         variant_key: variantKey,
         assets: [],
         conflicts: [],

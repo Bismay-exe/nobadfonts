@@ -10,6 +10,49 @@ import { createSupabasePublishingAdapter } from './supabase-publishing-adapter.j
 const sha256 = (bytes) => createHash('sha256').update(bytes).digest('hex');
 const normalizeFamily = (value) => String(value || '').normalize('NFKC').trim().replace(/\s+/g, ' ').toLocaleLowerCase('en-US');
 
+/**
+ * Build a lookup from the manifest's font_ids mapping. Two shapes are accepted:
+ *   { "Family Name": "<uuid>" }                              → standalone font
+ *   { "Parent Family": { "Sub Family": "<uuid>" } }          → nested sub-family
+ * The nested shape lets one parent family own many sub-family font records,
+ * each resolved independently so sub-families are never merged.
+ */
+function buildFontIdIndex(fontIds) {
+  const flat = new Map();
+  const nested = new Map();
+  for (const [name, value] of Object.entries(fontIds)) {
+    const parentKey = normalizeFamily(name);
+    if (typeof value === 'string') {
+      if (value.trim()) flat.set(parentKey, value);
+    } else if (value && typeof value === 'object' && !Array.isArray(value)) {
+      const subMap = new Map();
+      for (const [sub, id] of Object.entries(value)) {
+        if (typeof id === 'string' && id.trim()) subMap.set(normalizeFamily(sub), id);
+      }
+      nested.set(parentKey, subMap);
+    }
+  }
+  return { flat, nested };
+}
+
+function resolveGroupFontId(index, group) {
+  const leaf = normalizeFamily(group.font_name ?? group.family_name);
+  if (group.parent_family_name) {
+    const parent = normalizeFamily(group.parent_family_name);
+    const subId = index.nested.get(parent)?.get(normalizeFamily(group.subfamily_name ?? group.font_name));
+    if (subId) return subId;
+    const combined = index.flat.get(normalizeFamily(`${group.parent_family_name} ${group.font_name}`));
+    if (combined) return combined;
+  }
+  return index.flat.get(leaf) || null;
+}
+
+function describeGroup(group) {
+  return group.parent_family_name
+    ? `sub-family "${group.subfamily_name ?? group.font_name}" under family "${group.parent_family_name}"`
+    : `family "${group.font_name ?? group.family_name}"`;
+}
+
 export function resolvePublishingTarget(env = process.env) {
   const target = env.FONT_PROCESSING_TARGET;
   if (target === 'staging') {
@@ -68,7 +111,15 @@ export function buildPublishPlan(manifest, { baseDir = process.cwd() } = {}) {
       path: item.file_path,
       archive_label: item.archive_label ?? null,
       relative_path: item.relative_path ?? item.file_path,
-      metadata: { ...(item.metadata || {}), extension: path.extname(filePath) },
+      metadata: {
+        ...(item.metadata || {}),
+        extension: path.extname(filePath),
+        // Carry an explicit per-font classification override (family / sub_family
+        // / variant) so the deterministic core can nest sub-families correctly.
+        overrides: item.classification ?? item.overrides
+          ?? (item.metadata && (item.metadata.classification ?? item.metadata.overrides))
+          ?? null,
+      },
     };
   });
 
@@ -87,12 +138,12 @@ export function buildPublishPlan(manifest, { baseDir = process.cwd() } = {}) {
   if (conflicts.length) throw new Error(`Publish plan blocked: ${conflicts.length} variant/format conflict(s); no writes attempted`);
 
   const byHash = new Map(assets.map((asset) => [asset.sha256, asset]));
-  const fontIds = new Map(Object.entries(manifest.font_ids).map(([family, id]) => [normalizeFamily(family), id]));
+  const fontIdIndex = buildFontIdIndex(manifest.font_ids);
   const rows = [];
   const assigned = new Set();
   for (const group of groups) {
-    const fontId = fontIds.get(normalizeFamily(group.family_name));
-    if (typeof fontId !== 'string' || !fontId.trim()) throw new Error(`No explicit font_ids entry for embedded family "${group.family_name}"`);
+    const fontId = resolveGroupFontId(fontIdIndex, group);
+    if (typeof fontId !== 'string' || !fontId.trim()) throw new Error(`No explicit font_ids entry for ${describeGroup(group)}`);
     for (const asset of group.assets) {
       const bytesAsset = byHash.get(asset.sha256);
       if (!bytesAsset) throw new Error(`Missing bytes for planned asset ${asset.asset_id}`);
