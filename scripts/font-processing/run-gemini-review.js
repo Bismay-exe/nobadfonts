@@ -169,8 +169,8 @@ export async function runGeminiReview(input, options = {}) {
                 },
               },
             },
-            // Gemini 3.8 Flash counts internal thinking tokens against maxOutputTokens.
-            // LOW is sufficient for this constrained metadata classification task.
+            // Thinking tokens count against maxOutputTokens. The workflow can
+            // select a lower supported thinking level for latency-sensitive validation.
             thinkingConfig: { thinkingLevel },
             maxOutputTokens,
           },
