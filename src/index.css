@@ -19,7 +19,7 @@ body {
   --color-foreground: #09090b;
   --color-muted: #717179;
   --color-background: #f0f0f0;
-  --color-card-foreground: #09090b;
+  --color-card-foreground: #2c2c2c;
   --color-border: #e4e4e7;
   --color-accent: #ff90e8;
   --color-warning: #ff0000;
@@ -33,7 +33,7 @@ body {
   --color-foreground: #fafafa;
   --color-muted: #a1a1aa;
   --color-card-background: #111111;
-  --color-card-foreground: #fafafa;
+  --color-card-foreground: #E1E1E1;
   --color-border: #27272a;
   --color-accent: #ff90e8;
   --color-warning: #ff0000;

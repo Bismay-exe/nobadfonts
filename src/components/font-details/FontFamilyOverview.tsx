@@ -59,7 +59,7 @@ export default function FontFamilyOverview({ font }: { font: Font }) {
                 <Link
                   key={subfamily.id}
                   to={`/fonts/${subfamily.slug}`}
-                  className="group flex min-h-28 items-center justify-between gap-5 rounded-2xl border border-foreground/10 p-5 transition-colors hover:border-foreground/25 hover:bg-foreground/[0.025] md:p-6"
+                  className="group flex min-h-28 items-center justify-between gap-5 rounded-2xl border border-border p-5 transition-colors hover:border-border hover:bg-card-background md:p-6"
                 >
                   <div className="min-w-0">
                     <h3 className="text-lg font-medium tracking-tight">{subfamily.name}</h3>

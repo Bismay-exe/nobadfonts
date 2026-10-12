@@ -8,7 +8,7 @@ interface EmptyStateProps {
 
 const EmptyState = memo(({ title = "No fonts found", description = "We couldn't find any fonts matching your search criteria. Try adjusting your filters or search term." }: EmptyStateProps) => {
     return (
-        <div className="flex flex-col items-center justify-center py-20 text-center bg-muted/5 rounded-xl border border-dashed border-border">
+        <div className="absolute h-[80vh] w-full inset-0 flex flex-col items-center justify-center py-20 text-center">
             <div className="bg-card-background p-4 rounded-full shadow-sm mb-4">
                 <SearchX size={48} className="text-muted/40" />
             </div>

@@ -167,10 +167,15 @@ export default function FontsCatalog() {
     }, [fonts, viewMode, customText, getCardProps, userFavoriteIds, handleFavoriteToggle, bulkToggleVersion]);
 
     const columns =
-        width > 1280 ? 4 :
-            width > 1024 ? 3 :
-                width > 640 ? 2 :
-                    1;
+        width > 3000 ? 7 :
+        width > 2560 ? 6 : // 4k Tvs
+            width > 1920 ? 5 : // Large TVs / Ultra-wide monitors
+                width > 1440 ? 4 : // Large Laptops / Standard Desktops
+                    width > 1024 ? 3 : // Standard Laptops / Large Tablets
+                        width > 768 ? 2 : // Medium Tablets (Portrait)
+                            width > 480 ? 2 : // Large Phones (Landscape)
+                            1;  // Standard Mobile Phones
+
 
     const activeCategories = filters.categories && filters.categories.length > 0 ? filters.categories : [];
     const dynamicTitle = activeCategories.length > 0
@@ -241,7 +246,7 @@ export default function FontsCatalog() {
                 {/* Content */}
                 <div className="w-full h-full">
                     {error && (
-                        <div className="bg-warning/10 border border-warning/20 text-warning p-6 rounded-2xl text-center max-w-2xl mx-auto">
+                        <div className="bg-warning/10 text-warning m-4 p-6 rounded-2xl text-center max-w-2xl mx-auto">
                             Error loading fonts: {error}
                         </div>
                     )}

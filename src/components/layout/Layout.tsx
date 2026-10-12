@@ -24,7 +24,7 @@ const Layout = memo(function Layout() {
             </a> */}
 
             <Navbar />
-            <main id="main-content" tabIndex={-1} className="grow max-w-480 mx-auto w-full focus:outline-none">
+            <main id="main-content" tabIndex={-1} className="grow zmax-w-480 zmx-auto w-full focus:outline-none">
                 <Outlet />
             </main>
             <Footer />

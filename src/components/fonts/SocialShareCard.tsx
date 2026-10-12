@@ -131,7 +131,7 @@ const SocialShareCard = forwardRef<HTMLDivElement, SocialShareCardProps>(({
             ref={ref}
             className={`${isOg ? 'w-300 h-158.5 p-10' : 'w-300 h-200 p-14'} text-white relative overflow-hidden flex flex-col justify-between box-border select-none`}
             style={{
-                backgroundImage: 'url("/gradients/5.png")',
+                backgroundImage: 'url("/gradients/dark1.png")',
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 backgroundRepeat: 'no-repeat'
@@ -152,58 +152,24 @@ const SocialShareCard = forwardRef<HTMLDivElement, SocialShareCardProps>(({
 
             {/* HEADER */}
             <div className="relative z-10 flex justify-between items-start gap-8">
-                <div className="flex-1">
-                    <p
-                        className={`${isOg ? 'text-4xl' : 'text-5xl'} leading-tight text-white/90 drop-shadow-sm font-normal`}
-                        style={{ fontFamily: fontStack }}
-                    >
-                        The quick brown fox jumps <br />over the lazy dog. <br />1234567890
-                    </p>
-                    <div className='flex gap-2'>
-                        {/* {variantLabel && (
-                            <div className={`mt-2.5 items-center gap-1.5 ${isOg ? 'zpx-3.5 py-1.5 text-lg hidden' : 'px-4 py-2 text-xl'} rounded-full zbg-[#492FA7] font-inter font-medium tracking-wider text-white z-10`}>
-                                SPECIMEN ● {variantLabel}
-                            </div>
-                        )} */}
-                        {/* <span className={`mt-2.5 items-center gap-1.5 ${isOg ? 'zpx-3.5 py-1.5 text-lg hidden' : 'px-4 py-2 text-xl'} rounded-full zbg-[#492FA7] font-inter font-medium tracking-wider text-white capitalize`}>
-                            ● {stylesLabel}
-                        </span> */}
-                    </div>
-                </div>
-
                 {/* Logo & Brand Tag */}
-                <div className={`flex ${isOg ? 'flex-row items-center gap-2.5 flex-wrap justify-end' : 'flex-col items-end gap-3'} bg-black/40 backdrop-blur-md rounded-2xl`}>
-                    <div className={`${isOg ? 'w-16 h-16' : 'w-18 h-18'} rounded-lg overflow-hidden flex items-center justify-center`}>
-                        <img src="/logo/logo-black.png" alt="Logo" className="w-full h-full object-contain" />
+                <div className={`flex ${isOg ? 'flex-row items-center gap-2.5 flex-wrap justify-end' : 'flex-col items-end gap-3'}`}>
+                    <div className={`${isOg ? 'w-16 h-16' : 'w-20 h-20'} flex items-center justify-center`}>
+                        <img src="/logo/transparent-logo-white.png" alt="Logo" className="w-full h-full object-contain" />
                     </div>
                 </div>
             </div>
 
-            {/* MAIN CONTENT: GIANT FONT TITLE */}
-            <div className="relative h-full w-full z-10 flex flex-col justify-center items-center">
-                <span
-                    className="relative w-fit zh-full flex justify-center items-center"
-                    style={{ fontFamily: fontStack }}
+            {/* MAIN CONTENT: CENTERED FONT TITLE */}
+            <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
+                <h1
+                    className={`${titleFontSizeClass} w-full px-6 font-normal text-center leading-none text-white mix-blend-screen`}
+                    style={{
+                        fontFamily: fontStack,
+                    }}
                 >
-                    <h1
-                        className={`${titleFontSizeClass} font-normal text-center text-align-middle leading-none text-white mix-blend-screen px-4`}
-                        style={{ fontFamily: fontStack }}
-                    >
-
-                        {font.name}
-                        {/* {licenseLabel && (
-                            <span className={`${isOg ? 'px-3.5 py-1.5 text-lg' : 'px-4 py-2 text-xl'} absolute -ml-4 rotate-18 rounded-full bg-[#492FA7] font-inter font-medium tracking-wider text-white`}>
-                                {licenseLabel}
-                            </span>
-                        )} */}
-                        {/* <br /> <span className={`${isOg ? 'px-3.5 py-1.5 text-lg' : 'zpx-4 zpy-2 text-xl'} leading-none mr-8 rounded-full zbg-[#492FA7] font-inter font-medium tracking-wider text-white`}>
-                            ● {stylesLabel}
-                        </span>  */}
-                    </h1>
-                    {/* <span className={`${isOg ? 'px-3.5 py-1.5 text-lg' : 'px-4 py-2 text-xl'} absolute -bottom-10 left-0 rounded-full bg-[#492FA7] font-inter font-medium tracking-wider text-white`}>
-                        {stylesLabel}
-                    </span> */}
-                </span>
+                    {font.name}
+                </h1>
             </div>
 
             {/* FOOTER: REAL METADATA CHIPS & ATTRIBUTION */}
@@ -214,10 +180,13 @@ const SocialShareCard = forwardRef<HTMLDivElement, SocialShareCardProps>(({
                 </div>
 
                 {/* Right: Platform Callout */}
-                <div className="flex">
-                    <span className={`opacity-80 ${isOg ? 'text-3xl' : 'text-4xl'} font-inter-tight text-right`}>
-                        get it on <br />nobadfonts.in
-                    </span>
+                <div>
+                    <p className={`text-muted ${isOg ? 'text-xl' : 'text-2xl'} font-inter-tight text-right lowercase tracking-wider mb-2`}>
+                        get it on
+                    </p>
+                    <p className={`opacity-80 ${isOg ? 'text-3xl' : 'text-4xl'} font-inter-tight text-right`}>
+                        nobadfonts.in
+                    </p>
                 </div>
             </div>
         </div>

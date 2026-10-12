@@ -132,10 +132,11 @@ const AutoSizingText = React.memo(
             >
                 <div
                     ref={textRef}
-                    className="max-w-full text-card-foreground/80 text-center leading-[1.2] transition-opacity duration-300 m-0 flex flex-col items-center justify-center py-2"
+                    className="max-w-full text-card-foreground text-center leading-tight transition-opacity duration-300 m-0 flex flex-col items-center justify-center py-2"
                     style={{
                         fontFamily: isLoaded ? `'font-${fontId}'` : "sans-serif",
                         opacity: isLoaded ? 1 : 0,
+                        minHeight: isLoaded ? "auto" : "200px",
                     }}
                 >
                     {text.split(/\s+/).map((word, i) => (
@@ -469,7 +470,7 @@ function FontCard({
                                         {/* Likes */}
                                         {!hideLike && (
                                             <div
-                                                className={`flex items-center gap-1 rounded-full transition-all duration-300 ease-in-out ${isExpanded ? "pointer-events-none backdrop-blur-sm" : "pointer-events-auto"} ${viewMode === 'image' ? 'bg-black/30 text-white' : isFavorited ? 'text-foreground hover:bg-pink-500/10' : 'text-foreground hover:bg-foreground/5'}`}
+                                                className={`group/like flex items-center justify-center rounded-full transition-all duration-300 ease-in-out max-w- hover:max-w-100 ${isExpanded ? "pointer-events-none backdrop-blur-sm" : "pointer-events-auto"} ${viewMode === 'image' ? 'bg-black/30 text-white' : isFavorited ? 'text-foreground hover:bg-pink-500/10' : 'text-foreground hover:bg-foreground/5'}`}
                                             >
                                                 <Like
                                                     liked={isFavorited}
@@ -484,6 +485,9 @@ function FontCard({
                                                     }
                                                     className={`flex justify-center items-center gap-1.5 h-11 px-3 pointer-events-auto cursor-pointer font-medium text-[16px]`}
                                                 />
+                                                <span className="max-w-0 group-hover/like:pr-4 overflow-hidden font-medium text-[16px] whitespace-nowrap opacity-0 ml-0 group-hover/like:max-w-27.5 group-hover/like:opacity-100 group-hover/like:-ml-1.5 transition-all duration-300 ease-out">
+                                                    Likes
+                                                </span>
                                             </div>
                                         )}
                                         {/* Save to Board */}
@@ -494,7 +498,7 @@ function FontCard({
                                                     setBoardModalOpen(true);
                                                 }}
                                                 aria-label={`Save ${font.name} to a board`}
-                                                className={`group/save flex items-center justify-center h-11 px-3 rounded-full overflow-hidden pointer-events-auto cursor-pointer transition-all duration-300 ease-out max-w-11 hover:max-w-100 ${isExpanded ? "backdrop-blur-sm" : ""} ${viewMode === "image" ? "bg-black/30" : ""}`}
+                                                className={`group/save flex items-center justify-center h-11 px-3 rounded-full overflow-hidden pointer-events-auto cursor-pointer transition-all duration-300 ease-out max-w-11 hover:max-w-100 ${isExpanded ? "backdrop-blur-sm" : ""} ${viewMode === "image" ? "bg-black/30" : "hover:bg-foreground/5"}`}
                                             >
                                                 <svg className="flex h-11 w-5 shrink-0 items-center justify-center" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
                                                     <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2">
@@ -525,7 +529,7 @@ function FontCard({
                                         }
                                         title={fontIsInBag ? "View in bag" : "Add to bag"}
                                         className={`flex justify-center items-center ${isExpanded ? "backdrop-blur-sm" : ""} group/bag h-11 px-3 rounded-full overflow-hidden pointer-events-auto cursor-pointer transition-all duration-600 ease-out max-w-11 hover:max-w-100
-                                            ${viewMode === 'image' ? 'bg-black/30' : ''}`}
+                                            ${viewMode === 'image' ? 'bg-black/30' : 'hover:bg-foreground/5'}`}
                                     >
                                         <svg
                                             className="flex h-11 w-5 shrink-0 items-center justify-center"
@@ -577,7 +581,7 @@ function FontCard({
                                                 e.preventDefault();
                                             }
                                         }}
-                                        className={`flex justify-center items-center gap-1 ${viewMode === 'image' ? 'zbg-black/30 zbackdrop-blur-sm' : ''} transition-colors duration-300 ease-in-out h-11 px-3 rounded-full pointer-events-auto cursor-pointer`}
+                                        className={`flex justify-center items-center gap-1 bg-none ${viewMode === 'image' ? 'hover:bg-black/30' : 'hover:bg-foreground/5'} transition-colors duration-300 ease-in-out h-11 px-3 rounded-full pointer-events-auto cursor-pointer`}
                                     >
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"

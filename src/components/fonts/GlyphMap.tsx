@@ -64,13 +64,6 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
     const [setMode, setSetMode] = useState<'basic' | 'full'>('basic');
     const [selectedChar, setSelectedChar] = useState<string>('Y');
     const [themeTrigger, setThemeTrigger] = useState(0);
-    const getRGB = (name: string) =>
-        getComputedStyle(document.documentElement)
-            .getPropertyValue(name)
-            .trim();
-
-    const rgb = (name: string) => `rgb(${getRGB(name)})`;
-    const rgba = (name: string, alpha: number) => `rgba(${getRGB(name)}, ${alpha})`;
 
     // Variant State
     const [activeVariant, setActiveVariant] = useState<{ name: string; url: string } | null>(null);
@@ -210,10 +203,12 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
         if (!ctx) return;
 
         const render = () => {
-            const fg = rgb('--color-foreground');
-            const strokeColor = rgb('--color-muted-foreground');
-            const guideColor = rgb('--color-border');
-            const labelColor = rgb('--color-muted-foreground');
+            const rootStyles = window.getComputedStyle(document.documentElement);
+
+            const fg = rootStyles.getPropertyValue('--color-foreground').trim();
+            const strokeColor = rootStyles.getPropertyValue('--color-muted').trim();
+            const guideColor = rootStyles.getPropertyValue('--color-muted').trim();
+            const labelColor = rootStyles.getPropertyValue('--color-muted').trim();
             // Metrics and Setup
             const dpr = window.devicePixelRatio || 1;
             const rect = container.getBoundingClientRect();
@@ -255,18 +250,16 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
 
 
             // Draw Guidelines function
-            const drawLine = (y: number, label: string, value: number, isDashed = false) => {
+            const drawLine = (y: number, label: string, value: number) => {
                 ctx.beginPath();
                 ctx.strokeStyle = guideColor;
-                ctx.lineWidth = 1;
-                if (isDashed) ctx.setLineDash([4, 4]);
-                else ctx.setLineDash([]);
+                ctx.lineWidth = 0.25;
                 ctx.moveTo(0, y);
                 ctx.lineTo(width, y);
                 ctx.stroke();
 
                 ctx.fillStyle = labelColor;
-                ctx.font = '12px monospace';
+                ctx.font = '12px inter';
                 ctx.textAlign = 'left';
                 ctx.fillText(label, 10, y - 6);
 
@@ -277,7 +270,7 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
             // Draw Lines
             drawLine(baselineY, 'Baseline', 0);
             drawLine(baselineY - scaledCapHeight, 'Cap Height', capHeight);
-            drawLine(baselineY - scaledXHeight, 'X-Height', xHeight, true);
+            drawLine(baselineY - scaledXHeight, 'X-Height', xHeight);
             drawLine(baselineY - scaledDescender, 'Descender', descender);
 
             // Get Glyph Path
@@ -363,7 +356,7 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
                         const y = -cmd.y * scale;
 
                         // Draw Handle Lines: Start -> C1, C2 -> End
-                        ctx.strokeStyle = rgba('--color-muted-foreground', 0.3);
+                        ctx.strokeStyle = '--color-muted';
                         ctx.lineWidth = 1;
                         ctx.setLineDash([]);
 
@@ -431,15 +424,7 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
                 {/* Left: sticky ONLY inside this section */}
                 <div
                     ref={containerRef}
-                    className="
-                        max-h-[50vh] md:max-h-auto md:min-h-[90vh]
-                        lg:w-1/2
-                        lg:sticky
-                        lg:top-[5vh]
-                        self-start
-                        border border-border/50
-                    "
-                >
+                    className="max-h-[50vh] md:max-h-auto md:min-h-[87.6vh] lg:w-1/2 lg:sticky lg:top-[6.2vh] self-start bg-card-background rounded-4xl border border-border">
                     {/* Toolbar */}
                     <div className="relative z-20 flex flex-wrap justify-between rounded-4xl px-8 py-6 bg-transparent">
                         <div className='flex justify-between w-full md:w-auto'>
@@ -450,7 +435,7 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
                                 </div>
                             </div>
                             {/* Set Toggle */}
-                            <div className="md:hidden flex items-center gap-4 text-sm font-medium text-muted border-l border-border/50 pl-8">
+                            <div className="md:hidden flex items-center gap-4 text-sm font-medium text-muted border-l border-border pl-8">
                                 <button
                                     onClick={() => setSetMode('basic')}
                                     className={`transition-colors duration-300 ease-in-out hover:text-foreground ${setMode === 'basic' ? 'text-foreground' : ''}`}
@@ -469,7 +454,7 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
                         <div className="flex justify-between w-full md:w-auto items-center gap-0 md:gap-8 mt-4 md:mt-0">
                             {/* Variant Selector (if variants exist) */}
                             {variants.length > 0 && (
-                                <div className="border-r border-border/50 pr-8">
+                                <div className="border-r border-border pr-8">
                                     <div className="relative" ref={variantDropdownRef}>
                                         <button
                                             type="button"
@@ -483,7 +468,7 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
                                             <ChevronDown size={14} className={`transition-transform ${variantDropdownOpen ? 'rotate-180' : ''}`} />
                                         </button>
 
-                                        <div className={`absolute left-0 top-full mt-2 w-48 bg-background/80 backdrop-blur-2xl border border-border divide-y divide-border/50 rounded-xl overflow-y-auto max-h-64 custom-scrollbar transition-all shadow-xl z-30 flex flex-col origin-top-left transform ${variantDropdownOpen ? 'opacity-100 visible scale-100 pointer-events-auto' : 'opacity-0 invisible scale-95 pointer-events-none'}`}>
+                                        <div className={`absolute left-0 top-full mt-2 w-48 bg-background/80 backdrop-blur-2xl border border-border divide-y divide-border rounded-xl overflow-y-auto max-h-64 custom-scrollbar transition-all shadow-xl z-30 flex flex-col origin-top-left transform ${variantDropdownOpen ? 'opacity-100 visible scale-100 pointer-events-auto' : 'opacity-0 invisible scale-95 pointer-events-none'}`}>
                                             {sortedVariants.map(variant => {
                                                 const isSelected = activeVariant
                                                     ? activeVariant.name === variant.name
@@ -536,7 +521,7 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
                             </div>
 
                             {/* Set Toggle */}
-                            <div className="hidden md:flex items-center gap-4 text-sm font-medium text-muted border-l border-border/50 pl-8">
+                            <div className="hidden md:flex items-center gap-4 text-sm font-medium text-muted border-l border-border pl-8">
                                 <button
                                     onClick={() => setSetMode('basic')}
                                     className={`transition-colors duration-300 ease-in-out hover:text-foreground ${setMode === 'basic' ? 'text-foreground' : ''}`}
@@ -561,7 +546,7 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
                 </div>
 
                 {/* Right: must be taller than viewport */}
-                <div className="lg:w-1/2 p-8 pb-32 md:border border-border/50">
+                <div className="lg:w-1/2 md:min-h-[87.6vh] p-8 pb-32 zmd:border border-border">
 
                     {setMode === 'basic' ? (
                         <CategoryView
@@ -591,13 +576,13 @@ export default function GlyphMap({ fontFamily, fontUrl, variants = [] }: GlyphMa
                             {isScanning ? (
                                 <div className="w-full h-full flex justify-center items-center bg-background text-foreground">Loading...</div>
                             ) : (
-                                <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-px bg-muted/10 border border-border/50">
+                                <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-1">
                                     {availableGlyphs.length > 0 ? availableGlyphs.map(char => (
                                         <button
                                             key={char}
                                             onClick={() => setSelectedChar(char)}
                                             aria-label={`Inspect glyph ${char}`}
-                                            className={`aspect-square flex items-center justify-center bg-background hover:bg-muted/5 border border-transparent hover:border-foreground transition-colors duration-300 ease-in-out ${selectedChar === char ? 'ring-1 ring-foreground z-10' : ''}`}
+                                            className={`aspect-square flex items-center justify-center transition-colors duration-300 ease-in-out ${selectedChar === char ? ' z-10 bg-foreground text-background' : 'bg-card-background hover:bg-border'}`}
                                         >
                                             <span style={{ fontFamily: `"${fontFamily}"` }} className="text-2xl">{char}</span>
                                         </button>
@@ -620,7 +605,7 @@ function CategoryView({ fontFamily, basicUppercase, basicLowercase, basicNumeral
     return (
         <div className="space-y-6 md:space-y-12">
             {/* Mobile Tabs */}
-            <div className="flex justify-center gap-4 md:hidden border-b border-border/50 pb-4">
+            <div className="flex justify-center gap-4 md:hidden border-b border-border pb-4">
                 {(['Uppercase', 'Lowercase', 'Numerals'] as const).map(tab => (
                     <button
                         key={tab}
@@ -635,13 +620,13 @@ function CategoryView({ fontFamily, basicUppercase, basicLowercase, basicNumeral
             {/* Uppercase */}
             <div className={activeTab === 'Uppercase' ? 'block' : 'hidden md:block'}>
                 <h3 className="hidden md:block text-xs font-mono text-muted uppercase mb-4 text-right">Uppercase</h3>
-                <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-px bg-muted/10 border border-border/50">
+                <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-1">
                     {basicUppercase.map((char: string) => (
                         <button
                             key={char}
                             onClick={() => setSelectedChar(char)}
                             aria-label={`Inspect glyph ${char}`}
-                            className={`aspect-square flex items-center justify-center bg-background hover:bg-muted/5 border border-transparent hover:border-foreground transition-colors duration-300 ease-in-out ${selectedChar === char ? 'ring-1 ring-foreground z-10' : ''}`}
+                            className={`aspect-square flex items-center justify-center transition-colors duration-300 ease-in-out ${selectedChar === char ? ' z-10 bg-foreground text-background' : 'bg-card-background hover:bg-border'}`}
                         >
                             <span style={{ fontFamily: `"${fontFamily}"` }} className="text-2xl">{char}</span>
                         </button>
@@ -652,13 +637,13 @@ function CategoryView({ fontFamily, basicUppercase, basicLowercase, basicNumeral
             {/* Lowercase */}
             <div className={activeTab === 'Lowercase' ? 'block' : 'hidden md:block'}>
                 <h3 className="hidden md:block text-xs font-mono text-muted uppercase mb-4 text-right">Lowercase</h3>
-                <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-px bg-muted/10 border border-border/50">
+                <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-1">
                     {basicLowercase.map((char: string) => (
                         <button
                             key={char}
                             onClick={() => setSelectedChar(char)}
                             aria-label={`Inspect glyph ${char}`}
-                            className={`aspect-square flex items-center justify-center bg-background hover:bg-muted/5 border border-transparent hover:border-foreground transition-colors duration-300 ease-in-out ${selectedChar === char ? 'ring-1 ring-foreground z-10' : ''}`}
+                            className={`aspect-square flex items-center justify-center transition-colors duration-300 ease-in-out ${selectedChar === char ? ' z-10 bg-foreground text-background' : 'bg-card-background hover:bg-border'}`}
                         >
                             <span style={{ fontFamily: `"${fontFamily}"` }} className="text-2xl">{char}</span>
                         </button>
@@ -669,13 +654,13 @@ function CategoryView({ fontFamily, basicUppercase, basicLowercase, basicNumeral
             {/* Numerals */}
             <div className={activeTab === 'Numerals' ? 'block' : 'hidden md:block'}>
                 <h3 className="hidden md:block text-xs font-mono text-muted uppercase mb-4 text-right">Numerals</h3>
-                <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-px bg-muted/10 border border-border/50">
+                <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-1">
                     {basicNumerals.map((char: string) => (
                         <button
                             key={char}
                             onClick={() => setSelectedChar(char)}
                             aria-label={`Inspect glyph ${char}`}
-                            className={`aspect-square flex items-center justify-center bg-background hover:bg-muted/5 border border-transparent hover:border-foreground transition-colors duration-300 ease-in-out ${selectedChar === char ? 'ring-1 ring-foreground z-10' : ''}`}
+                            className={`aspect-square flex items-center justify-center transition-colors duration-300 ease-in-out ${selectedChar === char ? ' z-10 bg-foreground text-background' : 'bg-card-background hover:bg-border'}`}
                         >
                             <span style={{ fontFamily: `"${fontFamily}"` }} className="text-2xl">{char}</span>
                         </button>

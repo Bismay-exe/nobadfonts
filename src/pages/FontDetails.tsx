@@ -589,7 +589,7 @@ export default function FontDetails() {
                 </div>
 
                 {/* 7. Real-World Context Preview */}
-                <div id="context" className="scroll-mt-24 space-y-8 mt-40">
+                <div id="context" className="hidden scroll-mt-24 space-y-8 mt-40">
                     <div className="flex justify-center items-center gap-4 py-10">
                         <h2 className="relative flex justify-end items-center text-4xl sm:text-6xl md:text-8xl font-inter-tight font-medium zuppercase ztracking-widest text-foreground">
                             Real-World <br className='md:hidden' />Context
@@ -602,7 +602,7 @@ export default function FontDetails() {
                 </div>
 
                 {/* 8. Similar Fonts */}
-                <div id="similar" className="scroll-mt-24">
+                <div id="similar" className="hiddenz scroll-mt-24 pb-24">
                     <FontSimilarSection similarFonts={similarFonts} />
                 </div>
             </div>

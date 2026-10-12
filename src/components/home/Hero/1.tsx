@@ -38,7 +38,7 @@ const Hero = () => {
     }, []);
 
     return (
-        <div ref={containerRef} className="@container max-w-480 min-h-screen text-foreground font-mono selection:bg-primary/0 selection:text-foreground overflow-hidden flex flex-col">
+        <div ref={containerRef} className="@container zmax-w-480 min-h-screen text-foreground font-mono selection:bg-primary/0 selection:text-foreground overflow-hidden flex flex-col">
 
             {/* Main Content */}
             <main className="flex-1 flex flex-col justify-center items-center relative py-14 bg-blackz mt-14 md:mt-18 mx-2 mb-0 md:mb-2"
