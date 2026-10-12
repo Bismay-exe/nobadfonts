@@ -1,11 +1,7 @@
 import {
     Search,
-    Type,
-    Image,
     SlidersHorizontal,
     ArrowUpDown,
-    Maximize2,
-    Minimize2,
     Pencil,
     X,
     ChevronDown,

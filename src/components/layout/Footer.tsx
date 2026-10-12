@@ -1,5 +1,4 @@
 import React, { memo } from 'react';
-import { Github, Instagram, Linkedin } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const Footer: React.FC = memo(() => {
