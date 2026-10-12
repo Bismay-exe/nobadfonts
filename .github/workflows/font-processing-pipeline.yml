@@ -1,0 +1,55 @@
+name: Font Processing Pipeline
+
+# Drains the pending font_processing_queue: downloads release ZIPs, classifies
+# family/sub-family/variant (Gemini, with embedded OpenType metadata as fallback),
+# creates the sub-family fonts rows, and publishes variants to Supabase Storage +
+# DB through the atomic publish RPC. This is the single production pipeline.
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+    inputs:
+      queue_id:
+        description: 'Optional: process only this font_processing_queue row id'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: font-processing-pipeline
+  cancel-in-progress: false
+
+jobs:
+  process:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install fontTools
+        run: pip install fonttools brotli
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Process pending font queue
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          FONT_PROCESSING_QUEUE_ID: ${{ github.event.inputs.queue_id }}
+        run: node scripts/font-processing/process-queue.js
