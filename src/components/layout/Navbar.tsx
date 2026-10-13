@@ -1,8 +1,8 @@
 "use client";
 
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { cn } from "../../lib/utils";
 import { Type, Combine, Terminal, Users, Shield, Plus, Sun, Moon, UserRound, BookOpen, Search, X, Menu, Star, ShieldAlert, LayoutDashboard, Bot } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -14,6 +14,7 @@ import { Squircle } from "react-ios-corners";
 import { useBag } from "../../contexts/BagContext";
 import { DocsSearchModal } from "../docs/DocsSearchModal";
 import Switch from "../ui/ThemeToggle";
+import { MorphingSearchChips } from "../motion/morphing-search-chips";
 
 export default function Navbar() {
     const { user, profile } = useAuth();
@@ -33,6 +34,62 @@ export default function Navbar() {
     const [searchOpen, setSearchOpen] = useState(false);
     const location = useLocation();
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+
+    const isFontsPage = location.pathname === "/fonts";
+
+    const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+    const [navQuery, setNavQuery] = useState(
+        isFontsPage ? (searchParams.get("query") || "") : ""
+    );
+    const [navChips, setNavChips] = useState<string[]>(
+        isFontsPage && searchParams.get("categories")
+            ? searchParams.get("categories")!.split(",").filter(Boolean)
+            : []
+    );
+
+    // Reset search expanded when navigating between pages
+    useEffect(() => {
+        setIsSearchExpanded(false);
+    }, [location.pathname]);
+
+    // Keep navbar search state in sync when URL parameters change on /fonts page
+    useEffect(() => {
+        if (location.pathname === "/fonts") {
+            setNavQuery(searchParams.get("query") || "");
+            setNavChips(
+                searchParams.get("categories")
+                    ? searchParams.get("categories")!.split(",").filter(Boolean)
+                    : []
+            );
+        }
+    }, [location.pathname, searchParams]);
+
+    const handleNavbarQueryChange = useCallback(
+        (q: string) => {
+            setNavQuery(q);
+            if (location.pathname === "/fonts") {
+                const nextParams = new URLSearchParams(searchParams);
+                if (q.trim()) nextParams.set("query", q.trim());
+                else nextParams.delete("query");
+                navigate(`/fonts?${nextParams.toString()}`, { replace: true });
+            }
+        },
+        [location.pathname, searchParams, navigate],
+    );
+
+    const handleNavbarChipsChange = useCallback(
+        (c: string[]) => {
+            setNavChips(c);
+            if (location.pathname === "/fonts") {
+                const nextParams = new URLSearchParams(searchParams);
+                if (c.length > 0) nextParams.set("categories", c.join(","));
+                else nextParams.delete("categories");
+                navigate(`/fonts?${nextParams.toString()}`, { replace: true });
+            }
+        },
+        [location.pathname, searchParams, navigate],
+    );
 
     // Checks if path starts with '/docs/' and ensures it isn't just '/docs' or '/docs/'
     const inDocs = location.pathname.startsWith("/docs");
@@ -279,13 +336,14 @@ export default function Navbar() {
                     "fixed top-0 w-full left-1/2 -translate-x-1/2 z-50 transition-all duration-300",
                     isScrolled
                         ? "max-w-full md:rounded-none bg-linear-to-b from-background via-background/60 to-background/0 py-2 md:py-4 px-6 md:px-10"
-                        : "max-w-full md:rounded-none zbg-linear-to-b from-background via-background/60 to-background/0 py-2 md:py-4 px-6 md:px-10",
+                        : "max-w-full md:rounded-none bg-red-500z zbg-linear-to-b from-background via-background/60 to-background/0 py-2 md:py-4 px-6 md:px-10",
                     // : "md:top-4 max-w-7xl md:rounded-3xl bg-transparent border-none py-4 px-4"
                 )}
             >
                 <div className="flex items-center pt-[env(safe-area-inset-top)] md:pt-0">
-                    <div className="max-w-480 w-full mx-auto flex items-center justify-between">
-                        <div className="flex gap-10">
+                    <div className="max-w-480 w-full mx-auto md:grid grid-cols-3 flex items-center justify-between">
+                        {/* Left Side Actions */}
+                        <div className={cn("flex gap-10 transition-all duration-300", isSearchExpanded && "hidden md:flex")}>
                             <div className="flex gap-4">
                                 {inDocs && (
                                     <button
@@ -370,8 +428,35 @@ export default function Navbar() {
                             </div>
                         </div>
 
+                        {/* Center Morphing Search Bar */}
+                        <div
+                            className={cn(
+                                "transition-all duration-300 z-40 flex justify-center",
+                                isSearchExpanded
+                                    ? "w-full flex-1 max-w-none md:max-w-xl mx-0 md:mx-4"
+                                    : "flex-1 max-w-sm lg:max-w-md xl:max-w-xl mx-2 sm:mx-4"
+                            )}
+                        >
+                            <MorphingSearchChips
+                                size="default"
+                                open={isSearchExpanded}
+                                onOpenChange={setIsSearchExpanded}
+                                query={navQuery}
+                                onQueryChange={handleNavbarQueryChange}
+                                chips={navChips}
+                                onChipsChange={handleNavbarChipsChange}
+                                side="bottom"
+                                className="w-full"
+                            />
+                        </div>
+
                         {/* Right Side Actions */}
-                        <div className="flex items-center gap-3">
+                        <div
+                            className={cn(
+                                "flex justify-end items-center gap-3 transition-all duration-300",
+                                isSearchExpanded && "hidden md:flex"
+                            )}
+                        >
                             {/* Update Download Icon */}
                             {hasUpdate && (
                                 <motion.button

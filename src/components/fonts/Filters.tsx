@@ -516,16 +516,36 @@ export const Filters = React.memo(
                                     </h3>
                                     <div className="flex gap-1.5 md:gap-2 flex-wrap">
                                         {group.items.map((cat) => {
-                                            const isSelected = filters.categories?.includes(cat.id);
+                                            const isSelected = Boolean(
+                                                filters.categories?.some(
+                                                    (c) =>
+                                                        c.toLowerCase() === cat.id.toLowerCase() ||
+                                                        (cat.id === "monospace" && c.toLowerCase() === "mono") ||
+                                                        (cat.id === "mono" && c.toLowerCase() === "monospace")
+                                                )
+                                            );
                                             return (
                                                 <button
                                                     key={cat.id}
                                                     type="button"
                                                     onClick={() => {
                                                         const current = filters.categories || [];
-                                                        const newCategories = current.includes(cat.id)
-                                                            ? current.filter((c) => c !== cat.id)
-                                                            : [...current, cat.id];
+                                                        const newCategories = isSelected
+                                                            ? current.filter(
+                                                                (c) =>
+                                                                    c.toLowerCase() !== cat.id.toLowerCase() &&
+                                                                    !(cat.id === "monospace" && c.toLowerCase() === "mono") &&
+                                                                    !(cat.id === "mono" && c.toLowerCase() === "monospace")
+                                                            )
+                                                            : [
+                                                                ...current.filter(
+                                                                    (c) =>
+                                                                        c.toLowerCase() !== cat.id.toLowerCase() &&
+                                                                        !(cat.id === "monospace" && c.toLowerCase() === "mono") &&
+                                                                        !(cat.id === "mono" && c.toLowerCase() === "monospace")
+                                                                ),
+                                                                cat.id,
+                                                            ];
                                                         handleChange("categories", newCategories);
                                                     }}
                                                     className={`

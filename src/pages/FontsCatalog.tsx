@@ -29,11 +29,25 @@ const MasonryCard = ({ data, width }: { data: any; width: number }) => (
 export default function FontsCatalog() {
     const location = useLocation();
     const [searchParams, setSearchParams] = useSearchParams();
-    const [filters, setFilters] = useState<FontFilterParams>({
-        query: searchParams.get('query') || '',
-        categories: searchParams.get('categories') ? searchParams.get('categories')?.split(',') : [],
-        sortBy: (searchParams.get('sortBy') as any) || 'trending',
-    });
+    const filters = useMemo<FontFilterParams>(() => {
+        return {
+            query: searchParams.get('query') || '',
+            categories: searchParams.get('categories') ? searchParams.get('categories')!.split(',').filter(Boolean) : [],
+            sortBy: (searchParams.get('sortBy') as any) || 'trending',
+        };
+    }, [searchParams]);
+
+    const handleFiltersChange = useCallback((nextFilters: FontFilterParams) => {
+        const params = new URLSearchParams();
+        if (nextFilters.query) params.set('query', nextFilters.query);
+        if (nextFilters.categories && nextFilters.categories.length > 0) {
+            params.set('categories', nextFilters.categories.join(','));
+        }
+        if (nextFilters.sortBy && nextFilters.sortBy !== 'trending') {
+            params.set('sortBy', nextFilters.sortBy);
+        }
+        setSearchParams(params, { replace: true });
+    }, [setSearchParams]);
 
     const [viewMode, setViewMode] = useViewMode();
     const [expandedFontId, setExpandedFontId] = useState<string | null>(null);
@@ -96,17 +110,6 @@ export default function FontsCatalog() {
         if (node) observer.current.observe(node);
     }, [loading, loadingMore, hasMore, loadMore]);
 
-    // Update URL when filters change
-    useEffect(() => {
-        const params: any = {};
-        if (filters.query) params.query = filters.query;
-        if (filters.categories && filters.categories.length > 0) {
-            params.categories = filters.categories.join(',');
-        }
-        if (filters.sortBy && filters.sortBy !== 'trending') params.sortBy = filters.sortBy;
-        setSearchParams(params, { replace: true });
-    }, [filters, setSearchParams]);
-
     // Restore scroll position when fonts are loaded
     const restoredRef = useRef(false);
 
@@ -168,13 +171,13 @@ export default function FontsCatalog() {
 
     const columns =
         width > 3000 ? 7 :
-        width > 2560 ? 6 : // 4k Tvs
-            width > 1920 ? 5 : // Large TVs / Ultra-wide monitors
-                width > 1440 ? 4 : // Large Laptops / Standard Desktops
-                    width > 1024 ? 3 : // Standard Laptops / Large Tablets
-                        width > 768 ? 2 : // Medium Tablets (Portrait)
-                            width > 480 ? 2 : // Large Phones (Landscape)
-                            1;  // Standard Mobile Phones
+            width > 2560 ? 6 : // 4k Tvs
+                width > 1920 ? 5 : // Large TVs / Ultra-wide monitors
+                    width > 1440 ? 4 : // Large Laptops / Standard Desktops
+                        width > 1024 ? 3 : // Standard Laptops / Large Tablets
+                            width > 768 ? 2 : // Medium Tablets (Portrait)
+                                width > 480 ? 2 : // Large Phones (Landscape)
+                                    1;  // Standard Mobile Phones
 
 
     const activeCategories = filters.categories && filters.categories.length > 0 ? filters.categories : [];
@@ -211,10 +214,9 @@ export default function FontsCatalog() {
                 keywords={['free fonts', 'font catalog', 'typography', ...activeCategories]}
                 schema={catalogSchema}
             />
-
             <div className="relative px-1 sm:px-2 md:px-4 pt-0 md:pt-6 w-full">
                 {/* Header */}
-                <div className="mb-8 text-center px-8">
+                <div className="mb-10 text-center px-4 sm:px-8 relative z-30">
                     <h1 className="text-4xl md:text-6xl font-bold tracking-tighter text-foreground/85 mb-4">Catalog</h1>
                     <p className="text-muted max-w-xl mx-auto">
                         Discover the perfect typeface for your next project from our extensive collection of premium fonts.
@@ -225,7 +227,7 @@ export default function FontsCatalog() {
                 <aside className="w-full shrink-0 transition-all duration-300 ease-in-out">
                     <Filters
                         filters={filters}
-                        onChange={setFilters}
+                        onChange={handleFiltersChange}
                         viewMode={viewMode}
                         onViewModeChange={setViewMode}
                         showExpandToggle={true} // Enable on all screens

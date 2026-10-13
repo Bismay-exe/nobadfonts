@@ -35,3 +35,11 @@ export const useLenis = () => {
 
     return lenis;
 };
+
+export const stopLenis = () => {
+    lenis?.stop();
+};
+
+export const startLenis = () => {
+    lenis?.start();
+};

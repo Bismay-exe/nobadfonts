@@ -20,10 +20,19 @@ export function useFonts({ query, categories, sortBy = 'trending' }: FontFilterP
     setError(null);
 
     try {
+      const normalizedCategories = categories && categories.length > 0
+        ? Array.from(new Set(categories.flatMap((c) => {
+            const lower = c.trim().toLowerCase();
+            if (lower === 'mono') return ['mono', 'monospace'];
+            if (lower === 'monospace') return ['monospace', 'mono'];
+            return [lower];
+          })))
+        : undefined;
+
       const rpcParams = {
         query: query || undefined,
         sort_by: sortBy,
-        filter_tags: categories && categories.length > 0 ? categories : undefined,
+        filter_tags: normalizedCategories,
         limit_val: initialLimit,
         offset_val: currentOffset
       };
