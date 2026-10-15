@@ -142,19 +142,34 @@ export default function FontDetails() {
             loadFont(`custom-font-${font.slug}`, mainSource.url, mainSource.format);
         }
 
-        // Load variant fonts
-        font.font_variants?.forEach(variant => {
-            let variantSource = null;
-            if (variant.woff2_url) variantSource = { url: variant.woff2_url, format: 'woff2' };
-            else if (variant.woff_url) variantSource = { url: variant.woff_url, format: 'woff' };
-            else if (variant.ttf_url) variantSource = { url: variant.ttf_url, format: 'truetype' };
-            else if (variant.otf_url) variantSource = { url: variant.otf_url, format: 'opentype' };
+        // Lazy-load variant fonts only when the variants section scrolls into view
+        if (font.font_variants && font.font_variants.length > 0) {
+            const variantsEl = document.getElementById('variants');
+            if (!variantsEl) return;
 
-            if (variantSource) {
-                const variantFamily = `font-${font.id}-${variant.variant_name}`;
-                loadFont(variantFamily, variantSource.url, variantSource.format);
-            }
-        });
+            const variantObserver = new IntersectionObserver(
+                (entries) => {
+                    if (entries[0].isIntersecting) {
+                        variantObserver.disconnect();
+                        font.font_variants?.forEach(variant => {
+                            let variantSource = null;
+                            if (variant.woff2_url) variantSource = { url: variant.woff2_url, format: 'woff2' };
+                            else if (variant.woff_url) variantSource = { url: variant.woff_url, format: 'woff' };
+                            else if (variant.ttf_url) variantSource = { url: variant.ttf_url, format: 'truetype' };
+                            else if (variant.otf_url) variantSource = { url: variant.otf_url, format: 'opentype' };
+
+                            if (variantSource) {
+                                const variantFamily = `font-${font.id}-${variant.variant_name}`;
+                                loadFont(variantFamily, variantSource.url, variantSource.format);
+                            }
+                        });
+                    }
+                },
+                { rootMargin: '200px' }
+            );
+            variantObserver.observe(variantsEl);
+            return () => variantObserver.disconnect();
+        }
     }, [font]);
 
     const handleFavorite = async () => {
@@ -294,9 +309,16 @@ export default function FontDetails() {
     // Scroll Detection
     const [isScrolled, setIsScrolled] = useState(false);
     useEffect(() => {
-        const handleScroll = () => setIsScrolled(window.scrollY > 5);
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
+        let rafId: number;
+        const handleScroll = () => {
+            cancelAnimationFrame(rafId);
+            rafId = requestAnimationFrame(() => setIsScrolled(window.scrollY > 5));
+        };
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+            cancelAnimationFrame(rafId);
+        };
     }, []);
 
     // Scroll Progress Sections (must run before early returns)
@@ -418,7 +440,7 @@ export default function FontDetails() {
                 imageAlt={`${font.name} typography preview specimen by ${(font as any).taxonomy?.creator?.foundry || (font as any).taxonomy?.creator?.publisher || font.designer || 'Unknown'}`}
                 url={fontCanonicalUrl}
                 keywords={font.tags || []}
-                author={(font as any).taxonomy?.creator?.foundry || (font as any).taxonomy?.creator?.publisher || font.designer || 'Unknown'}
+                author={font.designer || 'Unknown'}
                 schema={fontSchema}
             />
 
@@ -490,15 +512,17 @@ export default function FontDetails() {
                     </>
                 )}
 
-                {/* Hidden Share Card for Image Generation */}
-                <div className="absolute -left-2499.75 -top-2499.75">
-                    <SocialShareCard
-                        ref={shareRef}
-                        font={font}
-                        aspectRatio="share"
-                        selectedVariantId={activeOgVariantId || font.og_image_variant_id}
-                    />
-                </div>
+                {/* Hidden Share Card for Image Generation — only mounted when share is triggered */}
+                {(shareLoading || showShareModal) && (
+                    <div className="absolute -left-2499.75 -top-2499.75">
+                        <SocialShareCard
+                            ref={shareRef}
+                            font={font}
+                            aspectRatio="share"
+                            selectedVariantId={activeOgVariantId || font.og_image_variant_id}
+                        />
+                    </div>
+                )}
 
                 <ShareModal
                     isOpen={showShareModal}

@@ -376,7 +376,7 @@ function FontCard({
     return (
         <>
             <div
-                className="group relative -mb-2 sm:mb-0 overflow-hidden flex flex-col active:scale-95 transition-all duration-500 ease-in-out"
+                className="group relative -mb-2 sm:mb-0 overflow-hidden flex flex-col active:scale-95 transition-transform duration-300 ease-in-out will-change-transform"
                 onClick={handleCardClick}
             >
                 <div
@@ -453,7 +453,7 @@ function FontCard({
                                     </div>
                                 </div>
                             ) : (
-                                <div className="py-4 sm:py-8 md:py-12 px-0 sm:px-2 md:px-4 relative z-10 bg-card-background backdrop-blur-3xl rounded-4xl">
+                                <div className="py-4 sm:py-8 md:py-12 px-0 sm:px-2 md:px-4 relative z-10 bg-card-background rounded-4xl">
                                     <AutoSizingText
                                         text={customText || font.name}
                                         fontId={font.id}
@@ -464,7 +464,7 @@ function FontCard({
                             )}
 
                             {/* Hover overlay gradient for collapsed state */}
-                            <div className={`absolute inset-0 flex flex-col justify-between items-end w-full p-5 rounded-4xl z-10 transition-all duration-300 ease-in-out pointer-events-none ${isExpanded ? "opacity-100" : "bg-linear-to-t opacity-0 group-hover:opacity-100"} ${viewMode === 'image' ? 'text-white from-black/50 via-transparent via-100% to-transparent' : 'text-foreground'}`}>
+                            <div className={`absolute inset-0 flex flex-col justify-between items-end w-full p-5 rounded-4xl z-10 transition-opacity duration-300 ease-in-out pointer-events-none ${isExpanded ? "opacity-100" : "bg-linear-to-t opacity-0 group-hover:opacity-100"} ${viewMode === 'image' ? 'text-white from-black/50 via-transparent via-100% to-transparent' : 'text-foreground'}`}>
                                 <div className="w-full flex justify-between items-start gap-3">
                                     <div className="flex items-center justify-end gap-2 font-inter-tight tracking-wider">
                                         {/* Likes */}
@@ -642,7 +642,7 @@ function FontCard({
                                         <Link
                                             key={i}
                                             to={`?categories=${tag}`}
-                                            className="bg-foreground/5 text-foreground/50 hover:bg-foreground/90 backdrop-blur-md hover:text-background text-[10px] md:text-[11px] px-2.5 py-1.5 rounded-full tracking-wider font-normal font-inter-tight zuppercase transition-colors duration-300 ease-in-out"
+                                            className="bg-foreground/5 text-foreground/50 hover:bg-foreground/90 hover:text-background text-[10px] md:text-[11px] px-2.5 py-1.5 rounded-full tracking-wider font-normal font-inter-tight zuppercase transition-colors duration-300 ease-in-out"
                                         >
                                             {tag}
                                         </Link>

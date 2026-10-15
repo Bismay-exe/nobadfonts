@@ -10,12 +10,8 @@ import {
   TrendingUp,
   Building2,
 } from "lucide-react";
-import {
-  AnimatePresence,
-  motion,
-  type Transition,
-  useReducedMotion,
-} from "motion/react";
+import gsap from "gsap";
+
 import {
   type KeyboardEvent as ReactKeyboardEvent,
   type PointerEvent as ReactPointerEvent,
@@ -31,9 +27,7 @@ import {
 } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
-import { EASE_OUT, SPRING_LAYOUT, SPRING_SWAP } from "@/lib/ease";
 import { useDismiss } from "@/lib/hooks/use-dismiss";
-import { PresenceGate } from "@/lib/presence-gate";
 import { cn } from "@/lib/utils";
 import { MOODS, type MoodDefinition } from "@/config/moods";
 import { POPULAR_TAGS, FALLBACK_FONTS } from "@/config/search-fallbacks";
@@ -47,14 +41,6 @@ const PANEL_GLASS =
 const BAR_GLASS =
   "bg-[#161618] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06),0_12px_32px_-12px_rgba(0,0,0,0.5)] text-white";
 
-const CHIP_HIDDEN = { opacity: 0, scale: 0.9, filter: "blur(4px)" };
-const CHIP_SHOWN = { opacity: 1, scale: 1, filter: "blur(0px)" };
-const CHIP_ENTER: Transition = {
-  ...SPRING_SWAP,
-  opacity: { duration: 0.16 },
-  filter: { duration: 0.2 },
-};
-const CHIP_EXIT: Transition = { duration: 0.14, ease: EASE_OUT };
 const SURFACE_RADIUS = 28;
 const PANEL_ROOM = 360;
 
@@ -296,8 +282,9 @@ export function MorphingSearchChips({
   actions,
   className,
 }: MorphingSearchChipsProps) {
-  const reduce = useReducedMotion();
   const navigate = useNavigate();
+  const panelRef = useRef<HTMLDivElement>(null);
+  const backdropMRef = useRef<HTMLDivElement>(null);
 
   const isCompact = size === "sm";
   const surfaceRadius = isCompact ? 20 : SURFACE_RADIUS;
@@ -824,8 +811,9 @@ export function MorphingSearchChips({
     const added = chips.length > chipCount.current;
     chipCount.current = chips.length;
     if (!row || !added || row.scrollWidth <= row.clientWidth) return;
-    row.scrollTo({ left: rtl ? -row.scrollWidth : row.scrollWidth, behavior: reduce ? "auto" : "smooth" });
-  }, [chips.length, reduce, rtl]);
+    const prefersReduced = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    row.scrollTo({ left: rtl ? -row.scrollWidth : row.scrollWidth, behavior: prefersReduced ? "auto" : "smooth" });
+  }, [chips.length, rtl]);
 
   const full = maxChips !== undefined && chips.length >= maxChips;
 
@@ -1027,8 +1015,20 @@ export function MorphingSearchChips({
     setOpen(true);
   };
 
-  const layout = reduce ? { duration: 0 } : SPRING_LAYOUT;
   const below = placed === "bottom";
+
+  // GSAP: animate panel open/close
+  useEffect(() => {
+    const el = panelRef.current;
+    if (!el) return;
+    if (panelOpen) {
+      const dir = below ? -8 : 8;
+      gsap.fromTo(el, { opacity: 0, y: dir, scale: 0.98 }, { opacity: 1, y: 0, scale: 1, duration: 0.18, ease: "power2.out" });
+    } else {
+      const dir = below ? -6 : 6;
+      gsap.to(el, { opacity: 0, y: dir, scale: 0.98, duration: 0.12, ease: "power2.in" });
+    }
+  }, [panelOpen, below]);
 
   // Content for the expanded panel matching the screenshots
   const panelContent = (
@@ -1092,18 +1092,16 @@ export function MorphingSearchChips({
                 );
                 const count = tagCounts[tag.id] ?? tag.defaultCount;
                 return (
-                  <motion.button
+                  <button
                     key={tag.id}
                     type="button"
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.96 }}
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
                       handleTagClick(tag.id, tag.label);
                     }}
                     className={cn(
-                      "flex items-center gap-1.5 shrink-0 rounded-full px-3.5 py-1.5 text-xs sm:text-sm font-medium transition-all duration-300 select-none cursor-pointer",
+                      "flex items-center gap-1.5 shrink-0 rounded-full px-3.5 py-1.5 text-xs sm:text-sm font-medium transition-all duration-300 select-none cursor-pointer active:scale-95",
                       isSelected
                         ? "bg-white text-black font-semibold shadow-sm"
                         : "bg-white/8 hover:bg-white/14 text-white/70 hover:text-white",
@@ -1118,7 +1116,7 @@ export function MorphingSearchChips({
                     >
                       {count}
                     </span>
-                  </motion.button>
+                  </button>
                 );
               })
               : MOODS.map((mood) => {
@@ -1127,18 +1125,16 @@ export function MorphingSearchChips({
                 );
                 const count = moodCounts[mood.id] ?? 8;
                 return (
-                  <motion.button
+                  <button
                     key={mood.id}
                     type="button"
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.96 }}
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
                       handleMoodClick(mood);
                     }}
                     className={cn(
-                      "flex items-center gap-1.5 shrink-0 rounded-full px-3.5 py-1.5 text-xs sm:text-sm font-medium transition-all duration-200 select-none cursor-pointer",
+                      "flex items-center gap-1.5 shrink-0 rounded-full px-3.5 py-1.5 text-xs sm:text-sm font-medium transition-all duration-200 select-none cursor-pointer active:scale-95",
                       isSelected
                         ? "bg-white text-black font-semibold shadow-sm"
                         : "bg-white/8 hover:bg-white/14 text-white/80 hover:text-white border border-white/5",
@@ -1154,7 +1150,7 @@ export function MorphingSearchChips({
                     >
                       {count}
                     </span>
-                  </motion.button>
+                  </button>
                 );
               })}
           </div>
@@ -1379,65 +1375,42 @@ export function MorphingSearchChips({
       {/* Low-opacity dark backdrop covering whole screen portaled to body */}
       {typeof document !== "undefined" &&
         createPortal(
-          <AnimatePresence>
-            {panelOpen && (
-              <motion.div
-                key="screen-backdrop"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
-                onPointerDown={(e) => {
-                  e.preventDefault();
-                  close();
-                }}
-                onWheel={(e) => e.preventDefault()}
-                onTouchMove={(e) => e.preventDefault()}
-                className="fixed inset-0 z-40 bg-black/40 backdrop-blur-xs cursor-pointer"
-                aria-hidden="true"
-              />
-            )}
-          </AnimatePresence>,
+          <div
+            ref={backdropMRef}
+            onPointerDown={(e) => {
+              e.preventDefault();
+              close();
+            }}
+            onWheel={(e) => e.preventDefault()}
+            onTouchMove={(e) => e.preventDefault()}
+            className="fixed inset-0 z-40 bg-black/40 backdrop-blur-xs cursor-pointer"
+            style={{ display: panelOpen ? "block" : "none" }}
+            aria-hidden="true"
+          />,
           document.body,
         )}
 
       {/* Morphing Expandable Flyout Panel */}
-      <AnimatePresence>
-        {panelOpen ? (
-          <PresenceGate key="panel">
-            {({ gate }) => (
-              <motion.div
-                {...gate}
-                initial={reduce ? { opacity: 0 } : { opacity: 0, y: below ? -8 : 8, scale: 0.98 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={
-                  reduce
-                    ? { opacity: 0, transition: { duration: 0.12 } }
-                    : { opacity: 0, y: below ? -6 : 6, scale: 0.98, transition: { duration: 0.12 } }
-                }
-                transition={{ duration: 0.18, ease: EASE_OUT }}
-                style={{ borderRadius: surfaceRadius }}
-                className={cn(
-                  "absolute z-50 left-1/2 -translate-x-1/2 w-[calc(100vw-20px)] sm:w-[540px] md:w-[580px] max-w-xl overflow-hidden",
-                  below ? "top-full mt-2.5" : "bottom-full mb-2.5",
-                  PANEL_GLASS,
-                )}
-              >
-                <div className="max-h-[75vh] sm:max-h-[80vh] overflow-y-auto scrollbar-none p-2 sm:p-2.5">
-                  {panelContent}
-                </div>
-              </motion.div>
-            )}
-          </PresenceGate>
-        ) : null}
-      </AnimatePresence>
+      {panelOpen && (
+        <div
+          ref={panelRef}
+          style={{ borderRadius: surfaceRadius, opacity: 0 }}
+          className={cn(
+            "absolute z-50 left-1/2 -translate-x-1/2 w-[calc(100vw-20px)] sm:w-[540px] md:w-[580px] max-w-xl overflow-hidden",
+            below ? "top-full mt-2.5" : "bottom-full mb-2.5",
+            PANEL_GLASS,
+          )}
+        >
+          <div className="max-h-[75vh] sm:max-h-[80vh] overflow-y-auto scrollbar-none p-2 sm:p-2.5">
+            {panelContent}
+          </div>
+        </div>
+      )}
 
       {/* Main Pill Search Input Bar */}
-      <motion.div
-        layout
-        transition={layout}
+      <div
         onPointerDown={focusField}
-        style={{ borderRadius: surfaceRadius }}
+        style={{ borderRadius: surfaceRadius, transition: "width 0.3s cubic-bezier(0.16,1,0.3,1)" }}
         className={cn(
           "relative z-40 flex min-w-0 items-center gap-1.5 sm:gap-2 max-w-full",
           isCompact ? "h-10 ps-3 pe-2" : "h-14 ps-3 sm:ps-4 pe-2.5 sm:pe-4",
@@ -1462,49 +1435,38 @@ export function MorphingSearchChips({
             "-mx-1 px-1.5 sm:-mx-1.5 sm:px-2 mask-[linear-gradient(to_right,transparent,#000_8px,#000_calc(100%-8px),transparent)]",
           )}
         >
-          <AnimatePresence initial={false} mode="popLayout">
-            {chips.map((chip) => {
-              const chipLabel = getChipLabel(chip);
-              return (
-                <motion.span
-                  key={chip}
-                  layout={reduce ? false : "position"}
-                  initial={reduce ? { opacity: 0 } : CHIP_HIDDEN}
-                  animate={reduce ? { opacity: 1 } : CHIP_SHOWN}
-                  exit={
-                    reduce
-                      ? { opacity: 0, transition: { duration: 0.1 } }
-                      : { ...CHIP_HIDDEN, transition: CHIP_EXIT }
-                  }
-                  transition={reduce ? { duration: 0.12 } : CHIP_ENTER}
-                  style={{ transformOrigin: rtl ? "right center" : "left center" }}
-                  className={cn(
-                    "flex shrink-0 items-center gap-1 rounded-full text-white transition-all duration-200 select-none",
-                    isCompact ? "h-6.5 ps-2.5 pe-1 text-[11px]" : "h-8 ps-3 pe-1 text-xs",
-                    marked === chip
-                      ? "bg-red-500/25 text-red-100 ring-1 ring-red-400/80 animate-pulse border border-red-500/40"
-                      : "bg-white/12 text-white hover:bg-white/16",
-                  )}
+          {chips.map((chip) => {
+            const chipLabel = getChipLabel(chip);
+            return (
+              <span
+                key={chip}
+                style={{ transformOrigin: rtl ? "right center" : "left center" }}
+                className={cn(
+                  "flex shrink-0 items-center gap-1 rounded-full text-white transition-all duration-200 select-none",
+                  isCompact ? "h-6.5 ps-2.5 pe-1 text-[11px]" : "h-8 ps-3 pe-1 text-xs",
+                  marked === chip
+                    ? "bg-red-500/25 text-red-100 ring-1 ring-red-400/80 animate-pulse border border-red-500/40"
+                    : "bg-white/12 text-white hover:bg-white/16",
+                )}
+              >
+                <span className="max-w-20 sm:max-w-32 truncate" title={chipLabel}>
+                  {chipLabel}
+                </span>
+                <button
+                  type="button"
+                  disabled={disabled}
+                  aria-label={`Remove filter ${chipLabel}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    removeChip(chip);
+                  }}
+                  className="grid size-5 shrink-0 place-items-center rounded-full text-white/60 outline-none transition-colors hover:bg-white/20 hover:text-white cursor-pointer"
                 >
-                  <span className="max-w-20 sm:max-w-32 truncate" title={chipLabel}>
-                    {chipLabel}
-                  </span>
-                  <button
-                    type="button"
-                    disabled={disabled}
-                    aria-label={`Remove filter ${chipLabel}`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      removeChip(chip);
-                    }}
-                    className="grid size-5 shrink-0 place-items-center rounded-full text-white/60 outline-none transition-colors hover:bg-white/20 hover:text-white cursor-pointer"
-                  >
-                    <X aria-hidden="true" className="size-3" />
-                  </button>
-                </motion.span>
-              );
-            })}
-          </AnimatePresence>
+                  <X aria-hidden="true" className="size-3" />
+                </button>
+              </span>
+            );
+          })}
         </div>
 
         {/* Search Input Field */}
@@ -1587,7 +1549,7 @@ export function MorphingSearchChips({
 
         {/* Trailing actions */}
         {actions ? <div className="flex shrink-0 items-center gap-1">{actions}</div> : null}
-      </motion.div>
+      </div>
 
       {name
         ? chips.map((chip) => <input key={chip} type="hidden" name={name} value={chip} />)

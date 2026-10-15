@@ -57,11 +57,16 @@ export default function FontsCatalog() {
     const bulkToggleTimeoutRef = useRef<any>(null);
     const [customText, setCustomText] = useState('');
     const { user } = useAuth();
-    const [userFavoriteIds, setUserFavoriteIds] = useState<Set<string>>(new Set());
+    const [, setUserFavoriteIds] = useState<Set<string>>(new Set());
+    // Keep a ref to the latest Set so the items memo doesn't need it as a dependency
+    const userFavoriteIdsRef = useRef<Set<string>>(new Set());
+    const [favoriteVersion, setFavoriteVersion] = useState(0);
 
     useEffect(() => {
         if (!user) {
-            setUserFavoriteIds(new Set());
+            const empty = new Set<string>();
+            setUserFavoriteIds(empty);
+            userFavoriteIdsRef.current = empty;
             return;
         }
 
@@ -72,7 +77,10 @@ export default function FontsCatalog() {
             .eq('user_id', user.id)
             .then(({ data, error }) => {
                 if (!isMounted || error || !data) return;
-                setUserFavoriteIds(new Set(data.map((f: any) => f.font_id)));
+                const ids = new Set(data.map((f: any) => f.font_id));
+                userFavoriteIdsRef.current = ids;
+                setUserFavoriteIds(ids);
+                setFavoriteVersion(v => v + 1);
             });
 
         return () => {
@@ -88,8 +96,10 @@ export default function FontsCatalog() {
             } else {
                 next.delete(fontId);
             }
+            userFavoriteIdsRef.current = next;
             return next;
         });
+        setFavoriteVersion(v => v + 1);
     }, []);
 
     const { fonts, loading, loadingMore, error, hasMore, loadMore } = useFonts(filters);
@@ -162,12 +172,14 @@ export default function FontsCatalog() {
                     customText,
                     isExpanded: cardProps.isExpanded,
                     onToggle: cardProps.onToggle,
-                    isFavorited: userFavoriteIds.has(f.id),
+                    isFavorited: userFavoriteIdsRef.current.has(f.id),
                     onFavoriteChange: handleFavoriteToggle,
                     bulkToggleVersion
                 };
             });
-    }, [fonts, viewMode, customText, getCardProps, userFavoriteIds, handleFavoriteToggle, bulkToggleVersion]);
+    // favoriteVersion is the stable trigger; userFavoriteIdsRef.current is read via ref
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [fonts, viewMode, customText, getCardProps, handleFavoriteToggle, bulkToggleVersion, favoriteVersion]);
 
     const columns =
         width > 3000 ? 7 :
@@ -289,7 +301,7 @@ export default function FontsCatalog() {
                                     columnCount={columns}
                                     columnGutter={16}
                                     itemHeightEstimate={280}
-                                    overscanBy={1}
+                                    overscanBy={3}
                                     render={MasonryCard}
                                 />
                             </div>
