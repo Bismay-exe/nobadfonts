@@ -17,7 +17,9 @@ import {
     Layers,
     Clock,
     Check,
-    Trash2
+    Trash2,
+    SlidersHorizontal,
+    RotateCcw
 } from 'lucide-react';
 
 interface AdminOgImageManagerProps {
@@ -36,6 +38,16 @@ type GenerationStatus =
     | 'saving'
     | 'success'
     | 'error';
+
+// Helper to determine default OG card title size based on font name length
+const getDefaultTitleFontSize = (name?: string, isOg: boolean = true): number => {
+    const len = name ? name.length : 0;
+    if (isOg) {
+        if (len <= 6) return 128;
+        return 96;
+    }
+    return 128;
+};
 
 // Helpers to extract storage path and filename from Supabase URL
 const getPathFromUrl = (url: string) => {
@@ -61,7 +73,6 @@ const getFileNameFromUrl = (url: string) => {
 
 export default function AdminOgImageManager({ font, onFontUpdated, onVariantChange }: AdminOgImageManagerProps) {
     const { profile } = useAuth();
-    if (profile?.role !== 'admin') return null;
 
     const variants = useMemo(() => font.font_variants || [], [font.font_variants]);
     const currentVariantsCount = variants.length > 0 ? variants.length : 1;
@@ -77,12 +88,45 @@ export default function AdminOgImageManager({ font, onFontUpdated, onVariantChan
 
     const [selectedVariantId, setSelectedVariantId] = useState<string>(initialVariantId);
 
-    // Keep parent in sync with variant selection
+    // Keep parent in sync with variant selection and reset family override
     useEffect(() => {
         if (selectedVariantId) {
             onVariantChange?.(selectedVariantId);
+            setActiveFontFamily(undefined);
         }
     }, [selectedVariantId, onVariantChange]);
+
+    const defaultTitleSize = useMemo(() => getDefaultTitleFontSize(font.name, true), [font.name]);
+    const [customTitleSize, setCustomTitleSize] = useState<number>(defaultTitleSize);
+    const [previewTab, setPreviewTab] = useState<'live' | 'saved'>('live');
+    const [previewScale, setPreviewScale] = useState<number>(0.3);
+
+    // Sync default size when font changes
+    useEffect(() => {
+        setCustomTitleSize(getDefaultTitleFontSize(font.name, true));
+    }, [font.id, font.name]);
+
+    const hiddenCardRef = useRef<HTMLDivElement>(null);
+    const previewContainerRef = useRef<HTMLDivElement>(null);
+
+    // Dynamically scale live specimen to fit preview container
+    useEffect(() => {
+        const el = previewContainerRef.current;
+        if (!el) return;
+
+        const updateScale = () => {
+            if (el.clientWidth) {
+                setPreviewScale(el.clientWidth / 1200);
+            }
+        };
+
+        updateScale();
+
+        const observer = new ResizeObserver(updateScale);
+        observer.observe(el);
+
+        return () => observer.disconnect();
+    }, [previewTab]);
 
     const [status, setStatus] = useState<GenerationStatus>('idle');
     const [statusMessage, setStatusMessage] = useState<string>('');
@@ -90,8 +134,6 @@ export default function AdminOgImageManager({ font, onFontUpdated, onVariantChan
     const [activeFontFamily, setActiveFontFamily] = useState<string | undefined>(undefined);
     const [orphanedCount, setOrphanedCount] = useState<number>(0);
     const [isDeleting, setIsDeleting] = useState<boolean>(false);
-
-    const hiddenCardRef = useRef<HTMLDivElement>(null);
 
     // Scan for obsolete files in storage folder
     const checkOrphanedFiles = async () => {
@@ -180,9 +222,10 @@ export default function AdminOgImageManager({ font, onFontUpdated, onVariantChan
                     duration: 'short'
                 });
             }
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Purge error:', err);
-            await Toast.show({ text: 'Purge failed: ' + (err.message || 'Unknown error'), duration: 'long' });
+            const message = err instanceof Error ? err.message : 'Unknown error';
+            await Toast.show({ text: 'Purge failed: ' + message, duration: 'long' });
         }
     };
 
@@ -247,10 +290,11 @@ export default function AdminOgImageManager({ font, onFontUpdated, onVariantChan
                 text: 'Custom OG card deleted. Fallback active.',
                 duration: 'short'
             });
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Failed to delete OG card:', err);
+            const message = err instanceof Error ? err.message : 'Unknown error';
             await Toast.show({
-                text: 'Failed to delete OG image: ' + (err.message || 'Unknown error'),
+                text: 'Failed to delete OG image: ' + message,
                 duration: 'long'
             });
         } finally {
@@ -349,7 +393,7 @@ export default function AdminOgImageManager({ font, onFontUpdated, onVariantChan
             setStatusMessage('Committing metadata to database...');
             const nowIso = new Date().toISOString();
 
-            const updatePayload: Record<string, any> = {
+            const updatePayload: Record<string, unknown> = {
                 og_image_url: publicUrl,
                 og_image_variant_id: selectedVariant.id,
                 og_image_variant_count: currentVariantsCount,
@@ -427,18 +471,21 @@ export default function AdminOgImageManager({ font, onFontUpdated, onVariantChan
                 setStatusMessage('');
             }, 3000);
 
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('OG Image Generation Error:', err);
             setStatus('error');
-            setErrorMessage(err.message || 'Unknown error occurred during generation.');
+            const message = err instanceof Error ? err.message : 'Unknown error occurred during generation.';
+            setErrorMessage(message);
             await Toast.show({
-                text: 'Generation failed: ' + (err.message || 'Unknown error'),
+                text: 'Generation failed: ' + message,
                 duration: 'long'
             });
         }
     };
 
     const isWorking = (status !== 'idle' && status !== 'success' && status !== 'error') || isDeleting;
+
+    if (profile?.role !== 'admin') return null;
 
     return (
         <div className="rounded-3xl border-2 border-dashed border-primary/40 bg-foreground/2 p-6 md:p-8 space-y-6 mb-8">
@@ -490,12 +537,72 @@ export default function AdminOgImageManager({ font, onFontUpdated, onVariantChan
             )}
 
             {/* Main Control Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
 
-                {/* Left: Thumbnail Preview of current OG image */}
-                <div className="md:col-span-4">
-                    <div className="relative aspect-1200/630 rounded-2xl overflow-hidden border border-foreground/15 bg-background group shadow-sm">
-                        {font.og_image_url ? (
+                {/* Left: Thumbnail / Live Preview of OG image & Controls */}
+                <div className="md:col-span-5 space-y-3">
+                    {/* Mode Toggle: Live Specimen vs Saved OG Image */}
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1 p-0.5 rounded-xl bg-foreground/5 border border-foreground/10 text-[11px] font-mono">
+                            <button
+                                type="button"
+                                onClick={() => setPreviewTab('live')}
+                                className={`px-2.5 py-1 rounded-lg font-semibold transition-all cursor-pointer ${
+                                    previewTab === 'live'
+                                        ? 'bg-foreground text-background shadow-xs'
+                                        : 'text-muted hover:text-foreground'
+                                }`}
+                            >
+                                <span className="flex items-center gap-1.5">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                    Live Preview
+                                </span>
+                            </button>
+                            {font.og_image_url && (
+                                <button
+                                    type="button"
+                                    onClick={() => setPreviewTab('saved')}
+                                    className={`px-2.5 py-1 rounded-lg font-semibold transition-all cursor-pointer ${
+                                        previewTab === 'saved'
+                                            ? 'bg-foreground text-background shadow-xs'
+                                            : 'text-muted hover:text-foreground'
+                                    }`}
+                                >
+                                    Saved Image
+                                </button>
+                            )}
+                        </div>
+
+                        <span className="text-[10px] font-mono text-muted">
+                            {previewTab === 'live' ? 'Dynamic 1200×630' : 'Current Snapshot'}
+                        </span>
+                    </div>
+
+                    {/* Preview Box Container */}
+                    <div
+                        ref={previewContainerRef}
+                        className="relative aspect-1200/630 rounded-2xl overflow-hidden border border-foreground/15 bg-background group shadow-sm"
+                    >
+                        {previewTab === 'live' ? (
+                            <div
+                                className="absolute top-0 left-0 origin-top-left pointer-events-none select-none"
+                                style={{
+                                    width: '1200px',
+                                    height: '630px',
+                                    transform: `scale(${previewScale})`,
+                                }}
+                            >
+                                <SocialShareCard
+                                    font={font}
+                                    aspectRatio="og"
+                                    selectedVariantId={selectedVariantId}
+                                    fontFamilyOverride={activeFontFamily}
+                                    activeVariantName={selectedVariant?.variant_name}
+                                    variantCount={currentVariantsCount}
+                                    customTitleFontSize={customTitleSize}
+                                />
+                            </div>
+                        ) : font.og_image_url ? (
                             <>
                                 <img
                                     src={font.og_image_url}
@@ -522,12 +629,63 @@ export default function AdminOgImageManager({ font, onFontUpdated, onVariantChan
                         )}
                     </div>
 
+                    {/* Live Font Title Size Slider Control */}
+                    <div className="p-3.5 rounded-2xl border border-foreground/10 bg-foreground/3 space-y-2.5">
+                        <div className="flex items-center justify-between">
+                            <label className="text-xs font-mono font-bold uppercase tracking-wider text-foreground/80 flex items-center gap-1.5">
+                                <SlidersHorizontal className="w-3.5 h-3.5 text-primary" />
+                                Font Title Size
+                            </label>
+                            <div className="flex items-center gap-2">
+                                <span className="text-xs font-mono font-bold px-2 py-0.5 rounded-md bg-foreground/5 text-foreground border border-foreground/10">
+                                    {customTitleSize}px
+                                </span>
+                                {customTitleSize !== defaultTitleSize && (
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setCustomTitleSize(defaultTitleSize);
+                                            setPreviewTab('live');
+                                        }}
+                                        className="text-[10px] font-mono text-primary hover:underline cursor-pointer flex items-center gap-1"
+                                        title="Reset to default calculated font size"
+                                    >
+                                        <RotateCcw className="w-2.5 h-2.5" />
+                                        Reset
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="space-y-1">
+                            <input
+                                type="range"
+                                min={40}
+                                max={420}
+                                step={1}
+                                value={customTitleSize}
+                                onChange={(e) => {
+                                    setCustomTitleSize(Number(e.target.value));
+                                    if (previewTab !== 'live') setPreviewTab('live');
+                                }}
+                                className="w-full accent-primary cursor-pointer h-2 bg-foreground/10 rounded-lg appearance-none"
+                            />
+                            <div className="flex justify-between text-[10px] font-mono text-muted">
+                                <span>Small (40px)</span>
+                                <span className={customTitleSize === defaultTitleSize ? 'text-primary font-bold' : ''}>
+                                    Default ({defaultTitleSize}px)
+                                </span>
+                                <span>Large (220px)</span>
+                            </div>
+                        </div>
+                    </div>
+
                     {/* Metadata Subtext */}
                     {font.og_image_url && (
-                        <div className="mt-2.5 text-[11px] font-mono text-muted space-y-1">
+                        <div className="text-[11px] font-mono text-muted space-y-1 pt-1">
                             <div className="flex items-center gap-1.5">
                                 <Layers className="w-3.5 h-3.5" />
-                                <span>Generated from: <strong>{currentOgVariant?.variant_name || 'Variant'}</strong></span>
+                                <span>Saved version from: <strong>{currentOgVariant?.variant_name || 'Variant'}</strong></span>
                             </div>
                             {font.og_image_generated_at && (
                                 <div className="flex items-center gap-1.5">
@@ -540,7 +698,7 @@ export default function AdminOgImageManager({ font, onFontUpdated, onVariantChan
                 </div>
 
                 {/* Right: Variant Selector & Generation Controls */}
-                <div className="md:col-span-8 space-y-5">
+                <div className="md:col-span-7 space-y-5">
 
                     {/* Variant Selector Dropdown */}
                     <div className="space-y-2">
@@ -644,6 +802,7 @@ export default function AdminOgImageManager({ font, onFontUpdated, onVariantChan
                     fontFamilyOverride={activeFontFamily}
                     activeVariantName={selectedVariant?.variant_name}
                     variantCount={currentVariantsCount}
+                    customTitleFontSize={customTitleSize}
                 />
             </div>
 

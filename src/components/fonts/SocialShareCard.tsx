@@ -1,13 +1,14 @@
 import { forwardRef, useEffect, useMemo, useState } from 'react';
 import type { Font } from '../../types/font';
 
-interface SocialShareCardProps {
+export interface SocialShareCardProps {
     font: Font;
     aspectRatio?: 'og' | 'share';
     selectedVariantId?: string | null;
     fontFamilyOverride?: string;
     activeVariantName?: string;
     variantCount?: number;
+    customTitleFontSize?: number;
 }
 
 const SocialShareCard = forwardRef<HTMLDivElement, SocialShareCardProps>(({
@@ -17,6 +18,7 @@ const SocialShareCard = forwardRef<HTMLDivElement, SocialShareCardProps>(({
     fontFamilyOverride,
     // activeVariantName,
     // variantCount
+    customTitleFontSize,
 }, ref) => {
     const [, setFontLoaded] = useState(false);
     const isOg = aspectRatio === 'og';
@@ -129,43 +131,45 @@ const SocialShareCard = forwardRef<HTMLDivElement, SocialShareCardProps>(({
     return (
         <div
             ref={ref}
-            className={`${isOg ? 'w-300 h-158.5 p-10' : 'w-300 h-200 p-14'} text-white relative overflow-hidden flex flex-col justify-between box-border select-none`}
+            className={`${isOg ? 'w-300 h-158.5 p-10' : 'w-300 h-200 p-14'} text-white relative overflow-hidden flex flex-col justify-end box-border select-none bg-linear-to-b from-white to-[#0A81FC]`}
             style={{
-                backgroundImage: 'url("/gradients/dark1.png")',
+                backgroundImage: `url(${isOg ? '/gradients/blue-og.png' : '/gradients/blue.png'})`,
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 backgroundRepeat: 'no-repeat'
             }}
         >
+            {/* <div className="absolute inset-0 h-full w-full flex justify-center items-center">
+                <img src="/gradients/dark2.png" alt="" className='h-full w-full object-contain object-center' />
+            </div> */}
+
             {/* In-DOM @font-face style tag so html-to-image and SVG foreignObject can parse and embed the font */}
             {fontSource && (
                 <style>
-                    {`
-                        @font-face {
+                    {`@font-face {
                             font-family: '${effectiveFamily}';
                             src: url('${fontSource.url}') format('${fontSource.format}');
                             font-display: block;
-                        }
-                    `}
+                        }`}
                 </style>
             )}
 
             {/* HEADER */}
-            <div className="relative z-10 flex justify-between items-start gap-8">
-                {/* Logo & Brand Tag */}
+            {/* <div className="relative z-10 flex justify-between items-start gap-8">
                 <div className={`flex ${isOg ? 'flex-row items-center gap-2.5 flex-wrap justify-end' : 'flex-col items-end gap-3'}`}>
                     <div className={`${isOg ? 'w-16 h-16' : 'w-20 h-20'} flex items-center justify-center`}>
                         <img src="/logo/transparent-logo-white.png" alt="Logo" className="w-full h-full object-contain" />
                     </div>
                 </div>
-            </div>
+            </div> */}
 
             {/* MAIN CONTENT: CENTERED FONT TITLE */}
             <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
                 <h1
-                    className={`${titleFontSizeClass} w-full px-6 font-normal text-center leading-none text-white mix-blend-screen`}
+                    className={`${customTitleFontSize ? '' : titleFontSizeClass} w-full px-6 font-normal text-center leading-none text-white mix-blend-screen`}
                     style={{
                         fontFamily: fontStack,
+                        ...(customTitleFontSize ? { fontSize: `${customTitleFontSize}px` } : {}),
                     }}
                 >
                     {font.name}
@@ -175,16 +179,19 @@ const SocialShareCard = forwardRef<HTMLDivElement, SocialShareCardProps>(({
             {/* FOOTER: REAL METADATA CHIPS & ATTRIBUTION */}
             <div className="relative z-10 flex justify-between items-end gap-6">
                 <div>
-                    <p className={`text-muted ${isOg ? 'text-xl' : 'text-2xl'} font-inter-tight lowercase tracking-wider mb-2`}>Designed By</p>
-                    <p className={`opacity-80 ${isOg ? 'text-3xl' : 'text-4xl'} font-inter-tight`}>{font.designer || 'Unknown Designer'}</p>
+                    <p className={`opacity-80 ${isOg ? 'text-3xl' : 'text-3xl'} font-inter-tight lowercase tracking-wider mb-2`}>Designed By</p>
+                    <p className={`opacity-80z ${isOg ? 'text-4xl' : 'text-4xl'} font-inter-tight`}>
+                        {/* {font.designer || 'Unknown Designer'} */}
+                        {(font as any).taxonomy?.creator?.foundry || (font as any).taxonomy?.creator?.publisher || font.designer || 'Unknown'}
+                    </p>
                 </div>
 
                 {/* Right: Platform Callout */}
                 <div>
-                    <p className={`text-muted ${isOg ? 'text-xl' : 'text-2xl'} font-inter-tight text-right lowercase tracking-wider mb-2`}>
+                    <p className={`opacity-80 ${isOg ? 'text-3xl' : 'text-3xl'} font-inter-tight text-right lowercase tracking-wider mb-2`}>
                         get it on
                     </p>
-                    <p className={`opacity-80 ${isOg ? 'text-3xl' : 'text-4xl'} font-inter-tight text-right`}>
+                    <p className={`opacity-80z ${isOg ? 'text-4xl' : 'text-4xl'} font-inter-tight text-right`}>
                         nobadfonts.in
                     </p>
                 </div>

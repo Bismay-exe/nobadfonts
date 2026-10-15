@@ -2,7 +2,7 @@
 
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { cn } from "../../lib/utils";
 import { Type, Combine, Terminal, Users, Shield, Plus, Sun, Moon, UserRound, BookOpen, Search, X, Menu, Star, ShieldAlert, LayoutDashboard, Bot } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -65,14 +65,29 @@ export default function Navbar() {
         }
     }, [location.pathname, searchParams]);
 
+    const queryNavTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    useEffect(() => {
+        return () => {
+            if (queryNavTimeoutRef.current) {
+                clearTimeout(queryNavTimeoutRef.current);
+            }
+        };
+    }, []);
+
     const handleNavbarQueryChange = useCallback(
         (q: string) => {
             setNavQuery(q);
             if (location.pathname === "/fonts") {
-                const nextParams = new URLSearchParams(searchParams);
-                if (q.trim()) nextParams.set("query", q.trim());
-                else nextParams.delete("query");
-                navigate(`/fonts?${nextParams.toString()}`, { replace: true });
+                if (queryNavTimeoutRef.current) {
+                    clearTimeout(queryNavTimeoutRef.current);
+                }
+                queryNavTimeoutRef.current = setTimeout(() => {
+                    const nextParams = new URLSearchParams(searchParams);
+                    if (q.trim()) nextParams.set("query", q.trim());
+                    else nextParams.delete("query");
+                    navigate(`/fonts?${nextParams.toString()}`, { replace: true });
+                }, 300);
             }
         },
         [location.pathname, searchParams, navigate],
@@ -112,7 +127,7 @@ export default function Navbar() {
         const handleKeyDown = (e: KeyboardEvent) => {
             if ((e.metaKey || e.ctrlKey) && e.key === "k") {
                 e.preventDefault();
-                setSearchOpen((prev) => !prev);
+                setIsSearchExpanded((prev) => !prev);
             }
         };
         window.addEventListener("keydown", handleKeyDown);
@@ -335,15 +350,15 @@ export default function Navbar() {
                 className={cn(
                     "fixed top-0 w-full left-1/2 -translate-x-1/2 z-50 transition-all duration-300",
                     isScrolled
-                        ? "max-w-full md:rounded-none bg-linear-to-b from-background via-background/60 to-background/0 py-2 md:py-4 px-6 md:px-10"
-                        : "max-w-full md:rounded-none bg-red-500z zbg-linear-to-b from-background via-background/60 to-background/0 py-2 md:py-4 px-6 md:px-10",
+                        ? "max-w-full md:rounded-none bg-linear-to-b from-background via-background/60 to-background/0 py-2 md:py-4 px-3 sm:px-6 md:px-10"
+                        : "max-w-full md:rounded-none bg-red-500z zbg-linear-to-b from-background via-background/60 to-background/0 py-2 md:py-4 px-3 sm:px-6 md:px-10",
                     // : "md:top-4 max-w-7xl md:rounded-3xl bg-transparent border-none py-4 px-4"
                 )}
             >
                 <div className="flex items-center pt-[env(safe-area-inset-top)] md:pt-0">
-                    <div className="max-w-480 w-full mx-auto md:grid grid-cols-3 flex items-center justify-between">
+                    <div className="max-w-480 w-full mx-auto md:grid grid-cols-3 flex items-center justify-between gap-1.5 sm:gap-4">
                         {/* Left Side Actions */}
-                        <div className={cn("flex gap-10 transition-all duration-300", isSearchExpanded && "hidden md:flex")}>
+                        <div className={cn("flex gap-4 sm:gap-10 transition-all duration-300 shrink-0", isSearchExpanded && "hidden md:flex")}>
                             <div className="flex gap-4">
                                 {inDocs && (
                                     <button
@@ -431,10 +446,10 @@ export default function Navbar() {
                         {/* Center Morphing Search Bar */}
                         <div
                             className={cn(
-                                "transition-all duration-300 z-40 flex justify-center",
+                                "transition-all duration-300 z-40 flex justify-center min-w-0",
                                 isSearchExpanded
                                     ? "w-full flex-1 max-w-none md:max-w-xl mx-0 md:mx-4"
-                                    : "flex-1 max-w-sm lg:max-w-md xl:max-w-xl mx-2 sm:mx-4"
+                                    : "flex-1 min-w-0 max-w-sm lg:max-w-md xl:max-w-xl mx-1 sm:mx-4"
                             )}
                         >
                             <MorphingSearchChips
@@ -453,7 +468,7 @@ export default function Navbar() {
                         {/* Right Side Actions */}
                         <div
                             className={cn(
-                                "flex justify-end items-center gap-3 transition-all duration-300",
+                                "flex justify-end items-center gap-1.5 sm:gap-3 transition-all duration-300 shrink-0",
                                 isSearchExpanded && "hidden md:flex"
                             )}
                         >
@@ -463,7 +478,11 @@ export default function Navbar() {
                                     whileTap={{ scale: 0.95 }}
                                     onClick={async () => {
                                         await Haptics.impact({ style: ImpactStyle.Light });
-                                        isModalOpen ? closeModal() : openModal();
+                                        if (isModalOpen) {
+                                            closeModal();
+                                        } else {
+                                            openModal();
+                                        }
                                     }}
                                     className="relative h-10 w-10 flex items-center justify-center rounded-full bg-foreground/5 border border-border/20 text-foreground hover:bg-foreground/10 transition-all cursor-pointer group"
                                     title="Software Update Available"

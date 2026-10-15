@@ -412,13 +412,13 @@ export default function FontDetails() {
     return (
         <div className="min-h-screen bg-background text-foreground relative selection:bg-accent selection:text-background">
             <SEO
-                title={`${font.name} by ${font.designer}`}
+                title={`${font.name} by ${(font as any).taxonomy?.creator?.foundry || (font as any).taxonomy?.creator?.publisher || font.designer || 'Unknown'}`}
                 description={`Download ${font.name}, a ${font.tags ? font.tags.join(', ') : 'unique'} font${font.designer ? ` by ${font.designer}` : ''}. Free ZIP package includes WOFF2, TTF/OTF, LICENSE.txt, and README.txt on NoBadFonts.`}
                 image={ogImage}
-                imageAlt={`${font.name} typography preview specimen by ${font.designer}`}
+                imageAlt={`${font.name} typography preview specimen by ${(font as any).taxonomy?.creator?.foundry || (font as any).taxonomy?.creator?.publisher || font.designer || 'Unknown'}`}
                 url={fontCanonicalUrl}
                 keywords={font.tags || []}
-                author={font.designer}
+                author={(font as any).taxonomy?.creator?.foundry || (font as any).taxonomy?.creator?.publisher || font.designer || 'Unknown'}
                 schema={fontSchema}
             />
 

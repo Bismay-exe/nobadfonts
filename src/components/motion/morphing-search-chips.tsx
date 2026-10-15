@@ -8,6 +8,7 @@ import {
   Sparkles,
   ArrowRight,
   TrendingUp,
+  Building2,
 } from "lucide-react";
 import {
   AnimatePresence,
@@ -19,7 +20,9 @@ import {
   type KeyboardEvent as ReactKeyboardEvent,
   type PointerEvent as ReactPointerEvent,
   type ReactNode,
+  memo,
   useCallback,
+  useDeferredValue,
   useEffect,
   useLayoutEffect,
   useMemo,
@@ -30,29 +33,13 @@ import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import { EASE_OUT, SPRING_LAYOUT, SPRING_SWAP } from "@/lib/ease";
 import { useDismiss } from "@/lib/hooks/use-dismiss";
-import { useOnOpen } from "@/lib/hooks/use-on-open";
 import { PresenceGate } from "@/lib/presence-gate";
 import { cn } from "@/lib/utils";
 import { MOODS, type MoodDefinition } from "@/config/moods";
+import { POPULAR_TAGS, FALLBACK_FONTS } from "@/config/search-fallbacks";
 import { supabase } from "@/lib/supabase";
 import type { Font } from "@/types/font";
 import { stopLenis, startLenis } from "@/hooks/useLenis";
-
-// Spring physics matching modern luxury design tokens
-const SPRING_MORPH = { type: "spring", stiffness: 520, damping: 40, mass: 0.1 } as const;
-const MORPH_ENTER: Transition = { ...SPRING_MORPH, opacity: { duration: 0.22 } };
-const MORPH_EXIT: Transition = {
-  type: "spring",
-  stiffness: 520,
-  damping: 40,
-  mass: 0.1,
-  opacity: { duration: 0.22, delay: 0.08 },
-};
-
-const SEED = { width: 365, height: 44 };
-const SEED_TUCK = 24;
-const CONTENT_IN: Transition = { duration: 0.18, ease: EASE_OUT, delay: 0.01 };
-const CONTENT_OUT: Transition = { duration: 0.08, ease: EASE_OUT };
 
 // Dark luxury surface styling matching the reference screenshots
 const PANEL_GLASS =
@@ -70,408 +57,6 @@ const CHIP_ENTER: Transition = {
 const CHIP_EXIT: Transition = { duration: 0.14, ease: EASE_OUT };
 const SURFACE_RADIUS = 28;
 const PANEL_ROOM = 360;
-
-// Curated default tags for typography search with initial count weights
-const POPULAR_TAGS = [
-  { id: "sans", label: "Sans", defaultCount: 48 },
-  { id: "serif", label: "Serif", defaultCount: 36 },
-  { id: "display", label: "Display", defaultCount: 52 },
-  { id: "script", label: "Script", defaultCount: 26 },
-  { id: "monospace", label: "Mono", defaultCount: 18 },
-  { id: "cyberpunk", label: "Cyberpunk", defaultCount: 14 },
-  { id: "retro", label: "Retro", defaultCount: 22 },
-  { id: "y2k", label: "Y2K", defaultCount: 16 },
-  { id: "minimal", label: "Minimal", defaultCount: 24 },
-  { id: "wedding", label: "Wedding", defaultCount: 12 },
-  { id: "luxury", label: "Luxury", defaultCount: 15 },
-  { id: "editorial", label: "Editorial", defaultCount: 28 },
-  { id: "sci-fi", label: "Sci-Fi", defaultCount: 14 },
-  { id: "brutalist", label: "Brutalist", defaultCount: 12 },
-  { id: "modern", label: "Modern", defaultCount: 38 },
-  { id: "playful", label: "Playful", defaultCount: 17 },
-  { id: "geometric", label: "Geometric", defaultCount: 29 },
-  { id: "bold", label: "Bold", defaultCount: 32 },
-];
-
-// Rich fallback fonts with specimen banners so the component is instantly visually stunning
-const FALLBACK_FONTS: Font[] = [
-  {
-    id: "f-clash-display",
-    name: "Clash Display",
-    slug: "clash-display",
-    designer: "Indian Type Foundry",
-    category: "display",
-    tags: ["display", "bold", "modern", "headline", "poster", "geometric"],
-    preview_image_url: "/moods/cards/editorial-card.png",
-    gallery_images: ["/moods/cards/editorial-card.png"],
-    downloads: 14200,
-    is_featured: true,
-    is_trending: true,
-    created_at: new Date().toISOString(),
-    family_role: "standalone",
-    parent_font_id: null,
-    commercial_use: true,
-    license_type: "OFL",
-    description: "A modern, bold display sans with personality and geometric character.",
-    downloads_7d: 120,
-    favorites_count: 530,
-    file_size_woff2: 24000,
-    file_size_ttf: null,
-    file_size_otf: null,
-    file_size_woff: null,
-    font_file_hash: null,
-    glyph_count: 420,
-    has_italic: false,
-    is_editors_pick: true,
-    is_published: true,
-    research_status: null,
-    github_url: null,
-    weights: [400, 500, 600, 700],
-    woff2_url: null,
-    woff_url: null,
-    ttf_url: null,
-    otf_url: null,
-    zip_url: null,
-    file_size_image_preview: null,
-    gallery_image_sizes: null,
-    uploaded_by: "system",
-    og_image_url: null,
-    og_image_variant_id: null,
-    og_image_variant_count: null,
-    og_image_variant_signature: null,
-    og_image_generated_at: null,
-    updated_at: null,
-  },
-  {
-    id: "f-satoshi",
-    name: "Satoshi",
-    slug: "satoshi",
-    designer: "Indian Type Foundry",
-    category: "sans",
-    tags: ["sans", "modern", "minimal", "branding", "tech", "clean"],
-    preview_image_url: "/moods/cards/minimal-card.png",
-    gallery_images: ["/moods/cards/minimal-card.png"],
-    downloads: 28500,
-    is_featured: true,
-    is_trending: true,
-    created_at: new Date(Date.now() - 86400000).toISOString(),
-    family_role: "standalone",
-    parent_font_id: null,
-    commercial_use: true,
-    license_type: "OFL",
-    description: "Versatile neo-grotesque sans-serif inspired by modern Swiss typography.",
-    downloads_7d: 250,
-    favorites_count: 890,
-    file_size_woff2: 26000,
-    file_size_ttf: null,
-    file_size_otf: null,
-    file_size_woff: null,
-    font_file_hash: null,
-    glyph_count: 500,
-    has_italic: true,
-    is_editors_pick: true,
-    is_published: true,
-    research_status: null,
-    github_url: null,
-    weights: [300, 400, 500, 700, 900],
-    woff2_url: null,
-    woff_url: null,
-    ttf_url: null,
-    otf_url: null,
-    zip_url: null,
-    file_size_image_preview: null,
-    gallery_image_sizes: null,
-    uploaded_by: "system",
-    og_image_url: null,
-    og_image_variant_id: null,
-    og_image_variant_count: null,
-    og_image_variant_signature: null,
-    og_image_generated_at: null,
-    updated_at: null,
-  },
-  {
-    id: "f-syntha",
-    name: "Syntha Cyber",
-    slug: "syntha-cyber",
-    designer: "Neon Foundry",
-    category: "techno",
-    tags: ["techno", "cyberpunk", "sci-fi", "experimental", "gaming"],
-    preview_image_url: "/moods/cards/cyberpunk-card.png",
-    gallery_images: ["/moods/cards/cyberpunk-card.png"],
-    downloads: 9800,
-    is_featured: false,
-    is_trending: true,
-    created_at: new Date(Date.now() - 2 * 86400000).toISOString(),
-    family_role: "standalone",
-    parent_font_id: null,
-    commercial_use: true,
-    license_type: "Free",
-    description: "High-octane cyberpunk display typeface for futuristic interfaces.",
-    downloads_7d: 180,
-    favorites_count: 420,
-    file_size_woff2: 21000,
-    file_size_ttf: null,
-    file_size_otf: null,
-    file_size_woff: null,
-    font_file_hash: null,
-    glyph_count: 310,
-    has_italic: false,
-    is_editors_pick: false,
-    is_published: true,
-    research_status: null,
-    github_url: null,
-    weights: [400, 700],
-    woff2_url: null,
-    woff_url: null,
-    ttf_url: null,
-    otf_url: null,
-    zip_url: null,
-    file_size_image_preview: null,
-    gallery_image_sizes: null,
-    uploaded_by: "system",
-    og_image_url: null,
-    og_image_variant_id: null,
-    og_image_variant_count: null,
-    og_image_variant_signature: null,
-    og_image_generated_at: null,
-    updated_at: null,
-  },
-  {
-    id: "f-cabinet-grotesk",
-    name: "Cabinet Grotesk",
-    slug: "cabinet-grotesk",
-    designer: "Indian Type Foundry",
-    category: "sans",
-    tags: ["sans", "grotesk", "editorial", "bold", "modern", "brutalist"],
-    preview_image_url: "/moods/cards/retro-card.png",
-    gallery_images: ["/moods/cards/retro-card.png"],
-    downloads: 16700,
-    is_featured: true,
-    is_trending: false,
-    created_at: new Date(Date.now() - 3 * 86400000).toISOString(),
-    family_role: "standalone",
-    parent_font_id: null,
-    commercial_use: true,
-    license_type: "OFL",
-    description: "Eccentric sans serif with distinctive geometric quirks.",
-    downloads_7d: 90,
-    favorites_count: 360,
-    file_size_woff2: 25000,
-    file_size_ttf: null,
-    file_size_otf: null,
-    file_size_woff: null,
-    font_file_hash: null,
-    glyph_count: 460,
-    has_italic: true,
-    is_editors_pick: true,
-    is_published: true,
-    research_status: null,
-    github_url: null,
-    weights: [400, 700, 800],
-    woff2_url: null,
-    woff_url: null,
-    ttf_url: null,
-    otf_url: null,
-    zip_url: null,
-    file_size_image_preview: null,
-    gallery_image_sizes: null,
-    uploaded_by: "system",
-    og_image_url: null,
-    og_image_variant_id: null,
-    og_image_variant_count: null,
-    og_image_variant_signature: null,
-    og_image_generated_at: null,
-    updated_at: null,
-  },
-  {
-    id: "f-amour-script",
-    name: "Amour Romance",
-    slug: "amour-romance",
-    designer: "Atelier Paris",
-    category: "script",
-    tags: ["script", "wedding", "romantic", "calligraphy", "luxury", "elegant"],
-    preview_image_url: "/moods/cards/wedding-card.png",
-    gallery_images: ["/moods/cards/wedding-card.png"],
-    downloads: 8200,
-    is_featured: true,
-    is_trending: false,
-    created_at: new Date(Date.now() - 4 * 86400000).toISOString(),
-    family_role: "standalone",
-    parent_font_id: null,
-    commercial_use: true,
-    license_type: "Free",
-    description: "Flowing luxury script font crafted for invitations and high-end romance.",
-    downloads_7d: 85,
-    favorites_count: 310,
-    file_size_woff2: 22000,
-    file_size_ttf: null,
-    file_size_otf: null,
-    file_size_woff: null,
-    font_file_hash: null,
-    glyph_count: 340,
-    has_italic: false,
-    is_editors_pick: false,
-    is_published: true,
-    research_status: null,
-    github_url: null,
-    weights: [400],
-    woff2_url: null,
-    woff_url: null,
-    ttf_url: null,
-    otf_url: null,
-    zip_url: null,
-    file_size_image_preview: null,
-    gallery_image_sizes: null,
-    uploaded_by: "system",
-    og_image_url: null,
-    og_image_variant_id: null,
-    og_image_variant_count: null,
-    og_image_variant_signature: null,
-    og_image_generated_at: null,
-    updated_at: null,
-  },
-  {
-    id: "f-y2k-blob",
-    name: "Bubble 2000",
-    slug: "bubble-2000",
-    designer: "Tokyo Type Lab",
-    category: "display",
-    tags: ["y2k", "playful", "bubbly", "retro", "experimental"],
-    preview_image_url: "/moods/cards/y2k-card.png",
-    gallery_images: ["/moods/cards/y2k-card.png"],
-    downloads: 11400,
-    is_featured: true,
-    is_trending: true,
-    created_at: new Date(Date.now() - 5 * 86400000).toISOString(),
-    family_role: "standalone",
-    parent_font_id: null,
-    commercial_use: true,
-    license_type: "Free",
-    description: "Puffy inflatable Y2K typography with metallic aesthetics.",
-    downloads_7d: 140,
-    favorites_count: 480,
-    file_size_woff2: 19000,
-    file_size_ttf: null,
-    file_size_otf: null,
-    file_size_woff: null,
-    font_file_hash: null,
-    glyph_count: 280,
-    has_italic: false,
-    is_editors_pick: false,
-    is_published: true,
-    research_status: null,
-    github_url: null,
-    weights: [700],
-    woff2_url: null,
-    woff_url: null,
-    ttf_url: null,
-    otf_url: null,
-    zip_url: null,
-    file_size_image_preview: null,
-    gallery_image_sizes: null,
-    uploaded_by: "system",
-    og_image_url: null,
-    og_image_variant_id: null,
-    og_image_variant_count: null,
-    og_image_variant_signature: null,
-    og_image_generated_at: null,
-    updated_at: null,
-  },
-  {
-    id: "f-stellar-orbit",
-    name: "Orbit Sci-Fi",
-    slug: "orbit-scifi",
-    designer: "Deep Cosmos",
-    category: "display",
-    tags: ["sci-fi", "techno", "future", "space", "geometric"],
-    preview_image_url: "/moods/cards/sci-fi-card.png",
-    gallery_images: ["/moods/cards/sci-fi-card.png"],
-    downloads: 7500,
-    is_featured: false,
-    is_trending: false,
-    created_at: new Date(Date.now() - 6 * 86400000).toISOString(),
-    family_role: "standalone",
-    parent_font_id: null,
-    commercial_use: true,
-    license_type: "OFL",
-    description: "Astronautic display typeface with clean geometric cuts.",
-    downloads_7d: 65,
-    favorites_count: 220,
-    file_size_woff2: 23000,
-    file_size_ttf: null,
-    file_size_otf: null,
-    file_size_woff: null,
-    font_file_hash: null,
-    glyph_count: 360,
-    has_italic: false,
-    is_editors_pick: false,
-    is_published: true,
-    research_status: null,
-    github_url: null,
-    weights: [400, 700],
-    woff2_url: null,
-    woff_url: null,
-    ttf_url: null,
-    otf_url: null,
-    zip_url: null,
-    file_size_image_preview: null,
-    gallery_image_sizes: null,
-    uploaded_by: "system",
-    og_image_url: null,
-    og_image_variant_id: null,
-    og_image_variant_count: null,
-    og_image_variant_signature: null,
-    og_image_generated_at: null,
-    updated_at: null,
-  },
-  {
-    id: "f-royal-serif",
-    name: "Royale Serif",
-    slug: "royale-serif",
-    designer: "Foundry Milano",
-    category: "serif",
-    tags: ["serif", "luxury", "editorial", "elegant", "classic"],
-    preview_image_url: "/moods/cards/luxury-card.png",
-    gallery_images: ["/moods/cards/luxury-card.png"],
-    downloads: 12900,
-    is_featured: true,
-    is_trending: false,
-    created_at: new Date(Date.now() - 7 * 86400000).toISOString(),
-    family_role: "standalone",
-    parent_font_id: null,
-    commercial_use: true,
-    license_type: "OFL",
-    description: "High-contrast editorial serif built for haute couture and high luxury.",
-    downloads_7d: 110,
-    favorites_count: 510,
-    file_size_woff2: 27000,
-    file_size_ttf: null,
-    file_size_otf: null,
-    file_size_woff: null,
-    font_file_hash: null,
-    glyph_count: 480,
-    has_italic: true,
-    is_editors_pick: true,
-    is_published: true,
-    research_status: null,
-    github_url: null,
-    weights: [300, 400, 600],
-    woff2_url: null,
-    woff_url: null,
-    ttf_url: null,
-    otf_url: null,
-    zip_url: null,
-    file_size_image_preview: null,
-    gallery_image_sizes: null,
-    uploaded_by: "system",
-    og_image_url: null,
-    og_image_variant_id: null,
-    og_image_variant_count: null,
-    og_image_variant_signature: null,
-    og_image_generated_at: null,
-    updated_at: null,
-  },
-];
 
 export interface MorphingSearchChipsProps {
   /** Active filters shown as chips inside the bar. */
@@ -543,7 +128,7 @@ function useControllable<T>(value: T | undefined, initial: T, onChange?: (next: 
   const set = useCallback(
     (next: T | ((prev: T) => T)) => {
       setInternal((prevInternal) => {
-        const resolved = typeof next === "function" ? (next as any)(prevInternal) : next;
+        const resolved = typeof next === "function" ? (next as (prev: T) => T)(prevInternal) : next;
         onChange?.(resolved);
         return resolved;
       });
@@ -570,30 +155,42 @@ const getChipLabel = (chip: string): string => {
   return chip.charAt(0).toUpperCase() + chip.slice(1);
 };
 
+const normalizeSearchText = (str: string) => str.toLowerCase().replace(/[\s\-_'".]/g, "");
+
 /** Single Font Specimen Thumbnail Component displaying preview image or typographic fallback */
-function FontThumbnailCard({
+const FontThumbnailCard = memo(function FontThumbnailCard({
   font,
   onClick,
   onRemoveRecent,
   isRecent = false,
+  isActive = false,
+  cardRef,
 }: {
   font: Font;
   onClick: () => void;
   onRemoveRecent?: () => void;
   isRecent?: boolean;
+  isActive?: boolean;
+  cardRef?: (node: HTMLDivElement | null) => void;
 }) {
   const [imgFailed, setImgFailed] = useState(false);
   const imageUrl = font.preview_image_url || font.gallery_images?.[0] || font.og_image_url;
 
   return (
-    <motion.div
-      layout="position"
-      whileTap={{ scale: 0.90 }}
+    <div
+      ref={cardRef}
       onClick={onClick}
-      className="group relative flex w-36 sm:w-44 shrink-0 cursor-pointer flex-col select-none text-left"
+      className="group relative flex w-36 sm:w-44 shrink-0 cursor-pointer flex-col select-none text-left active:scale-95 transition-transform duration-150"
     >
       {/* Thumbnail Container */}
-      <div className="relative h-28 sm:h-32 w-full overflow-hidden rounded-2xl bg-[#1c1c1f] border border-white/2 transition-all duration-300 group-hover:border-white/5 group-hover:shadow-[0_12px_28px_-10px_rgba(0,0,0,0.8)]">
+      <div
+        className={cn(
+          "relative h-28 sm:h-32 w-full overflow-hidden rounded-2xl bg-[#1c1c1f] border transition-all duration-300",
+          isActive
+            ? "border-white ring-2 ring-white/90 shadow-[0_0_24px_rgba(255,255,255,0.25)] scale-[1.02]"
+            : "border-white/5 group-hover:border-white/20 group-hover:shadow-[0_12px_28px_-10px_rgba(0,0,0,0.8)]"
+        )}
+      >
         {imageUrl && !imgFailed ? (
           <img
             src={imageUrl}
@@ -644,16 +241,26 @@ function FontThumbnailCard({
 
       {/* Font title below thumbnail */}
       <div className="mt-2 flex flex-col px-0.5">
-        <span className="truncate text-sm font-semibold text-white/60 transition-colors group-hover:text-white">
+        <span
+          className={cn(
+            "truncate text-sm font-semibold transition-colors",
+            isActive ? "text-white" : "text-white/60 group-hover:text-white"
+          )}
+        >
           {font.name}
         </span>
-        <span className="truncate text-[11px] text-muted transition-colors group-hover:text-white/60">
-          by {(font as any).taxonomy?.creator?.foundry || (font as any).taxonomy?.creator?.publisher || font.designer || 'Unknown'}
+        <span
+          className={cn(
+            "truncate text-[11px] transition-colors",
+            isActive ? "text-white/80" : "text-muted group-hover:text-white/60"
+          )}
+        >
+          by {(font as { taxonomy?: { creator?: { foundry?: string; publisher?: string } } }).taxonomy?.creator?.foundry || (font as { taxonomy?: { creator?: { foundry?: string; publisher?: string } } }).taxonomy?.creator?.publisher || font.designer || 'Unknown'}
         </span>
       </div>
-    </motion.div>
+    </div>
   );
-}
+});
 
 export function MorphingSearchChips({
   chips: chipsProp,
@@ -697,6 +304,7 @@ export function MorphingSearchChips({
 
   const [chips, setChips] = useControllable(chipsProp, defaultChips, onChipsChange);
   const [query, setQuery] = useControllable(queryProp, defaultQuery, onQueryChange);
+  const deferredQuery = useDeferredValue(query);
   const [recents, setRecentsState, setStoredRecents] = useControllable(
     recentsProp,
     defaultRecents,
@@ -709,6 +317,42 @@ export function MorphingSearchChips({
   const [dbFonts, setDbFonts] = useState<Font[]>([]);
   const [isFetchingDb, setIsFetchingDb] = useState(false);
   const [recentlyViewedFonts, setRecentlyViewedFonts] = useState<Font[]>([]);
+  const [serverFonts, setServerFonts] = useState<Font[]>([]);
+  const [isSearchingServer, setIsSearchingServer] = useState(false);
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const [isMac, setIsMac] = useState(false);
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  useEffect(() => {
+    if (typeof navigator !== "undefined") {
+      setIsMac(/(Mac|iPhone|iPod|iPad)/i.test(navigator.userAgent));
+    }
+  }, []);
+
+  // Auto-focus input when search expands
+  useEffect(() => {
+    if (open) {
+      inputRef.current?.focus({ preventScroll: true });
+    } else {
+      setActiveIndex(null);
+    }
+  }, [open]);
+
+  // Reset active highlight when search criteria change
+  useEffect(() => {
+    setActiveIndex(null);
+  }, [query, chips]);
+
+  // Auto-scroll the active font card smoothly into view
+  useEffect(() => {
+    if (activeIndex !== null && cardRefs.current[activeIndex]) {
+      cardRefs.current[activeIndex]?.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+        inline: "nearest",
+      });
+    }
+  }, [activeIndex]);
 
   const [announcement, setAnnouncement] = useState({ text: "", count: 0 });
   const [markedChip, setMarkedChip] = useState<string | null>(null);
@@ -760,6 +404,60 @@ export function MorphingSearchChips({
     }
     return FALLBACK_FONTS;
   }, [customFonts, dbFonts]);
+
+  // Debounced live Supabase search_fonts RPC call for 100% database coverage
+  useEffect(() => {
+    const trimmedQuery = query.trim().toLowerCase();
+    if (!trimmedQuery && chips.length === 0) {
+      setServerFonts([]);
+      setIsSearchingServer(false);
+      return;
+    }
+
+    let active = true;
+    setIsSearchingServer(true);
+
+    const timer = setTimeout(async () => {
+      try {
+        const filterTags = chips.length > 0 ? chips.map((c) => c.toLowerCase().trim()) : undefined;
+        const { data, error } = await supabase.rpc("search_fonts", {
+          query: trimmedQuery || undefined,
+          filter_tags: filterTags,
+          limit_val: 40,
+        });
+
+        if (active && !error && data && Array.isArray(data)) {
+          const valid = (data as Font[]).filter(
+            (f) => f && typeof f === "object" && f.family_role !== "parent",
+          );
+          setServerFonts(valid);
+        }
+      } catch {
+        // Safe silent fallback to cached fonts
+      } finally {
+        if (active) setIsSearchingServer(false);
+      }
+    }, 220);
+
+    return () => {
+      active = false;
+      clearTimeout(timer);
+    };
+  }, [query, chips]);
+
+  // Merged font pool combining local fonts and live server search results
+  const allMergedFonts = useMemo<Font[]>(() => {
+    const map = new Map<string, Font>();
+    for (const f of allFonts) {
+      map.set(f.id, f);
+    }
+    for (const f of serverFonts) {
+      if (!map.has(f.id)) {
+        map.set(f.id, f);
+      }
+    }
+    return Array.from(map.values());
+  }, [allFonts, serverFonts]);
 
   // Newly added fonts
   const newAddedFonts = useMemo<Font[]>(() => {
@@ -866,29 +564,58 @@ export function MorphingSearchChips({
     return counts;
   }, [allFonts]);
 
+  // Fast precomputed index for 100% database search with zero regex thrashing
+  const indexedFonts = useMemo(() => {
+    return allMergedFonts.map((font) => {
+      const rawName = font.name || "";
+      const rawDesigner =
+        font.designer ||
+        (font as { taxonomy?: { creator?: { foundry?: string; publisher?: string } } }).taxonomy?.creator?.foundry ||
+        (font as { taxonomy?: { creator?: { foundry?: string; publisher?: string } } }).taxonomy?.creator?.publisher ||
+        "";
+      const rawCategory = font.category || "";
+      const rawTags = Array.isArray(font.tags)
+        ? font.tags.filter((t): t is string => typeof t === "string")
+        : [];
+
+      return {
+        font,
+        nameLower: rawName.toLowerCase(),
+        cleanName: normalizeSearchText(rawName),
+        designer: rawDesigner,
+        designerLower: rawDesigner.toLowerCase(),
+        cleanDesigner: normalizeSearchText(rawDesigner),
+        categoryLower: rawCategory.toLowerCase(),
+        cleanCategory: normalizeSearchText(rawCategory),
+        tagsLower: rawTags.map((t) => t.toLowerCase()),
+        cleanTags: rawTags.map(normalizeSearchText),
+        fullSearch: normalizeSearchText(`${rawName} ${rawDesigner} ${rawCategory} ${rawTags.join(" ")}`),
+      };
+    });
+  }, [allMergedFonts]);
+
   // Search filtering logic matching font name, designer, category, tags, and moods
-  const trimmed = query.trim().toLowerCase();
+  const trimmed = deferredQuery.trim().toLowerCase();
 
   const matchingFonts = useMemo<Font[]>(() => {
-    let result = allFonts;
+    if (!trimmed && chips.length === 0) return [];
+    const cleanQ = normalizeSearchText(trimmed);
 
-    // Filter by active chips (tags or moods)
+    let pool = indexedFonts;
+
+    // 1. Intersection filtering: font must match EVERY selected chip (AND logic)
     if (chips.length > 0) {
-      result = result.filter((font) => {
-        const fontCat = (font.category || "").toLowerCase();
-        const fontTags = (font.tags || []).map((t) => (typeof t === "string" ? t.toLowerCase() : ""));
-        const fontName = (font.name || "").toLowerCase();
-        const fontDesc = (font.description || "").toLowerCase();
+      pool = pool.filter((item) =>
+        chips.every((chip) => {
+          const cLower = chip.toLowerCase().trim();
+          const cleanC = normalizeSearchText(cLower);
 
-        return chips.some((chip) => {
-          const filter = chip.toLowerCase().trim();
-
-          // Check if filter matches a mood
+          // Fast mood match
           const matchedMood = MOODS.find(
             (m) =>
-              sameTerm(m.id, filter) ||
-              sameTerm(m.slug, filter) ||
-              sameTerm(m.name, filter),
+              m.id.toLowerCase() === cLower ||
+              m.slug.toLowerCase() === cLower ||
+              m.name.toLowerCase() === cLower,
           );
           if (matchedMood) {
             const moodKeywords = [
@@ -897,77 +624,119 @@ export function MorphingSearchChips({
               ...(matchedMood.preferredCategories || []),
               ...(matchedMood.contextCategories || []),
             ].map((s) => s.toLowerCase());
+
             return moodKeywords.some(
               (k) =>
-                fontCat.includes(k) ||
-                fontTags.some((t) => t.includes(k)) ||
-                fontDesc.includes(k),
+                item.categoryLower.includes(k) ||
+                item.tagsLower.some((t) => t.includes(k)),
             );
           }
 
           // Alias checking (e.g. mono / monospace)
-          if (filter === "mono" || filter === "monospace") {
+          if (cLower === "mono" || cLower === "monospace") {
             return (
-              fontCat.includes("mono") ||
-              fontCat.includes("monospace") ||
-              fontTags.some((t) => t.includes("mono") || t.includes("monospace"))
+              item.categoryLower.includes("mono") ||
+              item.tagsLower.some((t) => t.includes("mono"))
             );
           }
 
-          // Check against known tag
-          const matchedTag = POPULAR_TAGS.find(
-            (t) => sameTerm(t.id, filter) || sameTerm(t.label, filter),
-          );
-          if (matchedTag) {
-            const tagId = matchedTag.id.toLowerCase();
-            const tagLabel = matchedTag.label.toLowerCase();
-            return (
-              fontCat.includes(tagId) ||
-              fontCat.includes(tagLabel) ||
-              fontTags.some((t) => t.includes(tagId) || t.includes(tagLabel)) ||
-              fontName.includes(tagId) ||
-              fontName.includes(tagLabel) ||
-              fontDesc.includes(tagId) ||
-              fontDesc.includes(tagLabel)
-            );
-          }
-
+          // Direct category / tag / name match
           return (
-            fontCat.includes(filter) ||
-            fontTags.some((t) => t.includes(filter)) ||
-            fontName.includes(filter) ||
-            fontDesc.includes(filter)
+            item.categoryLower.includes(cLower) ||
+            item.cleanCategory.includes(cleanC) ||
+            item.tagsLower.some((t) => t.includes(cLower)) ||
+            item.cleanTags.some((t) => t.includes(cleanC)) ||
+            item.nameLower.includes(cLower) ||
+            item.cleanName.includes(cleanC)
           );
-        });
-      });
+        }),
+      );
     }
 
-    // Filter by typed query
+    // 2. Query filter
     if (trimmed) {
-      result = result.filter((font) => {
-        const nameMatch = (font.name || "").toLowerCase().includes(trimmed);
-        const designerMatch = (font.designer || "").toLowerCase().includes(trimmed);
-        const catMatch = (font.category || "").toLowerCase().includes(trimmed);
-        const tagMatch = (font.tags || []).some(
-          (t) => typeof t === "string" && t.toLowerCase().includes(trimmed),
+      pool = pool.filter((item) => {
+        return (
+          item.nameLower.includes(trimmed) ||
+          item.cleanName.includes(cleanQ) ||
+          item.designerLower.includes(trimmed) ||
+          item.cleanDesigner.includes(cleanQ) ||
+          item.categoryLower.includes(trimmed) ||
+          item.cleanCategory.includes(cleanQ) ||
+          item.fullSearch.includes(cleanQ)
         );
-        return nameMatch || designerMatch || catMatch || tagMatch;
       });
     }
 
-    return result;
-  }, [allFonts, chips, trimmed]);
+    // 3. Intelligent relevance sorting
+    return pool
+      .map((item) => item.font)
+      .sort((a, b) => {
+        if (!trimmed) return 0;
+        const aName = (a.name || "").toLowerCase();
+        const bName = (b.name || "").toLowerCase();
 
-  // Quick suggestions based on typed query
+        // Exact name match first
+        if (aName === trimmed && bName !== trimmed) return -1;
+        if (bName === trimmed && aName !== trimmed) return 1;
+
+        // Prefix match second
+        const aStarts = aName.startsWith(trimmed) || normalizeSearchText(aName).startsWith(cleanQ);
+        const bStarts = bName.startsWith(trimmed) || normalizeSearchText(bName).startsWith(cleanQ);
+        if (aStarts && !bStarts) return -1;
+        if (bStarts && !aStarts) return 1;
+
+        // Downloads popularity third
+        return (b.downloads || 0) - (a.downloads || 0);
+      });
+  }, [chips, trimmed, indexedFonts]);
+
+  // Capped preview list for instant zero-lag rendering
+  const previewMatchingFonts = useMemo(() => matchingFonts.slice(0, 24), [matchingFonts]);
+
+  // Foundries and Designers extracted from matching fonts
+  const matchingDesigners = useMemo(() => {
+    if (!trimmed || trimmed.length < 2) return [];
+    const cleanQ = normalizeSearchText(trimmed);
+    const designers = new Set<string>();
+
+    for (const item of indexedFonts) {
+      if (item.designer) {
+        if (item.designerLower.includes(trimmed) || item.cleanDesigner.includes(cleanQ)) {
+          designers.add(item.designer.trim());
+        }
+      }
+    }
+
+    return Array.from(designers).slice(0, 4);
+  }, [trimmed, indexedFonts]);
+
+  // Active list of fonts currently displayed on screen for keyboard arrow navigation
+  const displayedFonts = useMemo<Font[]>(() => {
+    if (trimmed || chips.length > 0) {
+      return previewMatchingFonts;
+    }
+    if (recentlyViewedFonts.length > 0) {
+      return recentlyViewedFonts;
+    }
+    return newAddedFonts;
+  }, [trimmed, chips.length, previewMatchingFonts, recentlyViewedFonts, newAddedFonts]);
+
+  // Quick suggestions based on typed query with normalized matching
   const matchingSuggestions = useMemo(() => {
     if (!trimmed) return [];
+    const cleanQ = normalizeSearchText(trimmed);
     const pool = [
       ...suggestions,
       ...POPULAR_TAGS.map((t) => t.id),
       ...MOODS.map((m) => m.slug),
     ];
     return Array.from(new Set(pool))
-      .filter((term) => term.toLowerCase().includes(trimmed) && !chips.some((c) => sameTerm(c, term)))
+      .filter((term) => {
+        const tLower = term.toLowerCase();
+        const matches = tLower.includes(trimmed) || normalizeSearchText(tLower).includes(cleanQ);
+        return matches && !chips.some((c) => sameTerm(c, term));
+      })
       .slice(0, 6);
   }, [trimmed, suggestions, chips]);
 
@@ -978,19 +747,6 @@ export function MorphingSearchChips({
 
   const marked = markedChip !== null && chips.includes(markedChip) ? markedChip : null;
   if (markedChip !== null && marked === null) setMarkedChip(null);
-
-  // ResizeObserver for morphing glass container
-  const [panelSize, setPanelSize] = useState({ width: 0, height: 0 });
-  const panelObserver = useRef<ResizeObserver | null>(null);
-  const measurePanel = useCallback((node: HTMLDivElement | null) => {
-    panelObserver.current?.disconnect();
-    panelObserver.current = null;
-    if (!node) return;
-    const read = () => setPanelSize({ width: node.offsetWidth, height: node.offsetHeight });
-    read();
-    panelObserver.current = new ResizeObserver(read);
-    panelObserver.current.observe(node);
-  }, []);
 
   const chipsLatest = useRef(chips);
   useLayoutEffect(() => {
@@ -1030,64 +786,19 @@ export function MorphingSearchChips({
   const hasPanel = true;
   const panelOpen = open && hasPanel;
 
-  // Lock background scroll on the page below while search panel is open without jumping to top
+  // Clean background scroll lock when search panel is open without jerky scroll jump
   useEffect(() => {
     if (!panelOpen) return;
 
-    // Capture the exact current scroll position so page never jumps
-    const currentScrollY = window.scrollY;
-
-    // Stop Lenis virtual scrolling
     stopLenis();
-
-    // Prevent touch gestures outside search container
-    const preventTouch = (e: TouchEvent) => {
-      if (rootRef.current && rootRef.current.contains(e.target as Node)) {
-        return;
-      }
-      e.preventDefault();
-    };
-
-    // Prevent wheel gestures outside search container
-    const preventWheel = (e: WheelEvent) => {
-      if (rootRef.current && rootRef.current.contains(e.target as Node)) {
-        return;
-      }
-      e.preventDefault();
-    };
-
-    // Keep page strictly at currentScrollY if any browser event attempts to jump
-    const maintainScroll = () => {
-      if (window.scrollY !== currentScrollY) {
-        window.scrollTo({ top: currentScrollY, behavior: "instant" });
-      }
-    };
-
-    document.addEventListener("touchmove", preventTouch, { passive: false });
-    document.addEventListener("wheel", preventWheel, { passive: false });
-    window.addEventListener("scroll", maintainScroll, { passive: true });
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
 
     return () => {
+      document.body.style.overflow = originalOverflow;
       startLenis();
-      document.removeEventListener("touchmove", preventTouch);
-      document.removeEventListener("wheel", preventWheel);
-      window.removeEventListener("scroll", maintainScroll);
     };
   }, [panelOpen]);
-
-  // Track panel height floor during session
-  const [panelFloor, setPanelFloor] = useState(0);
-  useOnOpen(panelOpen, () => setPanelFloor(0));
-  const rowsObserver = useRef<ResizeObserver | null>(null);
-  const measureRows = useCallback((node: HTMLDivElement | null) => {
-    rowsObserver.current?.disconnect();
-    rowsObserver.current = null;
-    if (!node) return;
-    const read = () => setPanelFloor((floor) => Math.max(floor, node.offsetHeight + 16));
-    read();
-    rowsObserver.current = new ResizeObserver(read);
-    rowsObserver.current.observe(node);
-  }, []);
 
   // Direction calculation
   useLayoutEffect(() => {
@@ -1169,6 +880,56 @@ export function MorphingSearchChips({
     const atStart = field.selectionStart === 0 && field.selectionEnd === 0;
     const back = rtl ? "ArrowRight" : "ArrowLeft";
     const forward = rtl ? "ArrowLeft" : "ArrowRight";
+
+    // Arrow navigation down into result cards
+    if (event.key === "ArrowDown") {
+      if (displayedFonts.length > 0) {
+        event.preventDefault();
+        setActiveIndex((prev) => (prev === null ? 0 : Math.min(prev + 1, displayedFonts.length - 1)));
+        return;
+      }
+    }
+
+    // Arrow navigation up back towards the input or previous card
+    if (event.key === "ArrowUp") {
+      if (activeIndex !== null) {
+        event.preventDefault();
+        if (activeIndex <= 0) {
+          setActiveIndex(null);
+          inputRef.current?.focus({ preventScroll: true });
+        } else {
+          setActiveIndex((prev) => (prev !== null ? prev - 1 : null));
+        }
+        return;
+      }
+    }
+
+    // Horizontal arrow navigation when a card is actively highlighted
+    if (activeIndex !== null) {
+      if (event.key === forward) {
+        event.preventDefault();
+        setActiveIndex((prev) => (prev !== null ? Math.min(prev + 1, displayedFonts.length - 1) : 0));
+        return;
+      }
+      if (event.key === back) {
+        event.preventDefault();
+        setActiveIndex((prev) => (prev !== null ? Math.max(prev - 1, 0) : 0));
+        return;
+      }
+      if (event.key === "Enter") {
+        event.preventDefault();
+        if (displayedFonts[activeIndex]) {
+          handleFontSelect(displayedFonts[activeIndex]);
+        }
+        return;
+      }
+      if (event.key === "Escape") {
+        event.preventDefault();
+        event.stopPropagation();
+        setActiveIndex(null);
+        return;
+      }
+    }
 
     if (marked !== null) {
       if (event.key === "Backspace" || event.key === "Delete") {
@@ -1268,7 +1029,6 @@ export function MorphingSearchChips({
 
   const layout = reduce ? { duration: 0 } : SPRING_LAYOUT;
   const below = placed === "bottom";
-  const seed = { ...SEED, y: below ? -SEED_TUCK : SEED_TUCK };
 
   // Content for the expanded panel matching the screenshots
   const panelContent = (
@@ -1409,6 +1169,9 @@ export function MorphingSearchChips({
             <span className="text-[11px] font-semibold tracking-wider text-white/50 uppercase flex items-center gap-1.5">
               <Sparkles className="size-3 text-white/40" />
               FONTS ({matchingFonts.length})
+              {isSearchingServer && (
+                <LoaderCircle className="size-3 animate-spin text-white/50 ml-0.5" />
+              )}
             </span>
             {matchingFonts.length > 0 && (
               <button
@@ -1451,13 +1214,46 @@ export function MorphingSearchChips({
             </div>
           )}
 
-          {matchingFonts.length > 0 ? (
+          {/* Matching Foundries & Designers Section */}
+          {matchingDesigners.length > 0 && (
+            <div className="flex flex-col gap-1.5 px-1 py-1">
+              <span className="text-[11px] font-semibold tracking-wider text-white/50 uppercase flex items-center gap-1.5">
+                <Building2 className="size-3 text-white/40" />
+                FOUNDRIES &amp; DESIGNERS ({matchingDesigners.length})
+              </span>
+              <div className="flex items-center gap-2 flex-wrap">
+                {matchingDesigners.map((designer) => (
+                  <button
+                    key={designer}
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      navigate(`/designers/${encodeURIComponent(designer)}`);
+                      close();
+                    }}
+                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/6 hover:bg-white/14 border border-white/5 hover:border-white/20 text-xs font-medium text-white/90 hover:text-white transition-all cursor-pointer group"
+                  >
+                    <Building2 className="size-3 text-white/40 group-hover:text-white/70 transition-colors" />
+                    <span>{designer}</span>
+                    <ArrowRight className="size-2.5 text-white/30 group-hover:text-white/60 transition-colors" />
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {previewMatchingFonts.length > 0 ? (
             <div className="relative -mx-2 px-2 mask-[linear-gradient(to_right,transparent,black_16px,black_calc(100%-16px),transparent)]">
               <div className="flex items-start gap-3.5 overflow-x-auto py-1 scrollbar-none">
-                {matchingFonts.map((font) => (
+                {previewMatchingFonts.map((font, idx) => (
                   <FontThumbnailCard
                     key={font.id}
                     font={font}
+                    isActive={activeIndex === idx}
+                    cardRef={(el) => {
+                      cardRefs.current[idx] = el;
+                    }}
                     onClick={() => handleFontSelect(font)}
                   />
                 ))}
@@ -1499,11 +1295,15 @@ export function MorphingSearchChips({
 
               <div className="relative -mx-2 px-2 mask-[linear-gradient(to_right,transparent,black_16px,black_calc(100%-16px),transparent)]">
                 <div className="flex items-start gap-3.5 overflow-x-auto py-1 scrollbar-none">
-                  {recentlyViewedFonts.map((font) => (
+                  {recentlyViewedFonts.map((font, idx) => (
                     <FontThumbnailCard
                       key={`recent-${font.id}`}
                       font={font}
                       isRecent={true}
+                      isActive={activeIndex === idx}
+                      cardRef={(el) => {
+                        cardRefs.current[idx] = el;
+                      }}
                       onRemoveRecent={() => removeSingleRecentFont(font.id)}
                       onClick={() => handleFontSelect(font)}
                     />
@@ -1535,13 +1335,20 @@ export function MorphingSearchChips({
 
             <div className="relative -mx-2 px-2 mask-[linear-gradient(to_right,transparent,black_16px,black_calc(100%-16px),transparent)]">
               <div className="flex items-start gap-3.5 overflow-x-auto py-1 scrollbar-none">
-                {newAddedFonts.map((font) => (
-                  <FontThumbnailCard
-                    key={`new-${font.id}`}
-                    font={font}
-                    onClick={() => handleFontSelect(font)}
-                  />
-                ))}
+                {newAddedFonts.map((font, idx) => {
+                  const isPrimary = recentlyViewedFonts.length === 0;
+                  return (
+                    <FontThumbnailCard
+                      key={`new-${font.id}`}
+                      font={font}
+                      isActive={isPrimary && activeIndex === idx}
+                      cardRef={(el) => {
+                        if (isPrimary) cardRefs.current[idx] = el;
+                      }}
+                      onClick={() => handleFontSelect(font)}
+                    />
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -1562,7 +1369,7 @@ export function MorphingSearchChips({
     <div
       ref={rootRef}
       className={cn(
-        "relative flex justify-center font-inter transition-all duration-300",
+        "relative flex justify-center font-inter transition-all duration-300 min-w-0 max-w-full",
         open ? "w-full max-w-none md:max-w-xl" : "w-full max-w-full",
         isCompact ? "h-10" : "h-14",
         disabled && "opacity-60",
@@ -1599,49 +1406,27 @@ export function MorphingSearchChips({
         {panelOpen ? (
           <PresenceGate key="panel">
             {({ gate }) => (
-              <div
+              <motion.div
                 {...gate}
+                initial={reduce ? { opacity: 0 } : { opacity: 0, y: below ? -8 : 8, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={
+                  reduce
+                    ? { opacity: 0, transition: { duration: 0.12 } }
+                    : { opacity: 0, y: below ? -6 : 6, scale: 0.98, transition: { duration: 0.12 } }
+                }
+                transition={{ duration: 0.18, ease: EASE_OUT }}
+                style={{ borderRadius: surfaceRadius }}
                 className={cn(
-                  "absolute inset-x-0 z-50",
+                  "absolute z-50 left-1/2 -translate-x-1/2 w-[calc(100vw-20px)] sm:w-[540px] md:w-[580px] max-w-xl overflow-hidden",
                   below ? "top-full mt-2.5" : "bottom-full mb-2.5",
+                  PANEL_GLASS,
                 )}
               >
-                {/* Background Glass Plate springing into shape */}
-                <motion.div
-                  aria-hidden="true"
-                  initial={reduce ? { opacity: 0 } : { ...seed, opacity: 0 }}
-                  animate={{
-                    width: panelSize.width || SEED.width,
-                    height: panelSize.height || SEED.height,
-                    y: 0,
-                    opacity: 1,
-                  }}
-                  exit={
-                    reduce
-                      ? { opacity: 0, transition: { duration: 0.12 } }
-                      : { ...seed, opacity: 0, transition: MORPH_EXIT }
-                  }
-                  transition={reduce ? { duration: 0 } : MORPH_ENTER}
-                  style={{ borderRadius: SURFACE_RADIUS, x: "-50%" }}
-                  className={cn("absolute left-1/2", below ? "top-0" : "bottom-0", PANEL_GLASS)}
-                />
-
-                {/* Content inside panel */}
-                <motion.div
-                  initial={{ opacity: 0, y: reduce ? 0 : below ? -6 : 6 }}
-                  animate={{
-                    opacity: 1,
-                    y: 0,
-                    transition: reduce ? { duration: 0.15 } : CONTENT_IN,
-                  }}
-                  exit={{ opacity: 0, transition: CONTENT_OUT }}
-                  ref={measurePanel}
-                  style={{ minHeight: panelFloor || undefined }}
-                  className="relative p-2 sm:p-2.5 max-w-[calc(100vw-16px)] sm:max-w-none"
-                >
-                  <div ref={measureRows} className="max-h-[75vh] sm:max-h-[80vh] overflow-y-auto scrollbar-none">{panelContent}</div>
-                </motion.div>
-              </div>
+                <div className="max-h-[75vh] sm:max-h-[80vh] overflow-y-auto scrollbar-none p-2 sm:p-2.5">
+                  {panelContent}
+                </div>
+              </motion.div>
             )}
           </PresenceGate>
         ) : null}
@@ -1654,15 +1439,15 @@ export function MorphingSearchChips({
         onPointerDown={focusField}
         style={{ borderRadius: surfaceRadius }}
         className={cn(
-          "relative z-40 flex min-w-0 items-center gap-2",
-          isCompact ? "h-10 ps-3.5" : "h-14 ps-4",
+          "relative z-40 flex min-w-0 items-center gap-1.5 sm:gap-2 max-w-full",
+          isCompact ? "h-10 ps-3 pe-2" : "h-14 ps-3 sm:ps-4 pe-2.5 sm:pe-4",
           BAR_GLASS,
           disabled ? "cursor-not-allowed" : "cursor-text",
-          actions ? "pe-2" : isCompact ? "pe-2.5" : "pe-4",
-          open ? "w-full ring-1 ring-white/20" : "w-fit max-w-full hover:border-white/20",
+          actions ? "pe-2" : isCompact ? "pe-2.5" : "pe-3 sm:pe-4",
+          open ? "w-full ring-1 ring-white/20" : "w-full sm:w-fit max-w-full hover:border-white/20",
         )}
       >
-        {loading || isFetchingDb ? (
+        {loading || isFetchingDb || isSearchingServer ? (
           <LoaderCircle aria-hidden="true" className={cn("shrink-0 text-white/50 animate-spin", isCompact ? "size-4" : "size-5")} />
         ) : (
           <Search aria-hidden="true" className={cn("shrink-0 text-white/50", isCompact ? "size-4" : "size-5")} />
@@ -1672,9 +1457,9 @@ export function MorphingSearchChips({
         <div
           ref={chipsRef}
           className={cn(
-            "relative flex min-w-0 items-center gap-1.5 overflow-x-auto scrollbar-none",
+            "relative flex min-w-0 shrink items-center gap-1 sm:gap-1.5 overflow-x-auto scrollbar-none",
             chips.length > 0 &&
-            "-mx-1.5 px-2 mask-[linear-gradient(to_right,transparent,#000_12px,#000_calc(100%-12px),transparent)]",
+            "-mx-1 px-1.5 sm:-mx-1.5 sm:px-2 mask-[linear-gradient(to_right,transparent,#000_8px,#000_calc(100%-8px),transparent)]",
           )}
         >
           <AnimatePresence initial={false} mode="popLayout">
@@ -1694,14 +1479,14 @@ export function MorphingSearchChips({
                   transition={reduce ? { duration: 0.12 } : CHIP_ENTER}
                   style={{ transformOrigin: rtl ? "right center" : "left center" }}
                   className={cn(
-                    "flex shrink-0 items-center gap-1 rounded-full text-white transition-all duration-300 select-none",
+                    "flex shrink-0 items-center gap-1 rounded-full text-white transition-all duration-200 select-none",
                     isCompact ? "h-6.5 ps-2.5 pe-1 text-[11px]" : "h-8 ps-3 pe-1 text-xs",
                     marked === chip
-                      ? "bg-white/20"
-                      : "bg-white/12",
+                      ? "bg-red-500/25 text-red-100 ring-1 ring-red-400/80 animate-pulse border border-red-500/40"
+                      : "bg-white/12 text-white hover:bg-white/16",
                   )}
                 >
-                  <span className="max-w-32 truncate" title={chipLabel}>
+                  <span className="max-w-20 sm:max-w-32 truncate" title={chipLabel}>
                     {chipLabel}
                   </span>
                   <button
@@ -1723,10 +1508,8 @@ export function MorphingSearchChips({
         </div>
 
         {/* Search Input Field */}
-        <motion.input
+        <input
           ref={inputRef}
-          layout={reduce ? false : "position"}
-          transition={layout}
           type="text"
           role="combobox"
           aria-label={label}
@@ -1736,7 +1519,7 @@ export function MorphingSearchChips({
           enterKeyHint="search"
           disabled={disabled}
           value={query}
-          placeholder={chips.length > 0 ? "Filter..." : placeholder}
+          placeholder={chips.length > 0 ? (open ? "Filter..." : "") : placeholder}
           onChange={(event) => {
             setQuery(event.target.value);
             if (!open) setOpen(true);
@@ -1744,11 +1527,21 @@ export function MorphingSearchChips({
           onFocus={() => setOpen(true)}
           onClick={() => setOpen(true)}
           onKeyDown={onKeyDown}
-          style={open ? undefined : { width: `${Math.max(placeholder.length, 6) + 2}ch` }}
+          style={
+            open
+              ? undefined
+              : chips.length > 0
+                ? { width: query ? `${query.length + 1}ch` : "1.5ch" }
+                : { width: `${Math.max(placeholder.length, 6) + 2}ch` }
+          }
           className={cn(
-            "min-w-24 text-ellipsis bg-transparent text-white outline-none placeholder:text-white/40 disabled:cursor-not-allowed",
+            "text-ellipsis bg-transparent text-white outline-none placeholder:text-white/40 disabled:cursor-not-allowed",
+            open
+              ? "min-w-20 flex-1"
+              : chips.length > 0
+                ? "min-w-0 w-2 shrink-0"
+                : "min-w-16 flex-1 sm:flex-none",
             isCompact ? "h-7 text-xs sm:text-sm" : "h-9 text-sm sm:text-base",
-            open && "flex-1",
           )}
         />
 
@@ -1780,6 +1573,16 @@ export function MorphingSearchChips({
           >
             Cancel
           </button>
+        )}
+
+        {/* Keyboard shortcut pill when idle */}
+        {!open && chips.length === 0 && !query && (
+          <span
+            aria-hidden="true"
+            className="hidden sm:inline-flex items-center gap-0.5 rounded-md border border-white/10 bg-white/6 px-1.5 py-0.5 text-[10px] font-mono tracking-wider text-white/40 select-none shrink-0"
+          >
+            {isMac ? "⌘K" : "Ctrl K"}
+          </span>
         )}
 
         {/* Trailing actions */}

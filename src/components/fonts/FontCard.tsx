@@ -583,23 +583,9 @@ function FontCard({
                                         }}
                                         className={`flex justify-center items-center gap-1 bg-none ${viewMode === 'image' ? 'hover:bg-black/30' : 'hover:bg-foreground/5'} transition-colors duration-300 ease-in-out h-11 px-3 rounded-full pointer-events-auto cursor-pointer`}
                                     >
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            width="20"
-                                            height="20"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <g
-                                                fill="none"
-                                                stroke="currentColor"
-                                                stroke-linecap="round"
-                                                stroke-linejoin="round"
-                                                stroke-width="2"
-                                            >
-                                                <path d="M4 20 20 4" />
-                                                <path d="M10 4h10v10" />
-                                            </g>
-                                        </svg>
+                                        <svg width="20" height="20" viewBox="0 0 70 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M0 65.5L49 16.5C49 16.5 40 17.5 30.5 16.5C21 15.5 13 10.5 13 10.5L15 4.5C15 4.5 27 11.5 43 10.5C59 9.5 65 0 65 0L70 4.5C70 4.5 60 14 59.5 28.5C59 43 65 54.5 65 54.5L60 57.5C60 57.5 56 49 54 40.5C52 32 53 20.5 53 20.5L4 69.5H3L0 66.5V65.5Z" fill="currentColor" />
+                                            </svg>
                                     </Link>
                                 </div>
                             </div>
@@ -641,24 +627,10 @@ function FontCard({
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                             }}
-                                            className={`flex justify-center items-center gap-1 text-muted hover:text-foreground transition-colors duration-300 ease-in-out py-2 px-3 rounded-full pointer-events-auto cursor-pointer`}
+                                            className={`flex justify-center items-center gap-1 text-muted hover:text-foreground transition-all duration-300 ease-in-out py-2 px-3 rounded-full pointer-events-auto cursor-pointer hover:rotate-45`}
                                         >
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                width="20"
-                                                height="20"
-                                                viewBox="0 0 24 24"
-                                            >
-                                                <g
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    stroke-linecap="round"
-                                                    stroke-linejoin="round"
-                                                    stroke-width="2"
-                                                >
-                                                    <path d="M4 20 20 4" />
-                                                    <path d="M10 4h10v10" />
-                                                </g>
+                                            <svg width="20" height="20" viewBox="0 0 70 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M0 65.5L49 16.5C49 16.5 40 17.5 30.5 16.5C21 15.5 13 10.5 13 10.5L15 4.5C15 4.5 27 11.5 43 10.5C59 9.5 65 0 65 0L70 4.5C70 4.5 60 14 59.5 28.5C59 43 65 54.5 65 54.5L60 57.5C60 57.5 56 49 54 40.5C52 32 53 20.5 53 20.5L4 69.5H3L0 66.5V65.5Z" fill="currentColor" />
                                             </svg>
                                         </Link>
                                     </div>

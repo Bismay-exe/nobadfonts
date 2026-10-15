@@ -214,11 +214,11 @@ export default function FontsCatalog() {
                 keywords={['free fonts', 'font catalog', 'typography', ...activeCategories]}
                 schema={catalogSchema}
             />
-            <div className="relative px-1 sm:px-2 md:px-4 pt-0 md:pt-6 w-full">
+            <div className="relative px-4 pt-0 md:pt-6 w-full">
                 {/* Header */}
                 <div className="mb-10 text-center px-4 sm:px-8 relative z-30">
                     <h1 className="text-4xl md:text-6xl font-bold tracking-tighter text-foreground/85 mb-4">Catalog</h1>
-                    <p className="text-muted max-w-xl mx-auto">
+                    <p className="text-muted max-w-sm mx-auto">
                         Discover the perfect typeface for your next project from our extensive collection of premium fonts.
                     </p>
                 </div>
