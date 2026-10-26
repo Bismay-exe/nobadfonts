@@ -356,9 +356,9 @@ export default function Navbar() {
                 )}
             >
                 <div className="flex items-center pt-[env(safe-area-inset-top)] md:pt-0">
-                    <div className="max-w-480 w-full mx-auto md:grid grid-cols-3 flex items-center justify-between gap-1.5 sm:gap-4">
+                    <div className="max-w-480 w-full mx-auto md:grid grid-cols-2 flex items-center justify-between gap-1.5 sm:gap-4">
                         {/* Left Side Actions */}
-                        <div className={cn("flex gap-4 sm:gap-10 transition-all duration-300 shrink-0", isSearchExpanded && "hidden md:flex")}>
+                        <div className={cn("flex gap-4 sm:gap-10 transition-all duration-300 shrink-0", isSearchExpanded ? "hidden md:flex" : "flex")}>
                             <div className="flex gap-4">
                                 {inDocs && (
                                     <button
@@ -443,33 +443,34 @@ export default function Navbar() {
                             </div>
                         </div>
 
-                        {/* Center Morphing Search Bar */}
-                        <div
-                            className={cn(
-                                "transition-all duration-300 z-40 flex justify-center min-w-0",
+                        <div className="hidden zflex gap-1.5 sm:gap-3 w-full justify-center md:justify-end">
+                            <div className={cn("flex-1 md:hidden", isSearchExpanded ? "hidden" : "")}></div>
+
+                            <div className={cn(
+                                "transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] z-40 flex justify-center",
                                 isSearchExpanded
-                                    ? "w-full flex-1 max-w-none md:max-w-xl mx-0 md:mx-4"
-                                    : "flex-1 min-w-0 max-w-sm lg:max-w-md xl:max-w-xl mx-1 sm:mx-4"
-                            )}
-                        >
-                            <MorphingSearchChips
-                                size="default"
-                                open={isSearchExpanded}
-                                onOpenChange={setIsSearchExpanded}
-                                query={navQuery}
-                                onQueryChange={handleNavbarQueryChange}
-                                chips={navChips}
-                                onChipsChange={handleNavbarChipsChange}
-                                side="bottom"
-                                className="w-full"
-                            />
+                                    ? "w-full flex-1 max-w-none mx-0"
+                                    : "w-10 md:w-auto md:flex-1 md:min-w-0 md:max-w-sm lg:max-w-md xl:max-w-xl md:mx-2"
+                            )}>
+                                <MorphingSearchChips
+                                    size="default"
+                                    open={isSearchExpanded}
+                                    onOpenChange={setIsSearchExpanded}
+                                    query={navQuery}
+                                    onQueryChange={handleNavbarQueryChange}
+                                    chips={navChips}
+                                    onChipsChange={handleNavbarChipsChange}
+                                    side="bottom"
+                                    className="w-full"
+                                />
+                            </div>
                         </div>
 
                         {/* Right Side Actions */}
                         <div
                             className={cn(
                                 "flex justify-end items-center gap-1.5 sm:gap-3 transition-all duration-300 shrink-0",
-                                isSearchExpanded && "hidden md:flex"
+                                isSearchExpanded ? "hidden md:flex" : "flex"
                             )}
                         >
                             {/* Update Download Icon */}
@@ -772,6 +773,7 @@ export default function Navbar() {
                             {/* </>
                             )} */}
                         </div>
+
                     </div>
                 </div>
             </nav >
@@ -882,31 +884,9 @@ export default function Navbar() {
                                         <span className="flex items-center gap-3 text-sm font-medium">
                                             Theme
                                         </span>
-
-                                        <Switch />
-
-                                        {/* <button
-                                            type="button"
-                                            onClick={async () => {
-                                                await Haptics.impact({
-                                                    style: ImpactStyle.Light,
-                                                });
-                                                toggleTheme();
-                                            }}
-                                            className="flex items-center justify-center rounded-full transition-colors cursor-pointer"
-                                            aria-label="Toggle theme"
-                                        >
-                                            {theme === "light" ? (
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
-                                                    <path fill="currentColor" d="M11.643 5.28q-.143-.145-.143-.357V2.539q0-.213.144-.357t.357-.144t.356.144t.143.356v2.385q0 .213-.144.356t-.357.144t-.356-.144m5 2.079q-.141-.14-.131-.342q.01-.2.15-.366l1.65-1.694q.15-.166.359-.166t.378.17q.155.156.155.35t-.16.354L17.35 7.358q-.16.16-.354.16t-.354-.16m2.435 5.142q-.213 0-.356-.144t-.144-.357t.144-.356t.356-.143h2.385q.212 0 .356.144t.143.357t-.143.356t-.357.143zm-7.434 9.318q-.143-.144-.143-.356v-2.366q0-.212.144-.356t.357-.144t.356.144t.143.356v2.366q0 .212-.144.356t-.357.144t-.356-.144M6.67 7.358l-1.713-1.67q-.165-.149-.165-.36t.165-.372q.16-.14.367-.14t.34.14l1.714 1.713q.14.134.14.341t-.136.348q-.15.14-.348.14t-.364-.14m11.662 11.686l-1.67-1.694q-.14-.165-.15-.366t.128-.342t.34-.14t.371.16l1.694 1.669q.146.14.143.344t-.149.37q-.16.164-.366.164t-.341-.165M2.539 12.5q-.213 0-.357-.144t-.143-.357t.143-.356t.357-.143h2.384q.213 0 .356.144t.144.357t-.144.356t-.356.143zm2.436 6.544q-.14-.16-.15-.363t.13-.344l1.676-1.675q.16-.16.35-.16t.358.155q.165.17.165.371t-.165.366l-1.65 1.65q-.166.166-.373.166t-.341-.166m3.487-3.501Q7 14.086 7 12.005T8.457 8.46T11.995 7t3.544 1.457T17 11.995t-1.457 3.544T12.005 17T8.46 15.543" />
-                                                </svg>
-                                            ) : (
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
-                                                    <path fill="currentColor" d="M20.71 13.51c-.78.23-1.58.35-2.38.35c-4.52 0-8.2-3.68-8.2-8.2c0-.8.12-1.6.35-2.38a1.002 1.002 0 0 0-1.25-1.25A10.17 10.17 0 0 0 2 11.8C2 17.42 6.58 22 12.2 22c4.53 0 8.45-2.91 9.76-7.24a1.002 1.002 0 0 0-1.25-1.25" />
-                                                    <path fill="currentColor" d="m16 8l.94-2.06L19 5l-2.06-.94L16 2l-.94 2.06L13 5l2.06.94zm4.25-.5l-.55 1.2l-1.2.55l1.2.55l.55 1.2l.55-1.2l1.2-.55l-1.2-.55z" />
-                                                </svg>
-                                            )}
-                                        </button> */}
+                                        <div className="border px-2 aspect-square flex justify-center items-center zpy-2 rounded-full bg-border border-border">
+                                            <Switch />
+                                        </div>
                                     </div>
 
 
@@ -1082,8 +1062,7 @@ export default function Navbar() {
                                                 );
                                             })}
                                         </div>
-                                        <div className="w-full sm:w-px h-px sm:h-full bg-border my-8 sm:my-0 sm:mx-4" />
-                                        <div className="flex-1 bg-card-background px-6 py-4 rounded-3xl">
+                                        <div className="mt-6 flex-1 bg-card-background px-6 py-4 rounded-3xl">
                                             {otherLinks.map((link, index) => {
                                                 const isActive = location.pathname === link.path;
 
@@ -1134,11 +1113,9 @@ export default function Navbar() {
                                     </nav>
 
                                     {/* Utilities */}
-                                    <div className="mt-8 pt-6 border-t border-foreground/10">
+                                    {/* <div className="mt-6">
                                         <div className="grid grid-cols-1 gap-2">
-
-                                            {/* Search */}
-                                            {/* <button
+                                            <button
                                                 type="button"
                                                 onClick={() => {
                                                     setMobileMenuOpen(false);
@@ -1154,9 +1131,8 @@ export default function Navbar() {
                                                 <span className="text-[10px] text-muted">
                                                     ⌘K
                                                 </span>
-                                            </button> */}
+                                            </button>
 
-                                            {/* Theme */}
                                             <div className="flex items-center justify-between sm:justify-start gap-4 rounded-xl py-2.5 transition-colors text-foreground">
                                                 <span className="font-inter-tight text-[2rem] sm:text-[2rem] md:text-[2rem] leading-none transition-colors duration-200 flex items-center">
                                                     Theme
@@ -1165,35 +1141,12 @@ export default function Navbar() {
                                                 <div className="sm:bg-card-background sm:aspect-square sm:h-full sm:p-3 flex justify-center items-center rounded-full">
                                                     <Switch />
                                                 </div>
-
-                                                {/* <button
-                                                    type="button"
-                                                    onClick={async () => {
-                                                        await Haptics.impact({
-                                                            style: ImpactStyle.Light,
-                                                        });
-                                                        toggleTheme();
-                                                    }}
-                                                    className="flex items-center justify-center rounded-full transition-colors cursor-pointer"
-                                                    aria-label="Toggle theme"
-                                                >
-                                                    {theme === "light" ? (
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
-                                                            <path fill="currentColor" d="M11.643 5.28q-.143-.145-.143-.357V2.539q0-.213.144-.357t.357-.144t.356.144t.143.356v2.385q0 .213-.144.356t-.357.144t-.356-.144m5 2.079q-.141-.14-.131-.342q.01-.2.15-.366l1.65-1.694q.15-.166.359-.166t.378.17q.155.156.155.35t-.16.354L17.35 7.358q-.16.16-.354.16t-.354-.16m2.435 5.142q-.213 0-.356-.144t-.144-.357t.144-.356t.356-.143h2.385q.212 0 .356.144t.143.357t-.143.356t-.357.143zm-7.434 9.318q-.143-.144-.143-.356v-2.366q0-.212.144-.356t.357-.144t.356.144t.143.356v2.366q0 .212-.144.356t-.357.144t-.356-.144M6.67 7.358l-1.713-1.67q-.165-.149-.165-.36t.165-.372q.16-.14.367-.14t.34.14l1.714 1.713q.14.134.14.341t-.136.348q-.15.14-.348.14t-.364-.14m11.662 11.686l-1.67-1.694q-.14-.165-.15-.366t.128-.342t.34-.14t.371.16l1.694 1.669q.146.14.143.344t-.149.37q-.16.164-.366.164t-.341-.165M2.539 12.5q-.213 0-.357-.144t-.143-.357t.143-.356t.357-.143h2.384q.213 0 .356.144t.144.357t-.144.356t-.356.143zm2.436 6.544q-.14-.16-.15-.363t.13-.344l1.676-1.675q.16-.16.35-.16t.358.155q.165.17.165.371t-.165.366l-1.65 1.65q-.166.166-.373.166t-.341-.166m3.487-3.501Q7 14.086 7 12.005T8.457 8.46T11.995 7t3.544 1.457T17 11.995t-1.457 3.544T12.005 17T8.46 15.543" />
-                                                        </svg>
-                                                    ) : (
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
-                                                            <path fill="currentColor" d="M20.71 13.51c-.78.23-1.58.35-2.38.35c-4.52 0-8.2-3.68-8.2-8.2c0-.8.12-1.6.35-2.38a1.002 1.002 0 0 0-1.25-1.25A10.17 10.17 0 0 0 2 11.8C2 17.42 6.58 22 12.2 22c4.53 0 8.45-2.91 9.76-7.24a1.002 1.002 0 0 0-1.25-1.25" />
-                                                            <path fill="currentColor" d="m16 8l.94-2.06L19 5l-2.06-.94L16 2l-.94 2.06L13 5l2.06.94zm4.25-.5l-.55 1.2l-1.2.55l1.2.55l.55 1.2l.55-1.2l1.2-.55l-1.2-.55z" />
-                                                        </svg>
-                                                    )}
-                                                </button> */}
                                             </div>
                                         </div>
-                                    </div>
+                                    </div> */}
 
                                     {/* Account / Social Panel */}
-                                    <div className="mb-4 md:mb-5 rounded-3xl bg-card-background hover:bg-foreground/8 transition-colors duration-300 ease-in-out overflow-hidden">
+                                    <div className="mt-6 mb-4 md:mb-5 rounded-3xl bg-card-background hover:bg-foreground/8 transition-colors duration-300 ease-in-out overflow-hidden">
                                         {user ? (
                                             <>
                                                 {/* Profile */}

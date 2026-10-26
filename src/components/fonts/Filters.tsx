@@ -218,7 +218,7 @@ export const Filters = React.memo(
                 ?.label || "Trending";
 
         return (
-            <div className="fixed bottom-20 inset-x-4 md:bottom-6 lg:bottom-8 lg:inset-auto lg:left-1/2 lg:-translate-x-1/2 flex flex-col-reverse items-center z-50 font-inter-tight">
+            <div className="fixed bottom-8 inset-x-4 md:bottom-8 lg:bottom-8 lg:inset-auto lg:left-1/2 lg:-translate-x-1/2 flex flex-col-reverse items-center z-50 font-inter-tight">
                 {/* Main Filter Dock */}
                 {/* <Squircle className='w-full h-full bg-foreground/5' radius={70}></Squircle> */}
                 <Squircle
