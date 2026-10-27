@@ -92,7 +92,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }, []);
 
     const signOut = useCallback(async () => {
-        const { error } = await supabase.auth.signOut();
+        // Local only: the extension keeps its own OAuth session, so signing out
+        // of the website must not end it. Connected Apps revokes that grant.
+        const { error } = await supabase.auth.signOut({ scope: 'local' });
         if (error) throw error;
     }, []);
 

@@ -45,6 +45,8 @@ const Moods = React.lazy(() => import('./pages/Moods'));
 const MoodDetail = React.lazy(() => import('./pages/MoodDetail'));
 const FontPlayground = React.lazy(() => import('./pages/FontPlayground'));
 const TypeSwap = React.lazy(() => import('./pages/TypeSwap'));
+const OAuthConsent = React.lazy(() => import('./pages/OAuthConsent'));
+const ConnectedApps = React.lazy(() => import('./pages/ConnectedApps'));
 import CookieConsent from './components/layout/CookieConsent';
 import { useAuth } from './contexts/AuthContext';
 
@@ -60,6 +62,7 @@ function OnboardingGuard({ children }: { children: React.ReactNode }) {
   const exempt = [
     '/onboarding',
     '/auth',
+    '/oauth/consent',
     '/docs',
     '/moods',
     '/playground',
@@ -136,6 +139,7 @@ function AppContent() {
                 <PageTransitionTracker />
                 <Routes location={displayLocation} key={displayLocation.pathname}>
                   <Route path="/auth" element={<Auth />} />
+                  <Route path="/oauth/consent" element={<OAuthConsent />} />
                   <Route path="/onboarding" element={<Onboarding />} />
                   <Route path="/board-share/:shareToken" element={<BoardShare />} />
                   <Route path="/fonts/:id" element={<FontDetails />} />
@@ -150,6 +154,7 @@ function AppContent() {
                     <Route path="pairing" element={<FontPairing />} />
                     <Route path="upload" element={<Upload />} />
                     <Route path="profile" element={<Profile />} />
+                    <Route path="settings/connected-apps" element={<ConnectedApps />} />
                     <Route path="members" element={<Members />} />
                     <Route path="members/:id" element={<MemberDetails />} />
                     <Route path="designers/:designerName" element={<DesignerFonts />} />

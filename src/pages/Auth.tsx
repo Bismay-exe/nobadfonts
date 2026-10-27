@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { PreviewAccordion } from '../components/fonts/PreviewAccordion';
 import { useAuth } from '../contexts/AuthContext';
+import { getSafeReturnPath } from '../lib/oauthReturn';
 import { Toast } from '@capacitor/toast';
 import { Capacitor } from '@capacitor/core';
 import { Browser } from '@capacitor/browser';
@@ -43,16 +44,20 @@ export default function Auth() {
     const [honeypot, setHoneypot] = useState('');
     const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
     const navigate = useNavigate();
+    const location = useLocation();
+    const returnPath = getSafeReturnPath(new URLSearchParams(location.search).get('returnTo'));
 
     useEffect(() => {
         if (!authLoading && user) {
-            if (needsOnboarding) {
+            if (returnPath) {
+                navigate(returnPath, { replace: true });
+            } else if (needsOnboarding) {
                 navigate('/onboarding', { replace: true });
             } else {
                 navigate('/profile', { replace: true });
             }
         }
-    }, [user, authLoading, needsOnboarding, navigate]);
+    }, [user, authLoading, needsOnboarding, navigate, returnPath]);
 
     const handleAuth = useCallback(async (e: React.FormEvent) => {
         e.preventDefault();
@@ -79,7 +84,7 @@ export default function Auth() {
                     password,
                 });
                 if (error) throw error;
-                navigate('/profile');
+                navigate(returnPath ?? '/profile');
             } else {
                 const { data, error } = await supabase.auth.signUp({
                     email,
@@ -91,7 +96,7 @@ export default function Auth() {
                 if (data.user && !data.session) {
                     setIsVerifying(true);
                 } else {
-                    navigate('/onboarding');
+                    navigate(returnPath ?? '/onboarding');
                 }
             }
         } catch (err: any) {
@@ -99,7 +104,7 @@ export default function Auth() {
         } finally {
             setLoading(false);
         }
-    }, [isLogin, email, password, navigate, honeypot, turnstileToken]);
+    }, [isLogin, email, password, navigate, honeypot, turnstileToken, returnPath]);
 
     const handleVerifyOtp = useCallback(async (e: React.FormEvent) => {
         e.preventDefault();
@@ -114,18 +119,20 @@ export default function Auth() {
             });
 
             if (error) throw error;
-            navigate('/onboarding');
+            navigate(returnPath ?? '/onboarding');
         } catch (err: any) {
             setError(err.message);
         } finally {
             setLoading(false);
         }
-    }, [email, otp, navigate]);
+    }, [email, otp, navigate, returnPath]);
 
     const handleSocialLogin = useCallback(async (provider: 'google' | 'github') => {
         try {
             const isNative = Capacitor.isNativePlatform();
-            const redirectTo = isNative ? 'nobadfonts://auth' : `${window.location.origin}/onboarding`;
+            const redirectTo = isNative
+                ? 'nobadfonts://auth'
+                : `${window.location.origin}${returnPath ?? '/onboarding'}`;
 
             const { data, error } = await supabase.auth.signInWithOAuth({
                 provider,
@@ -141,7 +148,7 @@ export default function Auth() {
         } catch (err: any) {
             setError(err.message);
         }
-    }, []);
+    }, [returnPath]);
 
     const handleResendOtp = useCallback(async () => {
         setLoading(true);

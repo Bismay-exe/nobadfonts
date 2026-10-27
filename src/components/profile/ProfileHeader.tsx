@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 
 interface ProfileHeadingProps {
@@ -224,6 +225,12 @@ export default memo(function ProfileHeading({ onEditClick, isEditing, fontsLiked
                         </svg>
                         <span>{isEditing ? 'Cancel Edit' : 'Edit Profile'}</span>
                     </button>
+                    <Link to="/settings/connected-apps" className="mt-3 flex justify-center items-center gap-2 bg-foreground/5 hover:bg-foreground/10 border border-foreground/5 w-fit px-4 py-3 rounded-full text-foreground/65 hover:text-foreground transition-all duration-300 ease-in-out">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M15.5 3.5a2 2 0 0 0-3 0l-.5.5-.5-.5a2 2 0 1 0-3 2.8V8H6a2 2 0 0 0-2 2v2.5h.5a2 2 0 1 1 0 4H4V19a2 2 0 0 0 2 2h2.5v-.5a2 2 0 1 1 4 0V21H17a2 2 0 0 0 2-2v-2.5h-.5a2 2 0 1 0 0-4H18V10a2 2 0 0 0-2-2h-2v-1.7a2 2 0 0 0 0-2.8Z" />
+                        </svg>
+                        <span>Connected apps</span>
+                    </Link>
                     <button onClick={() => signOut()} className="mt-3 flex justify-center items-center gap-2 bg-foreground/5 hover:bg-warning/10 border border-foreground/5 hover:border-warning/20 w-fit px-4 rounded-full text-foreground/65 hover:text-warning transition-all duration-300 ease-in-out active:scale-80">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
                             <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.996 12h-10m3.976-6c-.046-1.093-.184-1.79-.596-2.326a3 3 0 0 0-.554-.554c-.808-.62-1.98-.62-4.326-.62s-3.518 0-4.326.62a3 3 0 0 0-.554.554c-.62.808-.62 1.98-.62 4.326v8c0 2.346 0 3.518.62 4.326a3 3 0 0 0 .554.554c.808.62 1.98.62 4.326.62s3.518 0 4.326-.62a3 3 0 0 0 .554-.554c.412-.536.55-1.233.596-2.326m3.524-2.5s3.5-2.578 3.5-3.5s-3.5-3.5-3.5-3.5" />
