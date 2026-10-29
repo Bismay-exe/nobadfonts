@@ -32,3 +32,5 @@ dist-ssr
 
 # Local font-processing caches and generated review outputs
 .cache/
+
+/nobadfonts-extension/
