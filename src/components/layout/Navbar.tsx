@@ -14,10 +14,12 @@ import { Squircle } from "react-ios-corners";
 import { useBag } from "../../contexts/BagContext";
 import { DocsSearchModal } from "../docs/DocsSearchModal";
 import Switch from "../ui/ThemeToggle";
+import { useAdminControls } from "../../hooks/useAdminControls";
 import { MorphingSearchChips } from "../motion/morphing-search-chips";
 
 export default function Navbar() {
     const { user, profile } = useAuth();
+    const { adminControlsEnabled, toggleAdminControls } = useAdminControls();
     const { theme, toggleTheme } = useTheme();
     const {
         hasUpdate,
@@ -880,6 +882,28 @@ export default function Navbar() {
                                 {/* Theme + Docs Search */}
                                 <div className="mt-2 border-t border-border/50 pt-2">
 
+                                    {profile?.role === 'admin' && (
+                                        <button
+                                            type="button"
+                                            onClick={toggleAdminControls}
+                                            className="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-sm font-medium text-foreground hover:bg-foreground/5 transition-colors cursor-pointer"
+                                        >
+                                            <span className="flex items-center gap-3 text-sm font-medium">
+                                                <ShieldAlert size={18} className={adminControlsEnabled ? "text-accent" : "text-muted"} />
+                                                Admin Controls
+                                            </span>
+                                            <div className={cn(
+                                                "w-9 h-5 rounded-full transition-colors duration-300 ease-in-out relative flex items-center p-0.5",
+                                                adminControlsEnabled ? "bg-accent" : "bg-foreground/20"
+                                            )}>
+                                                <div className={cn(
+                                                    "w-4 h-4 rounded-full bg-background shadow transition-transform duration-300 ease-in-out",
+                                                    adminControlsEnabled ? "translate-x-4" : "translate-x-0"
+                                                )} />
+                                            </div>
+                                        </button>
+                                    )}
+
                                     <div className="flex items-center justify-between rounded-xl px-3 py-2.5 text-sm font-medium transition-colors text-foreground">
                                         <span className="flex items-center gap-3 text-sm font-medium">
                                             Theme
@@ -1144,6 +1168,31 @@ export default function Navbar() {
                                             </div>
                                         </div>
                                     </div> */}
+
+                                    {/* Admin Controls for Mobile */}
+                                    {profile?.role === 'admin' && (
+                                        <div className="mt-6 rounded-3xl bg-card-background p-2">
+                                            <button
+                                                type="button"
+                                                onClick={toggleAdminControls}
+                                                className="flex w-full items-center justify-between px-4 py-3 rounded-2xl text-foreground hover:bg-foreground/5 transition-colors cursor-pointer"
+                                            >
+                                                <span className="flex items-center gap-3 font-inter-tight text-xl font-medium">
+                                                    <ShieldAlert size={20} className={adminControlsEnabled ? "text-accent" : "text-muted"} />
+                                                    Admin Controls
+                                                </span>
+                                                <div className={cn(
+                                                    "w-11 h-6 rounded-full transition-colors duration-300 ease-in-out relative flex items-center p-0.5",
+                                                    adminControlsEnabled ? "bg-accent" : "bg-foreground/20"
+                                                )}>
+                                                    <div className={cn(
+                                                        "w-5 h-5 rounded-full bg-background shadow transition-transform duration-300 ease-in-out",
+                                                        adminControlsEnabled ? "translate-x-5" : "translate-x-0"
+                                                    )} />
+                                                </div>
+                                            </button>
+                                        </div>
+                                    )}
 
                                     {/* Account / Social Panel */}
                                     <div className="mt-6 mb-4 md:mb-5 rounded-3xl bg-card-background hover:bg-foreground/8 transition-colors duration-300 ease-in-out overflow-hidden">

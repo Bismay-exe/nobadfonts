@@ -26,66 +26,84 @@ const formatCount = (count: number) => {
 export default memo(function ProfileHeading({ onEditClick, isEditing, fontsLiked = 0, boardsCount = 0, savedBoardsCount = 0 }: ProfileHeadingProps) {
     const { user, profile, signOut } = useAuth();
 
-    // const [isExpanded, setIsExpanded] = useState(false);
-
     if (!user) return null;
 
     const extendedProfile = profile as typeof profile & {
         profession?: string;
     };
 
-    // const bioLines = profile?.bio ? profile.bio.split('\n').length : 0;
-    // const showReadMore = !!profile?.bio && (profile.bio.length > 20 || bioLines > 5);
-
     const socials: SocialItem[] = [];
 
-    if (profile?.twitter) {
-        socials.push({
-            href: profile.twitter,
-            label: 'Twitter',
-            image: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAAAAABXZoBIAAAAqUlEQVR4AdXQEQwCUQDG8b87pFkcRmGuyfFpFB+HuZ20/DA4yndLHj17dHJ08G/V1qp7vvWjT77t28cfKlIIMS54KmPa8uli35l4WGvNtyQ7G2CmF37M7WncQe+NidKW5CyYyDhboY5kRZelLshz5OyevK0dySVZNz1iT07r0LkpbJmqdcUoJyt+VVrAxkB0NRnzKhysGQfevt++mgavfOpi844hhFjyf+4xHWjgrPr73gAAAABJRU5ErkJggg==',
-        });
-    }
+    const getSocialItemFromUrl = (url: string): SocialItem => {
+        const lower = url.toLowerCase();
+        if (lower.includes('instagram.com')) {
+            return {
+                href: url,
+                label: 'Instagram',
+                image: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y+mAAABsFBMVEVHcEx6Gft+F/x0FPyBDPORB+WnAt69AN/IANzSANrVANDpEKtpGv52FvjhANfhAMnbBLfVBJGHGP2YF/ueAu+zAPDrALTtA6quMNrKWuPhYtzvVMHvILzuAMbMf+z+3/3/////9//vd9v5AbryAqWuGvrxr9371vf2tePwp9/vnuD/+//+ArP9AJ395vrTRNPucMLwAo7HG/fxFM39wPHtPZ38AoXjGfD6E7TsJ6rzI5PzV6P7AXX9FpDtocvxZJ79AGTwrb39EGf8InX87PPxHGv+E3j8H1vugJX7KlLxZJH1u8v7M1X2Kz78M0XwbF79Kmbyu6/9OTD9QUPwWGf//vPrQlr0NGj7AFn0imzySCL7Szb4yb/7QiT8UBL+Wi3+7Nn1BEbzz6b5Ww79ZiL0dUf11bD8eyj6aAH+dg/+bh3zFUX93OjymjH9ign8hQT5hRj8fQ32t2f/+djypEz5kAL22539dwf+mQL5ogD3zmHzn4r4Go77Yyv/qgT+sAL5rwD5vzL1yVr6mAf9tgD9vQD/xAD/KnD2lwD8ygD+OGP/LGv+rQ3+uQj/ywL7VDI4+UxjAAAAkHRSTlMAXMb/////////xl0Kz///zgv//////8r//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8X/////xl3//////8/////OC//PClzG/8UUwjnzAAACFUlEQVR4ATXQRbobRxhG4fO16q8moZmZPQkz0wayg3CygHBGnmYjwTV4FpqamRl1o3u7pWqVoR+fYb3FAiQBQiDaAaQJiK4WW6JFARiS7joe2qBdPRbCAAR4IY0AabxMiMdJC32gZuLavYqylVaHnf97pEjLYdndZVNSqXWC3CSfZVpCO+FenvR1ru9py6tq2XjYgEt6vd5Y6OyOVeSPIr87jGl515GbM9gTwrmd1zfk1coLbKqqtbfWhpDkARLg5kSpbbjVc9fMriVcXXHVYhR4F2DVvXnfWHVZscDGcVWzjDUX8JBcv25Aj3hH2bIs63gtAeAczm3qULFeGtc79Hg8W1gW/GMmyX2xBsyvjGnTeO/LKsrTlvg8AbwZ2MNnQbuoRUscDM3s+XoQ0rSXb9IGvwbKNeAcdCFTTE7tL8edcnZ4v6DTrizLEnDOFt46fCeJtw/vKO9bTouNBCMzW2kfjA4fHr22rDJPQQEhcWb95+f2qPnw5ZeHsTFTsVWdawF9bFBN1khiiQ7TGaGKydG3J+fdPX0hMv35oQTUSmrqWZiMDu7ZfkL39FU69+jX58tVwC0ANz3I0yHM45K+qXxHqL7wH096vlx/YbF2Cy/rp/sFXkKqIIN7JPfnVNVD/FscmHgvQBCJoY6LnXo6C1X96ncOK2fQfkqDXIwsRj+DN4SAn1U5wGDWxDidNqGe7r9zAB4A0j29NbySqvYAAAAASUVORK5CYII=',
+            };
+        }
+        if (lower.includes('behance.net')) {
+            return {
+                href: url,
+                label: 'Behance',
+                image: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y+mAAAAeFBMVEUFWP8AVv8ATP8ASv8AUf+lt/+ywf9lhf8ARv8AU/8AQP/y9f////91kv/q8P8ARP/S2v9ujf/l7P8ASP8yZv8ATv+5xv9nh//M1f+Spv/BzP/Y3/+4xP+ZrP+su/8AJv8AN/8APf/f5v8AL/8oX/88af9Qd/+Kof8IPKxZAAAAvUlEQVR4Ac3RRQKDMAAAwZLgLO5ab///w7qgZxZnLpHNcspsa0UhHwl1CqWmP9IM8/5hPfpD2+GVLlX38fT8P/QIQteNIFYUVUnSB/1h5qdmDqq6KYDS76Mt0oratqBuoBX/yCMnjjuq7S6BHkZZljkQR9RVlYGh/mG2l7ENbYQXRdEhynvoq+rRoykoj/bxdB5OJdShzME4lSDHi1Cbfseji/pF2WWPOuM+vfjcdldVnVl4KxXp8patFhe6ATwRD2y5uYPGAAAAAElFTkSuQmCC',
+            };
+        }
+        if (lower.includes('twitter.com') || lower.includes('x.com')) {
+            return {
+                href: url,
+                label: 'Twitter',
+                image: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAAAAABXZoBIAAAAqUlEQVR4AdXQEQwCUQDG8b87pFkcRmGuyfFpFB+HuZ20/DA4yndLHj17dHJ08G/V1qp7vvWjT77t28cfKlIIMS54KmPa8uli35l4WGvNtyQ7G2CmF37M7WncQe+NidKW5CyYyDhboY5kRZelLshz5OyevK0dySVZNz1iT07r0LkpbJmqdcUoJyt+VVrAxkB0NRnzKhysGQfevt++mgavfOpi844hhFjyf+4xHWjgrPr73gAAAABJRU5ErkJggg==',
+            };
+        }
+        if (lower.includes('linkedin.com')) {
+            return {
+                href: url,
+                label: 'LinkedIn',
+                image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTBjUaECkUKy_fw68AQN07BBrtcAksp-iuJ_Ow_FYXc6w&s',
+            };
+        }
+        if (lower.includes('dribbble.com')) {
+            return {
+                href: url,
+                label: 'Dribbble',
+                svg: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10c5.51 0 10-4.48 10-10S17.51 2 12 2m6.605 4.61a8.5 8.5 0 0 1 1.93 5.314c-.281-.054-3.101-.629-5.943-.271c-.065-.141-.12-.293-.184-.445a25 25 0 0 0-.564-1.236c3.145-1.28 4.577-3.124 4.761-3.362M12 3.475c2.17 0 4.154.813 5.662 2.148c-.152.216-1.443 1.941-4.48 3.08c-1.399-2.57-2.95-4.675-3.189-5A8.7 8.7 0 0 1 12 3.475m-3.633.803a54 54 0 0 1 3.167 4.935c-3.992 1.063-7.517 1.04-7.896 1.04a8.58 8.58 0 0 1 4.729-5.975M3.453 12.01v-.26c.37.01 4.512.065 8.775-1.215q.371.694.717 1.402l-.336.085c-4.474 1.44-6.858 5.37-7.061 5.702A8.5 8.5 0 0 1 3.453 12.01m3.138 7.053c.137-.235 3.139-5.317 6.772-6.379a22 22 0 0 0-.042-.085a56 56 0 0 1 1.713 6.062A8.5 8.5 0 0 1 12 20.547a8.5 8.5 0 0 1-5.408-1.484m7.644-.959a53 53 0 0 0-1.596-5.703c2.677-.413 5.03.26 5.317.345a8.6 8.6 0 0 1-3.721 5.358"/></svg>',
+            };
+        }
+        if (lower.includes('github.com')) {
+            return {
+                href: url,
+                label: 'GitHub',
+                svg: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 16 16"><path fill="currentColor" fill-rule="evenodd" d="M8 .2A8 8 0 0 0 5.47 15.79c.4.074.546-.173.546-.385c0-.19-.007-.693-.01-1.36c-2.226.483-2.695-1.073-2.695-1.073c-.364-.924-.889-1.17-.889-1.17c-.726-.496.055-.486.055-.486c.803.056 1.226.824 1.226.824c.713 1.222 1.872.869 2.328.664c.072-.517.279-.869.508-1.069c-1.776-.202-3.644-.888-3.644-3.953c0-.874.312-1.588.823-2.147c-.082-.202-.357-1.016.078-2.117c0 0 .672-.215 2.2.82A7.7 7.7 0 0 1 8 4.068c.68.004 1.364.092 2.003.27c1.527-1.035 2.198-.82 2.198-.82c.436 1.101.162 1.915.08 2.117c.513.559.822 1.273.822 2.147c0 3.073-1.87 3.749-3.653 3.947c.287.247.543.735.543 1.481c0 1.07-.01 1.933-.01 2.196c0 .214.144.463.55.384A8 8 0 0 0 8 .2"/></svg>',
+            };
+        }
+        if (lower.includes('youtube.com')) {
+            return {
+                href: url,
+                label: 'YouTube',
+                svg: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M23.498 6.186a3.02 3.02 0 0 0-2.122-2.136C19.505 3.546 12 3.546 12 3.546s-7.505 0-9.377.504A3.02 3.02 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.02 3.02 0 0 0 2.122 2.136c1.871.504 9.376.504 9.376.504s7.505 0 9.377-.504a3.02 3.02 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814M9.545 15.568V8.432L15.818 12z"/></svg>',
+            };
+        }
+        return {
+            href: url,
+            label: 'Social',
+            svg: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10s10-4.48 10-10S17.52 2 12 2m-1 17.93c-3.95-.49-7-3.85-7-7.93c0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41c0 2.08-.8 3.97-2.1 5.39"/></svg>',
+        };
+    };
 
-    if (profile?.instagram) {
-        socials.push({
-            href: profile.instagram,
-            label: 'Instagram',
-            image: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y+mAAABsFBMVEVHcEx6Gft+F/x0FPyBDPORB+WnAt69AN/IANzSANrVANDpEKtpGv52FvjhANfhAMnbBLfVBJGHGP2YF/ueAu+zAPDrALTtA6quMNrKWuPhYtzvVMHvILzuAMbMf+z+3/3/////9//vd9v5AbryAqWuGvrxr9371vf2tePwp9/vnuD/+//+ArP9AJ395vrTRNPucMLwAo7HG/fxFM39wPHtPZ38AoXjGfD6E7TsJ6rzI5PzV6P7AXX9FpDtocvxZJ79AGTwrb39EGf8InX87PPxHGv+E3j8H1vugJX7KlLxZJH1u8v7M1X2Kz78M0XwbF79Kmbyu6/9OTD9QUPwWGf//vPrQlr0NGj7AFn0imzySCL7Szb4yb/7QiT8UBL+Wi3+7Nn1BEbzz6b5Ww79ZiL0dUf11bD8eyj6aAH+dg/+bh3zFUX93OjymjH9ign8hQT5hRj8fQ32t2f/+djypEz5kAL22539dwf+mQL5ogD3zmHzn4r4Go77Yyv/qgT+sAL5rwD5vzL1yVr6mAf9tgD9vQD/xAD/KnD2lwD8ygD+OGP/LGv+rQ3+uQj/ywL7VDI4+UxjAAAAkHRSTlMAXMb/////////xl0Kz///zgv//////8r//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8X/////xl3//////8/////OC//PClzG/8UUwjnzAAACFUlEQVR4ATXQRbobRxhG4fO16q8moZmZPQkz0wayg3CygHBGnmYjwTV4FpqamRl1o3u7pWqVoR+fYb3FAiQBQiDaAaQJiK4WW6JFARiS7joe2qBdPRbCAAR4IY0AabxMiMdJC32gZuLavYqylVaHnf97pEjLYdndZVNSqXWC3CSfZVpCO+FenvR1ru9py6tq2XjYgEt6vd5Y6OyOVeSPIr87jGl515GbM9gTwrmd1zfk1coLbKqqtbfWhpDkARLg5kSpbbjVc9fMriVcXXHVYhR4F2DVvXnfWHVZscDGcVWzjDUX8JBcv25Aj3hH2bIs63gtAeAczm3qULFeGtc79Hg8W1gW/GMmyX2xBsyvjGnTeO/LKsrTlvg8AbwZ2MNnQbuoRUscDM3s+XoQ0rSXb9IGvwbKNeAcdCFTTE7tL8edcnZ4v6DTrizLEnDOFt46fCeJtw/vKO9bTouNBCMzW2kfjA4fHr22rDJPQQEhcWb95+f2qPnw5ZeHsTFTsVWdawF9bFBN1khiiQ7TGaGKydG3J+fdPX0hMv35oQTUSmrqWZiMDu7ZfkL39FU69+jX58tVwC0ANz3I0yHM45K+qXxHqL7wH096vlx/YbF2Cy/rp/sFXkKqIIN7JPfnVNVD/FscmHgvQBCJoY6LnXo6C1X96ncOK2fQfkqDXIwsRj+DN4SAn1U5wGDWxDidNqGe7r9zAB4A0j29NbySqvYAAAAASUVORK5CYII=',
-        });
-    }
+    const rawSocialUrls = [
+        profile?.instagram,
+        profile?.behance,
+        profile?.twitter,
+        profile?.linkedin,
+    ].filter(Boolean) as string[];
 
-    if (profile?.linkedin) {
-        socials.push({
-            href: profile.linkedin,
-            label: 'LinkedIn',
-            image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTBjUaECkUKy_fw68AQN07BBrtcAksp-iuJ_Ow_FYXc6w&s',
-        });
-    }
-
-    if (profile?.behance) {
-        socials.push({
-            href: profile.behance,
-            label: 'Behance',
-            image: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y+mAAAAeFBMVEUFWP8AVv8ATP8ASv8AUf+lt/+ywf9lhf8ARv8AU/8AQP/y9f////91kv/q8P8ARP/S2v9ujf/l7P8ASP8yZv8ATv+5xv9nh//M1f+Spv/BzP/Y3/+4xP+ZrP+su/8AJv8AN/8APf/f5v8AL/8oX/88af9Qd/+Kof8IPKxZAAAAvUlEQVR4Ac3RRQKDMAAAwZLgLO5ab///w7qgZxZnLpHNcspsa0UhHwl1CqWmP9IM8/5hPfpD2+GVLlX38fT8P/QIQteNIFYUVUnSB/1h5qdmDqq6KYDS76Mt0oratqBuoBX/yCMnjjuq7S6BHkZZljkQR9RVlYGh/mG2l7ENbYQXRdEhynvoq+rRoykoj/bxdB5OJdShzME4lSDHi1Cbfseji/pF2WWPOuM+vfjcdldVnVl4KxXp8patFhe6ATwRD2y5uYPGAAAAAElFTkSuQmCC',
-        });
-    }
-
-    // if (profile?.custom_social) {
-    //     socials.push({
-    //         href: profile.custom_social.url,
-    //         label: profile.custom_social.name,
-    //         svg: profile.custom_social.svg,
-    //     });
-    // }
-
-    // if (profile?.paypal_me) {
-    //     socials.push({
-    //         href: `https://paypal.me/${profile.paypal_me}`,
-    //         label: 'Support',
-    //         icon: <Coffee size={17} strokeWidth={1.8} />,
-    //     });
-    // }
+    // Ensure all user's available socials are shown
+    const uniqueUrls = Array.from(new Set(rawSocialUrls));
+    uniqueUrls.forEach((url) => {
+        socials.push(getSocialItemFromUrl(url));
+    });
 
     return (
         <div className={`${!isEditing ? '' : 'zhidden'} relative z-10 w-full min-h-screen flex flex-col items-center justify-between px-6 py-24 sm:px-10 lg:px-16`}>
@@ -112,25 +130,6 @@ export default memo(function ProfileHeading({ onEditClick, isEditing, fontsLiked
                     {profile?.full_name || 'User'}
                 </h1>
 
-                {/* Description */}
-                {/* {profile?.bio && (
-                    <>
-                        <div className="w-10 h-px mt-8 mb-6 bg-foreground/25" />
-
-                        <div className="max-w-md my-5">
-                            <p className={`text-base sm:text-md leading-relaxed font-inter font-light tracking-wide text-foreground/92 whitespace-pre-wrap ${!isExpanded ? 'line-clamp-5' : 'line-camp-1'}`}>
-                                {profile.bio}
-                            </p>
-
-                            {showReadMore && (
-                                <button onClick={() => setIsExpanded((prev) => !prev)} className="mt-2 text-sm text-foreground/45 hover:text-foreground/80 transition-colors">
-                                    {isExpanded ? 'Show less' : '...more'}
-                                </button>
-                            )}
-                        </div>
-                    </>
-                )} */}
-
                 {/* Stats */}
                 <div className="flex flex-wrap items-center justify-center gap-x-7 gap-y-2 mt-4 font-light text-foreground/92">
                     <span className="text-sm sm:text-base">{formatCount(fontsLiked)} Fonts Liked</span>
@@ -144,9 +143,6 @@ export default memo(function ProfileHeading({ onEditClick, isEditing, fontsLiked
                         {extendedProfile.profession}
                     </p>
                 )}
-                {/* <p className="mt-5 text-base sm:text-lg font-light tracking-wide text-foreground/65">
-                    designer / developer
-                </p> */}
 
                 <div className='flex flex-col justify-center items-center gap-1'>
 
@@ -198,7 +194,7 @@ export default memo(function ProfileHeading({ onEditClick, isEditing, fontsLiked
                         <div className="flex items-center rounded-full zbg-foreground/8 border border-border/50 p-1 backdrop-blur-xl">
                             <div className="flex -space-x-2">
                                 {socials.map((social) => (
-                                    <a key={social.label} href={social.href} target="_blank" rel="noopener noreferrer" aria-label={social.label} className="w-10 h-10 flex items-center justify-center rounded-full border border-background bg-foreground/16 overflow-hidden hover:z-10 hover:bg-foreground/24 hover:scale-105 transition-all duration-300">
+                                    <a key={`${social.label}-${social.href}`} href={social.href} target="_blank" rel="noopener noreferrer" aria-label={social.label} className="w-10 h-10 flex items-center justify-center rounded-full border border-background bg-foreground/16 overflow-hidden hover:z-10 hover:bg-foreground/24 hover:scale-105 transition-all duration-300">
                                         {social.image && (
                                             <img src={social.image} alt="" className="w-full h-full object-contain" />
                                         )}

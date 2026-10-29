@@ -126,47 +126,43 @@ export default function FontAdminControls({
     };
 
     return (
-        <div className="bg-muted rounded-3xl mb-8 border border-foreground/10 overflow-hidden mt-8">
-            {!isEditingGallery ? (
-                <div className="p-4 w-full flex justify-between items-center bg-card-background/50">
-                    <span className="text-muted font-mono text-xs uppercase tracking-widest pl-2">
-                        Admin Controls
-                    </span>
-                    <div className="flex gap-2 md:gap-4">
-                        <button
-                            onClick={handleDeleteFont}
-                            disabled={isDeleting}
-                            className="flex items-center gap-2 px-3 md:px-4 py-2 bg-warning/10 text-warning border border-warning/20 rounded-full font-bold text-sm hover:opacity-80 transition-colors duration-300 ease-in-out disabled:opacity-50 cursor-pointer"
-                        >
-                            <Trash2 size={16} /> <span className="hidden md:inline">{isDeleting ? 'Deleting...' : 'Delete Font'}</span>
-                        </button>
-                        <button
-                            onClick={onEditFiles}
-                            className="flex items-center gap-2 px-4 py-2 bg-muted text-foreground border border-foreground/10 rounded-full font-bold text-sm hover:opacity-80 transition-colors duration-300 ease-in-out cursor-pointer"
-                        >
-                            <FileType size={16} /> Edit Files
-                        </button>
-                        <button
-                            onClick={() => setIsEditingGallery(true)}
-                            className="flex items-center gap-2 px-4 py-2 bg-foreground text-background rounded-full font-bold text-sm hover:opacity-80 transition-colors duration-300 ease-in-out cursor-pointer"
-                        >
-                            <Edit2 size={16} /> Edit Gallery
-                        </button>
-                    </div>
+        <>
+            <div className="flex flex-wrap gap-3 mt-8 mb-8">
+                <button
+                    onClick={handleDeleteFont}
+                    disabled={isDeleting}
+                    className="flex items-center gap-2 px-4 py-2.5 bg-warning/10 text-warning border border-warning/20 rounded-full font-bold text-sm hover:bg-warning/20 transition-colors duration-300 ease-in-out disabled:opacity-50 cursor-pointer"
+                >
+                    <Trash2 size={16} /> {isDeleting ? 'Deleting...' : 'Delete Font'}
+                </button>
+                <button
+                    onClick={onEditFiles}
+                    className="flex items-center gap-2 px-4 py-2.5 bg-foreground/5 text-foreground border border-foreground/10 rounded-full font-bold text-sm hover:bg-foreground/10 transition-colors duration-300 ease-in-out cursor-pointer"
+                >
+                    <FileType size={16} /> Edit Files
+                </button>
+                <button
+                    onClick={() => setIsEditingGallery(true)}
+                    className="flex items-center gap-2 px-4 py-2.5 bg-foreground text-background rounded-full font-bold text-sm hover:opacity-80 transition-colors duration-300 ease-in-out cursor-pointer"
+                >
+                    <Edit2 size={16} /> Edit Gallery
+                </button>
+            </div>
+            {isEditingGallery && (
+                <div className="mb-8 bg-muted rounded-3xl border border-foreground/10 overflow-hidden">
+                    <GalleryEditor
+                        font={font}
+                        user={user}
+                        initialImages={font.gallery_images || []}
+                        initialSizes={font.gallery_image_sizes || []}
+                        onClose={() => setIsEditingGallery(false)}
+                        onSaveSuccess={() => {
+                            setIsEditingGallery(false);
+                            window.location.reload();
+                        }}
+                    />
                 </div>
-            ) : (
-                <GalleryEditor
-                    font={font}
-                    user={user}
-                    initialImages={font.gallery_images || []}
-                    initialSizes={font.gallery_image_sizes || []}
-                    onClose={() => setIsEditingGallery(false)}
-                    onSaveSuccess={() => {
-                        setIsEditingGallery(false);
-                        window.location.reload();
-                    }}
-                />
             )}
-        </div>
+        </>
     );
 }

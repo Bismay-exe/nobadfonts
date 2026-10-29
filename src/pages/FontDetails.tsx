@@ -32,10 +32,12 @@ import ContextPreview from '../components/fonts/ContextPreview';
 import LoadingState from '../components/shared/LoadingState';
 import FontFamilyOverview from '../components/font-details/FontFamilyOverview';
 import { usePageReady } from '../components/transitions/PageTransition';
+import { useAdminControls } from '../hooks/useAdminControls';
 
 export default function FontDetails() {
     const { id } = useParams();
     const { user, profile } = useAuth();
+    const { showAdminControls } = useAdminControls();
     const navigate = useNavigate();
     const { font, setFont, loading, error, isFavorited, setIsFavorited } = useFont(id);
     usePageReady(!loading);
@@ -488,7 +490,7 @@ export default function FontDetails() {
                 </div>
 
                 {/* Admin Controls & OG Social Card Manager (Exclusively for Admins) */}
-                {profile?.role === 'admin' && (
+                {showAdminControls && (
                     <>
                         <FontAdminControls
                             font={font}
@@ -542,7 +544,7 @@ export default function FontDetails() {
 
                 {/* 3. Editorial Details & Taxonomy */}
                 <div id="details" className="scroll-mt-24 pt-4 space-y-4">
-                    {profile?.role === 'admin' && (
+                    {showAdminControls && (
                         <div className="flex items-center justify-between flex-wrap gap-4 pb-2 border-b border-foreground/8">
                             <span className="font-mono text-xs uppercase tracking-widest text-muted">
                                 Typography Specs &amp; Taxonomy (Admin)
@@ -635,7 +637,7 @@ export default function FontDetails() {
             <ScrollProgress sections={sections} />
 
             {/* Admin File Manager Overlay */}
-            {profile?.role === 'admin' && isEditingFiles && (
+            {showAdminControls && isEditingFiles && (
                 <FileManager
                     font={font}
                     user={user}

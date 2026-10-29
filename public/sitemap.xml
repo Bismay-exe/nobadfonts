@@ -136,6 +136,12 @@
         <priority>0.9</priority>
     </url>
     <url>
+        <loc>https://nobadfonts.in/fonts/lucky-saint</loc>
+        <lastmod>2026-10-29T08:34:11.722Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
         <loc>https://nobadfonts.in/fonts/advine</loc>
         <lastmod>2026-10-24T08:49:43.015Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -198,12 +204,6 @@
     <url>
         <loc>https://nobadfonts.in/fonts/space-grotesk</loc>
         <lastmod>2026-10-07T14:15:58.180Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.9</priority>
-    </url>
-    <url>
-        <loc>https://nobadfonts.in/fonts/calfine</loc>
-        <lastmod>2026-10-24T08:49:42.175Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
@@ -748,12 +748,6 @@
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://nobadfonts.in/fonts/almost-japanese-comic</loc>
-        <lastmod>2026-10-06T19:37:24.531Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.9</priority>
-    </url>
-    <url>
         <loc>https://nobadfonts.in/fonts/yoster-island</loc>
         <lastmod>2026-10-24T09:57:29.436Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -850,6 +844,12 @@
         <priority>0.9</priority>
     </url>
     <url>
+        <loc>https://nobadfonts.in/fonts/almost-japanese-comic</loc>
+        <lastmod>2026-10-06T19:37:24.531Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
         <loc>https://nobadfonts.in/fonts/jo-wrote-a-lovesong</loc>
         <lastmod>2026-10-24T09:40:31.152Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -870,6 +870,12 @@
     <url>
         <loc>https://nobadfonts.in/fonts/marua</loc>
         <lastmod>2026-10-24T09:41:56.232Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://nobadfonts.in/fonts/calfine</loc>
+        <lastmod>2026-10-24T08:49:42.175Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
@@ -966,6 +972,11 @@
         <priority>0.7</priority>
     </url>
     <url>
+        <loc>https://nobadfonts.in/designers/Bangkit%20Tri%20Setiadi</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
         <loc>https://nobadfonts.in/designers/Craft%20Supply%20Co</loc>
         <changefreq>weekly</changefreq>
         <priority>0.7</priority>
@@ -1017,11 +1028,6 @@
     </url>
     <url>
         <loc>https://nobadfonts.in/designers/Florian%20Karsten</loc>
-        <changefreq>weekly</changefreq>
-        <priority>0.7</priority>
-    </url>
-    <url>
-        <loc>https://nobadfonts.in/designers/Letterhend%20Studio</loc>
         <changefreq>weekly</changefreq>
         <priority>0.7</priority>
     </url>
@@ -1387,6 +1393,11 @@
     </url>
     <url>
         <loc>https://nobadfonts.in/designers/Lettertype%20Studio</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://nobadfonts.in/designers/Letterhend%20Studio</loc>
         <changefreq>weekly</changefreq>
         <priority>0.7</priority>
     </url>

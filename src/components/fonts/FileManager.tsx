@@ -1,4 +1,4 @@
-import { X, FileType, Upload, Save, Type, Trash2, Plus } from 'lucide-react';
+import { X, Save, Type, Trash2, Plus } from 'lucide-react';
 import { useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { Toast } from '@capacitor/toast';
@@ -102,13 +102,10 @@ export default function FileManager({ font, user, onClose, onSaveSuccess }: File
             // Process existing file changes
             for (const change of stagedChanges) {
                 let publicUrl: string | null = null;
-                let fileSize: number | null = null;
 
                 if (change.action === 'replace' && change.file) {
                     const fileName = `${Date.now()}-${change.file.name}`;
-                    const path = change.variantName
-                        ? `${font.uploaded_by}/${font.slug}/variants/${change.variantName}/${fileName}`
-                        : `${font.uploaded_by}/${font.slug}/${fileName}`;
+                    const path = `${font.uploaded_by}/${font.slug}/variants/${change.variantName}/${fileName}`;
 
                     const { error: uploadError } = await supabase.storage
                         .from('fonts')
@@ -118,12 +115,11 @@ export default function FileManager({ font, user, onClose, onSaveSuccess }: File
 
                     const { data } = supabase.storage.from('fonts').getPublicUrl(path);
                     publicUrl = data.publicUrl;
-                    fileSize = change.file.size;
                 }
 
                 if (change.action === 'delete') {
                     const variant = font.font_variants?.find((v: any) => v.id === change.variantId);
-                    const urlToDelete = variant ? variant[`${change.format}_url`] : font[`${change.format}_url`];
+                    const urlToDelete = variant?.[`${change.format}_url`];
 
                     if (urlToDelete) {
                         const urlObj = new URL(urlToDelete);
@@ -134,13 +130,33 @@ export default function FileManager({ font, user, onClose, onSaveSuccess }: File
                     }
                 }
 
-                if (change.variantId !== 'main') {
-                    const updateData: any = { [`${change.format}_url`]: publicUrl };
-                    const { error } = await supabase.from('font_variants').update(updateData).eq('id', change.variantId);
-                    if (error) throw error;
-                } else {
-                    const updateData: any = { [`${change.format}_url`]: publicUrl, [`file_size_${change.format}`]: fileSize };
-                    const { error } = await supabase.from('fonts').update(updateData).eq('id', font.id);
+                const updateData: any = { [`${change.format}_url`]: publicUrl };
+                const { error } = await supabase.from('font_variants').update(updateData).eq('id', change.variantId);
+                if (error) throw error;
+            }
+
+            // Auto-delete variants where all formats (ttf, otf, woff, woff2) are removed
+            const variantDeleteMap = new Map<string, Set<string>>();
+            for (const change of stagedChanges) {
+                if (change.action === 'delete') {
+                    if (!variantDeleteMap.has(change.variantId)) {
+                        variantDeleteMap.set(change.variantId, new Set());
+                    }
+                    variantDeleteMap.get(change.variantId)!.add(change.format);
+                }
+            }
+            for (const [variantId, deletedFormats] of variantDeleteMap) {
+                const variant = font.font_variants?.find((v: any) => v.id === variantId);
+                if (!variant) continue;
+                const allFormats = ['ttf', 'otf', 'woff', 'woff2'];
+                const allGone = allFormats.every(fmt => {
+                    const isDeleted = deletedFormats.has(fmt);
+                    const wasAlreadyMissing = !variant[`${fmt}_url`];
+                    const isReplaced = stagedChanges.some(c => c.variantId === variantId && c.format === fmt && c.action === 'replace');
+                    return (isDeleted || wasAlreadyMissing) && !isReplaced;
+                });
+                if (allGone) {
+                    const { error } = await supabase.from('font_variants').delete().eq('id', variantId);
                     if (error) throw error;
                 }
             }
@@ -191,64 +207,22 @@ export default function FileManager({ font, user, onClose, onSaveSuccess }: File
                     <button onClick={onClose} className="p-2 text-muted hover:text-foreground hover:bg-foreground/10 rounded-full transition-colors duration-300 ease-in-out"><X /></button>
                 </div>
 
-                <div className="space-y-4">
-                    <h3 className="text-lg font-bold text-muted uppercase tracking-widest flex items-center gap-2">
-                        <FileType size={16} /> Main Font Files
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {['woff2', 'woff', 'ttf', 'otf'].map(format => (
-                            <div key={format} className="p-4 bg-background/50 rounded-xl border border-foreground/5 flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-lg bg-card-background flex items-center justify-center text-muted font-mono text-xs uppercase shadow-inner">
-                                        {format}
-                                    </div>
-                                    <div>
-                                        <span className="block font-bold text-foreground/70 uppercase leading-tight">{format}</span>
-                                        <span className={cn("text-[10px] font-bold uppercase tracking-wider", (font as any)[`${format}_url`] ? "text-green-500" : "text-red-500/50")}>
-                                            {(font as any)[`${format}_url`] ? 'Installed' : 'Missing'}
-                                        </span>
-                                    </div>
-                                </div>
-                                <div className="flex gap-2">
-                                    <label className={cn(
-                                        "cursor-pointer p-2 rounded-lg transition-all border",
-                                        (stagedChanges.find((c: any) => c.variantId === 'main' && c.format === format)?.file)
-                                            ? "bg-success/10 border-success/50 text-success"
-                                            : "bg-foreground/5 border-transparent text-muted hover:bg-foreground/10 hover:text-foreground"
-                                    )}>
-                                        <Upload size={16} />
-                                        <input
-                                            type="file"
-                                            className="hidden"
-                                            accept={`.${format}`}
-                                            onChange={(e) => {
-                                                const file = e.target.files?.[0];
-                                                if (file) handleStageChange('replace', format, file, 'main');
-                                            }}
-                                        />
-                                    </label>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
                 {/* Variants List */}
                 <div className="space-y-4">
-                    <div className="flex justify-between items-center border-t border-foreground/10 pt-8">
+                    <div className="flex justify-between items-center">
                         <h3 className="text-lg font-bold text-muted uppercase tracking-widest flex items-center gap-2">
                             <Type size={16} /> Variants
                         </h3>
                         <div className="flex gap-2">
                             <button
                                 onClick={addCustomVariantToState}
-                                className="text-xs bg-foreground/5 text-foreground border border-foreground/10 px-4 py-2 rounded-full font-bold hover:bg-foreground/10 transition-colors duration-300 ease-in-out"
+                                className="text-xs bg-foreground/5 text-foreground border border-foreground/10 px-4 py-2 rounded-full font-bold hover:bg-foreground/10 transition-colors duration-300 ease-in-out cursor-pointer"
                             >
                                 + Custom
                             </button>
                             <button
                                 onClick={addStdVariantToState}
-                                className="text-xs bg-accent text-background px-4 py-2 rounded-full font-bold hover:scale-105 transition-transform shadow-[0_0_15px_rgba(var(--color-highlight),0.2)]"
+                                className="text-xs bg-accent text-background px-4 py-2 rounded-full font-bold hover:scale-105 transition-transform shadow-[0_0_15px_rgba(var(--color-highlight),0.2)] cursor-pointer"
                             >
                                 + Standard
                             </button>
@@ -262,6 +236,18 @@ export default function FileManager({ font, user, onClose, onSaveSuccess }: File
                                     <span className="font-bold text-foreground text-lg tracking-wide">{variant.variant_name}</span>
                                     <div className="flex items-center gap-3">
                                         <span className="text-[10px] font-bold text-accent/50 uppercase border border-accent/20 bg-accent/5 px-2 py-0.5 rounded shadow-inner"> Existing </span>
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                ['woff2', 'woff', 'ttf', 'otf'].forEach(fmt => {
+                                                    handleStageChange('delete', fmt, undefined, variant.id, variant.variant_name);
+                                                });
+                                            }}
+                                            className="flex items-center gap-1.5 px-2.5 py-1 bg-warning/10 text-warning border border-warning/20 rounded-full text-[10px] font-bold uppercase hover:bg-warning/20 transition-colors duration-300 ease-in-out cursor-pointer"
+                                            title="Delete entire variant"
+                                        >
+                                            <Trash2 size={12} /> Delete Variant
+                                        </button>
                                     </div>
                                 </div>
                                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">

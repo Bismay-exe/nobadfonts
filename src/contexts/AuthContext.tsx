@@ -107,7 +107,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         user,
         profile,
         loading,
-        needsOnboarding: !loading && !!user && (!profile?.username || !(profile as any)?.onboarding_completed),
+        needsOnboarding: !loading && !!user && !!profile && (!profile.username || (profile as any).onboarding_completed === false),
         signInWithGoogle,
         signOut,
         refreshProfile
