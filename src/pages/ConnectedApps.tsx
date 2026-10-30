@@ -59,7 +59,7 @@ export default function ConnectedApps() {
     }
 
     return (
-        <div className="mx-auto w-full max-w-3xl px-4 py-16 sm:px-6">
+        <div className="pt-24 min-h-screen mx-auto w-full max-w-3xl px-4 py-16 sm:px-6">
             <SEO title="Connected Apps | NoBadFonts" noindex url={returnTo} />
 
             <Link

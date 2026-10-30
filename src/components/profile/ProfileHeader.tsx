@@ -18,6 +18,20 @@ interface SocialItem {
     className?: string;
 }
 
+interface ConnectedAppItem {
+    id: string;
+    label: string;
+    image: string;
+}
+
+const CONNECTED_APPS: ConnectedAppItem[] = [
+    { id: 'nobadfonts-browser-extension', label: 'nobadfonts-browser-extension', image: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAPFBMVEVHcEwAAAAAAAAAAAAAAAAAAAAAAAAbGxtzc3NYWFi+vr5FRUX////4+PgvLy+cnJyoqKiJiYnV1dXt7e2lqAx1AAAAB3RSTlMAD4fR+P+9pD/62AAAAPVJREFUeAGFk9UCwyAMRdFiwf//WyeELen0vmAn2kbcJZU29kVGKym2lP0ihe+H/arjuz35kLfFWRSuzgciJDqI96cU11UEgOzJhb4vBWpqsMwzLPUNaIH11cddhq0dxghcAwCU2zrgoWxRG2jowQOpcyBBLxWcBabJgZV/aXX4VQUqEeAQ9mVHQzUCUHHlRXmOM+AmRHsqFE6Aw7xxs1U4kHdveKWBAEydckR5AhzFHB+BSsD8CEwC4CPAsoZPSQZmMT+V6VlvI7w0yhAwydvzaIRml4XHwM5r/Gn5VT8VoYS8L8mj8Kvzg/w/OP9H7+/w/hn/K46THV2vsc5BAAAAAElFTkSuQmCC' },
+    { id: 'figma-extension', label: 'figma-extension', image: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAIAAAD9b0jDAAABUUlEQVR4AWOgHxgF0mxsm9XVXxgZQZGu0YsMBFrnpybDy0ayoUCD/pubI5Ch+f8y8/9FEARiA40mzcQWWVmYcZiGIsxtsZYlwdDlKirEGAoMBBIMrZGWJsbQclMp0kLglr4+yCwzfTiCGlpoAERA9rUEPXISwDQFyae25RD0zLrmfJzCxRCei8XhF5pKJ9qKkmOii0ZTQ8B/OOoO/A8SnXyRYed/ENr2nyG6kTQT1cW9gKa0+yNQr9d/htYNDHuAxkEQ2GgdWxIMDTaci26oK9CUX0Cz4AhkQd4sGhtKf+8jIgpoUK8rDHlBIwpk7h5YRJEBhIptHddNgSC3nQshgiDXuSUzkAfkVsWrXi5VPJsLQUA2A4VAMN4UaIrK6UI4ooKhEu3e1DdUONMazVDFnekMlAOgKXBzgQxggFDBUBYxXmAgAI0GxhhfkC7DwIJRAAA6ZTBaejThFQAAAABJRU5ErkJggg==' },
+    { id: 'chatgpt-cli', label: 'chatgpt-cli', image: '/logo/nbf-apps/chatgpt.png' },
+    { id: 'claude-cli', label: 'claude-cli', image: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y+mAAAAHlBMVEXaakXadlXab03WXzP++PX45+LsvK7z08rfjHPloY6AmRKcAAAABHRSTlP+/v7+ukpK/AAAAP5JREFUKJG9UdluBCEMM7nz/z9cE4bdrSr1qapHXHacQAbrF+APxJIfwfcgaUG1vL6Lx5HusiSsOeMlUhMSZeQRRil9jeUESRfIO5C2h5364xSYBYRWddcwy2GPU6Q3QVYtuHUco0CIhXLmcmtjBMtujgNzH4Ks87OdHHrkcYLQsgOvSAZhnKyYEdFdbhcZJY/I0GQPHs17qSquiEmrj3Nmj5t29JWWw6cy037OFXd/rMPCR4XilZadcDahbN/M2tlG+ajZ2bpoYSk+Iv3QcxmuzMO2gg1oxoTf2+6AXdTZRCtoWul5wBhnzsXsFLkrPIZPnX9r7eU5v+0Hhf/AF8VIBuqNAYtiAAAAAElFTkSuQmCC' },
+    { id: 'gemini-cli', label: 'gemini-cli', image: '/logo/nbf-apps/gemini.png' },
+];
+
 const formatCount = (count: number) => {
     if (count >= 1000000) return `${(count / 1000000).toFixed(1)}M`;
     if (count >= 1000) return `${(count / 1000).toFixed(1)}K`;
@@ -107,15 +121,15 @@ export default memo(function ProfileHeading({ onEditClick, isEditing, fontsLiked
     });
 
     return (
-        <div className={`${!isEditing ? '' : 'zhidden'} relative z-10 w-full min-h-screen flex flex-col items-center justify-between px-6 py-24 sm:px-10 lg:px-16`}>
+        <div className={`${!isEditing ? '' : 'zhidden'} relative z-10 w-full min-h-screen flex flex-col items-center justify-between px-6 pt-24 pb-10 md:pb-18 sm:px-10 lg:px-16`}>
             <div className='@container w-full flex justify-center items-center'>
                 {profile?.username && (
-                        <p className={`${extendedProfile?.profession ? 'mt-1' : 'mt-4'} flex items-center gap-0.5 font-inter-tight text-center text-[6cqw] font-medium tracking-tightz text-foreground`}>
-                            nobadfonts.in/
-                            <span className='font-interz zfont-bold'>@</span>
-                            <span className='italic'>{profile.username}</span>
-                        </p>
-                    )}
+                    <p className={`${extendedProfile?.profession ? 'mt-1' : 'mt-4'} flex items-center gap-0.5 font-inter-tight text-center text-[6cqw] font-medium tracking-tightz text-foreground`}>
+                        nobadfonts.in/
+                        <span className='font-interz zfont-bold'>@</span>
+                        <span className='italic'>{profile.username}</span>
+                    </p>
+                )}
 
             </div>
 
@@ -189,30 +203,57 @@ export default memo(function ProfileHeading({ onEditClick, isEditing, fontsLiked
 
                 </div>
 
-                {/* Socials */}
-                {socials.length > 0 && (
-                    <div className="flex justify-center mt-6">
-                        <div className="flex items-center rounded-full zbg-foreground/8 border border-border/50 p-1 backdrop-blur-xl">
-                            <div className="flex -space-x-2">
-                                {socials.map((social) => (
-                                    <a key={`${social.label}-${social.href}`} href={social.href} target="_blank" rel="noopener noreferrer" aria-label={social.label} className="w-10 h-10 flex items-center justify-center rounded-full border border-background bg-foreground/16 overflow-hidden hover:z-10 hover:bg-foreground/24 hover:scale-105 transition-all duration-300">
-                                        {social.image && (
-                                            <img src={social.image} alt="" className="w-full h-full object-contain" />
-                                        )}
+                <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-10">
 
-                                        {social.svg && (
-                                            <span className="w-full h-full flex items-center justify-center [&>svg]:w-full [&>svg]:h-full" dangerouslySetInnerHTML={{ __html: social.svg }} />
-                                        )}
-                                    </a>
-                                ))}
+                    {/* Socials */}
+                    {socials.length > 0 && (
+                        <div className="flex flex-col justify-center gap-1 mt-6">
+                            <div className="flex items-center rounded-full bg-card-background border border-border/50 p-1">
+                                <div className="flex -space-x-2">
+                                    {socials.map((social) => (
+                                        <a key={`${social.label}-${social.href}`} href={social.href} target="_blank" rel="noopener noreferrer" aria-label={social.label} className="w-10 sm:w-11 h-10 sm:h-11 flex items-center justify-center rounded-full border border-background bg-foreground/16 overflow-hidden hover:z-10 hover:bg-foreground/24 hover:scale-105 transition-all duration-300">
+                                            {social.image && (
+                                                <img src={social.image} alt="" className="w-full h-full object-cover" />
+                                            )}
+
+                                            {social.svg && (
+                                                <span className="w-full h-full flex items-center justify-center [&>svg]:w-full [&>svg]:h-full" dangerouslySetInnerHTML={{ __html: social.svg }} />
+                                            )}
+                                        </a>
+                                    ))}
+                                </div>
                             </div>
 
                             <span className="px-3 text-xs sm:text-sm text-foreground/50">
                                 socials
                             </span>
                         </div>
+                    )}
+
+                    {/* Connected Apps */}
+                    <div className="flex flex-col justify-center gap-1 mt-6">
+                        <Link to="/settings/connected-apps" className="flex items-center rounded-xl bg-card-background border border-border/50 p-1">
+                            <div className="flex -space-x-3">
+                                {CONNECTED_APPS.map((app) => (
+                                    <div
+                                        key={app.id}
+                                        aria-label={app.label}
+                                        title={app.label}
+                                        className="w-10 sm:w-11 h-10 sm:h-11 flex items-center justify-center rounded-xl zring-3 ring-background border border-background bg-background overflow-hidden hover:z-10 hover:scale-105 transition-all duration-300"
+                                    >
+                                        {app.image && (
+                                            <img src={app.image} alt={app.label} className="w-full h-full object-cover" />
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        </Link>
+
+                        <span className="px-3 text-xs sm:text-sm text-foreground/50">
+                            connected apps
+                        </span>
                     </div>
-                )}
+                </div>
 
                 <div className="hiddenz flex gap-2">
                     <button onClick={onEditClick} className="mt-3 flex justify-center items-center gap-2 bg-foreground/5 hover:bg-foreground/10 border border-foreground/5 w-fit px-4 py-3 rounded-full text-foreground/65 hover:text-foreground transition-all duration-300 ease-in-out">
@@ -221,12 +262,6 @@ export default memo(function ProfileHeading({ onEditClick, isEditing, fontsLiked
                         </svg>
                         <span>{isEditing ? 'Cancel Edit' : 'Edit Profile'}</span>
                     </button>
-                    <Link to="/settings/connected-apps" className="mt-3 flex justify-center items-center gap-2 bg-foreground/5 hover:bg-foreground/10 border border-foreground/5 w-fit px-4 py-3 rounded-full text-foreground/65 hover:text-foreground transition-all duration-300 ease-in-out">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M15.5 3.5a2 2 0 0 0-3 0l-.5.5-.5-.5a2 2 0 1 0-3 2.8V8H6a2 2 0 0 0-2 2v2.5h.5a2 2 0 1 1 0 4H4V19a2 2 0 0 0 2 2h2.5v-.5a2 2 0 1 1 4 0V21H17a2 2 0 0 0 2-2v-2.5h-.5a2 2 0 1 0 0-4H18V10a2 2 0 0 0-2-2h-2v-1.7a2 2 0 0 0 0-2.8Z" />
-                        </svg>
-                        <span>Connected apps</span>
-                    </Link>
                     <button onClick={() => signOut()} className="mt-3 flex justify-center items-center gap-2 bg-foreground/5 hover:bg-warning/10 border border-foreground/5 hover:border-warning/20 w-fit px-4 rounded-full text-foreground/65 hover:text-warning transition-all duration-300 ease-in-out active:scale-80">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
                             <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.996 12h-10m3.976-6c-.046-1.093-.184-1.79-.596-2.326a3 3 0 0 0-.554-.554c-.808-.62-1.98-.62-4.326-.62s-3.518 0-4.326.62a3 3 0 0 0-.554.554c-.62.808-.62 1.98-.62 4.326v8c0 2.346 0 3.518.62 4.326a3 3 0 0 0 .554.554c.808.62 1.98.62 4.326.62s3.518 0 4.326-.62a3 3 0 0 0 .554-.554c.412-.536.55-1.233.596-2.326m3.524-2.5s3.5-2.578 3.5-3.5s-3.5-3.5-3.5-3.5" />
