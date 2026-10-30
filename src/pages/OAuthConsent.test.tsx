@@ -140,6 +140,36 @@ describe('OAuthConsent', () => {
         expect(await screen.findByText(/belongs to a different account/i)).toBeInTheDocument();
     });
 
+    it('refuses an already-approved request from another OAuth client', async () => {
+        oauth.getAuthorizationDetails.mockResolvedValue({
+            data: details({
+                redirect_url: REDIRECT_URL,
+                client: { id: 'some-other-client', name: 'Someone else' },
+            }),
+            error: null,
+        });
+        renderConsent();
+
+        expect(
+            await screen.findByText(/not allowed to connect to NoBadFonts accounts/i)
+        ).toBeInTheDocument();
+        expect(replace).not.toHaveBeenCalled();
+    });
+
+    it('refuses an already-approved request for a different account', async () => {
+        oauth.getAuthorizationDetails.mockResolvedValue({
+            data: details({
+                redirect_url: REDIRECT_URL,
+                user: { id: 'user-2', email: 'other@example.com' },
+            }),
+            error: null,
+        });
+        renderConsent();
+
+        expect(await screen.findByText(/belongs to a different account/i)).toBeInTheDocument();
+        expect(replace).not.toHaveBeenCalled();
+    });
+
     it('lists what the extension is asking for', async () => {
         oauth.getAuthorizationDetails.mockResolvedValue({ data: details(), error: null });
         renderConsent();

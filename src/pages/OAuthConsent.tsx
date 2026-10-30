@@ -148,11 +148,6 @@ export default function OAuthConsent() {
             }
 
             const details = data as AuthorizationDetails;
-
-            if (redirectToClient(details.redirect_url)) {
-                return;
-            }
-
             const extensionClientId = getExtensionClientId();
 
             if (!extensionClientId || details.client.id !== extensionClientId) {
@@ -168,6 +163,10 @@ export default function OAuthConsent() {
                     status: 'error',
                     message: 'This request belongs to a different account. Sign in again and retry.',
                 });
+                return;
+            }
+
+            if (redirectToClient(details.redirect_url)) {
                 return;
             }
 
