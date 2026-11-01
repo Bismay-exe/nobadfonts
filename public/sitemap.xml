@@ -400,6 +400,12 @@
         <priority>0.9</priority>
     </url>
     <url>
+        <loc>https://nobadfonts.in/fonts/farqey-denours</loc>
+        <lastmod>2026-10-24T09:37:54.428Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
         <loc>https://nobadfonts.in/fonts/devina-garden</loc>
         <lastmod>2026-10-24T09:37:31.525Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -408,12 +414,6 @@
     <url>
         <loc>https://nobadfonts.in/fonts/dx-lactos-vol-02</loc>
         <lastmod>2026-10-24T09:37:35.229Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.9</priority>
-    </url>
-    <url>
-        <loc>https://nobadfonts.in/fonts/farqey-denours</loc>
-        <lastmod>2026-10-24T09:37:54.428Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
@@ -526,14 +526,14 @@
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://nobadfonts.in/fonts/amolin</loc>
-        <lastmod>2026-10-24T09:36:16.901Z</lastmod>
+        <loc>https://nobadfonts.in/fonts/aalto</loc>
+        <lastmod>2026-10-06T19:33:44.104Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://nobadfonts.in/fonts/aalto</loc>
-        <lastmod>2026-10-06T19:33:44.104Z</lastmod>
+        <loc>https://nobadfonts.in/fonts/amolin</loc>
+        <lastmod>2026-10-24T09:36:16.901Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
@@ -886,12 +886,6 @@
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://nobadfonts.in/fonts/calcio</loc>
-        <lastmod>2026-10-06T19:50:45.370Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.9</priority>
-    </url>
-    <url>
         <loc>https://nobadfonts.in/fonts/coroy</loc>
         <lastmod>2026-10-24T09:41:21.371Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -900,6 +894,12 @@
     <url>
         <loc>https://nobadfonts.in/fonts/quinn</loc>
         <lastmod>2026-10-12T13:59:09.977Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://nobadfonts.in/fonts/calcio</loc>
+        <lastmod>2026-10-06T19:50:45.370Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>

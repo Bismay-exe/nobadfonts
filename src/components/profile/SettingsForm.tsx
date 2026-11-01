@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Trash2, Plus, Upload } from 'lucide-react';
+import { X, Plus, Upload } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { cn } from '../../lib/utils';
