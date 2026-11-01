@@ -72,8 +72,9 @@ export default function ConnectedApps() {
 
             <h1 className="font-inter text-4xl font-semibold tracking-tight">Connected apps</h1>
             <p className="mt-2 max-w-xl font-space-mono text-sm leading-relaxed text-muted">
-                Apps you have authorized with your NoBadFonts account. Disconnecting one revokes its
-                access immediately.
+                Apps you have authorized with your NoBadFonts account. Disconnecting one stops it
+                from renewing access. A token it already has can keep working until it expires, up
+                to one hour.
             </p>
 
             {error && (

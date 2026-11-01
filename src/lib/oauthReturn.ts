@@ -1,4 +1,4 @@
-const CANONICAL_ORIGIN = 'https://nobadfonts.in';
+const CANONICAL_ORIGIN = 'https://www.nobadfonts.in';
 
 const ALLOWED_RETURN_PATHS = ['/oauth/consent', '/settings/connected-apps'];
 

@@ -363,7 +363,7 @@ export default function SettingsForm({ isOpen, onCancel }: { isOpen?: boolean; o
                                         </svg>
                                     </button>
                                 </div>
-                                
+
                                 <div className="absolute right-1 bottom-1 flex gap-1.5">
                                     {canRemoveAvatar && (
                                         <button
@@ -482,18 +482,32 @@ export default function SettingsForm({ isOpen, onCancel }: { isOpen?: boolean; o
                                                 placeholder="Social link (Instagram, Behance, Twitter/X, LinkedIn...)"
                                             />
                                         </div>
+
                                         {socialLinks.length > 1 && (
                                             <button
                                                 type="button"
                                                 onClick={() => {
                                                     setSocialLinks(prev => prev.filter((_, i) => i !== idx));
                                                 }}
-                                                className="p-3 text-muted hover:text-warning hover:bg-foreground/5 rounded-2xl transition-colors cursor-pointer shrink-0"
+                                                className="group p-3 text-muted hover:text-warning hover:bg-foreground/5 rounded-2xl transition-all duration-500 ease-in-out cursor-pointer shrink-0"
                                                 title="Remove social link"
                                             >
-                                                <Trash2 size={18} />
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    width="24"
+                                                    height="24"
+                                                    viewBox="0 0 24 24"
+                                                >
+                                                    <path
+                                                        fill="currentColor"
+                                                        fillRule="evenodd"
+                                                        className="transition-all duration-300 ease-in-out group-hover:[d:path('M9.774_5L3.758_3.94l.174-.986a.5.5_0_0_1_.58-.405L18.411_5h.088h-.087l1.855.327a.5.5_0_0_1_.406.58l-.174.984l-2.09-.368l-.8_13.594A2_2_0_0_1_15.615_22H8.386a2_2_0_0_1-1.997-1.883L5.59_6.5h12.69zH5.5zM9_9l.5_9H11l-.4-9zm4.5_0l-.5_9h1.5l.5-9zm-2.646-7.871l3.94.694a.5.5_0_0_1_.405.58l-.174.984l-4.924-.868l.174-.985a.5.5_0_0_1_.58-.405z')]"
+                                                        d="m18.412 6.5l-.801 13.617A2 2 0 0 1 15.614 22H8.386a2 2 0 0 1-1.997-1.883L5.59 6.5H3.5v-1A.5.5 0 0 1 4 5h16a.5.5 0 0 1 .5.5v1zM10 2.5h4a.5.5 0 0 1 .5.5v1h-5V3a.5.5 0 0 1 .5-.5M9 9l.5 9H11l-.4-9zm4.5 0l-.5 9h1.5l.5-9z"
+                                                    />
+                                                </svg>
                                             </button>
                                         )}
+
                                     </div>
                                 ))}
                             </div>

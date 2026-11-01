@@ -1,5 +1,7 @@
 'use client';
 
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { useLayoutEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { Link } from 'react-router-dom';
@@ -9,6 +11,19 @@ import VariableProximity from '../components/VariableProximity';
 const Hero = () => {
     const containerRef = useRef<HTMLDivElement>(null);
     const titleRef = useRef<HTMLHeadingElement>(null);
+
+    const navigate = useNavigate();
+    const [searchQuery, setSearchQuery] = useState("");
+
+    const handleSearch = (e:any) => {
+        e.preventDefault();
+
+        const query = searchQuery.trim();
+
+        if (!query) return;
+
+        navigate(`/fonts?query=${encodeURIComponent(query)}`);
+    };
 
     useLayoutEffect(() => {
         const ctx = gsap.context(() => {
@@ -125,22 +140,30 @@ const Hero = () => {
                         <div className="hero-content mt-8 md:mt-12 max-w-xl mx-auto flex flex-col items-center gap-8">
                             <p className="text-md md:text-xl text-muted leading-none font-medium">
                                 A curated directory of open-source typefaces that actually look good.
-                                <br className='md:hidden'/>No clutter, just type.
+                                <br className='md:hidden' />No clutter, just type.
                             </p>
 
                             {/* Search Bar / CTA */}
-                            <div className="w-full max-w-md relative group scale-75 md:scale-100 text-muted font-sans">
+                            <form onSubmit={handleSearch} className="w-full max-w-md relative group scale-75 md:scale-100 text-muted font-sans">
                                 <input
                                     type="text"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
                                     placeholder="Try 'Inter' or 'Geist'..."
                                     className="w-full h-14 pl-6 pr-14 bg-foreground/5 backdrop-blur-sm rounded-2xl focus:border-none! focus:ring-0! outline-none transition-all placeholder:text-foreground/80 text-foreground font-medium font-inter-tight"
                                 />
-                                <button className="absolute right-2 top-2 h-10 w-10 bg-muted text-background rounded-xl flex items-center justify-center group-focus-within:bg-foreground transition-colors duration-300 ease-in-out">
+
+                                <button
+                                    type="submit"
+                                    disabled={!searchQuery.trim()}
+                                    aria-label="Search fonts"
+                                    className="absolute right-2 top-2 h-10 w-10 bg-foreground text-background rounded-xl flex items-center justify-center group-focus-within:bg-foreground transition-colors duration-300 ease-in-out disabled:opacity-40 disabled:cursor-not-allowed"
+                                >
                                     <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3"/>
                                     </svg>
                                 </button>
-                            </div>
+                            </form>
 
                             <div className="flex gap-4 text-sm text-muted font-inter font-bold">
                                 <span className='text-muted/50'>Popular:</span>

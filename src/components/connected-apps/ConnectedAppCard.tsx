@@ -80,7 +80,8 @@ export default function ConnectedAppCard({ app, onRevoke }: Props) {
             {confirming ? (
                 <div className="flex flex-col gap-3 rounded-2xl border border-warning/20 bg-warning/10 p-4">
                     <p className="text-sm text-warning">
-                        Disconnecting signs the extension out and ends its session. You can connect it
+                        Disconnecting stops the extension from renewing access. A token it already
+                        has can keep working until it expires, up to one hour. You can connect it
                         again from the extension.
                     </p>
                     <div className="flex flex-wrap gap-2">

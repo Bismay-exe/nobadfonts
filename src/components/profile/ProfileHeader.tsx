@@ -264,14 +264,16 @@ export default memo(function ProfileHeading({ onEditClick, isEditing, fontsLiked
                     </button>
                     <button onClick={() => signOut()} className="mt-3 flex justify-center items-center gap-2 bg-foreground/5 hover:bg-warning/10 border border-foreground/5 hover:border-warning/20 w-fit px-4 rounded-full text-foreground/65 hover:text-warning transition-all duration-300 ease-in-out active:scale-80">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
-                            <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.996 12h-10m3.976-6c-.046-1.093-.184-1.79-.596-2.326a3 3 0 0 0-.554-.554c-.808-.62-1.98-.62-4.326-.62s-3.518 0-4.326.62a3 3 0 0 0-.554.554c-.62.808-.62 1.98-.62 4.326v8c0 2.346 0 3.518.62 4.326a3 3 0 0 0 .554.554c.808.62 1.98.62 4.326.62s3.518 0 4.326-.62a3 3 0 0 0 .554-.554c.412-.536.55-1.233.596-2.326m3.524-2.5s3.5-2.578 3.5-3.5s-3.5-3.5-3.5-3.5" />
+                            <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19.996 12h-10m3.976-6c-.046-1.093-.184-1.79-.596-2.326a3 3 0 0 0-.554-.554c-.808-.62-1.98-.62-4.326-.62s-3.518 0-4.326.62a3 3 0 0 0-.554.554c-.62.808-.62 1.98-.62 4.326v8c0 2.346 0 3.518.62 4.326a3 3 0 0 0 .554.554c.808.62 1.98.62 4.326.62s3.518 0 4.326-.62a3 3 0 0 0 .554-.554c.412-.536.55-1.233.596-2.326m3.524-2.5s3.5-2.578 3.5-3.5s-3.5-3.5-3.5-3.5" />
                         </svg>
 
                         {/* Sign out */}
                     </button>
-                    <button className="mt-3 flex justify-center items-center gap-2 bg-foreground/5 hover:bg-warning/10 border border-foreground/5 hover:border-warning/20 w-fit px-4 rounded-full text-foreground/65 hover:text-warning transition-all duration-300 ease-in-out active:scale-80">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 12 12">
-                            <path fill="currentColor" d="M5 3h2a1 1 0 0 0-2 0M4 3a2 2 0 1 1 4 0h2.5a.5.5 0 0 1 0 1h-.441l-.443 5.17A2 2 0 0 1 7.623 11H4.377a2 2 0 0 1-1.993-1.83L1.941 4H1.5a.5.5 0 0 1 0-1zm3.5 3a.5.5 0 0 0-1 0v2a.5.5 0 0 0 1 0zM5 5.5a.5.5 0 0 0-.5.5v2a.5.5 0 0 0 1 0V6a.5.5 0 0 0-.5-.5" />
+                    <button className="group mt-3 flex justify-center items-center gap-2 bg-foreground/5 hover:bg-warning/10 border border-foreground/5 hover:border-warning/20 w-fit px-4 rounded-full text-foreground/65 hover:text-warning transition-all duration-300 ease-in-out active:scale-80">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+                            <path fill="currentColor" fillRule="evenodd" className="transition-all duration-300 ease-in-out group-hover:[d:path('M9.774_5L3.758_3.94l.174-.986a.5.5_0_0_1_.58-.405L18.411_5h.088h-.087l1.855.327a.5.5_0_0_1_.406.58l-.174.984l-2.09-.368l-.8_13.594A2_2_0_0_1_15.615_22H8.386a2_2_0_0_1-1.997-1.883L5.59_6.5h12.69zH5.5zM9_9l.5_9H11l-.4-9zm4.5_0l-.5_9h1.5l.5-9zm-2.646-7.871l3.94.694a.5.5_0_0_1_.405.58l-.174.984l-4.924-.868l.174-.985a.5.5_0_0_1_.58-.405z')]"
+                                d="m18.412 6.5l-.801 13.617A2 2 0 0 1 15.614 22H8.386a2 2 0 0 1-1.997-1.883L5.59 6.5H3.5v-1A.5.5 0 0 1 4 5h16a.5.5 0 0 1 .5.5v1zM10 2.5h4a.5.5 0 0 1 .5.5v1h-5V3a.5.5 0 0 1 .5-.5M9 9l.5 9H11l-.4-9zm4.5 0l-.5 9h1.5l.5-9z"
+                            />
                         </svg>
                         {/* Delete Account */}
                     </button>
