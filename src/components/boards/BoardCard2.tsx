@@ -1,17 +1,30 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import type { Board } from '../../hooks/useBoards';
-import { Globe, Lock } from 'lucide-react';
 
 interface BoardCardProps {
     board: Board;
     username: string;
+    avatarUrl?: string | null;
+    ownerAvatar?: string | null;
+    ownerAvatarUrl?: string | null;
+    ownerName?: string;
     selectionMode?: boolean;
     isSelected?: boolean;
     onToggleSelect?: () => void;
 }
 
-export default function BoardCard2({ board, username, selectionMode, isSelected, onToggleSelect }: BoardCardProps) {
+export default function BoardCard2({
+    board,
+    username,
+    avatarUrl,
+    ownerAvatar,
+    ownerAvatarUrl,
+    ownerName,
+    selectionMode,
+    isSelected,
+    onToggleSelect
+}: BoardCardProps) {
     const previewFonts = board.preview_fonts || [];
     const [loadedFonts, setLoadedFonts] = useState<Set<string>>(new Set());
 
@@ -49,6 +62,9 @@ export default function BoardCard2({ board, username, selectionMode, isSelected,
         displayFonts.push(null as any);
     }
 
+    const resolvedAvatar = ownerAvatarUrl ?? avatarUrl ?? ownerAvatar ?? (board as any)?.profiles?.avatar_url;
+    const resolvedOwnerName = ownerName || (board as any)?.profiles?.full_name || username;
+
     return (
         <Link
             to={`/${username}/${board.slug}`}
@@ -63,7 +79,7 @@ export default function BoardCard2({ board, username, selectionMode, isSelected,
             {/* Selection Overlay */}
             {selectionMode && (
                 <div
-                    className={`absolute aspect-4/3 inset-0 z-20 rounded-3xl border-2 transition-all pointer-events-none ${isSelected ? 'border-foreground bg-background/50' : 'border-transparent group-hover:border-foreground/20'
+                    className={`absolute aspect-4/3 inset-0 z-20 rounded-3xl border-2 transition-all pointer-events-none ${isSelected ? 'border-foreground' : 'border-transparent group-hover:border-foreground/20'
                         }`}
                 >
                     <div className={`absolute top-4 right-4 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors shadow-sm ${isSelected ? 'border-foreground bg-foreground' : 'border-foreground/30 bg-card-background'
@@ -74,7 +90,7 @@ export default function BoardCard2({ board, username, selectionMode, isSelected,
             )}
 
             {/* 2x2 Grid Container matching the image design[cite: 3] */}
-            <div className={`w-full aspect-4/3 bg-foreground/3 rounded-3xl p-2 grid grid-cols-2 grid-rows-2 gap-1 overflow-hidden transition-all duration-300 ease-in-out ${isSelected ? 'scale-95' : ''} `}>
+            <div className={`w-full aspect-4/3 bg-foreground/3 rounded-3xl p-2 grid grid-cols-2 grid-rows-2 gap-1 overflow-hidden transition-all duration-300 ease-in-out ${isSelected ? 'scale-95 opacity-60' : ''} `}>
 
                 {displayFonts.map((font, idx) => {
 
@@ -83,7 +99,7 @@ export default function BoardCard2({ board, username, selectionMode, isSelected,
                             idx === 1 ? "rounded-tr-2xl" :
                                 idx === 2 ? "rounded-bl-2xl" :
                                     idx === 3 ? "rounded-br-2xl" : "rounded-none";
-                                    
+
                     if (!font) {
                         // Empty placeholder for missing fonts to maintain grid structure
                         return (
@@ -113,13 +129,35 @@ export default function BoardCard2({ board, username, selectionMode, isSelected,
 
             {/* Board Info placed below the grid[cite: 3] */}
             <div className="px-3 flex flex-col">
-                <h3 className="font-inter-tight font-medium text-md md:text-xl tracking-wide text-foreground/80 group-hover:text-foreground transition-colors duration-300 truncate">
-                    <span className={`${isSelected ? 'text-muted italic line-through decoration-3 decoration-current zdecoration-foreground' : ''}`}>{board.name}</span>
+                <h3 className="flex flex-wrap items-center gap-2 font-inter-tight font-medium text-md md:text-xl tracking-wide text-foreground/80 group-hover:text-foreground transition-colors duration-300 truncate">
+                    <span className={`${isSelected ? 'text-muted/50 italic' : ''}`}>{board.name}</span>
+                    <div className='flex gap-2 items-center'>
+                        <span className='text-muted font-light text-sm'>by</span>
+                        {resolvedAvatar ? (
+                            <img
+                                src={resolvedAvatar}
+                                alt={resolvedOwnerName || 'Owner'}
+                                className='h-5 md:h-7 w-5 md:w-7 rounded-full object-cover border border-border shrink-0'
+                            />
+                        ) : (
+                            <div className='h-5 w-5 rounded-full bg-card-background border border-border flex items-center justify-center text-[10px] font-bold text-foreground shrink-0'>
+                                {(resolvedOwnerName?.[0] || username?.[0] || '?').toUpperCase()}
+                            </div>
+                        )}
+                    </div>
                 </h3>
-                <p className={`${isSelected ? 'text-muted italic line-through decoration-3 decoration-current zdecoration-foreground' : 'text-muted'} text-sm md:text-base mt-0.5 flex items-center gap-1.5`}>
+                <p className={`${isSelected ? 'text-muted/50 italic' : 'text-muted'} text-sm md:text-base mt-1 flex items-center gap-1.5`}>
                     {board.font_count} font{board.font_count !== 1 ? 's' : ''}
                     <span className="mx-1 opacity-50">·</span>
-                    {board.visibility === 'private' ? <Lock size={14} /> : <Globe size={14} />}
+                    {board.visibility === 'private' ?
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                            <rect fill='currentColor' width="18" height="11" x="3" y="11" rx="2" ry="2" />
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                        </svg>
+                        : <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16">
+                            <path fill="currentColor" d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0M4.882 1.731a.48.48 0 0 0 .14.291a.487.487 0 0 1-.126.78l-.291.146a.7.7 0 0 0-.188.135l-.48.48a1 1 0 0 1-1.023.242l-.02-.007a1 1 0 0 0-.462-.04a7 7 0 0 1 2.45-2.027m-3 9.674l.86-.216a1 1 0 0 0 .758-.97v-.184a1 1 0 0 1 .445-.832l.04-.026a1 1 0 0 0 .152-1.54L3.121 6.621a.414.414 0 0 1 .542-.624l1.09.818a.5.5 0 0 0 .523.047a.5.5 0 0 1 .724.447v.455a.8.8 0 0 0 .131.433l.795 1.192a1 1 0 0 1 .116.238l.73 2.19a1 1 0 0 0 .949.683h.058a1 1 0 0 0 .949-.684l.73-2.189a1 1 0 0 1 .116-.238l.791-1.187A.45.45 0 0 1 11.743 8c.16 0 .306.084.392.218c.557.875 1.63 2.282 2.365 2.282l.04-.001a7.003 7.003 0 0 1-12.658.905Z" />
+                        </svg>
+                    }
                 </p>
             </div>
         </Link>

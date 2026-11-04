@@ -17,6 +17,58 @@ import Switch from "../ui/ThemeToggle";
 import { useAdminControls } from "../../hooks/useAdminControls";
 import { MorphingSearchChips } from "../motion/morphing-search-chips";
 
+export interface NavLinkItem {
+    name: string;
+    path: string;
+    icon: any;
+    svg: React.ReactNode;
+    badge?: string;
+    status?: "soon" | "beta" | (string & {});
+    disabled?: boolean;
+}
+
+function StatusBadge({
+    status,
+    badge,
+    size = "sm",
+}: {
+    status?: "soon" | "beta" | (string & {});
+    badge?: string;
+    size?: "sm" | "md" | "lg";
+}) {
+    const text = status || badge;
+    if (!text) return null;
+
+    const lower = text.toLowerCase();
+    const isSoon = lower === "soon";
+    const isBeta = lower === "beta";
+
+    const sizeClasses =
+        size === "lg"
+            ? "ml-2.5 text-xs px-2.5 py-0.5"
+            : size === "md"
+                ? "ml-2 text-[10px] px-2 py-0.5"
+                : "ml-1.5 text-[10px] px-1.5 py-0.5";
+
+    const colorClasses = isSoon
+        ? "bg-foreground/10 text-muted border border-border/40"
+        : isBeta
+            ? "bg-accent/15 text-accent border border-accent/30"
+            : "bg-muted/20 text-foreground/80 border border-border/40";
+
+    return (
+        <span
+            className={cn(
+                "rounded-full font-medium uppercase tracking-wider inline-flex items-center justify-center leading-none select-none",
+                sizeClasses,
+                colorClasses
+            )}
+        >
+            {text}
+        </span>
+    );
+}
+
 export default function Navbar() {
     const { user, profile } = useAuth();
     const { adminControlsEnabled, toggleAdminControls } = useAdminControls();
@@ -136,12 +188,14 @@ export default function Navbar() {
         return () => window.removeEventListener("keydown", handleKeyDown);
     }, []);
 
-    const navLinks = useMemo(
+    const navLinks: NavLinkItem[] = useMemo(
         () => [
             {
                 name: "Fonts",
                 path: "/fonts",
                 icon: Type,
+                disabled: false,
+                status: undefined,
                 svg: (
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 16 16">
                         <path fill="currentColor" d="M12.494.253C11.08.253 10.172 0 8.715 0C4.007 0 1.812 2.681 1.812 5.404c0 1.604.76 2.132 2.259 2.132c-.106-.232-.296-.486-.296-1.626c0-3.188 1.203-4.117 2.744-4.18c0 0-1.264 12.396-4.934 13.883v.385h4.947l1.688-8h3.091l.689-2H8.642l.812-3.847c.929.19 1.837.38 2.618.38c.971 0 1.858-.296 2.343-2.533c-.591.19-1.224.253-1.921.253z" />
@@ -152,6 +206,8 @@ export default function Navbar() {
                 name: "Pairing",
                 path: "/pairing",
                 icon: Combine,
+                disabled: false,
+                status: "beta",
                 svg: (
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 15 15">
                         <path fill="currentColor" d="M3.5 5A1.5 1.5 0 0 0 2 6.5V8h3V6.5A1.5 1.5 0 0 0 3.5 5" />
@@ -171,11 +227,15 @@ export default function Navbar() {
                     </svg>
                 ),
                 badge: "NEW",
+                disabled: false,
+                status: undefined,
             },
             {
                 name: "Docs",
                 path: "/docs",
                 icon: BookOpen,
+                disabled: false,
+                status: undefined,
                 svg: (
                     <svg xmlns="http://www.w3.org/2000/svg" width="20.25" height="18" viewBox="0 0 576 512">
                         <path fill="currentColor" d="M528.3 46.5H388.5c-48.1 0-89.9 33.3-100.4 80.3c-10.6-47-52.3-80.3-100.4-80.3H48c-26.5 0-48 21.5-48 48v245.8c0 26.5 21.5 48 48 48h89.7c102.2 0 132.7 24.4 147.3 75c.7 2.8 5.2 2.8 6 0c14.7-50.6 45.2-75 147.3-75H528c26.5 0 48-21.5 48-48V94.6c0-26.4-21.3-47.9-47.7-48.1M242 311.9c0 1.9-1.5 3.5-3.5 3.5H78.2c-1.9 0-3.5-1.5-3.5-3.5V289c0-1.9 1.5-3.5 3.5-3.5h160.4c1.9 0 3.5 1.5 3.5 3.5v22.9zm0-60.9c0 1.9-1.5 3.5-3.5 3.5H78.2c-1.9 0-3.5-1.5-3.5-3.5v-22.9c0-1.9 1.5-3.5 3.5-3.5h160.4c1.9 0 3.5 1.5 3.5 3.5V251zm0-60.9c0 1.9-1.5 3.5-3.5 3.5H78.2c-1.9 0-3.5-1.5-3.5-3.5v-22.9c0-1.9 1.5-3.5 3.5-3.5h160.4c1.9 0 3.5 1.5 3.5 3.5v22.9zm259.3 121.7c0 1.9-1.5 3.5-3.5 3.5H337.5c-1.9 0-3.5-1.5-3.5-3.5v-22.9c0-1.9 1.5-3.5 3.5-3.5h160.4c1.9 0 3.5 1.5 3.5 3.5v22.9zm0-60.9c0 1.9-1.5 3.5-3.5 3.5H337.5c-1.9 0-3.5-1.5-3.5-3.5V228c0-1.9 1.5-3.5 3.5-3.5h160.4c1.9 0 3.5 1.5 3.5 3.5v22.9zm0-60.9c0 1.9-1.5 3.5-3.5 3.5H337.5c-1.9 0-3.5-1.5-3.5-3.5v-22.8c0-1.9 1.5-3.5 3.5-3.5h160.4c1.9 0 3.5 1.5 3.5 3.5V190z" />
@@ -186,6 +246,7 @@ export default function Navbar() {
                 name: "Moods",
                 path: "/moods",
                 icon: BookOpen,
+                status: undefined,
                 svg: (
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 64 64">
                         <path fill="currentColor" d="M31.096 62h-4.891s5.02-18.473 5.213-30.574c.014-.838 1.164-.838 1.164 0C32.582 48.862 31.096 62 31.096 62m26.889-40.164c-9.24-6.425-22.98 7.2-24.522 9.138c.873 1.571 6.095 21.527 16.962 20.817c10.104-.658 8.646-12.536 4.267-14.841c5.278.041 11.593-9.343 3.293-15.114" />
@@ -193,62 +254,16 @@ export default function Navbar() {
                         <path fill="currentColor" d="M6.013 21.836c-8.298 5.771-1.98 15.155 3.295 15.114c-4.38 2.306-5.836 14.183 4.267 14.841c10.868.709 16.065-19.245 16.937-20.816c-1.596-1.938-15.317-15.52-24.499-9.139" />
                     </svg>
                 ),
-                badge: "NEW",
+                disabled: true,
             },
-            // {
-            //     name: "Favourites",
-            //     path: "/favourites",
-            //     icon: Star,
-            //     svg: (
-            //         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 16 16">
-            //             <path fill="currentColor" fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15C-7.534 4.736 3.562-3.248 8 1.314" />
-            //         </svg>
-
-            //     ),
-            // },
-            // {
-            //     name: "Boards",
-            //     path: "/boards",
-            //     icon: LayoutDashboard,
-            //     svg: (
-            //         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
-            //             <path fill="currentColor" fill-rule="evenodd" d="M14.748 0a1.75 1.75 0 0 0-1.75 1.75v4.5c0 .966.784 1.75 1.75 1.75h7.5a1.75 1.75 0 0 0 1.75-1.75v-4.5A1.75 1.75 0 0 0 22.248 0zm0 10a1.75 1.75 0 0 0-1.75 1.75v10.5c0 .967.784 1.75 1.75 1.75h7.5a1.75 1.75 0 0 0 1.75-1.75v-10.5a1.75 1.75 0 0 0-1.75-1.75zM.002 1.75C.002.784.785 0 1.752 0h7.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0 1 9.252 14h-7.5a1.75 1.75 0 0 1-1.75-1.75zM1.752 16a1.75 1.75 0 0 0-1.75 1.75v4.5c0 .966.783 1.75 1.75 1.75h7.5a1.75 1.75 0 0 0 1.75-1.75v-4.5A1.75 1.75 0 0 0 9.252 16z" clip-rule="evenodd" />
-            //         </svg>
-            //     ),
-            // },
-            // {
-            //     name: "Bag",
-            //     path: "/bag",
-            //     icon: Users,
-            //     svg: (
-            //         <svg
-            //             xmlns="http://www.w3.org/2000/svg"
-            //             width="18"
-            //             height="18"
-            //             viewBox="0 0 24 24"
-            //         >
-            //             <g
-            //                 fill="none"
-            //                 stroke="currentColor"
-            //                 stroke-linecap="round"
-            //                 stroke-linejoin="round"
-            //                 stroke-width="2"
-            //             >
-            //                 <path
-            //                     d="M3.977 9.84A2 2 0 0 1 5.971 8h12.058a2 2 0 0 1 1.994 1.84l.803 10A2 2 0 0 1 18.833 22H5.167a2 2 0 0 1-1.993-2.16z"
-            //                     fill="currentColor"
-            //                 />
-            //                 <path d="M16 11V6a4 4 0 0 0-4-4v0a4 4 0 0 0-4 4v5" />
-            //             </g>
-            //         </svg>
-            //     ),
-            // },
             ...(profile?.role === "member" || profile?.role === "admin"
                 ? [
                     {
                         name: "Members",
                         path: "/members",
                         icon: Users,
+                        disabled: false,
+                        status: undefined,
                         svg: (
                             <svg xmlns="http://www.w3.org/2000/svg" width="22.5" height="18" viewBox="0 0 640 512">
                                 <path fill="currentColor" d="M96 224c35.3 0 64-28.7 64-64s-28.7-64-64-64s-64 28.7-64 64s28.7 64 64 64m448 0c35.3 0 64-28.7 64-64s-28.7-64-64-64s-64 28.7-64 64s28.7 64 64 64m32 32h-64c-17.6 0-33.5 7.1-45.1 18.6c40.3 22.1 68.9 62 75.1 109.4h66c17.7 0 32-14.3 32-32v-32c0-35.3-28.7-64-64-64m-256 0c61.9 0 112-50.1 112-112S381.9 32 320 32S208 82.1 208 144s50.1 112 112 112m76.8 32h-8.3c-20.8 10-43.9 16-68.5 16s-47.6-6-68.5-16h-8.3C179.6 288 128 339.6 128 403.2V432c0 26.5 21.5 48 48 48h288c26.5 0 48-21.5 48-48v-28.8c0-63.6-51.6-115.2-115.2-115.2m-223.7-13.4C161.5 263.1 145.6 256 128 256H64c-35.3 0-64 28.7-64 64v32c0 17.7 14.3 32 32 32h65.9c6.3-47.4 34.9-87.3 75.2-109.4" />
@@ -259,6 +274,8 @@ export default function Navbar() {
                         name: "Admin",
                         path: "/admin",
                         icon: ShieldAlert,
+                        disabled: false,
+                        status: undefined,
                         svg: (
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 16 16">
                                 <path fill="currentColor" fill-rule="evenodd" d="M8 0c-.69 0-1.843.265-2.928.56c-1.11.3-2.229.655-2.887.87a1.54 1.54 0 0 0-1.044 1.262c-.596 4.477.787 7.795 2.465 9.99a11.8 11.8 0 0 0 2.517 2.453c.386.273.744.482 1.048.625c.28.132.581.24.829.24s.548-.108.829-.24a7 7 0 0 0 1.048-.625a11.8 11.8 0 0 0 2.517-2.453c1.678-2.195 3.061-5.513 2.465-9.99a1.54 1.54 0 0 0-1.044-1.263a63 63 0 0 0-2.887-.87C9.843.266 8.69 0 8 0m2.146 5.146a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 7.793z" />
@@ -271,6 +288,8 @@ export default function Navbar() {
                         name: "Upload",
                         path: "/upload",
                         icon: Plus,
+                        disabled: false,
+                        status: undefined,
                         svg: (
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 512 512">
                                 <path fill="currentColor" d="M288 109.3V352c0 17.7-14.3 32-32 32s-32-14.3-32-32V109.3l-73.4 73.4c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l128-128c12.5-12.5 32.8-12.5 45.3 0l128 128c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0zM64 352h128c0 35.3 28.7 64 64 64s64-28.7 64-64h128c35.3 0 64 28.7 64 64v32c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64v-32c0-35.3 28.7-64 64-64m368 104a24 24 0 1 0 0-48a24 24 0 1 0 0 48" />
@@ -284,11 +303,13 @@ export default function Navbar() {
         [profile?.role],
     );
 
-    const otherLinks = [
+    const otherLinks: NavLinkItem[] = [
         {
             name: "Favourites",
             path: "/favourites",
             icon: Star,
+            disabled: true,
+            status: undefined,
             svg: (
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 16 16">
                     <path fill="currentColor" fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15C-7.534 4.736 3.562-3.248 8 1.314" />
@@ -298,8 +319,10 @@ export default function Navbar() {
         },
         {
             name: "Boards",
-            path: "/boards",
+            path: profile?.username ? `/${profile.username}` : user ? "/profile" : "/auth",
             icon: LayoutDashboard,
+            disabled: false,
+            status: undefined,
             svg: (
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
                     <path fill="currentColor" fill-rule="evenodd" d="M14.748 0a1.75 1.75 0 0 0-1.75 1.75v4.5c0 .966.784 1.75 1.75 1.75h7.5a1.75 1.75 0 0 0 1.75-1.75v-4.5A1.75 1.75 0 0 0 22.248 0zm0 10a1.75 1.75 0 0 0-1.75 1.75v10.5c0 .967.784 1.75 1.75 1.75h7.5a1.75 1.75 0 0 0 1.75-1.75v-10.5a1.75 1.75 0 0 0-1.75-1.75zM.002 1.75C.002.784.785 0 1.752 0h7.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0 1 9.252 14h-7.5a1.75 1.75 0 0 1-1.75-1.75zM1.752 16a1.75 1.75 0 0 0-1.75 1.75v4.5c0 .966.783 1.75 1.75 1.75h7.5a1.75 1.75 0 0 0 1.75-1.75v-4.5A1.75 1.75 0 0 0 9.252 16z" clip-rule="evenodd" />
@@ -310,26 +333,13 @@ export default function Navbar() {
             name: "Bag",
             path: "/bag",
             icon: Users,
+            disabled: false,
+            status: undefined,
             svg: (
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                >
-                    <g
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                    >
-                        <path
-                            d="M3.977 9.84A2 2 0 0 1 5.971 8h12.058a2 2 0 0 1 1.994 1.84l.803 10A2 2 0 0 1 18.833 22H5.167a2 2 0 0 1-1.993-2.16z"
-                            fill="currentColor"
-                        />
-                        <path d="M16 11V6a4 4 0 0 0-4-4v0a4 4 0 0 0-4 4v5" />
-                    </g>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M2.048 18.566A2 2 0 0 0 4 21h16a2 2 0 0 0 1.952-2.434l-2-9A2 2 0 0 0 18 8H6a2 2 0 0 0-1.952 1.566z"
+                        className="fill-current" />
+                    <path d="M8 11V6a4 4 0 0 1 8 0v5" />
                 </svg>
             ),
         },
@@ -342,7 +352,8 @@ export default function Navbar() {
                     <path fill="currentColor" d="M9.052 1.684a1 1 0 0 1 1.896.633l-4 12a1 1 0 0 1-1.896-.633zM3.293 4.293a1 1 0 1 1 1.414 1.414L2.414 8l2.293 2.293a1 1 0 1 1-1.414 1.414l-3-3a1 1 0 0 1 0-1.414zm8 0a1 1 0 0 1 1.414 0l3 3a1 1 0 0 1 0 1.414l-3 3a1 1 0 0 1-1.414-1.414L13.586 8l-2.293-2.293a1 1 0 0 1 0-1.414" />
                 </svg>
             ),
-            badge: "Soon",
+            status: "soon",
+            disabled: true,
         },
     ]
 
@@ -425,6 +436,18 @@ export default function Navbar() {
                                 {navLinks.map((link) => {
                                     // const Icon = link.icon;
                                     const isActive = location.pathname === link.path;
+                                    if (link.disabled) {
+                                        return (
+                                            <span
+                                                key={link.path}
+                                                className="relative px-4 py-2 rounded-full text-sm font-inter-tight font-medium tracking-wider flex items-center gap-2 opacity-40 cursor-not-allowed select-none text-muted"
+                                            >
+                                                {link.svg}
+                                                {link.name}
+                                                <StatusBadge status={link.status} badge={link.badge} size="sm" />
+                                            </span>
+                                        );
+                                    }
                                     return (
                                         <Link
                                             key={link.path}
@@ -436,9 +459,9 @@ export default function Navbar() {
                                                     : "text-muted hover:text-foreground",
                                             )}
                                         >
-                                            {/* <Icon size={16} className={isActive ? 'fill-current transition-all duration-1000z ease-in-out' : 'fill-current/0'} /> */}
                                             {link.svg}
                                             {link.name}
+                                            <StatusBadge status={link.status} badge={link.badge} size="sm" />
                                         </Link>
                                     );
                                 })}
@@ -634,25 +657,10 @@ export default function Navbar() {
                                 title="Font Bag"
                                 aria-label={`Font Bag — ${bagCount} font${bagCount !== 1 ? "s" : ""}`}
                             >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="18"
-                                    height="18"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <g
-                                        fill="none"
-                                        stroke="currentColor"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                    >
-                                        <path
-                                            d="M3.977 9.84A2 2 0 0 1 5.971 8h12.058a2 2 0 0 1 1.994 1.84l.803 10A2 2 0 0 1 18.833 22H5.167a2 2 0 0 1-1.993-2.16z"
-                                            fill="currentColor"
-                                        />
-                                        <path d="M16 11V6a4 4 0 0 0-4-4v0a4 4 0 0 0-4 4v5" />
-                                    </g>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M2.048 18.566A2 2 0 0 0 4 21h16a2 2 0 0 0 1.952-2.434l-2-9A2 2 0 0 0 18 8H6a2 2 0 0 0-1.952 1.566z"
+                                        className="fill-current" />
+                                    <path d="M8 11V6a4 4 0 0 1 8 0v5" />
                                 </svg>
                                 {bagCount > 0 && (
                                     <span className="absolute -top-1 -right-1 min-w-4.5 h-4.5 px-1 bg-foreground text-background text-[12px] font-inter-tight font-semibold rounded-full flex items-center justify-center">
@@ -804,6 +812,20 @@ export default function Navbar() {
                                 <div className="space-y-0.5">
                                     {navLinks.map((link) => {
                                         const isActive = location.pathname === link.path;
+                                        if (link.disabled) {
+                                            return (
+                                                <div
+                                                    key={link.path}
+                                                    className="flex items-center justify-between rounded-xl px-3 py-2.5 text-sm font-medium opacity-40 cursor-not-allowed select-none text-muted"
+                                                >
+                                                    <span className="font-inter-tight flex items-center gap-1.5 text-muted">
+                                                        {link.name}
+                                                        <StatusBadge status={link.status} badge={link.badge} size="sm" />
+                                                    </span>
+                                                    <span className="text-muted/60">{link.svg}</span>
+                                                </div>
+                                            );
+                                        }
 
                                         return (
                                             <Link
@@ -823,10 +845,11 @@ export default function Navbar() {
                                                 )}
                                             >
                                                 <span className={cn(
-                                                    "font-inter-tight ztext-[2.4rem] zsm:text-[2.7rem] zmd:text-[2rem] zleading-none transition-colors duration-200 flex items-center",
+                                                    "font-inter-tight flex items-center gap-1.5 transition-colors duration-200",
                                                     isActive ? "text-foreground" : "text-muted group-hover:text-foreground"
                                                 )}>
                                                     {link.name}
+                                                    <StatusBadge status={link.status} badge={link.badge} size="sm" />
                                                 </span>
                                                 <span className={cn(isActive ? "text-foreground" : "text-muted group-hover:text-foreground")}>
                                                     {link.svg}
@@ -836,12 +859,31 @@ export default function Navbar() {
                                     })}
                                 </div>
 
-                                <div className="w-full h-px bg-card-background my-4" />
+                                <div className="w-full h-px bg-border/50 my-4" />
 
                                 {/* other links */}
                                 <div className="space-y-0.5">
                                     {otherLinks.map((link) => {
                                         const isActive = location.pathname === link.path;
+                                        if (link.disabled) {
+                                            return (
+                                                <div
+                                                    key={link.path}
+                                                    className="flex items-center justify-between rounded-xl px-3 py-2.5 text-sm font-medium opacity-40 cursor-not-allowed select-none text-muted"
+                                                >
+                                                    <span className="font-inter-tight flex items-center gap-1.5 text-muted">
+                                                        {link.name}
+                                                        {link.name === "Bag" && bagCount > 0 && (
+                                                            <span className="ml-2 text-xs bg-border text-muted px-1.5 py-0.5 rounded-full">
+                                                                {bagCount > 99 ? "99+" : bagCount} <span className='ml-0.5 tracking-normal'>fonts</span>
+                                                            </span>
+                                                        )}
+                                                        <StatusBadge status={link.status} badge={link.badge} size="sm" />
+                                                    </span>
+                                                    <span className="text-muted/60">{link.svg}</span>
+                                                </div>
+                                            );
+                                        }
 
                                         return (
                                             <Link
@@ -861,7 +903,7 @@ export default function Navbar() {
                                                 )}
                                             >
                                                 <span className={cn(
-                                                    "font-inter-tight ztext-[2.4rem] zsm:text-[2.7rem] zmd:text-[2rem] zleading-none transition-colors duration-200 flex items-center",
+                                                    "font-inter-tight flex items-center gap-1.5 transition-colors duration-200",
                                                     isActive ? "text-foreground" : "text-muted group-hover:text-foreground"
                                                 )}>
                                                     {link.name}
@@ -870,6 +912,7 @@ export default function Navbar() {
                                                             {bagCount > 99 ? "99+" : bagCount} <span className='ml-0.5 tracking-normal'>fonts</span>
                                                         </span>
                                                     )}
+                                                    <StatusBadge status={link.status} badge={link.badge} size="sm" />
                                                 </span>
                                                 <span className={cn(isActive ? "text-foreground" : "text-muted group-hover:text-foreground")}>
                                                     {link.svg}
@@ -883,25 +926,34 @@ export default function Navbar() {
                                 <div className="mt-2 border-t border-border/50 pt-2">
 
                                     {profile?.role === 'admin' && (
-                                        <button
-                                            type="button"
-                                            onClick={toggleAdminControls}
-                                            className="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-sm font-medium text-foreground hover:bg-foreground/5 transition-colors cursor-pointer"
-                                        >
+                                        <div className="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-sm font-medium text-foreground hover:bg-foreground/5 transition-colors">
                                             <span className="flex items-center gap-3 text-sm font-medium">
-                                                <ShieldAlert size={18} className={adminControlsEnabled ? "text-accent" : "text-muted"} />
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
+                                                    <g fill="currentColor">
+                                                        <path d="M12 22C10.9807 22 10.6199 21.8425 9.89844 21.5273C7.23883 20.3655 3 17.6292 3 11.9912V11L12 8V22Z" />
+                                                        <path d="M12 2C12.8114 2 13.595 2.26825 15.1621 2.80469L15.7354 3.00098C18.7409 4.02979 20.244 4.54434 20.6221 5.08203C20.9996 5.6199 21 7.21941 21 10.417V11L12 8V2Z" />
+                                                        <g opacity=".5">
+                                                            <path d="M21 11V11.9912C21 17.6292 16.7612 20.3655 14.1016 21.5273C13.3801 21.8425 13.0193 22 12 22V8L21 11Z" />
+                                                            <path d="M12 8L3 11V10.417C3 7.21941 3.00041 5.6199 3.37793 5.08203C3.75595 4.54434 5.25909 4.02979 8.26465 3.00098L8.83789 2.80469C10.405 2.26825 11.1886 2 12 2V8Z" />
+                                                        </g>
+                                                    </g>
+                                                </svg>
+
                                                 Admin Controls
                                             </span>
-                                            <div className={cn(
-                                                "w-9 h-5 rounded-full transition-colors duration-300 ease-in-out relative flex items-center p-0.5",
-                                                adminControlsEnabled ? "bg-accent" : "bg-foreground/20"
-                                            )}>
+                                            <button
+                                                type="button"
+                                                onClick={toggleAdminControls}
+                                                className={cn(
+                                                    "w-9 h-5 rounded-full transition-colors duration-300 ease-in-out relative flex items-center p-0.5 cursor-pointer",
+                                                    adminControlsEnabled ? "bg-accent" : "bg-foreground/20"
+                                                )}>
                                                 <div className={cn(
                                                     "w-4 h-4 rounded-full bg-background shadow transition-transform duration-300 ease-in-out",
                                                     adminControlsEnabled ? "translate-x-4" : "translate-x-0"
                                                 )} />
-                                            </div>
-                                        </button>
+                                            </button>
+                                        </div>
                                     )}
 
                                     <div className="flex items-center justify-between rounded-xl px-3 py-2.5 text-sm font-medium transition-colors text-foreground">
@@ -1049,6 +1101,27 @@ export default function Navbar() {
                                         <div className="flex-1">
                                             {navLinks.map((link, index) => {
                                                 const isActive = location.pathname === link.path;
+                                                if (link.disabled) {
+                                                    return (
+                                                        <div key={link.path} className="opacity-40 cursor-not-allowed select-none">
+                                                            <motion.div
+                                                                initial={{ opacity: 0, x: 15 }}
+                                                                animate={{ opacity: 1, x: 0 }}
+                                                                transition={{ delay: index * 0.035, duration: 0.3 }}
+                                                                className="flex sm:flex-row-reverse items-center justify-between sm:justify-end sm:gap-4 py-2 md:py-2.5"
+                                                            >
+                                                                <span className="font-inter-tight text-[2rem] sm:text-[2rem] leading-none text-muted/50 flex items-center">
+                                                                    {link.name}
+                                                                    <StatusBadge status={link.status} badge={link.badge} size="lg" />
+                                                                </span>
+
+                                                                <span className="text-muted/40 sm:hiddenz">
+                                                                    {link.svg}
+                                                                </span>
+                                                            </motion.div>
+                                                        </div>
+                                                    );
+                                                }
 
                                                 return (
                                                     <Link
@@ -1076,6 +1149,7 @@ export default function Navbar() {
                                                                 )}
                                                             >
                                                                 {link.name}
+                                                                <StatusBadge status={link.status} badge={link.badge} size="lg" />
                                                             </span>
 
                                                             <span className={cn("sm:hiddenz", isActive ? "text-foreground" : "text-muted/60 group-hover:text-foreground")}>
@@ -1089,6 +1163,32 @@ export default function Navbar() {
                                         <div className="mt-6 flex-1 bg-card-background px-6 py-4 rounded-3xl">
                                             {otherLinks.map((link, index) => {
                                                 const isActive = location.pathname === link.path;
+                                                if (link.disabled) {
+                                                    return (
+                                                        <div key={link.path} className="opacity-40 cursor-not-allowed select-none">
+                                                            <motion.div
+                                                                initial={{ opacity: 0, x: 15 }}
+                                                                animate={{ opacity: 1, x: 0 }}
+                                                                transition={{ delay: index * 0.035, duration: 0.3 }}
+                                                                className="flex items-center justify-between py-2 md:py-2.5"
+                                                            >
+                                                                <span className="font-inter-tight text-[2rem] sm:text-[2rem] leading-none text-muted/50 flex items-center">
+                                                                    {link.name}
+                                                                    {link.name === "Bag" && bagCount > 0 && (
+                                                                        <span className="ml-2 text-lg bg-foreground/90 text-background tracking-normal px-2 py-0 rounded-full">
+                                                                            {bagCount > 99 ? "99+" : bagCount} <span className='ml-1'>fonts</span>
+                                                                        </span>
+                                                                    )}
+                                                                    <StatusBadge status={link.status} badge={link.badge} size="lg" />
+                                                                </span>
+
+                                                                <span className="text-muted/40">
+                                                                    {link.svg}
+                                                                </span>
+                                                            </motion.div>
+                                                        </div>
+                                                    );
+                                                }
 
                                                 return (
                                                     <Link
@@ -1121,9 +1221,7 @@ export default function Navbar() {
                                                                         {bagCount > 99 ? "99+" : bagCount} <span className='ml-1'>fonts</span>
                                                                     </span>
                                                                 )}
-                                                                <span className="ml-2 text-lg bg-muted/30 text-muted/95 tracking-normal lowercase px-2 py-0 rounded-full">
-                                                                    {link.badge}
-                                                                </span>
+                                                                <StatusBadge status={link.status} badge={link.badge} size="lg" />
                                                             </span>
 
                                                             <span className={cn(isActive ? "text-foreground" : "text-muted/60 group-hover:text-foreground")}>

@@ -5,7 +5,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import SEO from '../../components/shared/SEO';
 import { useBoards, type Board, type BoardFont } from '../../hooks/useBoards';
 import EditBoardModal from '../../components/boards/EditBoardModal';
-import { Trash2, Edit3, Lock, Globe, Bookmark, BookmarkCheck } from 'lucide-react';
+import { Trash2, Edit3, Bookmark, BookmarkCheck } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useViewMode } from '../../hooks/useViewMode';
 import { useWindowSize } from '../../hooks/useWindowSize';
@@ -244,14 +244,18 @@ export default function BoardDetail() {
   }, [fonts, filters, viewMode, customText, getCardProps, userFavoriteIds, handleFavoriteToggle, bulkToggleVersion, selectionMode, selectedFonts, toggleFontSelection]);
 
   const columns =
-    width > 1280 ? 4 :
-      width > 1024 ? 3 :
-        width > 640 ? 2 :
-          1;
+    width > 3000 ? 7 :
+      width > 2560 ? 6 : // 4k Tvs
+        width > 1920 ? 5 : // Large TVs / Ultra-wide monitors
+          width > 1440 ? 4 : // Large Laptops / Standard Desktops
+            width > 1024 ? 3 : // Standard Laptops / Large Tablets
+              width > 768 ? 2 : // Medium Tablets (Portrait)
+                width > 480 ? 2 : // Large Phones (Landscape)
+                  1;  // Standard Mobile Phones
 
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="w-8 h-8 rounded-full border-2 border-foreground/10 border-t-[var(--color-foreground)] animate-spin" />
+      <div className="w-8 h-8 rounded-full border-2 border-foreground/10 border-t-foreground animate-spin" />
     </div>
   );
 
@@ -260,7 +264,7 @@ export default function BoardDetail() {
       <p className="text-5xl mb-4">🔒</p>
       <h1 className="text-2xl font-black mb-2">Board not found</h1>
       <p className="text-muted mb-6">This board doesn't exist or is private.</p>
-      <Link to="/" className="text-accent hover:underline text-sm font-medium">← Back to home</Link>
+      <Link to="/" className="text-foreground hover:underline text-sm font-medium">← Back to home</Link>
     </div>
   );
 
@@ -271,8 +275,8 @@ export default function BoardDetail() {
         description={board.description || `A curated font board by ${owner.full_name} on NoBadFonts.`}
       />
 
-      <div className="relative bg-card-background/40 backdrop-blur-sm">
-        <div className='h-px w-full bg-linear-to-r from-transparent via-foreground/8 to-transparent absolute bottom-0 left-0 right-0' />
+      <div className="relative">
+        {/* <div className='h-px w-full bg-linear-to-r from-transparent via-foreground/8 to-transparent absolute bottom-0 left-0 right-0' /> */}
         <div className="max-w-6xl mx-auto px-4 py-8">
           <div className="flex items-center gap-2 text-sm text-muted mb-5">
             <Link to={`/${username}`} className="hover:text-foreground transition-colors flex items-center gap-1.5">
@@ -295,8 +299,18 @@ export default function BoardDetail() {
                   ? 'bg-foreground/8 text-muted'
                   : 'bg-foreground/8 text-muted'}`}>
                   {board.visibility === 'private' ?
-                    <div className='flex gap-1 items-center'><Lock size={14} /> Private</div>
-                    : <div className='flex gap-1 items-center'><Globe size={14} /> Public</div>
+                    <div className='flex gap-1 items-center'>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect fill='currentColor' width="18" height="11" x="3" y="11" rx="2" ry="2" />
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                      </svg>
+                      Private
+                    </div>
+                    : <div className='flex gap-1 items-center'>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16">
+                        <path fill="currentColor" d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0M4.882 1.731a.48.48 0 0 0 .14.291a.487.487 0 0 1-.126.78l-.291.146a.7.7 0 0 0-.188.135l-.48.48a1 1 0 0 1-1.023.242l-.02-.007a1 1 0 0 0-.462-.04a7 7 0 0 1 2.45-2.027m-3 9.674l.86-.216a1 1 0 0 0 .758-.97v-.184a1 1 0 0 1 .445-.832l.04-.026a1 1 0 0 0 .152-1.54L3.121 6.621a.414.414 0 0 1 .542-.624l1.09.818a.5.5 0 0 0 .523.047a.5.5 0 0 1 .724.447v.455a.8.8 0 0 0 .131.433l.795 1.192a1 1 0 0 1 .116.238l.73 2.19a1 1 0 0 0 .949.683h.058a1 1 0 0 0 .949-.684l.73-2.189a1 1 0 0 1 .116-.238l.791-1.187A.45.45 0 0 1 11.743 8c.16 0 .306.084.392.218c.557.875 1.63 2.282 2.365 2.282l.04-.001a7.003 7.003 0 0 1-12.658.905Z" />
+                      </svg>
+                      Public</div>
                   }
                 </span>
               </div>

@@ -531,27 +531,12 @@ function FontCard({
                                         className={`flex justify-center items-center ${isExpanded ? "backdrop-blur-sm" : ""} group/bag h-11 px-3 rounded-full overflow-hidden pointer-events-auto cursor-pointer transition-all duration-600 ease-out max-w-11 hover:max-w-100
                                             ${viewMode === 'image' ? 'bg-black/30' : 'hover:bg-foreground/5'}`}
                                     >
-                                        <svg
-                                            className="flex h-11 w-5 shrink-0 items-center justify-center"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            width="20"
-                                            height="20"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <g
-                                                fill="none"
-                                                stroke="currentColor"
-                                                stroke-linecap="round"
-                                                stroke-linejoin="round"
-                                                stroke-width="2"
-                                            >
-                                                <path
-                                                    d="M3.977 9.84A2 2 0 0 1 5.971 8h12.058a2 2 0 0 1 1.994 1.84l.803 10A2 2 0 0 1 18.833 22H5.167a2 2 0 0 1-1.993-2.16z"
-                                                    className={`${fontIsInBag ? "fill-current" : "fill-transparent"} transition-all duration-300 ease-in-out`}
-                                                />
-                                                <path d="M16 11V6a4 4 0 0 0-4-4v0a4 4 0 0 0-4 4v5" />
-                                            </g>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="flex h-11 w-5 shrink-0 items-center justify-center">
+                                            <path d="M2.048 18.566A2 2 0 0 0 4 21h16a2 2 0 0 0 1.952-2.434l-2-9A2 2 0 0 0 18 8H6a2 2 0 0 0-1.952 1.566z" 
+                                            className={`${fontIsInBag ? "fill-current" : "fill-transparent"} transition-all duration-300 ease-in-out`}/>
+                                            <path d="M8 11V6a4 4 0 0 1 8 0v5" />
                                         </svg>
+
                                         <span className=" max-w-0 overflow-hidden whitespace-nowrap opacity-0 ml-0 group-hover/bag:max-w-27.5 group-hover/bag:opacity-100 group-hover/bag:ml-2 transition-all duration-600 ease-out">
                                             {fontIsInBag ? "View in bag" : "Add to bag"}</span>
                                     </button>
@@ -584,8 +569,8 @@ function FontCard({
                                         className={`flex justify-center items-center gap-1 bg-none ${viewMode === 'image' ? 'hover:bg-black/30' : 'hover:bg-foreground/5'} transition-colors duration-300 ease-in-out h-11 px-3 rounded-full pointer-events-auto cursor-pointer`}
                                     >
                                         <svg width="20" height="20" viewBox="0 0 70 70" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M0 65.5L49 16.5C49 16.5 40 17.5 30.5 16.5C21 15.5 13 10.5 13 10.5L15 4.5C15 4.5 27 11.5 43 10.5C59 9.5 65 0 65 0L70 4.5C70 4.5 60 14 59.5 28.5C59 43 65 54.5 65 54.5L60 57.5C60 57.5 56 49 54 40.5C52 32 53 20.5 53 20.5L4 69.5H3L0 66.5V65.5Z" fill="currentColor" />
-                                            </svg>
+                                            <path d="M0 65.5L49 16.5C49 16.5 40 17.5 30.5 16.5C21 15.5 13 10.5 13 10.5L15 4.5C15 4.5 27 11.5 43 10.5C59 9.5 65 0 65 0L70 4.5C70 4.5 60 14 59.5 28.5C59 43 65 54.5 65 54.5L60 57.5C60 57.5 56 49 54 40.5C52 32 53 20.5 53 20.5L4 69.5H3L0 66.5V65.5Z" fill="currentColor" />
+                                        </svg>
                                     </Link>
                                 </div>
                             </div>

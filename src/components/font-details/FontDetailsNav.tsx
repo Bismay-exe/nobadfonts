@@ -91,25 +91,9 @@ export default function FontDetailsNav({
                                 title="Font Bag"
                                 aria-label={`Font Bag — ${bagCount} font${bagCount !== 1 ? "s" : ""}`}
                             >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="18"
-                                    height="18"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <g
-                                        fill="none"
-                                        stroke="currentColor"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                    >
-                                        <path
-                                            d="M3.977 9.84A2 2 0 0 1 5.971 8h12.058a2 2 0 0 1 1.994 1.84l.803 10A2 2 0 0 1 18.833 22H5.167a2 2 0 0 1-1.993-2.16z"
-                                            fill="currentColor"
-                                        />
-                                        <path d="M16 11V6a4 4 0 0 0-4-4v0a4 4 0 0 0-4 4v5" />
-                                    </g>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M2.048 18.566A2 2 0 0 0 4 21h16a2 2 0 0 0 1.952-2.434l-2-9A2 2 0 0 0 18 8H6a2 2 0 0 0-1.952 1.566z" className="fill-current" />
+                                    <path d="M8 11V6a4 4 0 0 1 8 0v5" />
                                 </svg>
                                 {bagCount > 0 && (
                                     <span className="absolute -top-1 -right-1 min-w-4.5 h-4.5 px-1 bg-foreground text-background text-[12px] font-inter-tight font-semibold rounded-full flex items-center justify-center">
