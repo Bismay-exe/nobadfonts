@@ -90,7 +90,7 @@ export default function SaveToBoardModal({ fontId, isOpen, onClose }: SaveToBoar
 
   const copyShareLink = useCallback((board: Board) => {
     const link = board.visibility === 'public'
-      ? `${window.location.origin}/${board.user_id}/boards/${board.slug}`
+      ? `${window.location.origin}/${board.user_id}/board/${board.slug}`
       : `${window.location.origin}/board-share/${board.share_token}`;
     navigator.clipboard.writeText(link);
     setCopied(board.id);

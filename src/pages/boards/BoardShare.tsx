@@ -54,7 +54,7 @@ export default function BoardShare() {
 
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="w-8 h-8 rounded-full border-2 border-foreground/10 border-t-[var(--color-accent)] animate-spin" />
+      <div className="w-8 h-8 rounded-full border-2 border-foreground/10 border-t-foreground animate-spin" />
     </div>
   );
 
@@ -84,7 +84,7 @@ export default function BoardShare() {
           <h1 className="text-3xl font-black text-foreground mb-2">{board.name}</h1>
           {board.description && <p className="text-muted max-w-xl">{board.description}</p>}
           {owner && (
-            <Link to={`/${owner.username}`} className="mt-4 inline-flex items-center gap-2 text-sm text-muted hover:text-foreground transition-colors">
+            <Link to={`/@${owner.username}`} className="mt-4 inline-flex items-center gap-2 text-sm text-muted hover:text-foreground transition-colors">
               {owner.avatar_url ? (
                 <img src={owner.avatar_url} alt={owner.full_name} className="w-6 h-6 rounded-full object-cover" />
               ) : (

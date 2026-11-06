@@ -63,7 +63,7 @@ export default function ConnectedApps() {
             <SEO title="Connected Apps | NoBadFonts" noindex url={returnTo} />
 
             <Link
-                to="/profile"
+                to="/@me"
                 className="mb-8 inline-flex items-center gap-2 font-space-mono text-xs uppercase tracking-[0.2em] text-muted hover:text-foreground"
             >
                 <ArrowLeft size={14} />

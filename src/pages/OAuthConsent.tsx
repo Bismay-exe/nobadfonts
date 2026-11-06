@@ -38,8 +38,12 @@ type View =
  * snapshot.
  */
 function getExtensionClientId(): string | undefined {
-    const clientId = import.meta.env.VITE_NOBADFONTS_OAUTH_CLIENT_ID as string | undefined;
-    return clientId?.trim() || undefined;
+    const clientId = (
+        (import.meta.env.NOBADFONTS_OAUTH_CLIENT_ID as string | undefined) ||
+        (import.meta.env.VITE_NOBADFONTS_OAUTH_CLIENT_ID as string | undefined)
+    )?.trim();
+
+    return clientId || undefined;
 }
 
 function Shell({ children }: { children: React.ReactNode }) {
@@ -79,7 +83,7 @@ function ErrorView({ message }: { message: string }) {
                 <span>{message}</span>
             </div>
             <a
-                href="/profile"
+                href="/@me"
                 className="flex w-full items-center justify-center rounded-xl border border-border py-3 font-medium transition-colors hover:bg-foreground/5"
             >
                 Return to NoBadFonts
@@ -93,7 +97,7 @@ export default function OAuthConsent() {
     const location = useLocation();
     const navigate = useNavigate();
     const authorizationId = getAuthorizationId(location.search);
-    const consentPath = authorizationId ? getConsentReturnPath(authorizationId) : '/profile';
+    const consentPath = authorizationId ? getConsentReturnPath(authorizationId) : '/@me';
 
     const [view, setView] = useState<View>({ status: 'loading' });
     const [submitting, setSubmitting] = useState(false);

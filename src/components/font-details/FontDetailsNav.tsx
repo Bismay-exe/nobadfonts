@@ -104,7 +104,7 @@ export default function FontDetailsNav({
 
                             {user ? (
                                 <Link
-                                    to="/profile"
+                                    to="/@me"
                                     onClick={async () => {
                                         await Haptics.impact({ style: ImpactStyle.Light });
                                     }}

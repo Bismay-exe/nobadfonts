@@ -5,13 +5,13 @@ export default function PrivacyPolicy() {
         <LegalLayout
             title="Privacy Policy"
             description="NoBadFonts does not track you, does not sell your data, and does not want your identity."
-            lastUpdated="13 September 2026"
+            lastUpdated="5 November 2026"
         >
             <div className="space-y-18">
                 <section className="space-y-8">
                     <h2>The short version</h2>
                     <p>
-                        The platform, mobile app, and CLI companion have no accounts required, no ads, and no tracking or behavioral analytics. When resources you need come via cloud servers and edge networks that hold the fonts, everything listed below explains why, what happens, and what is kept. The short of it: we want nothing. We never sell anything about you.
+                        Browsing, previewing and downloading fonts needs no account, and there are no ads, no tracking and no behavioral analytics. Accounts are optional, for the features that need one. When resources you need come via cloud servers and edge networks that hold the fonts, everything listed below explains why, what happens, and what is kept. The short of it: we want nothing. We never sell anything about you.
                     </p>
                 </section>
 
@@ -63,6 +63,30 @@ export default function PrivacyPolicy() {
                     </p>
                     <p>
                         Submitting a report opens a pre-filled email in your own default mail app addressed to support, with the diagnostic summary in the body. The app sends nothing automatically in the background. You can see, inspect, and edit the entire email before you choose to tap Send. If your device cannot launch an email client, the app copies the diagnostic summary to your clipboard so you can paste it wherever you like. Emails sent to support include your IP address and standard email headers handled by your mail provider. We keep what you send only for as long as it takes to investigate and resolve the issue.
+                    </p>
+                </section>
+
+                <section className="space-y-8">
+                    <h2>The browser extension</h2>
+                    <p>
+                        <strong>No account needed to use it.</strong>{' '}
+                        The extension changes fonts and CSS locally. Styles, profiles, settings and history are stored in your browser, and no browsing history, page contents or list of the sites you style is sent to us.
+                    </p>
+                    <p>
+                        <strong>Optional account sign-in.</strong>{' '}
+                        You can sign in to a NoBadFonts account to identify yourself to features that need one. You only ever type your password on this website; the extension opens it in the browser's sign-in window and never sees your password. The extension is a public OAuth client with no secret. Sign-in requests the <code>openid</code>, <code>profile</code> and <code>email</code> scopes, so we receive your account id, email address and display name.
+                    </p>
+                    <p>
+                        <strong>Tokens stay in the extension.</strong>{' '}
+                        The access token, refresh token, expiry, granted scope and the account claims above are kept in the extension's own background IndexedDB. They are not placed in <code>chrome.storage.local</code>, which content scripts can read, and popup and options pages only ask the background for account state — they never receive a token.
+                    </p>
+                    <p>
+                        <strong>Retention and revocation.</strong>{' '}
+                        Tokens stay until you sign out in the extension or revoke the extension's access on the website's <a href="/settings/connected-apps">Connected apps</a> page. Signing out of the extension clears this browser's session and nothing else; revoking on the site ends the grant everywhere. Revocation takes effect at the next token refresh: an access token already issued can remain valid until it expires, which is up to one hour. A revoked or expired refresh token is discarded, and no new one is accepted.
+                    </p>
+                    <p>
+                        <strong>Reports you send.</strong>{' '}
+                        The extension's report action opens the public extension repository's issue page. Nothing is sent in the background; you can review and edit anything before you submit it.
                     </p>
                 </section>
 

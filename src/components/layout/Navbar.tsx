@@ -246,7 +246,7 @@ export default function Navbar() {
                 name: "Moods",
                 path: "/moods",
                 icon: BookOpen,
-                status: undefined,
+                status: "soon",
                 svg: (
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 64 64">
                         <path fill="currentColor" d="M31.096 62h-4.891s5.02-18.473 5.213-30.574c.014-.838 1.164-.838 1.164 0C32.582 48.862 31.096 62 31.096 62m26.889-40.164c-9.24-6.425-22.98 7.2-24.522 9.138c.873 1.571 6.095 21.527 16.962 20.817c10.104-.658 8.646-12.536 4.267-14.841c5.278.041 11.593-9.343 3.293-15.114" />
@@ -306,7 +306,7 @@ export default function Navbar() {
     const otherLinks: NavLinkItem[] = [
         {
             name: "Favourites",
-            path: "/favourites",
+            path: "/@me/favourites",
             icon: Star,
             disabled: true,
             status: undefined,
@@ -319,7 +319,7 @@ export default function Navbar() {
         },
         {
             name: "Boards",
-            path: profile?.username ? `/${profile.username}` : user ? "/profile" : "/auth",
+            path: user ? "/@me/boards" : "/auth",
             icon: LayoutDashboard,
             disabled: false,
             status: undefined,
@@ -710,7 +710,7 @@ export default function Navbar() {
                                         </>
                                     )}
                                     <Link
-                                        to="/profile"
+                                        to="/@me"
                                         onClick={async () => {
                                             await Haptics.impact({ style: ImpactStyle.Light });
                                         }}
@@ -991,7 +991,7 @@ export default function Navbar() {
                                 <div className="border-t border-border/50 pt-2">
                                     {user ? (
                                         <Link
-                                            to="/profile"
+                                            to="/@me"
                                             onClick={async () => {
                                                 await Haptics.impact({
                                                     style: ImpactStyle.Light,
@@ -1298,7 +1298,7 @@ export default function Navbar() {
                                             <>
                                                 {/* Profile */}
                                                 <Link
-                                                    to="/profile"
+                                                    to="/@me"
                                                     onClick={async () => {
                                                         await Haptics.impact({
                                                             style: ImpactStyle.Light,

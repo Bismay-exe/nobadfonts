@@ -22,6 +22,7 @@ const Bag = React.lazy(() => import('./pages/Bag'));
 const FontDetails = React.lazy(() => import('./pages/FontDetails'));
 const Auth = React.lazy(() => import('./pages/Auth'));
 const Profile = React.lazy(() => import('./pages/Profile'));
+const UserProfile = React.lazy(() => import('./pages/UserProfile'));
 const Upload = React.lazy(() => import('./pages/Upload'));
 const Members = React.lazy(() => import('./pages/Members'));
 const MemberDetails = React.lazy(() => import('./pages/MemberDetails'));
@@ -47,6 +48,7 @@ const FontPlayground = React.lazy(() => import('./pages/FontPlayground'));
 const TypeSwap = React.lazy(() => import('./pages/TypeSwap'));
 const OAuthConsent = React.lazy(() => import('./pages/OAuthConsent'));
 const ConnectedApps = React.lazy(() => import('./pages/ConnectedApps'));
+const Support = React.lazy(() => import('./pages/Support'));
 import CookieConsent from './components/layout/CookieConsent';
 import { useAuth } from './contexts/AuthContext';
 
@@ -153,7 +155,10 @@ function AppContent() {
                     <Route path="fonts" element={<FontsCatalog />} />
                     <Route path="pairing" element={<FontPairing />} />
                     <Route path="upload" element={<Upload />} />
-                    <Route path="profile" element={<Profile />} />
+                    {/* Own profile routes */}
+                    <Route path="@me" element={<Profile />} />
+                    <Route path="@me/boards" element={<UserBoards />} />
+                    <Route path="@me/board/:boardSlug" element={<BoardDetail />} />
                     <Route path="settings/connected-apps" element={<ConnectedApps />} />
                     <Route path="members" element={<Members />} />
                     <Route path="members/:id" element={<MemberDetails />} />
@@ -164,6 +169,7 @@ function AppContent() {
                     <Route path="legal/privacy" element={<PrivacyPolicy />} />
                     <Route path="legal/dmca" element={<DmcaPolicy />} />
                     <Route path="legal/cookies" element={<CookiePolicy />} />
+                    <Route path="support" element={<Support />} />
                     <Route path="bag" element={<Bag />} />
                     {/* Moods / Worlds */}
                     <Route path="moods" element={<Moods />} />
@@ -171,9 +177,10 @@ function AppContent() {
                     {/* Font tools */}
                     <Route path="playground" element={<FontPlayground />} />
                     <Route path="type-swap" element={<TypeSwap />} />
-                    {/* User boards routes — must be after all known paths */}
-                    <Route path=":username" element={<UserBoards />} />
-                    <Route path=":username/:boardSlug" element={<BoardDetail />} />
+                    {/* Other user's profile & boards */}
+                    <Route path=":username" element={<UserProfile />} />
+                    <Route path=":username/boards" element={<UserBoards />} />
+                    <Route path=":username/board/:boardSlug" element={<BoardDetail />} />
                     <Route path="*" element={<NotFound />} />
                   </Route>
                 </Routes>

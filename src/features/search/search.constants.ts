@@ -42,7 +42,7 @@ export const SEARCH_CATEGORIES = [
 export const COMMAND_ROUTES = [
   { id: 'browse-fonts', label: 'Browse Fonts', icon: 'Type', route: '/fonts', description: 'Explore the font catalog' },
   { id: 'font-pairing', label: 'Font Pairing', icon: 'Layers2', route: '/pairing', description: 'Find complementary font pairs' },
-  { id: 'profile', label: 'My Profile', icon: 'User', route: '/profile', description: 'View your profile' },
+  { id: 'profile', label: 'My Profile', icon: 'User', route: '/@me', description: 'View your profile' },
   { id: 'bag', label: 'My Bag', icon: 'ShoppingBag', route: '/bag', description: 'Fonts saved in your bag' },
   { id: 'moods', label: 'Explore Moods', icon: 'Palette', route: '/moods', description: 'Browse fonts by mood & vibe' },
   { id: 'playground', label: 'Playground', icon: 'Sliders', route: '/playground', description: 'Test fonts interactively' },

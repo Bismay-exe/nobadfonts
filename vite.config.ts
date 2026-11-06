@@ -24,6 +24,9 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  // Expose NoBadFonts build settings to the client alongside Vite's own VITE_
+  // variables. These values are public; secrets stay in server-only variables.
+  envPrefix: ['VITE_', 'NOBADFONTS_'],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),

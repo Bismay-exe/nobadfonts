@@ -42,7 +42,7 @@ export default function BoardCard({ board, username }: BoardCardProps) {
 
   return (
     <Link
-      to={`/${username}/${board.slug}`}
+      to={`/@${username}/board/${board.slug}`}
       className="@container group relative flex flex-col justify-between p-6 bg-foreground/5 rounded-3xl overflow-hidden hover:border-foreground/18 hover:shadow-lg transition-all duration-500 aspect-video"
     >
       <div className="z-10 relative w-full flex flex-col justify-center items-center">

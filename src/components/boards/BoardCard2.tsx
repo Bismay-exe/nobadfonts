@@ -67,7 +67,7 @@ export default function BoardCard2({
 
     return (
         <Link
-            to={`/${username}/${board.slug}`}
+            to={`/@${username}/board/${board.slug}`}
             className="group flex flex-col gap-3 w-full cursor-pointer relative"
             onClick={(e) => {
                 if (selectionMode) {

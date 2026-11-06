@@ -148,7 +148,12 @@ export default memo(function ProfileHeading({ onEditClick, isEditing, fontsLiked
                 {/* Stats */}
                 <div className="flex flex-wrap items-center justify-center gap-x-7 gap-y-2 mt-4 font-light text-foreground/92">
                     <span className="text-sm sm:text-base">{formatCount(fontsLiked)} Fonts Liked</span>
-                    <span className="text-sm sm:text-base">{formatCount(boardsCount)} Boards</span>
+                    <Link
+                        to="/@me/boards"
+                        className="text-sm sm:text-base hover:text-foreground transition-colors hover:underline cursor-pointer"
+                    >
+                        {formatCount(boardsCount)} Boards
+                    </Link>
                     <span className="text-sm sm:text-base">{formatCount(savedBoardsCount)} Saved Boards</span>
                 </div>
 

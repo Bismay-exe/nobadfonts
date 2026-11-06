@@ -54,7 +54,7 @@ export default function Auth() {
             } else if (needsOnboarding) {
                 navigate('/onboarding', { replace: true });
             } else {
-                navigate('/profile', { replace: true });
+                navigate('/@me', { replace: true });
             }
         }
     }, [user, authLoading, needsOnboarding, navigate, returnPath]);
@@ -84,7 +84,7 @@ export default function Auth() {
                     password,
                 });
                 if (error) throw error;
-                navigate(returnPath ?? '/profile');
+                navigate(returnPath ?? '/@me');
             } else {
                 const { data, error } = await supabase.auth.signUp({
                     email,

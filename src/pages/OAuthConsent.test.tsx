@@ -66,7 +66,7 @@ const replace = vi.fn();
 const originalLocation = window.location;
 
 beforeEach(() => {
-    vi.stubEnv('VITE_NOBADFONTS_OAUTH_CLIENT_ID', CLIENT_ID);
+    vi.stubEnv('NOBADFONTS_OAUTH_CLIENT_ID', CLIENT_ID);
     Object.defineProperty(window, 'location', {
         configurable: true,
         value: { replace },

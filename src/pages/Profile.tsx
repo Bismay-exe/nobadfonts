@@ -75,7 +75,7 @@ export default function Profile() {
     return (
         <>
             <div className="relative flex flex-col gap-4">
-                <SEO title="User Profile | NoBadFonts" noindex url="/profile" />
+                <SEO title="User Profile | NoBadFonts" noindex url="/@me" />
 
                 <div className={`fixed left-0 top-0 righ-0 w-full zrounded-t-4xl overflow-hidden ${isEditing ? 'hidden' : 'hidden'}`}>
                     <img src="https://img.magnific.com/free-photo/side-view-asian-model-close-up_23-2148239994.jpg?t=st=1790712645~exp=1790716245~hmac=5c9dfd9224f63db4a7494e92f3ac4441725c3aeaeed577a2064225bda8e8fbe9&w=1480" alt="" className='w-full min-h-[50vh] max- h-screen zh-full object-cover zobject-top' />

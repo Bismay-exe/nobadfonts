@@ -26,6 +26,10 @@ export default function TermsOfService() {
                         If you create an account to curate personal or public font collections, bookmark favorites across devices, or publish your own typefaces, you must provide a valid email address and maintain the confidentiality of your authentication credentials. You are solely responsible for all activities and submissions that occur under your account. If you believe your credentials have been compromised or discover an unauthorized session, you agree to notify us immediately.
                     </p>
                     <p>
+                        <strong>The browser extension.</strong>{' '}
+                        The NoBadFonts browser extension is free to install and use. It is distributed under the MIT License, and its source is public. Styles, profiles, settings and history stay in your browser; signing in to a NoBadFonts account is optional and subject to the account terms above. You are responsible for the CSS and font choices you apply to sites you visit, and for complying with those sites' terms.
+                    </p>
+                    <p>
                         <strong>Developer tools & CLI usage.</strong>{' '}
                         Our command-line companion tool (<code>nobadfonts-cli</code> or <code>nbf</code>) and public API endpoints are provided to streamline local development and design workflows. You are welcome to integrate our tools into your local terminal environments, project starter templates, and CI/CD pipelines, provided that your automated scripts respect HTTP cache headers and do not generate abusive request floods that degrade service availability for other developers.
                     </p>

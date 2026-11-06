@@ -62,7 +62,9 @@ const MasonryCard = ({ data, width }: { data: any; width: number }) => {
 };
 
 export default function BoardDetail() {
-  const { username, boardSlug } = useParams<{ username: string; boardSlug: string }>();
+  const { username: rawUsername, boardSlug } = useParams<{ username: string; boardSlug: string }>();
+const username = rawUsername?.replace(/^@/, '');
+
   const { user } = useAuth();
   const [board, setBoard] = useState<Board | null>(null);
   const [owner, setOwner] = useState<BoardOwner | null>(null);
@@ -125,7 +127,7 @@ export default function BoardDetail() {
     if (!board) return;
     const link = board.visibility === 'private'
       ? `${window.location.origin}/board-share/${board.share_token}`
-      : `${window.location.origin}/${username}/${boardSlug}`;
+      : `${window.location.origin}/@${username}/board/${boardSlug}`;
     navigator.clipboard.writeText(link);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -279,7 +281,7 @@ export default function BoardDetail() {
         {/* <div className='h-px w-full bg-linear-to-r from-transparent via-foreground/8 to-transparent absolute bottom-0 left-0 right-0' /> */}
         <div className="max-w-6xl mx-auto px-4 py-8">
           <div className="flex items-center gap-2 text-sm text-muted mb-5">
-            <Link to={`/${username}`} className="hover:text-foreground transition-colors flex items-center gap-1.5">
+            <Link to={`/@${username}`} className="hover:text-foreground transition-colors flex items-center gap-1.5">
               {owner.avatar_url ? (
                 <img src={owner.avatar_url} alt={owner.full_name} className="w-5 h-5 rounded-full object-cover" />
               ) : (
@@ -456,7 +458,7 @@ export default function BoardDetail() {
             return success;
           }}
           onDelete={deleteBoard}
-          onDeleted={() => navigate(`/${username}`)}
+          onDeleted={() => navigate(`/@${username}`)}
         />
       )}
 

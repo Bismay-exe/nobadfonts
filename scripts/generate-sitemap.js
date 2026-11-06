@@ -39,6 +39,7 @@ async function generateSitemap() {
         { path: '/legal/privacy', priority: '0.5', changefreq: 'yearly' },
         { path: '/legal/dmca', priority: '0.5', changefreq: 'yearly' },
         { path: '/legal/cookies', priority: '0.5', changefreq: 'yearly' },
+        { path: '/support', priority: '0.4', changefreq: 'yearly' },
         // Popular Category Landing Paths
         { path: '/fonts?categories=sans', priority: '0.8', changefreq: 'daily' },
         { path: '/fonts?categories=serif', priority: '0.8', changefreq: 'daily' },

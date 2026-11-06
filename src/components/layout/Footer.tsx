@@ -49,6 +49,7 @@ const Footer: React.FC = memo(() => {
                         <Link to="/about" className={linkClass}>About</Link>
                         <Link to="/legal/terms" className={linkClass}>Terms of Service</Link>
                         <Link to="/legal/privacy" className={linkClass}>Privacy Policy</Link>
+                        <Link to="/support" className={linkClass}>Support</Link>
                         <Link to="/legal/cookies" className={linkClass}>Cookie Policy</Link>
                         <Link to="/legal/dmca" className={linkClass}>DMCA / Takedown</Link>
                     </nav>
