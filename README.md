@@ -1,6 +1,6 @@
 <div align="center">
 
-![Banner](https://www.nobadfonts.in/banner/banner.png)
+![Banner](https://www.nobadfonts.in/banner/banner.webp)
 
 ### *"Because Comic Sans deserves to stay in 2003."*
 

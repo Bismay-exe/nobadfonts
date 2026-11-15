@@ -212,7 +212,7 @@ export default memo(function ProfileHeading({ onEditClick, isEditing, fontsLiked
 
                     {/* Socials */}
                     {socials.length > 0 && (
-                        <div className="flex flex-col justify-center gap-1 mt-6">
+                        <div className="flex flex-col items-center justify-center gap-1 mt-6">
                             <div className="flex items-center rounded-full bg-card-background border border-border/50 p-1">
                                 <div className="flex -space-x-2">
                                     {socials.map((social) => (

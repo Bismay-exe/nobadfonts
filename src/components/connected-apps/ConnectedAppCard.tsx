@@ -49,9 +49,9 @@ export default function ConnectedAppCard({ app, onRevoke }: Props) {
         <li className="flex flex-col gap-4 rounded-4xl border border-border bg-card-background p-6">
             <div className="flex items-start justify-between gap-4">
                 <div className="flex items-center gap-4">
-                    <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-border bg-foreground/5">
+                    <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl overflow-hidden border border-border bg-foreground/5">
                         {app.client.logo_uri ? (
-                            <img src={app.client.logo_uri} alt="" className="h-8 w-8 object-contain" />
+                            <img src={app.client.logo_uri} alt="" className="h-full w-full object-contain" />
                         ) : (
                             <Puzzle size={20} strokeWidth={1.6} />
                         )}
@@ -63,7 +63,7 @@ export default function ConnectedAppCard({ app, onRevoke }: Props) {
                         </p>
                     </div>
                 </div>
-                <span className="rounded-full border border-border px-3 py-1 font-space-mono text-[11px] uppercase tracking-wider text-muted">
+                <span className="rounded-full bg-border background border border-border px-3 py-1 font-space-mono text-[11px] uppercase tracking-wider text-muted">
                     Active
                 </span>
             </div>
@@ -108,7 +108,7 @@ export default function ConnectedAppCard({ app, onRevoke }: Props) {
                 <button
                     type="button"
                     onClick={() => setConfirming(true)}
-                    className="inline-flex w-fit items-center gap-2 rounded-xl border border-border px-4 py-2 text-sm font-medium transition-colors hover:bg-foreground/5"
+                    className="inline-flex w-fit items-center gap-2 rounded-xl border border-border px-4 py-2 text-sm font-medium transition-colors hover:bg-border duration-300 ease-in-out"
                 >
                     <ShieldOff size={15} strokeWidth={1.8} />
                     Disconnect

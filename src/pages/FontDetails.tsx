@@ -414,7 +414,7 @@ export default function FontDetails() {
                 url: 'https://nobadfonts.in'
             },
             license: font.license_type || 'SIL Open Font License (OFL 1.1)',
-            image: font.preview_image_url || 'https://nobadfonts.in/banner/banner.png',
+            image: font.preview_image_url || 'https://nobadfonts.in/banner/og.png',
             genre: font.category || 'Typography',
             keywords: font.tags?.join(', ') || 'free fonts, typography, webfonts',
             fileFormat: ['font/woff2', 'font/ttf', 'font/otf'],
@@ -431,7 +431,7 @@ export default function FontDetails() {
     const ogImage =
         font.og_image_url ||
         (font.gallery_images && font.gallery_images.length > 0 ? font.gallery_images[0] : null) ||
-        'https://nobadfonts.in/banner/banner.png';
+        'https://nobadfonts.in/banner/og.png';
 
     return (
         <div className="min-h-screen bg-background text-foreground relative selection:bg-accent selection:text-background">

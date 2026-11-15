@@ -32,18 +32,15 @@ interface SocialItem {
 export default function UserProfile() {
   const { username: rawUsername } = useParams<{ username: string }>();
   const username = rawUsername?.replace(/^@/, '');
-  
-  const { user, profile } = useAuth();
 
-  // If the logged-in user visits their own dynamic profile URL, redirect to /@me
-  if (user && profile?.username && username && profile.username.toLowerCase() === username.toLowerCase()) {
-    return <Navigate to="/@me" replace />;
-  }
+  const { user, profile } = useAuth();
 
   const [userProfile, setUserProfile] = useState<OtherUserProfile | null>(null);
   const [boards, setBoards] = useState<Board[]>([]);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+
+  const isSelf = Boolean(user && profile?.username && username && profile.username.toLowerCase() === username.toLowerCase());
 
   useEffect(() => {
     if (!username) return;
@@ -82,13 +79,16 @@ export default function UserProfile() {
           .order('created_at', { ascending: false });
 
         if (!boardsError && boardsData && isMounted) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const formattedBoards = boardsData.map((b: any) => ({
             ...b,
             preview_fonts: b.board_fonts
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               ?.map((bf: any) => {
                 const font = bf.fonts;
                 if (!font) return null;
                 const variants = font.font_variants || [];
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const regular = variants.find((v: any) => v.variant_name === 'Regular') || variants[0];
                 return {
                   id: font.id,
@@ -119,6 +119,11 @@ export default function UserProfile() {
       isMounted = false;
     };
   }, [username]);
+
+  // If the logged-in user visits their own dynamic profile URL, redirect to /@me
+  if (isSelf) {
+    return <Navigate to="/@me" replace />;
+  }
 
   if (loading) {
     return (
@@ -219,8 +224,8 @@ export default function UserProfile() {
       />
 
       {/* Profile Header */}
-      <div className="relative border-b border-foreground/8">
-        <div className="max-w-5xl mx-auto px-4 py-12 flex flex-col items-center text-center">
+      <div className="@container relative z-10 w-full min-h-screen flex flex-col items-center justify-end px-6 -mt-24 pb-10 md:pb-18 sm:px-10 lg:px-16">
+        
           {/* Avatar */}
           <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-full p-1 border-2 border-foreground/10 bg-card-background overflow-hidden shrink-0 shadow-sm">
             {userProfile.avatar_url ? (
@@ -318,7 +323,7 @@ export default function UserProfile() {
               <ArrowRight size={14} />
             </Link>
           </div>
-        </div>
+        
       </div>
 
       {/* Public Boards Preview Grid */}
