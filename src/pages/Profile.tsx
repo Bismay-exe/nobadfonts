@@ -95,9 +95,9 @@ export default function Profile() {
                 <div>
                     {/* Membership Status Section */}
                     {!isEditing && profile?.role === 'user' && (
-                        <div className="bg-foreground/10 border border-foreground/10 rounded-4xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
+                        <div className="hidden md:flex z-999 absolute bottom-10 right-6 bg-card-background border border-border rounded-4xl p-6 flex-col md:flex-col w-80 items-center justify-between gap-4">
                             <div>
-                                <h3 className="text-xl font-black uppercase">Become a Contributor</h3>
+                                <h3 className="text-xl font-black uppercase pb-4">Want to become a Contributor ?</h3>
                                 <p className="text-muted font-medium">
                                     {profile.membership_status === 'pending'
                                         ? "Your request is under review by our admins."
@@ -109,7 +109,7 @@ export default function Profile() {
                             </div>
 
                             {profile.membership_status === 'pending' ? (
-                                <div className="px-6 py-3 bg-muted text-muted font-bold rounded-xl border-2 border-border uppercase tracking-wide">
+                                <div className="px-6 py-3 w-full bg-muted text-center text-background font-black uppercase rounded-xl border-2 border-background cursor-not-allowed">
                                     Request Pending
                                 </div>
                             ) : (
@@ -120,7 +120,7 @@ export default function Profile() {
                                         handleRequestAccess();
                                     }}
                                     disabled={requestLoading}
-                                    className="px-6 py-3 bg-accent hover:opacity-80 text-background font-black uppercase rounded-xl border-2 border-background transition-all hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(var(--color-background),1)] disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="px-6 py-3 w-full bg-accent hover:opacity-80 text-center text-background font-black uppercase rounded-xl border-2 border-background transition-all hover:-opacity-90 hover:shadow-[4px_4px_0px_0px_rgba(var(--color-background),1)] disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     {requestLoading ? 'Requesting...' : (profile.membership_status === 'rejected' ? 'Request Again' : 'Request Access')}
                                 </motion.button>
