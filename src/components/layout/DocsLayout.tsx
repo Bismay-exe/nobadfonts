@@ -81,11 +81,11 @@ export const DocsLayout: React.FC = () => {
 
       {/* Main 3-column layout container */}
       {/* We use padding-top to clear the fixed Navbar (~56px on mobile, ~72px on desktop) */}
-      <div className="flex flex-1 max-w-400 w-full mx-auto" style={{ paddingTop: '72px' }}>
+      <div className="flex flex-1 max-w-480 w-full mx-auto" style={{ paddingTop: '72px' }}>
 
         {/* Desktop Left Sidebar */}
         <aside
-          className="hidden md:flex flex-col w-64 shrink-0 sticky h-[calc(100vh-72px)] overflow-y-auto border-r"
+          className="hidden md:flex flex-col w-64 shrink-0 sticky h-[calc(100vh-72px)] overflow-y-auto zborder-r"
           style={{
             top: '72px',
             borderColor: 'var(--color-border)',
@@ -130,7 +130,7 @@ export const DocsLayout: React.FC = () => {
 
         {/* Right column: Table of Contents */}
         <aside
-          className="hidden lg:flex flex-col w-56 xl:w-64 shrink-0 sticky h-[calc(100vh-72px)] overflow-y-auto py-8 px-5 border-l"
+          className="hidden lg:flex flex-col w-56 xl:w-64 shrink-0 sticky h-[calc(100vh-72px)] overflow-y-auto py-8 px-5 zborder-l"
           style={{
             top: '72px',
             borderColor: 'var(--color-border)',

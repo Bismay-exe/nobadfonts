@@ -46,7 +46,8 @@ const Footer: React.FC = memo(() => {
 
                     <nav aria-label="Policies" className="flex flex-col items-start gap-y-3">
                         <h2 className={headingClass}>Policies</h2>
-                        <Link to="/about" className={linkClass}>About</Link>
+                        {/* <Link to="/about" className={linkClass}>About</Link> */}
+                        <Link to="/changelog" className={linkClass}>Changelog</Link>
                         <Link to="/legal/terms" className={linkClass}>Terms of Service</Link>
                         <Link to="/legal/privacy" className={linkClass}>Privacy Policy</Link>
                         <Link to="/support" className={linkClass}>Support</Link>

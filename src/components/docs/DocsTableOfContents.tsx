@@ -107,7 +107,7 @@ export const DocsTableOfContents: React.FC = () => {
                 onClick={(e) => handleClick(e, h.id)}
                 className="block py-1 transition-all leading-snug truncate"
                 style={{
-                  paddingLeft: h.level === 3 ? '12px' : '0',
+                  paddingLeft: h.level === 3 || isActive ? '13px' : '0',
                   fontSize: h.level === 3 ? '11px' : '13px',
                   color: isActive ? 'var(--color-foreground)' : 'var(--color-muted)',
                   fontWeight: isActive ? '600' : '400',

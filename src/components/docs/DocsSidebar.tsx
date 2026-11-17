@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { Search, BookOpen, Terminal, Sparkles, Compass, Layers } from 'lucide-react';
+import { BookOpen, Terminal, Sparkles, Compass, Layers } from 'lucide-react';
 import { DOCS_NAVIGATION } from '../../config/docsNav';
 
 interface DocsSidebarProps {
@@ -16,42 +16,12 @@ const CATEGORY_ICONS: Record<string, React.ElementType> = {
   'Community & Open Source': Layers,
 };
 
-export const DocsSidebar: React.FC<DocsSidebarProps> = ({ onItemClick, onOpenSearch }) => {
+export const DocsSidebar: React.FC<DocsSidebarProps> = ({ onItemClick }) => {
   const location = useLocation();
   const currentPath = location.pathname.replace(/^\/docs\/?/, '').replace(/\/$/, '') || 'introduction';
 
   return (
-    <aside className="w-full flex flex-col h-full font-inter-tight">
-      {/* Search Trigger */}
-      <div
-        className="px-4 py-3 border-b"
-        style={{ borderColor: 'var(--color-border)' }}
-      >
-        <button
-          type="button"
-          onClick={onOpenSearch}
-          className="w-full flex items-center justify-between px-3 py-2 text-xs rounded-xl border transition-all"
-          style={{
-            color: 'var(--color-muted)',
-            backgroundColor: 'var(--color-card-background)',
-            borderColor: 'var(--color-border)',
-          }}
-        >
-          <span className="flex items-center gap-2">
-            <Search className="w-3.5 h-3.5" style={{ color: 'var(--color-muted)' }} />
-            <span>Search docs...</span>
-          </span>
-          <kbd
-            className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-mono rounded"
-            style={{
-              backgroundColor: 'var(--color-muted)',
-              color: 'var(--color-muted)',
-            }}
-          >
-            <span>⌘</span>K
-          </kbd>
-        </button>
-      </div>
+    <aside className="w-full flex flex-col h-full font-inter-tight my-6">
 
       {/* Navigation Groups */}
       <nav className="flex-1 overflow-y-auto px-4 py-4 space-y-6 text-sm">
@@ -80,7 +50,7 @@ export const DocsSidebar: React.FC<DocsSidebarProps> = ({ onItemClick, onOpenSea
                       key={item.slug}
                       to={toPath}
                       onClick={onItemClick}
-                      className="group flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-all"
+                      className="group flex items-center justify-between ml-4 px-3 py-2 rounded-lg text-xs font-medium transition-all"
                       style={{
                         backgroundColor: isActive ? 'color-mix(in srgb, var(--color-foreground) 8%, transparent)' : 'transparent',
                         color: isActive ? 'var(--color-foreground)' : 'var(--color-muted)',
@@ -102,11 +72,7 @@ export const DocsSidebar: React.FC<DocsSidebarProps> = ({ onItemClick, onOpenSea
                       <span className="truncate">{item.title}</span>
                       {item.badge && (
                         <span
-                          className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded"
-                          style={{
-                            backgroundColor: isActive ? 'color-mix(in srgb, var(--color-foreground) 15%, transparent)' : 'var(--color-muted)',
-                            color: isActive ? 'var(--color-foreground)' : 'var(--color-muted)',
-                          }}
+                          className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded bg-border"
                         >
                           {item.badge}
                         </span>

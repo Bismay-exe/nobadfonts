@@ -129,12 +129,6 @@
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://nobadfonts.in/fonts/skybold</loc>
-        <lastmod>2026-10-24T09:56:42.844Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.9</priority>
-    </url>
-    <url>
         <loc>https://nobadfonts.in/fonts/lucky-saint</loc>
         <lastmod>2026-10-29T08:34:11.722Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -263,6 +257,12 @@
     <url>
         <loc>https://nobadfonts.in/fonts/laora</loc>
         <lastmod>2026-10-24T09:40:51.889Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://nobadfonts.in/fonts/skybold</loc>
+        <lastmod>2026-10-24T09:56:42.844Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
@@ -525,14 +525,14 @@
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://nobadfonts.in/fonts/dx-sligh</loc>
-        <lastmod>2026-10-24T09:55:42.285Z</lastmod>
+        <loc>https://nobadfonts.in/fonts/aalto</loc>
+        <lastmod>2026-10-06T19:33:44.104Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://nobadfonts.in/fonts/aalto</loc>
-        <lastmod>2026-10-06T19:33:44.104Z</lastmod>
+        <loc>https://nobadfonts.in/fonts/dx-sligh</loc>
+        <lastmod>2026-10-24T09:55:42.285Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
@@ -973,11 +973,6 @@
         <priority>0.7</priority>
     </url>
     <url>
-        <loc>https://nobadfonts.in/designers/limitype</loc>
-        <changefreq>weekly</changefreq>
-        <priority>0.7</priority>
-    </url>
-    <url>
         <loc>https://nobadfonts.in/designers/Bangkit%20Tri%20Setiadi</loc>
         <changefreq>weekly</changefreq>
         <priority>0.7</priority>
@@ -1074,6 +1069,11 @@
     </url>
     <url>
         <loc>https://nobadfonts.in/designers/Aqeel%20Art%20Studio</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://nobadfonts.in/designers/limitype</loc>
         <changefreq>weekly</changefreq>
         <priority>0.7</priority>
     </url>

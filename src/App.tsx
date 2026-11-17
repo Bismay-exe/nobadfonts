@@ -49,6 +49,8 @@ const TypeSwap = React.lazy(() => import('./pages/TypeSwap'));
 const OAuthConsent = React.lazy(() => import('./pages/OAuthConsent'));
 const ConnectedApps = React.lazy(() => import('./pages/ConnectedApps'));
 const Support = React.lazy(() => import('./pages/Support'));
+const Changelog = React.lazy(() => import('./pages/Changelog'));
+const About = React.lazy(() => import('./pages/About'));
 import CookieConsent from './components/layout/CookieConsent';
 import { useAuth } from './contexts/AuthContext';
 
@@ -170,6 +172,8 @@ function AppContent() {
                     <Route path="legal/dmca" element={<DmcaPolicy />} />
                     <Route path="legal/cookies" element={<CookiePolicy />} />
                     <Route path="support" element={<Support />} />
+                    <Route path="changelog" element={<Changelog />} />
+                    <Route path="about" element={<About />} />
                     <Route path="bag" element={<Bag />} />
                     {/* Moods / Worlds */}
                     <Route path="moods" element={<Moods />} />

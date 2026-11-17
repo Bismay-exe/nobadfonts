@@ -6,7 +6,7 @@ import Footer from './Footer';
 
 const Layout = memo(function Layout() {
     return (
-        <div className="app-container flex flex-col min-h-screen bg-background text-foreground antialiased selection:bg-foreground selection:text-background overflow-x-hidden">
+        <div className="app-container flex flex-col min-h-screen bg-background text-foreground antialiased selection:bg-foreground selection:text-background zoverflow-x-hidden">
 
             {/* Progressive Blur Effects */}
             {/* <ProgressiveBlur position="top" height="150px" zIndex={45} />
