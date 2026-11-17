@@ -1,3 +1,4 @@
+import { useState, useEffect, useCallback } from 'react';
 import SEO from '../components/shared/SEO';
 
 interface ChangelogSection {
@@ -412,7 +413,7 @@ const CHANGELOG: ChangelogEntry[] = [
     date: 'September 19',
     year: '2026',
     title: 'Catalogue & Interface Redesign',
-    image: '/changelogs/sep26/catalog2.webp',
+    image: '/changelogs/sep26/catalog3.webp',
     description:
       'A broad visual and interaction refinement across the font catalogue, filters, navigation, and application layout.',
     sections: [
@@ -619,6 +620,21 @@ const CHANGELOG: ChangelogEntry[] = [
 ];
 
 export default function Changelog() {
+  const [lightbox, setLightbox] = useState<string | null>(null);
+
+  const close = useCallback(() => setLightbox(null), []);
+
+  useEffect(() => {
+    if (!lightbox) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') close(); };
+    window.addEventListener('keydown', onKey);
+    document.body.style.overflow = 'hidden';
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      document.body.style.overflow = '';
+    };
+  }, [lightbox, close]);
+
   return (
     <>
       <SEO title="Changelog — NoBadFonts" description="A full history of NoBadFonts updates, new features, improvements, and fixes." url="/changelog" />
@@ -669,7 +685,13 @@ export default function Changelog() {
 
                 {entry.image && (
                   <figure className="mt-10 overflow-hidden rounded-xl sm:rounded-2xl md:rounded-2xl xl:rounded-3xl border border-foreground/10 shadow-[0_0_1000px_0] shadow-border">
-                    <img src={entry.image} alt={`${entry.title} preview`} className="block w-full h-auto" loading="lazy" />
+                    <img
+                      src={entry.image}
+                      alt={`${entry.title} preview`}
+                      className="block w-full h-auto cursor-zoom-in"
+                      loading="lazy"
+                      onClick={() => setLightbox(entry.image!)}
+                    />
                   </figure>
                 )}
 
@@ -695,6 +717,33 @@ export default function Changelog() {
           ))}
         </div>
       </main>
+
+      {/* Lightbox */}
+      {lightbox && (
+        <div
+          className="fixed inset-0 z-9999 flex items-center justify-center bg-border/50 backdrop-blur-md"
+          onClick={close}
+        >
+          {/* Close button */}
+          <button
+            onClick={close}
+            className="absolute top-4 right-4 text-foreground hover:-rotate-90 transition-transform duration-300 ease-in-out p-2"
+            aria-label="Close"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+
+          {/* Image — stop propagation so clicking the image itself doesn't close */}
+          <img
+            src={lightbox}
+            alt="Full size preview"
+            className="max-w-[92vw] max-h-[90vh] w-auto h-auto rounded-xl object-contain shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
     </>
   );
 }
