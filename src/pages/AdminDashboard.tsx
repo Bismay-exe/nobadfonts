@@ -12,6 +12,7 @@ import { useAnalytics } from '../hooks/useAnalytics';
 import AnalyticsSection from '../components/admin/AnalyticsSection';
 import FontResearchPanel from '../components/admin/FontResearchPanel';
 import GitHubDiscoveryTab from '../components/admin/github/GitHubDiscoveryTab';
+import ProcessingQueueTab from '../components/admin/ProcessingQueueTab';
 import SEO from '../components/shared/SEO';
 
 type FontResearchRow = Database['public']['Tables']['font_research']['Row'];
@@ -23,7 +24,8 @@ type FontRow = Database['public']['Tables']['fonts']['Row'];
 
 export default function AdminDashboard() {
     const { user, profile, loading: authLoading } = useAuth();
-    const [activeTab, setActiveTab] = useState<'requests' | 'users' | 'files' | 'curation' | 'analytics' | 'research' | 'github'>('requests');
+    const [activeTab, setActiveTab] = useState<'requests' | 'users' | 'files' | 'curation' | 'analytics' | 'research' | 'github' | 'queue'>('requests');
+    const [pendingQueueCount, setPendingQueueCount] = useState<number>(0);
 
     // State for Requests
     const [pendingRequests, setPendingRequests] = useState<Profile[]>([]);
@@ -58,8 +60,25 @@ export default function AdminDashboard() {
 
     const [loading, setLoading] = useState(true);
 
+    const fetchPendingQueueCount = useCallback(async () => {
+        try {
+            const { count, error } = await supabase
+                .from('font_processing_queue')
+                .select('*', { count: 'exact', head: true })
+                .in('status', ['pending', 'processing']);
+
+            if (!error && count !== null) {
+                setPendingQueueCount(count);
+            }
+        } catch (err) {
+            console.error('Error fetching pending queue count:', err);
+        }
+    }, []);
+
     useEffect(() => {
         if (profile?.role !== 'admin') return;
+
+        fetchPendingQueueCount();
 
         if (activeTab === 'requests') {
             fetchRequests();
@@ -69,8 +88,10 @@ export default function AdminDashboard() {
             fetchFonts();
         } else if (activeTab === 'research') {
             fetchResearchData();
+        } else if (activeTab === 'queue') {
+            setLoading(false);
         }
-    }, [activeTab, profile]);
+    }, [activeTab, profile, fetchPendingQueueCount]);
 
     const fetchRequests = useCallback(async () => {
         setLoading(true);
@@ -440,6 +461,22 @@ export default function AdminDashboard() {
                             }`}
                     >
                         GitHub Discovery
+                    </motion.button>
+                    <motion.button
+                        whileTap={{ scale: 0.95 }}
+                        onClick={async () => {
+                            await Haptics.impact({ style: ImpactStyle.Light });
+                            setActiveTab('queue');
+                        }}
+                        className={`px-6 py-2 rounded-full font-bold border-2 border-foreground/15 transition-all flex items-center gap-2 ${activeTab === 'queue' ? 'bg-warning text-black shadow-[4px_4px_0px_0px_rgba(var(--color-foreground),1)]' : 'bg-card-background text-foreground hover:border-warning'
+                            }`}
+                    >
+                        <span>Auto-Imports & Queue</span>
+                        {pendingQueueCount > 0 && (
+                            <span className="bg-warning text-black text-xs px-2 py-0.5 rounded-full font-bold">
+                                {pendingQueueCount}
+                            </span>
+                        )}
                     </motion.button>
                 </div>
             </div>
@@ -988,6 +1025,10 @@ export default function AdminDashboard() {
                                 <h2 className="text-2xl font-bold mb-6">GitHub Font Discovery</h2>
                                 <GitHubDiscoveryTab />
                             </div>
+                        )}
+
+                        {activeTab === 'queue' && (
+                            <ProcessingQueueTab onPendingCountChange={setPendingQueueCount} />
                         )}
                     </>
                 )}
