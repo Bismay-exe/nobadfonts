@@ -6,7 +6,7 @@ Usage:
   python scripts/scrape-1001fonts.py https://www.1001fonts.com/diomeca-font.html --output result.json
 
 Outputs a JSON object with:
-  url, name, author, author_url, images (direct avif links), download_zip
+  url, name, designer, author, author_url, images (direct full-size image links), download_zip
 """
 import json
 import re
@@ -30,14 +30,23 @@ HEADERS = {
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
 }
 
-URL_PATTERN = re.compile(r"^https://www\.1001fonts\.com/[a-z0-9\-+]+-font\.html$")
+URL_PATTERN = re.compile(
+    r"^https?://(?:www\.)?1001fonts\.com/([a-zA-Z0-9_-]+-font\.html)(?:[?#].*)?$",
+    re.IGNORECASE,
+)
+
+
+def normalize_1001fonts_url(url: str) -> str:
+    m = URL_PATTERN.match(url.strip())
+    if not m:
+        raise ValueError(f"Not a valid 1001fonts font page URL: {url}")
+    return f"https://www.1001fonts.com/{m.group(1).lower()}"
 
 
 def scrape(url: str) -> dict:
-    if not URL_PATTERN.match(url):
-        raise ValueError(f"Not a valid 1001fonts font page URL: {url}")
+    normalized_url = normalize_1001fonts_url(url)
 
-    res = requests.get(url, headers=HEADERS, timeout=30)
+    res = requests.get(normalized_url, headers=HEADERS, timeout=30)
     res.raise_for_status()
     soup = BeautifulSoup(res.text, "html.parser")
 
@@ -49,38 +58,54 @@ def scrape(url: str) -> dict:
         # Strip trailing " Font" or " Font Family"
         font_name = re.sub(r"\s+Font(\s+Family)?$", "", raw, flags=re.IGNORECASE).strip()
 
-    # ── Author ───────────────────────────────────────────────────────
+    # ── Author / Designer ────────────────────────────────────────────
     author_a = soup.select_one('a[href*="/users/"]:not(:has(img))') or soup.select_one('a[href*="/users/"]')
-    author = author_a.get_text(strip=True) if author_a else None
-    author_url = urljoin(url, author_a["href"]) if author_a else None
+    author = None
+    author_url = None
+    if author_a:
+        raw_author = author_a.get_text(strip=True)
+        # Strip leading "by " if present
+        author = re.sub(r"^by\s+", "", raw_author, flags=re.IGNORECASE).strip() or None
+        href = author_a.get("href", "")
+        if href:
+            author_url = urljoin(normalized_url, href)
 
     # ── Download ZIP ─────────────────────────────────────────────────
-    dl = soup.select_one('a[href*="/download/"][href$=".zip"]')
-    download_zip = urljoin(url, dl["href"]) if dl else None
+    dl = (
+        soup.select_one('a[href*="/download/"][href$=".zip"]')
+        or soup.select_one('a[href*="/download/"]')
+        or soup.select_one("a.download-button")
+    )
+    download_zip = None
+    if dl and dl.get("href"):
+        download_zip = urljoin(normalized_url, dl["href"])
 
     # ── Gallery images ───────────────────────────────────────────────
     # The gallery wraps full-resolution images in <a href="...-original.avif">.
-    # That href is the full-size image, which is why <img> scraping misses it.
+    # We inspect all anchor links inside the illustrations/gallery area first.
     images = []
-    for a in soup.select('a[href*="/img/illustrations/"]'):
-        href = a.get("href", "")
-        if href:
-            images.append(urljoin(url, href))
+    for a in soup.select('a[href*="/img/illustrations/"], a[href*="/illustrations/"], a.gallery-item, a[data-full-img]'):
+        href = a.get("href") or a.get("data-full-img") or ""
+        if href and not href.startswith("#"):
+            full_img_url = urljoin(normalized_url, href)
+            if re.search(r"\.(?:avif|webp|png|jpe?g|gif)(?:\?.*)?$", full_img_url, re.IGNORECASE):
+                images.append(full_img_url)
 
-    # Fallback: build from <img> thumbnails, upgrading small/large -> original
+    # Fallback: inspect <img> elements, upgrading small/large -> original
     if not images:
-        for img in soup.select('img[src*="/img/illustrations/"]'):
+        for img in soup.select('img[src*="/img/illustrations/"], img[src*="/illustrations/"]'):
             src = img.get("src", "")
             if src:
-                full = re.sub(r"-(small|large)\.\w+$", "-original.avif", urljoin(url, src))
+                full = re.sub(r"-(small|large)\.\w+$", "-original.avif", urljoin(normalized_url, src))
                 images.append(full)
 
     # De-duplicate preserving order
     images = list(dict.fromkeys(images))
 
     return {
-        "url": url,
+        "url": normalized_url,
         "name": font_name,
+        "designer": author,
         "author": author,
         "author_url": author_url,
         "images": images,
@@ -109,7 +134,7 @@ def main():
     else:
         print(json_str)
 
-    # Exit with error if critical fields are missing
+    # Exit with warning if critical fields are missing
     if not (data.get("name") and data.get("download_zip")):
         print(
             "WARNING: Scrape incomplete — name or download_zip missing. "

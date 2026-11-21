@@ -1,9 +1,10 @@
 name: Font Processing Pipeline
 
-# Drains the pending font_processing_queue: downloads release ZIPs, classifies
-# family/sub-family/variant (Gemini, with embedded OpenType metadata as fallback),
-# creates the sub-family fonts rows, and publishes variants to Supabase Storage +
-# DB through the atomic publish RPC. This is the single production pipeline.
+# Drains the pending font_processing_queue: optionally imports from 1001fonts,
+# downloads release ZIPs, classifies family/sub-family/variant (Gemini, with
+# embedded OpenType metadata as fallback), creates sub-family fonts rows, and
+# publishes variants to Supabase Storage + DB through the atomic publish RPC.
+# This is the single production pipeline.
 
 on:
   schedule:
@@ -12,6 +13,14 @@ on:
     inputs:
       queue_id:
         description: 'Optional: process only this font_processing_queue row id'
+        required: false
+        type: string
+      font_page_url:
+        description: 'Optional: 1001fonts font page URL to import before processing'
+        required: false
+        type: string
+      uploader_user_id:
+        description: 'Optional: Supabase user UUID to attribute the 1001fonts import to'
         required: false
         type: string
 
@@ -40,16 +49,26 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install fontTools
-        run: pip install fonttools brotli
+      - name: Install Python dependencies
+        run: pip install fonttools brotli requests beautifulsoup4
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Import from 1001fonts (manual trigger)
+        id: import_1001fonts
+        if: ${{ github.event.inputs.font_page_url != '' }}
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          FONT_PAGE_URL: ${{ github.event.inputs.font_page_url }}
+          UPLOADER_USER_ID: ${{ github.event.inputs.uploader_user_id }}
+        run: node scripts/font-processing/create-from-1001fonts.js
 
       - name: Process pending font queue
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          FONT_PROCESSING_QUEUE_ID: ${{ github.event.inputs.queue_id }}
+          FONT_PROCESSING_QUEUE_ID: ${{ steps.import_1001fonts.outputs.queue_id || github.event.inputs.queue_id }}
         run: node scripts/font-processing/process-queue.js

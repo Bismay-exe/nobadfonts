@@ -81,3 +81,29 @@ export function formatUrlForDisplay(rawUrl: string | null | undefined): string {
         return cleaned.replace(/^https?:\/\//, '');
     }
 }
+
+/**
+ * Validates whether a URL is a valid 1001fonts font page URL.
+ * Matches:
+ * - https://www.1001fonts.com/diomeca-font.html
+ * - http://1001fonts.com/fira-code-font.html?param=value
+ * - Slugs containing alphanumeric characters, dashes, and underscores.
+ */
+export const PATTERN_1001FONTS = /^https?:\/\/(?:www\.)?1001fonts\.com\/([a-zA-Z0-9_-]+-font\.html)(?:[?#].*)?$/i;
+
+export function isValid1001FontsUrl(rawUrl: string | null | undefined): boolean {
+    if (!rawUrl || typeof rawUrl !== 'string') return false;
+    return PATTERN_1001FONTS.test(rawUrl.trim());
+}
+
+/**
+ * Normalizes a 1001fonts URL to the canonical format:
+ * `https://www.1001fonts.com/<slug>-font.html`
+ */
+export function normalize1001FontsUrl(rawUrl: string | null | undefined): string | null {
+    if (!rawUrl || typeof rawUrl !== 'string') return null;
+    const match = rawUrl.trim().match(PATTERN_1001FONTS);
+    if (!match) return null;
+    return `https://www.1001fonts.com/${match[1].toLowerCase()}`;
+}
+

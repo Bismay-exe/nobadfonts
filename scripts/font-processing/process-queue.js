@@ -2,17 +2,68 @@ import { createClient } from '@supabase/supabase-js';
 import { pathToFileURL } from 'node:url';
 import path from 'node:path';
 import { deduplicateAssets, planVariantGroups } from './core.js';
-import { extractQueueItemAssets } from './extract-archive.js';
+import { extractQueueItemAssets, cleanHttpUrl } from './extract-archive.js';
 import { classifyAssets } from './gemini-classify.js';
 import { publishStagedBatch } from './publishing-protocol.js';
 import { createSupabasePublishingAdapter } from './supabase-publishing-adapter.js';
 import { enrichFrom1001Fonts } from './enrich-from-1001fonts.js';
 
-const normalizeKey = (value) => String(value || '').normalize('NFKC').trim().replace(/\s+/g, ' ').toLocaleLowerCase('en-US');
+const normalizeKey = (value) =>
+  String(value || '').normalize('NFKC').trim().replace(/\s+/g, ' ').toLocaleLowerCase('en-US');
 
 function slugify(value, fallback = 'font') {
-  const slug = String(value || '').normalize('NFKD').replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-+|-+$/g, '').toLowerCase();
+  const slug = String(value || '')
+    .normalize('NFKD')
+    .replace(/[^a-zA-Z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .toLowerCase();
   return slug || fallback;
+}
+
+/** Stale processing timeout: 30 minutes */
+export const STALE_PROCESSING_TIMEOUT_MS = Number(
+  process.env.FONT_PROCESSING_STALE_TIMEOUT_MS || 30 * 60 * 1000
+);
+
+/**
+ * Recover items stuck in 'processing' state older than timeout.
+ * Reverts them to 'pending' so subsequent pipeline runs can process them.
+ */
+export async function recoverStaleProcessingItems(supabase, timeoutMs = STALE_PROCESSING_TIMEOUT_MS) {
+  const staleCutoff = new Date(Date.now() - timeoutMs).toISOString();
+  const { data: recovered, error } = await supabase
+    .from('font_processing_queue')
+    .update({ status: 'pending', error_message: 'Recovered from stale processing lock' })
+    .eq('status', 'processing')
+    .lt('updated_at', staleCutoff)
+    .select('id, slug');
+
+  if (error) {
+    console.warn(`[queue] Stale processing recovery warning: ${error.message}`);
+    return [];
+  }
+  return recovered || [];
+}
+
+/**
+ * Atomically claim a queue item for processing.
+ * Strictly prevents race conditions: only claims items that are currently 'pending' or 'error'.
+ * Returns the claimed row, or null if another runner already claimed it.
+ */
+export async function claimQueueItem(supabase, itemId, eligibleStatuses = ['pending', 'error']) {
+  const { data: claimed, error } = await supabase
+    .from('font_processing_queue')
+    .update({ status: 'processing', error_message: null })
+    .eq('id', itemId)
+    .in('status', eligibleStatuses)
+    .select('id, font_id, slug, download_urls, source_1001fonts, status, created_at')
+    .maybeSingle();
+
+  if (error) {
+    console.warn(`[queue] Failed to claim item ${itemId}: ${error.message}`);
+    return null;
+  }
+  return claimed;
 }
 
 /**
@@ -47,7 +98,9 @@ export function buildPublishInputs(groups, bytesByHash, resolveFontId) {
   const seen = new Set();
   for (const group of groups) {
     if (group.conflicts?.length) {
-      throw new Error(`Variant "${group.variant_name}" of "${group.family_name}" has ${group.conflicts.length} format conflict(s)`);
+      throw new Error(
+        `Variant "${group.variant_name}" of "${group.family_name}" has ${group.conflicts.length} format conflict(s)`
+      );
     }
     const fontId = resolveFontId(group);
     if (typeof fontId !== 'string' || !fontId.trim()) {
@@ -99,10 +152,11 @@ export async function ensureHierarchy(supabase, parentFont, groups) {
   }
 
   const { data: existing, error: existingError } = await supabase
-    .from('fonts').select('id, name').eq('parent_font_id', parentFont.id);
+    .from('fonts')
+    .select('id, name')
+    .eq('parent_font_id', parentFont.id);
   if (existingError) throw new Error(`Failed to read existing sub-families: ${existingError.message}`);
-  // Match existing rows by their bare sub-family label (parent prefix stripped),
-  // so "Monaspace Xenon" is reused for the "Xenon" sub-family rather than duplicated.
+
   const parentKey = normalizeKey(parentFont.name);
   const subKey = (name) => {
     let key = normalizeKey(name);
@@ -114,9 +168,10 @@ export async function ensureHierarchy(supabase, parentFont, groups) {
   const createdSubfamilies = [];
   for (const sub of subfamilies) {
     if (idByKey.has(sub.key)) continue;
-    const subName = parentFont.name && !normalizeKey(sub.subfamily_name).startsWith(normalizeKey(parentFont.name))
-      ? `${parentFont.name} ${sub.subfamily_name}`
-      : sub.subfamily_name;
+    const subName =
+      parentFont.name && !normalizeKey(sub.subfamily_name).startsWith(normalizeKey(parentFont.name))
+        ? `${parentFont.name} ${sub.subfamily_name}`
+        : sub.subfamily_name;
     const subSlug = `${parentFont.slug}-${slugify(sub.subfamily_name)}`;
     const row = {
       name: subName,
@@ -157,23 +212,37 @@ export async function processQueueItem(supabase, item, options = {}) {
   // When the queue entry carries a source_1001fonts URL we scrape the page
   // first so gallery images are saved and the zip URL is injected into
   // download_urls before the main extraction loop runs.
-  const source1001Fonts = item.source_1001fonts
-    || (item.download_urls && typeof item.download_urls === 'object' && !Array.isArray(item.download_urls)
-        ? item.download_urls.source_1001fonts
-        : null);
+  const source1001Fonts =
+    item.source_1001fonts ||
+    (item.download_urls && typeof item.download_urls === 'object' && !Array.isArray(item.download_urls)
+      ? item.download_urls.source_1001fonts
+      : null);
 
   if (source1001Fonts) {
     try {
-      await enrichFrom1001Fonts(supabase, item, source1001Fonts);
+      await enrichFrom1001Fonts(supabase, item, source1001Fonts, {
+        fetchImpl: options.fetchImpl,
+        scrapeImpl: options.scrapeImpl,
+      });
     } catch (enrichErr) {
-      // Non-fatal: log and continue — the pipeline can still work without the gallery.
       console.warn(`[1001fonts] Enrichment failed (continuing): ${enrichErr.message}`);
     }
   }
 
-  const { assets: extracted, warnings } = await extractQueueItemAssets(item, { readBytes: true });
-  if (!extracted.length) {
-    throw new Error(`No font files found in release archives${warnings.length ? `: ${warnings.join('; ')}` : ''}`);
+  // Ensure valid ZIP URLs exist before extraction
+  const validZipUrls = Array.isArray(item.download_urls)
+    ? item.download_urls.filter((u) => u && cleanHttpUrl(u.url))
+    : [];
+  if (!validZipUrls.length) {
+    throw new Error(`No valid release ZIP URLs available for font "${item.slug || item.id}"`);
+  }
+
+  const extractFn = options.extractImpl || extractQueueItemAssets;
+  const { assets: extracted, warnings } = await extractFn(item, { readBytes: true });
+  if (!extracted || !extracted.length) {
+    throw new Error(
+      `No font files found in release archives${warnings?.length ? `: ${warnings.join('; ')}` : ''}`
+    );
   }
 
   const overrides = await classifyAssets(extracted, {
@@ -190,16 +259,16 @@ export async function processQueueItem(supabase, item, options = {}) {
     if (override) asset.metadata = { ...(asset.metadata || {}), overrides: override };
   }
 
-  const unique = deduplicateAssets(extracted.map((asset) => ({
-    sha256: asset.sha256,
-    size_bytes: asset.size_bytes,
-    extension: asset.extension,
-    relative_path: asset.relative_path,
-    archive_label: asset.source_label,
-    // The Python parser does not emit the file extension; inject it so the
-    // deterministic core can resolve the variant/format.
-    metadata: { ...(asset.metadata || {}), extension: asset.extension },
-  })));
+  const unique = deduplicateAssets(
+    extracted.map((asset) => ({
+      sha256: asset.sha256,
+      size_bytes: asset.size_bytes,
+      extension: asset.extension,
+      relative_path: asset.relative_path,
+      archive_label: asset.source_label,
+      metadata: { ...(asset.metadata || {}), extension: asset.extension },
+    }))
+  );
   const { groups, review } = planVariantGroups(unique);
   if (review.length) {
     const reasons = [...new Set(review.map((entry) => entry.reason))].join(', ');
@@ -210,14 +279,17 @@ export async function processQueueItem(supabase, item, options = {}) {
   const { data: parentFont, error: fontError } = await supabase
     .from('fonts')
     .select('id, name, slug, family_role, designer, category, license_type, commercial_use, tags, user_id, uploaded_by')
-    .eq('id', item.font_id).single();
-  if (fontError || !parentFont) throw new Error(`Uploaded font ${item.font_id} not found: ${fontError?.message || 'missing'}`);
+    .eq('id', item.font_id)
+    .single();
+  if (fontError || !parentFont) {
+    throw new Error(`Uploaded font ${item.font_id} not found: ${fontError?.message || 'missing'}`);
+  }
 
   const { resolveFontId, createdSubfamilies } = await ensureHierarchy(supabase, parentFont, groups);
   const { assets, rows } = buildPublishInputs(groups, bytesByHash, resolveFontId);
 
   const batchId = `queue-${item.id}`;
-  const adapter = createSupabasePublishingAdapter({ supabase });
+  const adapter = options.adapter || createSupabasePublishingAdapter({ supabase });
   const result = await publishStagedBatch({ batchId, assets, rows, adapter });
 
   return {
@@ -230,6 +302,90 @@ export async function processQueueItem(supabase, item, options = {}) {
     subfamilies_created: createdSubfamilies.length,
     gemini_overrides_applied: overrides.size,
     publish_status: result.status,
+  };
+}
+
+export async function drainQueue(supabase, options = {}) {
+  const requestedQueueId = options.requestedQueueId?.trim() || null;
+  const maxItems = Number(options.maxItems || 10);
+  const geminiApiKey = options.geminiApiKey || null;
+
+  // 1. Recover stale processing locks
+  await recoverStaleProcessingItems(supabase);
+
+  // 2. Fetch pending candidates
+  let query = supabase
+    .from('font_processing_queue')
+    .select('id, font_id, slug, download_urls, source_1001fonts, status, created_at, updated_at')
+    .order('created_at', { ascending: true });
+
+  query = requestedQueueId
+    ? query.eq('id', requestedQueueId)
+    : query.in('status', ['pending', 'error']).limit(maxItems);
+
+  const { data: items, error } = await query;
+  if (error) throw new Error(`Queue read failed: ${error.message}`);
+  if (!items?.length) {
+    console.log(requestedQueueId ? `No queue row found for id ${requestedQueueId}` : 'No pending queue items.');
+    return { processed: 0, failed: 0, items: [] };
+  }
+
+  const results = [];
+  const errors = [];
+
+  for (const candidate of items) {
+    // 3. Atomically claim candidate row to prevent concurrent processing
+    const item = await claimQueueItem(supabase, candidate.id);
+    if (!item) {
+      console.warn(`Skipping ${candidate.slug || candidate.id}: already claimed by another runner`);
+      continue;
+    }
+
+    try {
+      const summary = await processQueueItem(supabase, item, {
+        geminiApiKey,
+        fetchImpl: options.fetchImpl,
+        scrapeImpl: options.scrapeImpl,
+        extractImpl: options.extractImpl,
+        adapter: options.adapter,
+      });
+
+      // 4. Update status to completed and check DB result!
+      const { error: completeErr } = await supabase
+        .from('font_processing_queue')
+        .update({ status: 'completed', error_message: null })
+        .eq('id', item.id);
+
+      if (completeErr) {
+        throw new Error(`Failed to update status to completed: ${completeErr.message}`);
+      }
+
+      results.push(summary);
+      console.log(
+        `✓ ${item.slug || item.id}: ${summary.variant_count} variant(s), ${summary.subfamilies_created} sub-famil(ies) created`
+      );
+    } catch (itemError) {
+      const message = itemError instanceof Error ? itemError.message : String(itemError);
+      errors.push({ id: item.id, slug: item.slug, error: message });
+
+      // Check error status update DB result
+      const { error: errUpdateErr } = await supabase
+        .from('font_processing_queue')
+        .update({ status: 'error', error_message: message.slice(0, 2000) })
+        .eq('id', item.id);
+
+      if (errUpdateErr) {
+        console.error(`✗ Failed to record error status for ${item.slug || item.id}: ${errUpdateErr.message}`);
+      }
+      console.error(`✗ ${item.slug || item.id}: ${message}`);
+    }
+  }
+
+  return {
+    processed: results.length,
+    failed: errors.length,
+    items: results,
+    errors,
   };
 }
 
@@ -248,46 +404,19 @@ async function main() {
     auth: { persistSession: false, autoRefreshToken: false },
   });
 
-  let query = supabase
-    .from('font_processing_queue')
-    .select('id, font_id, slug, download_urls, source_1001fonts, status, created_at')
-    .order('created_at', { ascending: true });
-  query = requestedQueueId ? query.eq('id', requestedQueueId) : query.in('status', ['pending', 'error']).limit(maxItems);
+  const outcome = await drainQueue(supabase, {
+    requestedQueueId,
+    maxItems,
+    geminiApiKey,
+  });
 
-  const { data: items, error } = await query;
-  if (error) throw new Error(`Queue read failed: ${error.message}`);
-  if (!items?.length) {
-    console.log(requestedQueueId ? `No queue row found for id ${requestedQueueId}` : 'No pending queue items.');
-    return;
-  }
+  console.log(JSON.stringify(outcome, null, 2));
 
-  const results = [];
-  for (const item of items) {
-    // Claim the row so overlapping scheduled runs do not double-process it.
-    const { data: claimed, error: claimError } = await supabase
-      .from('font_processing_queue')
-      .update({ status: 'processing', error_message: null })
-      .eq('id', item.id)
-      .in('status', ['pending', 'error', 'processing'])
-      .select('id').single();
-    if (claimError || !claimed) {
-      console.warn(`Skipping ${item.id}: could not claim (${claimError?.message || 'already claimed'})`);
-      continue;
-    }
-    try {
-      const summary = await processQueueItem(supabase, item, { geminiApiKey });
-      await supabase.from('font_processing_queue')
-        .update({ status: 'completed', error_message: null }).eq('id', item.id);
-      results.push(summary);
-      console.log(`✓ ${item.slug || item.id}: ${summary.variant_count} variant(s), ${summary.subfamilies_created} sub-famil(ies) created`);
-    } catch (itemError) {
-      const message = itemError instanceof Error ? itemError.message : String(itemError);
-      await supabase.from('font_processing_queue')
-        .update({ status: 'error', error_message: message.slice(0, 2000) }).eq('id', item.id);
-      console.error(`✗ ${item.slug || item.id}: ${message}`);
-    }
+  // Exit with non-zero code if any item failed
+  if (outcome.failed > 0) {
+    console.error(`Font processing queue finished with ${outcome.failed} failed item(s).`);
+    process.exitCode = 1;
   }
-  console.log(JSON.stringify({ processed: results.length, items: results }, null, 2));
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {

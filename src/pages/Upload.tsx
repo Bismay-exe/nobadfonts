@@ -16,7 +16,7 @@ import { CustomLock } from '../components/ui/CustomIcons';
 import { validateFontFile, validateImageFile } from '../utils/fontValidator';
 import { extractRichFontMetadata } from '../utils/fontMetadataExtractor';
 import { JsonImportModal, type FontFormState } from '../components/fonts/JsonImportModal';
-import { cleanUrl } from '../utils/urlHelper';
+import { cleanUrl, isValid1001FontsUrl, normalize1001FontsUrl } from '../utils/urlHelper';
 import TurnstileWidget from '../components/shared/TurnstileWidget';
 
 export const LICENSE_OPTIONS = [
@@ -838,7 +838,8 @@ const Upload = () => {
         // Validate that at least one variant has files OR release zips are present
         const hasManualFiles = variants.some(v => Object.values(v.files).some(f => f !== null));
         const hasAutoDownload = formState.releaseZips && formState.releaseZips.length > 0;
-        const has1001Url = /^https:\/\/www\.1001fonts\.com\/[a-z0-9-]+-font\.html$/.test(source1001Fonts.trim());
+        const normalized1001Url = normalize1001FontsUrl(source1001Fonts);
+        const has1001Url = Boolean(normalized1001Url);
 
         if (!hasManualFiles && !hasAutoDownload && !has1001Url) {
             return await Toast.show({ text: 'Please upload files, provide release zip URLs, or enter a 1001fonts page URL for auto-download.', duration: 'short' });
@@ -1078,9 +1079,8 @@ const Upload = () => {
 
                 // If a 1001fonts URL is provided, attach it so the pipeline can
                 // scrape gallery images + confirm the zip automatically.
-                const valid1001Url = source1001Fonts.trim();
-                if (valid1001Url && /^https:\/\/www\.1001fonts\.com\/[a-z0-9-]+-font\.html$/.test(valid1001Url)) {
-                    queuePayload.source_1001fonts = valid1001Url;
+                if (normalized1001Url) {
+                    queuePayload.source_1001fonts = normalized1001Url;
                 }
 
                 const { error: queueError } = await supabase
@@ -1093,17 +1093,17 @@ const Upload = () => {
                 } else {
                     console.log('✅ Queued release zip downloads successfully');
                 }
-            } else if (has1001Url) {
+            } else if (has1001Url && normalized1001Url) {
                 // 1001fonts-only: queue with no manual release zips — the pipeline
                 // will discover and download the zip via the scraper.
-                console.log('Queuing 1001fonts-only import:', source1001Fonts.trim());
+                console.log('Queuing 1001fonts-only import:', normalized1001Url);
                 const { error: queueError } = await supabase
                     .from('font_processing_queue')
                     .insert({
                         font_id: insertedFont.id,
                         slug: slug,
                         download_urls: [],   // will be patched by enrich-from-1001fonts.js
-                        source_1001fonts: source1001Fonts.trim(),
+                        source_1001fonts: normalized1001Url,
                     });
 
                 if (queueError) {
@@ -1908,7 +1908,7 @@ const Upload = () => {
                             placeholder="https://www.1001fonts.com/your-font-name-font.html"
                             className="w-full text-xs p-2.5 bg-background border-2 border-border rounded-xl font-mono focus:outline-none focus:border-foreground"
                         />
-                        {source1001Fonts && !/^https:\/\/www\.1001fonts\.com\/[a-z0-9-]+-font\.html$/.test(source1001Fonts) && (
+                        {source1001Fonts && !isValid1001FontsUrl(source1001Fonts) && (
                             <p className="text-[10px] text-warning mt-1">
                                 Must be a valid 1001fonts font page URL (e.g. https://www.1001fonts.com/diomeca-font.html)
                             </p>

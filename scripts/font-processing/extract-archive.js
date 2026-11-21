@@ -3,6 +3,7 @@ import path from 'node:path';
 import os from 'node:os';
 import crypto from 'node:crypto';
 import { execFileSync } from 'node:child_process';
+import { getPythonCommand } from './enrich-from-1001fonts.js';
 
 const SUPPORTED_EXTENSIONS = new Set(['.ttf', '.otf', '.woff', '.woff2']);
 const DEFAULT_MAX_ARCHIVE_BYTES = Number(process.env.FONT_DISCOVERY_MAX_ARCHIVE_BYTES || 700 * 1024 * 1024);
@@ -70,15 +71,24 @@ async function downloadArchive(url, destination, maxArchiveBytes) {
   const contentLength = Number(response.headers.get('content-length') || 0);
   if (contentLength > maxArchiveBytes) throw new Error(`Archive exceeds ${maxArchiveBytes} byte limit`);
   const bytes = Buffer.from(await response.arrayBuffer());
+  if (bytes.length === 0) throw new Error('Downloaded archive is empty (0 bytes)');
   if (bytes.length > maxArchiveBytes) throw new Error(`Archive exceeds ${maxArchiveBytes} byte limit`);
+  // Verify standard ZIP magic signature: PK (0x50, 0x4B)
+  if (bytes.length < 4 || bytes[0] !== 0x50 || bytes[1] !== 0x4B) {
+    throw new Error('Downloaded file is not a valid ZIP archive (missing PK signature)');
+  }
   fs.writeFileSync(destination, bytes, { flag: 'wx' });
+  if (!fs.existsSync(destination) || fs.statSync(destination).size === 0) {
+    throw new Error('Failed to write ZIP archive to disk');
+  }
   return { bytes: bytes.length, sha256: sha256(bytes) };
 }
 
 export function parseMetadata(filePath, extension) {
   try {
     const parserPath = path.join(process.cwd(), 'scripts', 'font-processing', 'parse-woff2-metadata.py');
-    const output = execFileSync('python3', [parserPath, filePath], {
+    const pyCmd = getPythonCommand();
+    const output = execFileSync(pyCmd, [parserPath, filePath], {
       encoding: 'utf8',
       timeout: 30_000,
       maxBuffer: 2 * 1024 * 1024,
