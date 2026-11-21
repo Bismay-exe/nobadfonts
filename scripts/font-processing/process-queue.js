@@ -6,6 +6,7 @@ import { extractQueueItemAssets } from './extract-archive.js';
 import { classifyAssets } from './gemini-classify.js';
 import { publishStagedBatch } from './publishing-protocol.js';
 import { createSupabasePublishingAdapter } from './supabase-publishing-adapter.js';
+import { enrichFrom1001Fonts } from './enrich-from-1001fonts.js';
 
 const normalizeKey = (value) => String(value || '').normalize('NFKC').trim().replace(/\s+/g, ' ').toLocaleLowerCase('en-US');
 
@@ -152,6 +153,24 @@ export async function ensureHierarchy(supabase, parentFont, groups) {
  * failure so the caller can mark the queue row as 'error'.
  */
 export async function processQueueItem(supabase, item, options = {}) {
+  // ── 1001fonts enrichment ──────────────────────────────────────────────────
+  // When the queue entry carries a source_1001fonts URL we scrape the page
+  // first so gallery images are saved and the zip URL is injected into
+  // download_urls before the main extraction loop runs.
+  const source1001Fonts = item.source_1001fonts
+    || (item.download_urls && typeof item.download_urls === 'object' && !Array.isArray(item.download_urls)
+        ? item.download_urls.source_1001fonts
+        : null);
+
+  if (source1001Fonts) {
+    try {
+      await enrichFrom1001Fonts(supabase, item, source1001Fonts);
+    } catch (enrichErr) {
+      // Non-fatal: log and continue — the pipeline can still work without the gallery.
+      console.warn(`[1001fonts] Enrichment failed (continuing): ${enrichErr.message}`);
+    }
+  }
+
   const { assets: extracted, warnings } = await extractQueueItemAssets(item, { readBytes: true });
   if (!extracted.length) {
     throw new Error(`No font files found in release archives${warnings.length ? `: ${warnings.join('; ')}` : ''}`);
@@ -231,7 +250,7 @@ async function main() {
 
   let query = supabase
     .from('font_processing_queue')
-    .select('id, font_id, slug, download_urls, status, created_at')
+    .select('id, font_id, slug, download_urls, source_1001fonts, status, created_at')
     .order('created_at', { ascending: true });
   query = requestedQueueId ? query.eq('id', requestedQueueId) : query.in('status', ['pending', 'error']).limit(maxItems);
 

@@ -388,53 +388,7 @@ function FontCard({
                         />
                     )}
                     <div className="flex flex-col h-full relative z-10 cursor-pointer">
-                        {/* Top Expanded Content Section */}
-                        {/* <motion.div
-                            transition={{ duration: 0.25, ease: "easeInOut" }}
-                            style={{
-                                height: isExpanded ? "auto" : 0,
-                                opacity: isExpanded ? 1 : 0,
-                                overflow: "hidden",
-                            }}
-                        >
-                            <motion.div
-                                initial={false}
-                                animate={{
-                                    opacity: isExpanded ? 1 : 0,
-                                    y: isExpanded ? 0 : -100,
-                                }}
-                                transition={{ duration: 0.25 }}
-                            >
-                                <div className="w-full px-2 pb-4 pt-2 flex flex-col-reverse gap-3 overflow-hidden">
-                                    <div className="w-full h-full">
-                                        <div className="flex justify-start items-start gap-3">
-                                            <div className="w-12 h-12 rounded-4xl bg-white ring-2 ring-foreground/5 zp-px mt-1">
-                                                <img src="/public/logo/logo-white.png" alt="logo" className="w-full h-full rounded-full p-2 bg-white" />
-                                            </div>
-
-                                            <div className="flex flex-col">
-                                                <h1 className="text-2xl font-bold tracking-tight mb-0.5 group/title">
-                                                    {font.name}
-                                                </h1>
-                                                <p className="text-sm text-muted tracking-wide">
-                                                    by{" "}
-                                                    <Link
-                                                        to={`/designers/${encodeURIComponent(font.designer || "")}`}
-                                                        state={{ from: location }}
-                                                        onClick={(e) => e.stopPropagation()}
-                                                        className="hover:text-foreground hover:underline transition-colors duration-300 ease-in-out"
-                                                    >
-                                                        {font.designer}
-                                                    </Link>
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </motion.div>
-                        </motion.div> */}
-
-                        <div className="relative z-10">
+                        <div className="relative z-10 overflow-hidden rounded-4xl">
                             {viewMode === "image" &&
                                 (font.preview_image_url ||
                                     (font.gallery_images && font.gallery_images.length > 0)) ? (
@@ -470,7 +424,7 @@ function FontCard({
                                         {/* Likes */}
                                         {!hideLike && (
                                             <div
-                                                className={`group/like flex items-center justify-center rounded-full transition-all duration-300 ease-in-out max-w- hover:max-w-100 ${isExpanded ? "pointer-events-none backdrop-blur-sm" : "pointer-events-auto"} ${viewMode === 'image' ? 'bg-black/30 text-white' : isFavorited ? 'text-foreground hover:bg-pink-500/10' : 'text-foreground hover:bg-foreground/5'}`}
+                                                className={`group/like flex items-center justify-center rounded-full transition-all duration-300 ease-in-out max-w- hover:max-w-100 ${isExpanded ? "pointer-events-none backdrop-blur-sm" : "pointer-events-auto"} ${viewMode === 'image' ? isFavorited ? 'text-white bg-pink-500/10' : 'bg-black/30 text-white' : isFavorited ? 'text-foreground bg-pink-500/10' : 'text-foreground bg-border/50 hover:bg-foreground/5'}`}
                                             >
                                                 <Like
                                                     liked={isFavorited}
@@ -498,7 +452,7 @@ function FontCard({
                                                     setBoardModalOpen(true);
                                                 }}
                                                 aria-label={`Save ${font.name} to a board`}
-                                                className={`group/save flex items-center justify-center h-11 px-3 rounded-full overflow-hidden pointer-events-auto cursor-pointer transition-all duration-300 ease-out max-w-11 hover:max-w-100 ${isExpanded ? "backdrop-blur-sm" : ""} ${viewMode === "image" ? "bg-black/30" : "hover:bg-foreground/5"}`}
+                                                className={`group/save flex items-center justify-center h-11 px-3 rounded-full overflow-hidden pointer-events-auto cursor-pointer transition-all duration-300 ease-out max-w-11 hover:max-w-100 ${isExpanded ? "backdrop-blur-sm" : ""} ${viewMode === "image" ? "bg-black/30" : "bg-border/50 hover:bg-foreground/5"}`}
                                             >
                                                 <svg className="flex h-11 w-5 shrink-0 items-center justify-center" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
                                                     <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2">
@@ -529,11 +483,11 @@ function FontCard({
                                         }
                                         title={fontIsInBag ? "View in bag" : "Add to bag"}
                                         className={`flex justify-center items-center ${isExpanded ? "backdrop-blur-sm" : ""} group/bag h-11 px-3 rounded-full overflow-hidden pointer-events-auto cursor-pointer transition-all duration-600 ease-out max-w-11 hover:max-w-100
-                                            ${viewMode === 'image' ? 'bg-black/30' : 'hover:bg-foreground/5'}`}
+                                            ${viewMode === 'image' ? 'bg-black/30' : 'bg-border/50 hover:bg-foreground/5'}`}
                                     >
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="flex h-11 w-5 shrink-0 items-center justify-center">
-                                            <path d="M2.048 18.566A2 2 0 0 0 4 21h16a2 2 0 0 0 1.952-2.434l-2-9A2 2 0 0 0 18 8H6a2 2 0 0 0-1.952 1.566z" 
-                                            className={`${fontIsInBag ? "fill-current" : "fill-transparent"} transition-all duration-300 ease-in-out`}/>
+                                            <path d="M2.048 18.566A2 2 0 0 0 4 21h16a2 2 0 0 0 1.952-2.434l-2-9A2 2 0 0 0 18 8H6a2 2 0 0 0-1.952 1.566z"
+                                                className={`${fontIsInBag ? "fill-current" : "fill-transparent"} transition-all duration-300 ease-in-out`} />
                                             <path d="M8 11V6a4 4 0 0 1 8 0v5" />
                                         </svg>
 
@@ -541,18 +495,19 @@ function FontCard({
                                             {fontIsInBag ? "View in bag" : "Add to bag"}</span>
                                     </button>
                                 </div>
-                                <div className={`${isExpanded ? "hidden" : "flex"} justify-between items-end gap-5 w-full`}>
+                                <div className={`${isExpanded ? "hidden" : "flex"} group/arrow justify-start items-end gap-0 w-full`}>
                                     {/* Font name and designer name */}
                                     <div className="flex flex-col justify-center items-start transition-colors duration-300 ease-in-out pointer-events-auto">
-                                        <p className={`font-medium text-base transition-transform duration-300 ${isExpanded ? "translate-y-2" : "translate-y-2 group-hover:translate-y-0"}`}
+                                        <p className={`flex justify-center items-center font-medium text-base h-11 px-3 rounded-full transition-all duration-500 ease-in-out pointer-events-auto cursor-pointer
+                                            ${viewMode === 'image' ? 'bg-black/30' : 'bg-border/50 hover:bg-foreground/5'} `}
                                         >
                                             {font.name}
                                         </p>
-                                        <p className={`text-sm transition-transform duration-300 delay-75 ${isExpanded ? "translate-y-2" : "translate-y-2 group-hover:translate-y-0"}
+                                        {/* <p className={`text-sm transition-transform duration-300 delay-75 ${isExpanded ? "translate-y-2" : "translate-y-2 group-hover:translate-y-0"}
                                         ${viewMode === 'image' ? 'text-white/60' : 'text-muted'}`}
                                         >
                                             {(font as any).taxonomy?.creator?.foundry || (font as any).taxonomy?.creator?.publisher || font.designer || 'Unknown'}
-                                        </p>
+                                        </p> */}
                                     </div>
 
                                     {/* View Font Button */}
@@ -566,9 +521,9 @@ function FontCard({
                                                 e.preventDefault();
                                             }
                                         }}
-                                        className={`flex justify-center items-center gap-1 bg-none ${viewMode === 'image' ? 'hover:bg-black/30' : 'hover:bg-foreground/5'} transition-colors duration-300 ease-in-out h-11 px-3 rounded-full pointer-events-auto cursor-pointer`}
+                                        className={`flex justify-center items-center gap-1 bg-none ${viewMode === 'image' ? 'bg-black/30' : 'bg-border/50 hover:bg-foreground/5'} transition-colors duration-300 ease-in-out h-11 px-5 rounded-full pointer-events-auto cursor-pointer`}
                                     >
-                                        <svg width="20" height="20" viewBox="0 0 70 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <svg className="group-hover/arrow:rotate-45 transition-transform duration-300 ease-in-out" width="16" height="16" viewBox="0 0 70 70" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M0 65.5L49 16.5C49 16.5 40 17.5 30.5 16.5C21 15.5 13 10.5 13 10.5L15 4.5C15 4.5 27 11.5 43 10.5C59 9.5 65 0 65 0L70 4.5C70 4.5 60 14 59.5 28.5C59 43 65 54.5 65 54.5L60 57.5C60 57.5 56 49 54 40.5C52 32 53 20.5 53 20.5L4 69.5H3L0 66.5V65.5Z" fill="currentColor" />
                                         </svg>
                                     </Link>
@@ -577,7 +532,7 @@ function FontCard({
                         </div>
 
                         {/* Expanded Content Section */}
-                        <div className={`${isExpanded ? 'translate-y-0' : '-ztranslate-y-full h-0'} transition-all duration-300 ease-in-out relative z-0`}
+                        <div className={`${isExpanded ? 'translate-y-0' : '-ztranslate-y-full h-0'}  transition-all duration-300 ease-in-out relative z-99`}
                         // initial={false}
                         // style={{
                         // height: isExpanded ? "auto" : 0,
@@ -606,7 +561,31 @@ function FontCard({
                                         </div>
 
                                         {/* View Font Button */}
-                                        <Link
+                                        <div className={`group/arrow relative flex justify-end items-center gap-0`}>
+                                            <Link
+                                                to={`/fonts/${font.slug || font.id}`}
+                                                aria-label={`View ${font.name} font details and specimen`}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                }}
+                                                className={`group-hover/arrow:-translate-x-1z rounded-r-none group-hover/arrow:rounded-r-lg group-hover/arrow:rounded-l-lg flex justify-center items-center gap-1 text-card-background bg-card-foreground group-hover/arrow:text-background transition-all duration-300 ease-in-out h-8 w-15z pl-3 pr-1 group-hover/arrow:pr-3 rounded-l-2xl pointer-events-auto cursor-pointer`}
+                                            >
+                                                View
+                                            </Link>
+                                            <Link
+                                                to={`/fonts/${font.slug || font.id}`}
+                                                aria-label={`View ${font.name} font details and specimen`}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                }}
+                                                className={`zgroup-hover/arrow:pl-2 flex justify-center items-center text-card-background bg-card-foreground group-hover/arrow:text-background transition-all duration-300 ease-in-out h-8 group-hover/arrow:rounded-l-2xl w-8z pl-1 pr-3 group-hover/arrow:pl-3 rounded-l-none rounded-r-2xl pointer-events-auto cursor-pointer`}
+                                            >
+                                                <svg className="group-hover/arrow:rotate-45 transition-transform duration-300 ease-in-out" width="12" height="12" viewBox="0 0 70 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M0 65.5L49 16.5C49 16.5 40 17.5 30.5 16.5C21 15.5 13 10.5 13 10.5L15 4.5C15 4.5 27 11.5 43 10.5C59 9.5 65 0 65 0L70 4.5C70 4.5 60 14 59.5 28.5C59 43 65 54.5 65 54.5L60 57.5C60 57.5 56 49 54 40.5C52 32 53 20.5 53 20.5L4 69.5H3L0 66.5V65.5Z" fill="currentColor" />
+                                                </svg>
+                                            </Link>
+                                        </div>
+                                        {/* <Link
                                             to={`/fonts/${font.slug || font.id}`}
                                             aria-label={`View ${font.name} font details and specimen`}
                                             onClick={(e) => {
@@ -617,7 +596,7 @@ function FontCard({
                                             <svg width="20" height="20" viewBox="0 0 70 70" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                 <path d="M0 65.5L49 16.5C49 16.5 40 17.5 30.5 16.5C21 15.5 13 10.5 13 10.5L15 4.5C15 4.5 27 11.5 43 10.5C59 9.5 65 0 65 0L70 4.5C70 4.5 60 14 59.5 28.5C59 43 65 54.5 65 54.5L60 57.5C60 57.5 56 49 54 40.5C52 32 53 20.5 53 20.5L4 69.5H3L0 66.5V65.5Z" fill="currentColor" />
                                             </svg>
-                                        </Link>
+                                        </Link> */}
                                     </div>
                                 </div>
 
@@ -627,7 +606,7 @@ function FontCard({
                                         <Link
                                             key={i}
                                             to={`?categories=${tag}`}
-                                            className="bg-foreground/5 text-foreground/50 hover:bg-foreground/90 hover:text-background text-[10px] md:text-[11px] px-2.5 py-1.5 rounded-full tracking-wider font-normal font-inter-tight zuppercase transition-colors duration-300 ease-in-out"
+                                            className="bg-card-background /10 text-foreground/40 hover:bg-foreground/90 hover:text-background text-[10px] md:text-[12px] px-2.5 py-1.5 rounded-full tracking-wide font-normal font- zuppercase transition-colors duration-300 ease-in-out"
                                         >
                                             {tag}
                                         </Link>

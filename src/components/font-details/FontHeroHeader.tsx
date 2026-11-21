@@ -60,8 +60,8 @@ export default function FontHeroHeader({
                         whileTap={{ scale: 0.9 }}
                         onClick={onFavorite}
                         aria-label={`Save ${font.name} to a board`}
-                        className={cn("flex items-center gap-2 px-4 md:px-6 py-3 rounded-full border transition-all duration-300 cursor-pointer",
-                            isFavorited ? 'bg-accent/25 border-accent/30 text-accent' : 'bg-foreground/5 border-foreground/10 text-foreground hover:opacity-80'
+                        className={cn("flex items-center gap-2 px-4 md:px-6 h-12 md:h-auto md:py-3 rounded-full transition-all duration-300 cursor-pointer",
+                            isFavorited ? 'bg-accent/25 border-accent/30 text-accent' : 'bg-card-background text-foreground hover:opacity-80'
                         )}
                     >
                         <Like
@@ -79,7 +79,7 @@ export default function FontHeroHeader({
                             whileTap={{ scale: 0.9 }}
                             onClick={() => setBoardModalOpen(true)}
                             aria-label={`Save ${font.name} to a board`}
-                            className="flex items-center gap-2 px-4 md:px-6 py-3 rounded-full border bg-foreground/5 border-foreground/10 text-foreground hover:opacity-80 transition-all duration-300 cursor-pointer"
+                            className="flex items-center gap-2 px-4 md:px-6 h-12 md:h-auto md:py-3 rounded-full bg-card-background text-foreground hover:opacity-80 transition-all duration-300 cursor-pointer"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
                                 <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2">
@@ -96,7 +96,7 @@ export default function FontHeroHeader({
                         onClick={onShare}
                         disabled={shareLoading}
                         aria-label={`Share ${font.name} font family`}
-                        className="flex items-center gap-2 px-4 md:px-6 py-3 rounded-full border bg-foreground/5 border-foreground/10 text-foreground hover:opacity-80 transition-all duration-300 cursor-pointer disabled:opacity-50"
+                        className="flex items-center gap-2 px-4 md:px-6 h-12 md:h-auto md:py-3 rounded-full bg-card-background text-foreground hover:opacity-80 transition-all duration-300 cursor-pointer disabled:opacity-50"
                     >
                         {shareLoading ? <Loader2 className="animate-spin" size={20} /> : <Share2 size={20} />}
                         <span className="font-bold hidden md:inline">Share</span>
@@ -116,16 +116,16 @@ export default function FontHeroHeader({
                         }}
                         aria-label={fontIsInBag ? `${font.name} is in your bag` : `Add ${font.name} to bag`}
                         title={fontIsInBag ? 'View in bag' : 'Add to bag'}
-                        className={`flex items-center gap-2 px-4 md:px-6 py-3 rounded-full border transition-all duration-300 cursor-pointer ${fontIsInBag
-                            ? 'bg-blue-500/25 border-blue-500/30 text-blue-500'
-                            : 'bg-foreground/5 border-foreground/10 text-foreground hover:opacity-80'
+                        className={`flex items-center gap-2 px-4 md:px-6 h-12 md:h-auto md:py-3 rounded-full transition-all duration-300 cursor-pointer ${fontIsInBag
+                            ? 'bg-blue-500/25 text-blue-500'
+                            : 'bg-card-background text-foreground hover:opacity-80'
                             }`}
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="flex h-11 w-5 shrink-0 items-center justify-center">
-                                            <path d="M2.048 18.566A2 2 0 0 0 4 21h16a2 2 0 0 0 1.952-2.434l-2-9A2 2 0 0 0 18 8H6a2 2 0 0 0-1.952 1.566z" 
-                                            className={`${fontIsInBag ? "fill-current" : "fill-transparent"} transition-all duration-300 ease-in-out`}/>
-                                            <path d="M8 11V6a4 4 0 0 1 8 0v5" />
-                                        </svg>
+                            <path d="M2.048 18.566A2 2 0 0 0 4 21h16a2 2 0 0 0 1.952-2.434l-2-9A2 2 0 0 0 18 8H6a2 2 0 0 0-1.952 1.566z"
+                                className={`${fontIsInBag ? "fill-current" : "fill-transparent"} transition-all duration-300 ease-in-out`} />
+                            <path d="M8 11V6a4 4 0 0 1 8 0v5" />
+                        </svg>
                         <span className="font-bold hidden md:inline">{fontIsInBag ? 'In bag' : 'Add to bag'}</span>
                     </motion.button>
 
@@ -135,7 +135,7 @@ export default function FontHeroHeader({
                         onClick={onDownloadZip}
                         disabled={isDownloadingZip}
                         aria-label={`Download ${font.name} font ZIP package`}
-                        className="flex items-center gap-2.5 px-4 md:px-6 py-3 bg-foreground text-background rounded-full font-bold hover:opacity-85 transition-all shadow-[0_0_25px_rgba(var(--color-foreground),0.2)] disabled:opacity-75 cursor-pointer"
+                        className="flex items-center gap-2 px-4 md:px-6 h-12 md:h-auto md:py-3 rounded-full bg-card-background text-foreground hover:opacity-80 transition-all duration-300 cursor-pointer disabled:opacity-50"
                     >
                         {isDownloadingZip ? (
                             <>

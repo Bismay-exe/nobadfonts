@@ -36,15 +36,15 @@ const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, imageSrc, font
     }, [currentUrl]);
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 h-screen flex items-center justify-center p-4">
             {/* Backdrop */}
             <div
-                className="absolute inset-0 bg-background/60 backdrop-blur-md transition-opacity"
+                className="absolute inset-0 bg-background/30 backdrop-blur-md transition-opacity"
                 onClick={onClose}
             ></div>
 
             {/* Modal Content */}
-            <div className="relative z-10 bg-background rounded-4xl p-6 md:p-8 max-w-4xl w-full shadow-2xl flex flex-col gap-6 animate-in fade-in zoom-in duration-200">
+            <div className="relative z-10 bg-card-background rounded-4xl p-6 md:p-8 max-w-4xl w-full shadow-2xl flex flex-col gap-6 animate-in fade-in zoom-in duration-200">
                 {/* Header */}
                 <div className="flex justify-between items-center">
                     <h2 className="text-2xl font-black uppercase">Share Font</h2>
@@ -71,7 +71,7 @@ const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, imageSrc, font
                     <motion.button
                         whileTap={{ scale: 0.98 }}
                         onClick={handleDownload}
-                        className="scale-100 w-full py-4 bg-accent hover:brightness-110 text-background font-black uppercase rounded-xl border-2 border-foreground transition-all hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_var(--color-foreground)] flex items-center justify-center gap-2 text-lg"
+                        className="w-full flex justify-center items-center gap-5 bg-card-foreground hover:bg-foreground text-background p-3.5 rounded-2xl font-semibold font-inter"
                     >
                         <Download size={24} />
                         Download Image

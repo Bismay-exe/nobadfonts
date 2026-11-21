@@ -60,6 +60,9 @@ export interface FontFormState {
         url: string;
         label: string;
     }[];
+
+    // 1001fonts source page (optional — triggers gallery scraping in the pipeline)
+    source1001Fonts?: string;
 }
 
 /**
@@ -137,7 +140,8 @@ export const JSON_SCHEMA_TEMPLATE = {
             url: "string (direct zip download URL from GitHub Releases)",
             label: "string (e.g. complete, static, variable, webfonts)"
         }
-    ]
+    ],
+    "1001fonts": "string (optional — 1001fonts.com font page URL for gallery image auto-scraping)"
 };
 
 export const CANONICAL_JSON_SAMPLE = {
@@ -392,6 +396,22 @@ export function normalizeFontJson(raw: any): { parsedState: Partial<FontFormStat
 
         if (parsedZips.length > 0) {
             state.releaseZips = parsedZips;
+            count++;
+        }
+    }
+
+    // 9. 1001fonts source URL (key can be "1001fonts" or "1001font")
+    // When present, the pipeline will auto-scrape gallery images + download zip.
+    const raw1001 = raw['1001fonts'] || raw['1001font'];
+    if (raw1001) {
+        const url1001 = toUrl(raw1001);
+        if (url1001 && url1001.includes('1001fonts.com')) {
+            // Surface as the official_font_page if not already set
+            if (!state.officialFontPage) {
+                state.officialFontPage = url1001;
+            }
+            // Preserve the raw 1001fonts URL so callers can pass it to the workflow
+            (state as any)._source1001Fonts = url1001;
             count++;
         }
     }

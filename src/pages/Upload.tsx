@@ -289,6 +289,7 @@ const Upload = () => {
     const [bannerItems, setBannerItems] = useState<{ id: string, type: 'file' | 'url', content: File | string }[]>([]);
     const [urlInput, setUrlInput] = useState('');
     const [showUrlInput, setShowUrlInput] = useState(false);
+    const [source1001Fonts, setSource1001Fonts] = useState('');
 
     // Variant State
     type FontVariant = {
@@ -837,9 +838,10 @@ const Upload = () => {
         // Validate that at least one variant has files OR release zips are present
         const hasManualFiles = variants.some(v => Object.values(v.files).some(f => f !== null));
         const hasAutoDownload = formState.releaseZips && formState.releaseZips.length > 0;
+        const has1001Url = /^https:\/\/www\.1001fonts\.com\/[a-z0-9-]+-font\.html$/.test(source1001Fonts.trim());
 
-        if (!hasManualFiles && !hasAutoDownload) {
-            return await Toast.show({ text: 'Please upload files or provide release zip URLs for auto-download.', duration: 'short' });
+        if (!hasManualFiles && !hasAutoDownload && !has1001Url) {
+            return await Toast.show({ text: 'Please upload files, provide release zip URLs, or enter a 1001fonts page URL for auto-download.', duration: 'short' });
         }
 
         await Haptics.impact({ style: ImpactStyle.Medium });
@@ -1068,19 +1070,47 @@ const Upload = () => {
             // 4. Queue automated background downloads from release zips
             if (hasAutoDownload) {
                 console.log('Queuing release zip downloads:', formState.releaseZips);
+                const queuePayload: Record<string, any> = {
+                    font_id: insertedFont.id,
+                    slug: slug,
+                    download_urls: formState.releaseZips,
+                };
+
+                // If a 1001fonts URL is provided, attach it so the pipeline can
+                // scrape gallery images + confirm the zip automatically.
+                const valid1001Url = source1001Fonts.trim();
+                if (valid1001Url && /^https:\/\/www\.1001fonts\.com\/[a-z0-9-]+-font\.html$/.test(valid1001Url)) {
+                    queuePayload.source_1001fonts = valid1001Url;
+                }
+
                 const { error: queueError } = await supabase
                     .from('font_processing_queue')
-                    .insert({
-                        font_id: insertedFont.id,
-                        slug: slug,
-                        download_urls: formState.releaseZips
-                    });
+                    .insert(queuePayload);
 
                 if (queueError) {
                     console.error('Failed to queue release zip downloads:', queueError);
                     await Toast.show({ text: `⚠️ Upload succeeded but auto-download queue failed: ${queueError.message}`, duration: 'long' });
                 } else {
                     console.log('✅ Queued release zip downloads successfully');
+                }
+            } else if (has1001Url) {
+                // 1001fonts-only: queue with no manual release zips — the pipeline
+                // will discover and download the zip via the scraper.
+                console.log('Queuing 1001fonts-only import:', source1001Fonts.trim());
+                const { error: queueError } = await supabase
+                    .from('font_processing_queue')
+                    .insert({
+                        font_id: insertedFont.id,
+                        slug: slug,
+                        download_urls: [],   // will be patched by enrich-from-1001fonts.js
+                        source_1001fonts: source1001Fonts.trim(),
+                    });
+
+                if (queueError) {
+                    console.error('Failed to queue 1001fonts import:', queueError);
+                    await Toast.show({ text: `⚠️ Upload succeeded but 1001fonts queue failed: ${queueError.message}`, duration: 'long' });
+                } else {
+                    console.log('✅ 1001fonts import queued successfully');
                 }
             }
 
@@ -1098,7 +1128,7 @@ const Upload = () => {
         } finally {
             setLoading(false);
         }
-    }, [user, formState, slugPreview, variants, dynamicFormats, dynamicWeights, dynamicStyles, detectedHints, bannerItems, honeypot, turnstileToken, queueWoff2Conversion, navigate]);
+    }, [user, formState, slugPreview, variants, dynamicFormats, dynamicWeights, dynamicStyles, detectedHints, bannerItems, honeypot, turnstileToken, source1001Fonts, queueWoff2Conversion, navigate]);
 
     // Role Check
     if (!profile || (profile.role !== 'member' && profile.role !== 'admin')) {
@@ -1859,6 +1889,29 @@ const Upload = () => {
                             >
                                 <LinkIcon size={14} /> Add Image URL
                             </button>
+                        )}
+                    </div>
+
+                    {/* 1001fonts.com gallery auto-import */}
+                    <div className="mt-4 p-4 rounded-2xl bg-foreground/3 border border-foreground/8">
+                        <label className="block text-xs font-bold uppercase mb-1 flex items-center gap-2">
+                            <span>1001fonts.com Page URL</span>
+                            <span className="font-normal normal-case text-muted text-[10px] px-1.5 py-0.5 rounded-full bg-accent/15 border border-accent/30">Auto-imports gallery images + zip</span>
+                        </label>
+                        <p className="text-[10px] text-muted mb-2">
+                            Paste the font page URL and the pipeline will automatically fetch all specimen images and the download ZIP when processing.
+                        </p>
+                        <input
+                            type="url"
+                            value={source1001Fonts}
+                            onChange={(e) => setSource1001Fonts(e.target.value)}
+                            placeholder="https://www.1001fonts.com/your-font-name-font.html"
+                            className="w-full text-xs p-2.5 bg-background border-2 border-border rounded-xl font-mono focus:outline-none focus:border-foreground"
+                        />
+                        {source1001Fonts && !/^https:\/\/www\.1001fonts\.com\/[a-z0-9-]+-font\.html$/.test(source1001Fonts) && (
+                            <p className="text-[10px] text-warning mt-1">
+                                Must be a valid 1001fonts font page URL (e.g. https://www.1001fonts.com/diomeca-font.html)
+                            </p>
                         )}
                     </div>
                 </div>

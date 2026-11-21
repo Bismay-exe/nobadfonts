@@ -514,9 +514,9 @@ export default function FontDetails() {
                     </>
                 )}
 
-                {/* Hidden Share Card for Image Generation — only mounted when share is triggered */}
-                {(shareLoading || showShareModal) && (
-                    <div className="absolute -left-2499.75 -top-2499.75">
+                {/* Hidden Share Card for Image Generation — always mounted off-screen so shareRef is always ready */}
+                {font && (
+                    <div className="absolute left-[-9999px] top-[-9999px] pointer-events-none" aria-hidden>
                         <SocialShareCard
                             ref={shareRef}
                             font={font}
@@ -558,41 +558,6 @@ export default function FontDetails() {
                     )}
                     <FontEditorialDetails font={font} />
                 </div>
-
-                {/* 3.5 Admin: AI Research Panel */}
-                {/* {profile?.role === 'admin' && font && (
-                    <div className="space-y-8">
-                        <div className="flex items-center gap-4">
-                            <div className="h-px bg-foreground/10 flex-1"></div>
-                            <h2 className="text-2xl font-bold uppercase tracking-widest text-muted">
-                                AI Research
-                            </h2>
-                            <div className="h-px bg-foreground/10 flex-1"></div>
-                        </div>
-                        <FontResearchPanel
-                            fontId={font.id}
-                            fontName={font.name}
-                            research={fontResearch}
-                            sources={fontSources}
-                            onResearchComplete={async () => {
-                                const { data: research } = await supabase
-                                    .from('font_research')
-                                    .select('*')
-                                    .eq('font_id', font.id)
-                                    .maybeSingle();
-                                if (research) {
-                                    setFontResearch(research);
-                                    const { data: sources } = await supabase
-                                        .from('font_sources')
-                                        .select('*')
-                                        .eq('research_id', research.id)
-                                        .order('source_tier', { ascending: true });
-                                    setFontSources(sources || []);
-                                }
-                            }}
-                        />
-                    </div>
-                )} */}
 
                 {/* 4. Type Tester */}
                 <div id="tester" className="scroll-mt-24 space-y-8">
