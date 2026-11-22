@@ -77,6 +77,20 @@ export function cleanUrl(rawUrl: string | null | undefined): string | null {
   }
 }
 
+export const PATTERN_1001FONTS = /^https?:\/\/(?:www\.)?1001fonts\.com\/([a-zA-Z0-9_-]+-font\.html)(?:[?#].*)?$/i;
+
+export function isValid1001FontsUrl(rawUrl: string | null | undefined): boolean {
+  if (!rawUrl || typeof rawUrl !== 'string') return false;
+  return PATTERN_1001FONTS.test(rawUrl.trim());
+}
+
+export function normalize1001FontsUrl(rawUrl: string | null | undefined): string | null {
+  if (!rawUrl || typeof rawUrl !== 'string') return null;
+  const match = rawUrl.trim().match(PATTERN_1001FONTS);
+  if (!match) return null;
+  return `https://www.1001fonts.com/${match[1].toLowerCase()}`;
+}
+
 // ─── Domain Tiers & Classification Constants ─────────────────────────
 const TIER_1_DOMAINS = [
   'github.com', 'gitlab.com', 'bitbucket.org', 'codeberg.org'
@@ -3676,6 +3690,7 @@ export async function handleUpdateMultipleFontsJsonDirect(args: {
 
 export async function handleUploadFontJson(args: {
   json: Record<string, any>;
+  source_1001fonts?: string;
   skip_existing?: boolean;
   publish_immediately?: boolean;
   uploader_user_id?: string;
@@ -3714,43 +3729,51 @@ export async function handleUploadFontJson(args: {
 
   if (!slug) slug = 'untitled-font';
 
-  // Release zips extraction & validation
-  const zipsObj = raw.release_zips || raw.releaseZips;
-  if (!Array.isArray(zipsObj) || zipsObj.length === 0) {
-    return {
-      isError: true,
-      content: [{
-        type: 'text',
-        text: JSON.stringify({
-          isError: true,
-          error_type: 'MISSING_RELEASE_ZIPS',
-          message: 'At least one release zip URL is required in "release_zips" for automated font file processing.'
-        }, null, 2)
-      }]
-    };
-  }
-
-  const sanitizedZips: { url: string; label: string }[] = [];
-  for (const z of zipsObj) {
-    const rawUrl = z?.url || z?.download_url;
-    const u = cleanUrl(rawUrl);
-    if (u) {
-      sanitizedZips.push({
-        url: u,
-        label: typeof z?.label === 'string' && z.label.trim() ? z.label.trim() : 'complete'
-      });
+  // 1001fonts URL extraction & validation
+  const raw1001Url = args.source_1001fonts || raw.source_1001fonts || raw.source1001fonts || raw.official_links?.source_1001fonts || raw.official_links?.['1001fonts_url'] || raw.official_links?.['1001fontsUrl'];
+  let normalized1001Url: string | null = null;
+  if (raw1001Url) {
+    normalized1001Url = normalize1001FontsUrl(raw1001Url);
+    if (!normalized1001Url) {
+      return {
+        isError: true,
+        content: [{
+          type: 'text',
+          text: JSON.stringify({
+            isError: true,
+            error_type: 'INVALID_1001FONTS_URL',
+            message: `Invalid 1001fonts page URL "${raw1001Url}". Must match format: https://www.1001fonts.com/<font-slug>-font.html`
+          }, null, 2)
+        }]
+      };
     }
   }
 
-  if (sanitizedZips.length === 0) {
+  // Release zips extraction & validation
+  const zipsObj = raw.release_zips || raw.releaseZips;
+  const sanitizedZips: { url: string; label: string }[] = [];
+  if (Array.isArray(zipsObj)) {
+    for (const z of zipsObj) {
+      const rawUrl = z?.url || z?.download_url;
+      const u = cleanUrl(rawUrl);
+      if (u) {
+        sanitizedZips.push({
+          url: u,
+          label: typeof z?.label === 'string' && z.label.trim() ? z.label.trim() : 'complete'
+        });
+      }
+    }
+  }
+
+  if (sanitizedZips.length === 0 && !normalized1001Url) {
     return {
       isError: true,
       content: [{
         type: 'text',
         text: JSON.stringify({
           isError: true,
-          error_type: 'INVALID_RELEASE_ZIPS',
-          message: 'None of the provided release_zips contain valid URLs.'
+          error_type: 'MISSING_SOURCE_OR_ZIPS',
+          message: 'At least one release zip URL in "release_zips" or a valid 1001fonts page URL in "source_1001fonts" is required for automated font file processing.'
         }, null, 2)
       }]
     };
@@ -3922,6 +3945,8 @@ export async function handleUploadFontJson(args: {
       free_download_url: cleanUrl(officialObj.free_download_url || officialObj.freeDownloadUrl),
       github_url: githubUrl,
       google_fonts_url: cleanUrl(officialObj.google_fonts_url || officialObj.googleFontsUrl),
+      source_1001fonts: normalized1001Url || cleanUrl(officialObj.source_1001fonts),
+      '1001fonts_url': normalized1001Url || cleanUrl(officialObj['1001fonts_url'] || officialObj['1001fontsUrl']),
     },
     technical: {
       formats: Array.isArray(techObj.formats) ? techObj.formats : ['TTF', 'OTF', 'WOFF', 'WOFF2'],
@@ -3982,20 +4007,25 @@ export async function handleUploadFontJson(args: {
     };
   }
 
-  // 2. Queue automated downloads from release zips
+  // 2. Queue automated downloads from release zips and/or 1001fonts
+  const queuePayload: Record<string, any> = {
+    font_id: insertedFont.id,
+    slug: slug,
+    download_urls: sanitizedZips,
+    status: 'pending'
+  };
+  if (normalized1001Url) {
+    queuePayload.source_1001fonts = normalized1001Url;
+  }
+
   const { data: queueItem, error: queueError } = await supabase
     .from('font_processing_queue')
-    .insert({
-      font_id: insertedFont.id,
-      slug: slug,
-      download_urls: sanitizedZips,
-      status: 'pending'
-    })
+    .insert(queuePayload)
     .select('id')
     .single();
 
   if (queueError) {
-    console.error('[mcp-upload] Failed to queue release zips:', queueError);
+    console.error('[mcp-upload] Failed to queue font processing:', queueError);
   }
 
   // 3. Audit log (non-blocking)
@@ -4003,9 +4033,18 @@ export async function handleUploadFontJson(args: {
     action: 'mcp_font_upload',
     font_id: insertedFont.id,
     after_state: canonicalTaxonomy,
-    reason: args.rationale || 'Direct font upload with GitHub release zips via MCP',
+    reason: args.rationale || (normalized1001Url ? 'Font upload with 1001fonts auto-import via MCP' : 'Direct font upload with GitHub release zips via MCP'),
     performed_by: uploaderId || 'mcp'
   }).then(() => {}).catch(() => {});
+
+  let statusMessage = `✨ Typeface "${insertedFont.name}" (${insertedFont.slug}) successfully created`;
+  if (normalized1001Url && sanitizedZips.length > 0) {
+    statusMessage += ` and queued for 1001Fonts gallery import + ${sanitizedZips.length} release zip extraction.`;
+  } else if (normalized1001Url) {
+    statusMessage += ` and queued for automated 1001Fonts gallery scraping and font download.`;
+  } else {
+    statusMessage += ` and queued for automated GitHub download and variant extraction.`;
+  }
 
   return {
     content: [{
@@ -4018,7 +4057,8 @@ export async function handleUploadFontJson(args: {
         queue_id: queueItem?.id || null,
         status: queueError ? 'created_queue_failed' : 'queued_for_processing',
         release_zips_count: sanitizedZips.length,
-        message: `✨ Typeface "${insertedFont.name}" (${insertedFont.slug}) successfully created and queued for automated GitHub download and variant extraction.`
+        source_1001fonts: normalized1001Url,
+        message: statusMessage
       }, null, 2)
     }]
   };
@@ -4032,7 +4072,9 @@ export async function handleUploadFontJson(args: {
 export async function handleUploadMultipleFontsJson(args: {
   fonts: Array<{
     json: Record<string, any>;
+    source_1001fonts?: string;
     publish_immediately?: boolean;
+    uploader_user_id?: string;
     rationale?: string;
   }>;
   skip_existing?: boolean;
@@ -4054,8 +4096,10 @@ export async function handleUploadMultipleFontsJson(args: {
   for (const item of args.fonts) {
     const res = await handleUploadFontJson({
       json: item.json,
+      source_1001fonts: item.source_1001fonts || item.json?.source_1001fonts || item.json?.source1001fonts,
       skip_existing: args.skip_existing !== false,
       publish_immediately: item.publish_immediately !== false,
+      uploader_user_id: item.uploader_user_id,
       rationale: item.rationale,
       caller: args.caller
     });

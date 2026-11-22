@@ -92,6 +92,20 @@ export function cleanUrl(rawUrl) {
   }
 }
 
+export const PATTERN_1001FONTS = /^https?:\/\/(?:www\.)?1001fonts\.com\/([a-zA-Z0-9_-]+-font\.html)(?:[?#].*)?$/i;
+
+export function isValid1001FontsUrl(rawUrl) {
+  if (!rawUrl || typeof rawUrl !== 'string') return false;
+  return PATTERN_1001FONTS.test(rawUrl.trim());
+}
+
+export function normalize1001FontsUrl(rawUrl) {
+  if (!rawUrl || typeof rawUrl !== 'string') return null;
+  const match = rawUrl.trim().match(PATTERN_1001FONTS);
+  if (!match) return null;
+  return `https://www.1001fonts.com/${match[1].toLowerCase()}`;
+}
+
 export function buildCanonicalTaxonomy(font, research) {
   const extracted = research?.font_metadata_extracted || {};
   const existingTax = font?.taxonomy || extracted?.taxonomy || {};
@@ -630,32 +644,40 @@ async function handleUploadFontJson(args) {
 
   if (!slug) slug = 'untitled-font';
 
-  const zipsObj = raw.release_zips || raw.releaseZips;
-  if (!Array.isArray(zipsObj) || zipsObj.length === 0) {
-    return {
-      isError: true,
-      error_type: 'MISSING_RELEASE_ZIPS',
-      message: 'At least one release zip URL is required in "release_zips" for automated font file processing.'
-    };
-  }
-
-  const sanitizedZips = [];
-  for (const z of zipsObj) {
-    const rawUrl = z?.url || z?.download_url;
-    const u = cleanUrl(rawUrl);
-    if (u) {
-      sanitizedZips.push({
-        url: u,
-        label: typeof z?.label === 'string' && z.label.trim() ? z.label.trim() : 'complete'
-      });
+  // 1001fonts URL extraction & validation
+  const raw1001Url = args.source_1001fonts || raw.source_1001fonts || raw.source1001fonts || raw.official_links?.source_1001fonts || raw.official_links?.['1001fonts_url'] || raw.official_links?.['1001fontsUrl'];
+  let normalized1001Url = null;
+  if (raw1001Url) {
+    normalized1001Url = normalize1001FontsUrl(raw1001Url);
+    if (!normalized1001Url) {
+      return {
+        isError: true,
+        error_type: 'INVALID_1001FONTS_URL',
+        message: `Invalid 1001fonts page URL "${raw1001Url}". Must match format: https://www.1001fonts.com/<font-slug>-font.html`
+      };
     }
   }
 
-  if (sanitizedZips.length === 0) {
+  const zipsObj = raw.release_zips || raw.releaseZips;
+  const sanitizedZips = [];
+  if (Array.isArray(zipsObj)) {
+    for (const z of zipsObj) {
+      const rawUrl = z?.url || z?.download_url;
+      const u = cleanUrl(rawUrl);
+      if (u) {
+        sanitizedZips.push({
+          url: u,
+          label: typeof z?.label === 'string' && z.label.trim() ? z.label.trim() : 'complete'
+        });
+      }
+    }
+  }
+
+  if (sanitizedZips.length === 0 && !normalized1001Url) {
     return {
       isError: true,
-      error_type: 'INVALID_RELEASE_ZIPS',
-      message: 'None of the provided release_zips contain valid URLs.'
+      error_type: 'MISSING_SOURCE_OR_ZIPS',
+      message: 'At least one release zip URL in "release_zips" or a valid 1001fonts page URL in "source_1001fonts" is required for automated font file processing.'
     };
   }
 
@@ -788,6 +810,8 @@ async function handleUploadFontJson(args) {
       free_download_url: cleanUrl(officialObj.free_download_url || officialObj.freeDownloadUrl),
       github_url: githubUrl,
       google_fonts_url: cleanUrl(officialObj.google_fonts_url || officialObj.googleFontsUrl),
+      source_1001fonts: normalized1001Url || cleanUrl(officialObj.source_1001fonts),
+      '1001fonts_url': normalized1001Url || cleanUrl(officialObj['1001fonts_url'] || officialObj['1001fontsUrl']),
     },
     technical: {
       formats: Array.isArray(techObj.formats) ? techObj.formats : ['TTF', 'OTF', 'WOFF', 'WOFF2'],
@@ -843,22 +867,27 @@ async function handleUploadFontJson(args) {
     };
   }
 
-  // 2. Queue automated downloads from release zips
+  // 2. Queue automated downloads from release zips and/or 1001fonts
   let queueId = null;
   try {
+    const queuePayload = {
+      font_id: insertedFont.id,
+      slug: slug,
+      download_urls: sanitizedZips,
+      status: 'pending'
+    };
+    if (normalized1001Url) {
+      queuePayload.source_1001fonts = normalized1001Url;
+    }
+
     const queueItems = await supabaseFetch('font_processing_queue', {
       method: 'POST',
       headers: { 'Prefer': 'return=representation' },
-      body: JSON.stringify({
-        font_id: insertedFont.id,
-        slug: slug,
-        download_urls: sanitizedZips,
-        status: 'pending'
-      })
+      body: JSON.stringify(queuePayload)
     });
     queueId = queueItems?.[0]?.id || null;
   } catch (qErr) {
-    process.stderr.write(`[nobadfonts-mcp] Failed to queue release zips: ${qErr.message}\n`);
+    process.stderr.write(`[nobadfonts-mcp] Failed to queue font processing: ${qErr.message}\n`);
   }
 
   // 3. Audit log (non-blocking)
@@ -868,10 +897,19 @@ async function handleUploadFontJson(args) {
       action: 'mcp_font_upload',
       font_id: insertedFont.id,
       after_state: canonicalTaxonomy,
-      reason: args.rationale || 'Direct font upload with GitHub release zips via Local MCP',
+      reason: args.rationale || (normalized1001Url ? 'Font upload with 1001fonts auto-import via Local MCP' : 'Direct font upload with GitHub release zips via Local MCP'),
       performed_by: uploaderId || 'mcp-local'
     })
   }).catch(() => {});
+
+  let statusMessage = `✨ Typeface "${insertedFont.name}" (${insertedFont.slug}) successfully created`;
+  if (normalized1001Url && sanitizedZips.length > 0) {
+    statusMessage += ` and queued for 1001Fonts gallery import + ${sanitizedZips.length} release zip extraction.`;
+  } else if (normalized1001Url) {
+    statusMessage += ` and queued for automated 1001Fonts gallery scraping and font download.`;
+  } else {
+    statusMessage += ` and queued for automated GitHub download and variant extraction.`;
+  }
 
   return {
     success: true,
@@ -881,7 +919,8 @@ async function handleUploadFontJson(args) {
     queue_id: queueId,
     status: queueId ? 'queued_for_processing' : 'created_queue_failed',
     release_zips_count: sanitizedZips.length,
-    message: `✨ Typeface "${insertedFont.name}" (${insertedFont.slug}) successfully created and queued for automated GitHub download and variant extraction.`
+    source_1001fonts: normalized1001Url,
+    message: statusMessage
   };
 }
 
@@ -899,8 +938,10 @@ async function handleUploadMultipleFontsJson(args) {
     try {
       const res = await handleUploadFontJson({
         json: item.json,
+        source_1001fonts: item.source_1001fonts || item.json?.source_1001fonts || item.json?.source1001fonts,
         skip_existing: args.skip_existing !== false,
         publish_immediately: item.publish_immediately !== false,
+        uploader_user_id: item.uploader_user_id || args.uploader_user_id,
         rationale: item.rationale
       });
 
@@ -1044,13 +1085,17 @@ const TOOLS = [
   },
   {
     name: 'upload_font_json',
-    description: 'Create a new font in NoBadFonts from a canonical font JSON definition, and queue automated font file extraction from GitHub release zip archives. Supports skip_existing to automatically skip duplicate fonts.',
+    description: 'Create a new font in NoBadFonts from a canonical font JSON definition, and queue automated font file extraction from GitHub release zip archives or automated 1001Fonts gallery scraping and download. Supports skip_existing to automatically skip duplicate fonts.',
     inputSchema: {
       type: 'object',
       properties: {
         json: {
           type: 'object',
-          description: 'Canonical font JSON matching github-font-output.json, including identity.name and release_zips array'
+          description: 'Canonical font JSON matching github-font-output.json, including identity.name and release_zips array or source_1001fonts URL'
+        },
+        source_1001fonts: {
+          type: 'string',
+          description: 'Optional 1001fonts font page URL (e.g. https://www.1001fonts.com/example-font.html) to automatically queue gallery scraping and zip download.'
         },
         skip_existing: {
           type: 'boolean',
@@ -1074,7 +1119,7 @@ const TOOLS = [
   },
   {
     name: 'upload_multiple_fonts_json',
-    description: 'Batch create multiple fonts in NoBadFonts from generated JSONs and queue automated GitHub release downloads (up to 50 fonts). Ideal for automated discovery.',
+    description: 'Batch create multiple fonts in NoBadFonts from generated JSONs and queue automated GitHub release downloads or 1001Fonts imports (up to 50 fonts). Ideal for automated discovery.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -1084,6 +1129,7 @@ const TOOLS = [
             type: 'object',
             properties: {
               json: { type: 'object' },
+              source_1001fonts: { type: 'string' },
               publish_immediately: { type: 'boolean' },
               rationale: { type: 'string' }
             },
@@ -1249,5 +1295,6 @@ export {
   handleGetFontFields,
   handleUpdateMultipleFontsJson,
   handleUploadFontJson,
-  handleUploadMultipleFontsJson
+  handleUploadMultipleFontsJson,
+  TOOLS
 };

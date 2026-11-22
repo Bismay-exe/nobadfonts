@@ -1143,12 +1143,13 @@ Supports up to 50 fonts per call. Best-effort execution: valid fonts are updated
 // Register Tool: upload_font_json
 server.tool(
   'upload_font_json',
-  `Create a new font in NoBadFonts from a canonical font JSON definition, and queue automated font file extraction from GitHub release zip archives.
+  `Create a new font in NoBadFonts from a canonical font JSON definition, and queue automated font file extraction from GitHub release zip archives or 1001Fonts gallery scraping and download.
 
-Accepts the complete canonical taxonomy (identity, creator, classification, description, license, official_links, technical) plus release_zips containing direct download links from GitHub Releases.
+Accepts the complete canonical taxonomy (identity, creator, classification, description, license, official_links, technical) plus release_zips and/or source_1001fonts URL.
 Automatically verifies whether the font already exists (by slug or github_url). If skip_existing is true (default), gracefully skips duplicates without error.`,
   {
-    json: z.record(z.any()).describe('Canonical font JSON payload matching github-font-output.json template, including identity.name and release_zips array'),
+    json: z.record(z.any()).describe('Canonical font JSON payload matching github-font-output.json template, including identity.name and release_zips array or source_1001fonts URL'),
+    source_1001fonts: z.string().optional().describe('Optional 1001fonts font page URL (e.g. https://www.1001fonts.com/example-font.html) to automatically queue gallery scraping and zip download'),
     skip_existing: z.boolean().optional().describe('If true (default), skips creation if font already exists in catalog; if false, returns conflict error'),
     publish_immediately: z.boolean().optional().describe('If true (default), marks font as published immediately; if false, creates as draft'),
     uploader_user_id: z.string().optional().describe('Optional user UUID to assign ownership to (defaults to authenticated caller or admin)'),
@@ -1160,12 +1161,13 @@ Automatically verifies whether the font already exists (by slug or github_url). 
 // Register Tool: upload_multiple_fonts_json
 server.tool(
   'upload_multiple_fonts_json',
-  `Batch create multiple fonts in NoBadFonts from generated JSONs and queue automated GitHub release downloads (up to 50 fonts per call).
+  `Batch create multiple fonts in NoBadFonts from generated JSONs and queue automated GitHub release downloads or 1001Fonts imports (up to 50 fonts per call).
 
 Ideal for automated discovery pipelines. Supports skip_existing to automatically omit already-cataloged fonts while processing the rest.`,
   {
     fonts: z.array(z.object({
-      json: z.record(z.any()).describe('Canonical font JSON matching github-font-output.json with release_zips'),
+      json: z.record(z.any()).describe('Canonical font JSON matching github-font-output.json with release_zips or source_1001fonts'),
+      source_1001fonts: z.string().optional().describe('Optional 1001fonts font page URL for this font'),
       publish_immediately: z.boolean().optional().describe('Publish flag for this font (default: true)'),
       rationale: z.string().optional().describe('Audit note for this font')
     })).describe('Array of font creation payloads (up to 50 fonts)'),
